@@ -215,7 +215,7 @@ export default function NewAbstract() {
                   onChange={(e) => set("title", e.target.value)}
                   placeholder="Enter the full title of your presentation"
                   className="w-full px-3 py-2.5 rounded-lg text-[14px] outline-none"
-                  style={{ border: `1px solid ${errors.title ? "#dc3545" : "#dee2e6"}`, fontFamily: "Inter, sans-serif" }}
+                  style={{ border: `1px solid ${errors.title ? "#dc3545" : "#dee2e6"}` }}
                 />
                 {errors.title && <p className="text-[12px] mt-1" style={{ color: "#dc3545" }}>{errors.title}</p>}
               </div>
@@ -248,7 +248,7 @@ export default function NewAbstract() {
                   onChange={(e) => set("keywords", e.target.value)}
                   placeholder="e.g. tick-borne diseases, vector control, epidemiology"
                   className="w-full px-3 py-2.5 rounded-lg text-[14px] outline-none"
-                  style={{ border: `1px solid ${errors.keywords ? "#dc3545" : "#dee2e6"}`, fontFamily: "Inter, sans-serif" }}
+                  style={{ border: `1px solid ${errors.keywords ? "#dc3545" : "#dee2e6"}` }}
                 />
                 {errors.keywords && <p className="text-[12px] mt-1" style={{ color: "#dc3545" }}>{errors.keywords}</p>}
               </div>
@@ -262,7 +262,7 @@ export default function NewAbstract() {
                   onChange={(e) => set("coAuthors", e.target.value)}
                   placeholder="e.g. Dr. Jane Smith (UM), Prof. Ali Hassan (USM)"
                   className="w-full px-3 py-2.5 rounded-lg text-[14px] outline-none"
-                  style={{ border: "1px solid #dee2e6", fontFamily: "Inter, sans-serif" }}
+                  style={{ border: "1px solid #dee2e6" }}
                 />
               </div>
               <div>
@@ -280,7 +280,7 @@ export default function NewAbstract() {
                   placeholder="Background: ...&#10;Methods: ...&#10;Results: ...&#10;Conclusion: ..."
                   rows={10}
                   className="w-full px-3 py-2.5 rounded-lg text-[14px] outline-none resize-y"
-                  style={{ border: `1px solid ${errors.body ? "#dc3545" : "#dee2e6"}`, fontFamily: "Inter, sans-serif", lineHeight: 1.7 }}
+                  style={{ border: `1px solid ${errors.body ? "#dc3545" : "#dee2e6"}`, lineHeight: 1.7 }}
                 />
                 {errors.body && <p className="text-[12px] mt-1" style={{ color: "#dc3545" }}>{errors.body}</p>}
               </div>

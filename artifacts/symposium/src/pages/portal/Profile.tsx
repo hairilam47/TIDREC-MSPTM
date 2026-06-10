@@ -111,7 +111,7 @@ export default function Profile() {
                     onChange={(e) => setForm((f) => ({ ...f, firstName: e.target.value }))}
                     required
                     className="w-full px-3 py-2.5 rounded-lg text-[14px] outline-none focus:ring-2 ring-teal-200"
-                    style={{ border: "1px solid #dee2e6", fontFamily: "Inter, sans-serif" }}
+                    style={{ border: "1px solid #dee2e6" }}
                   />
                 </div>
                 <div>
@@ -124,7 +124,7 @@ export default function Profile() {
                     onChange={(e) => setForm((f) => ({ ...f, lastName: e.target.value }))}
                     required
                     className="w-full px-3 py-2.5 rounded-lg text-[14px] outline-none focus:ring-2 ring-teal-200"
-                    style={{ border: "1px solid #dee2e6", fontFamily: "Inter, sans-serif" }}
+                    style={{ border: "1px solid #dee2e6" }}
                   />
                 </div>
               </div>
@@ -138,7 +138,7 @@ export default function Profile() {
                   value={user?.email ?? ""}
                   disabled
                   className="w-full px-3 py-2.5 rounded-lg text-[14px]"
-                  style={{ border: "1px solid #dee2e6", background: "#f8f9fa", color: "#adb5bd", fontFamily: "Inter, sans-serif" }}
+                  style={{ border: "1px solid #dee2e6", background: "#f8f9fa", color: "#adb5bd" }}
                 />
                 <p className="text-[12px] mt-1" style={{ color: "#adb5bd" }}>Email address cannot be changed.</p>
               </div>
@@ -153,7 +153,7 @@ export default function Profile() {
                   onChange={(e) => setForm((f) => ({ ...f, institution: e.target.value }))}
                   placeholder="e.g. University of Malaya"
                   className="w-full px-3 py-2.5 rounded-lg text-[14px] outline-none focus:ring-2 ring-teal-200"
-                  style={{ border: "1px solid #dee2e6", fontFamily: "Inter, sans-serif" }}
+                  style={{ border: "1px solid #dee2e6" }}
                 />
               </div>
 
@@ -165,7 +165,7 @@ export default function Profile() {
                   value={form.country}
                   onChange={(e) => setForm((f) => ({ ...f, country: e.target.value }))}
                   className="w-full px-3 py-2.5 rounded-lg text-[14px] outline-none focus:ring-2 ring-teal-200"
-                  style={{ border: "1px solid #dee2e6", fontFamily: "Inter, sans-serif" }}
+                  style={{ border: "1px solid #dee2e6" }}
                 >
                   <option value="">Select country…</option>
                   {COUNTRIES.map((c) => (

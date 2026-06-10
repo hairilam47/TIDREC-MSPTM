@@ -33,7 +33,7 @@ export default function AdminReports() {
     const acceptRate = abstractTotal > 0 ? Math.round(((stats?.acceptedAbstracts ?? 0) / abstractTotal) * 100) : 0;
     const html = `<!DOCTYPE html><html><head><title>SATBDS 2027 Event Report</title><style>
       *{box-sizing:border-box;margin:0;padding:0}
-      body{font-family:Arial,sans-serif;font-size:12px;color:#333;padding:20mm}
+      body{font-family:'Inter',sans-serif;font-size:12px;color:#333;padding:20mm}
       h1{font-size:20px;color:#0B2744;margin-bottom:4px}
       .meta{color:#6c757d;font-size:11px;margin-bottom:20px}
       h2{font-size:13px;font-weight:bold;color:#0E6E74;margin:20px 0 8px;border-bottom:2px solid #0E6E74;padding-bottom:4px;text-transform:uppercase;letter-spacing:.05em}
