@@ -27,15 +27,15 @@ export default function AdminReports() {
   const exportPdf = () => {
     const printWindow = window.open("", "_blank");
     if (!printWindow) return;
+    // Inject compiled page styles so shared font tokens (--app-font-sans, etc.) are available
+    const pageStyles = Array.from(document.querySelectorAll("style")).map((el) => el.outerHTML).join("");
     const topCountriesHtml = topCountries.map((c) => `<tr><td>${c.country}</td><td>${c.count}</td></tr>`).join("");
     const catHtml = (stats?.registrationsByCategory ?? []).sort((a, b) => b.count - a.count).map((c) => `<tr><td class="cap">${c.category.replace(/_/g, " ")}</td><td>${c.count}</td></tr>`).join("");
     const abstractTotal = stats?.totalAbstracts ?? 0;
     const acceptRate = abstractTotal > 0 ? Math.round(((stats?.acceptedAbstracts ?? 0) / abstractTotal) * 100) : 0;
-    const html = `<!DOCTYPE html><html><head><title>SATBDS 2027 Event Report</title><style>
-      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-      :root{--report-font:'Inter',sans-serif}
+    const html = `<!DOCTYPE html><html><head><title>SATBDS 2027 Event Report</title>${pageStyles}<style>
       *{box-sizing:border-box;margin:0;padding:0}
-      body{font-family:var(--report-font);font-size:12px;color:#333;padding:20mm}
+      body{font-family:var(--app-font-sans);font-size:12px;color:#333;padding:20mm}
       h1{font-size:20px;color:#0B2744;margin-bottom:4px}
       .meta{color:#6c757d;font-size:11px;margin-bottom:20px}
       h2{font-size:13px;font-weight:bold;color:#0E6E74;margin:20px 0 8px;border-bottom:2px solid #0E6E74;padding-bottom:4px;text-transform:uppercase;letter-spacing:.05em}
