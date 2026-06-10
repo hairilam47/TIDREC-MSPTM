@@ -23,6 +23,8 @@ export interface Abstract {
   status: AbstractStatus;
   /** @nullable */
   reviewNotes?: string | null;
+  /** @nullable */
+  reviewedBy?: string | null;
   abstractCode?: string;
   /** @nullable */
   fileUrl?: string | null;

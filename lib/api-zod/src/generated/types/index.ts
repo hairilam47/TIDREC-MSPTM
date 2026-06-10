@@ -35,6 +35,7 @@ export * from './session';
 export * from './sessionInput';
 export * from './sessionInputSessionType';
 export * from './sessionSessionType';
+export * from './settingsMap';
 export * from './speaker';
 export * from './speakerInput';
 export * from './sponsor';

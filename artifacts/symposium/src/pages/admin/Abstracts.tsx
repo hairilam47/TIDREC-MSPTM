@@ -22,6 +22,7 @@ export default function AdminAbstracts() {
   const [statusFilter, setStatusFilter] = React.useState("all");
   const [typeFilter, setTypeFilter] = React.useState("all");
   const [reviewNote, setReviewNote] = React.useState<Record<number, string>>({});
+  const [reviewerName, setReviewerName] = React.useState<Record<number, string>>({});
   const [expanded, setExpanded] = React.useState<number | null>(null);
 
   const filtered = (abstracts ?? []).filter((a) => {
@@ -34,13 +35,26 @@ export default function AdminAbstracts() {
 
   const handleAction = (id: number, status: "accepted" | "rejected" | "revision_requested" | "under_review") => {
     updateMutation.mutate(
-      { id, data: { status, reviewNotes: reviewNote[id] || undefined } },
+      { id, data: { status, reviewNotes: reviewNote[id] || undefined, reviewedBy: reviewerName[id] || undefined } },
       {
         onSuccess: () => {
           refetch();
           setReviewNote((p) => { const n = { ...p }; delete n[id]; return n; });
+          setReviewerName((p) => { const n = { ...p }; delete n[id]; return n; });
           toast({ title: `Abstract ${status.replace(/_/g, " ")}` });
         },
+        onError: () => toast({ title: "Update failed", variant: "destructive" }),
+      }
+    );
+  };
+
+  const assignReviewer = (id: number) => {
+    const name = reviewerName[id];
+    if (!name?.trim()) return;
+    updateMutation.mutate(
+      { id, data: { reviewedBy: name } },
+      {
+        onSuccess: () => { refetch(); toast({ title: `Reviewer assigned: ${name}` }); },
         onError: () => toast({ title: "Update failed", variant: "destructive" }),
       }
     );
@@ -134,14 +148,61 @@ export default function AdminAbstracts() {
 
               {isExpanded && (
                 <div className="px-5 pb-5" style={{ borderTop: "1px solid #f1f3f5" }}>
-                  <div className="rounded-lg p-4 mb-4 mt-4 text-[13px] leading-relaxed whitespace-pre-wrap" style={{ background: "#f8f9fa", color: "#495057" }}>
+                  {/* Meta row */}
+                  <div className="grid grid-cols-2 gap-3 mt-4 mb-3">
+                    {a.keywords && (
+                      <div className="rounded-lg p-3" style={{ background: "#f8f9fa" }}>
+                        <div className="text-[10px] font-bold uppercase tracking-wide mb-0.5" style={{ color: "#adb5bd" }}>Keywords</div>
+                        <div className="text-[12px]" style={{ color: "#495057" }}>{a.keywords}</div>
+                      </div>
+                    )}
+                    {a.coAuthors && (
+                      <div className="rounded-lg p-3" style={{ background: "#f8f9fa" }}>
+                        <div className="text-[10px] font-bold uppercase tracking-wide mb-0.5" style={{ color: "#adb5bd" }}>Co-Authors</div>
+                        <div className="text-[12px]" style={{ color: "#495057" }}>{a.coAuthors}</div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="rounded-lg p-4 mb-4 text-[13px] leading-relaxed whitespace-pre-wrap" style={{ background: "#f8f9fa", color: "#495057" }}>
                     {a.body}
                   </div>
+
+                  {/* Reviewer assignment */}
+                  <div className="mb-3">
+                    <label className="block text-[11px] font-semibold uppercase tracking-wide mb-1.5" style={{ color: "#6c757d" }}>
+                      Assign Reviewer
+                    </label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        placeholder={a.reviewedBy ? `Current: ${a.reviewedBy}` : "Enter reviewer name…"}
+                        value={reviewerName[a.id] ?? ""}
+                        onChange={(e) => setReviewerName((p) => ({ ...p, [a.id]: e.target.value }))}
+                        className="flex-1 px-3 py-2 rounded-lg text-[13px] outline-none"
+                        style={{ border: "1px solid #dee2e6" }}
+                      />
+                      <button
+                        onClick={() => assignReviewer(a.id)}
+                        className="px-3 py-2 rounded-lg text-[12px] font-semibold"
+                        style={{ background: "#0B2744", color: "#fff" }}
+                      >
+                        Assign
+                      </button>
+                    </div>
+                    {a.reviewedBy && (
+                      <div className="text-[11px] mt-1" style={{ color: "#6c757d" }}>
+                        Currently assigned to: <span className="font-semibold" style={{ color: "#0B2744" }}>{a.reviewedBy}</span>
+                      </div>
+                    )}
+                  </div>
+
                   {a.reviewNotes && (
-                    <div className="rounded-lg p-3 mb-4 text-[12px]" style={{ background: "#fff3cd", color: "#664d03" }}>
-                      <span className="font-semibold">Previous note:</span> {a.reviewNotes}
+                    <div className="rounded-lg p-3 mb-3 text-[12px]" style={{ background: "#fff3cd", color: "#664d03" }}>
+                      <span className="font-semibold">Review note:</span> {a.reviewNotes}
                     </div>
                   )}
+
                   <div className="flex flex-col sm:flex-row gap-2">
                     <input
                       type="text"
@@ -151,7 +212,7 @@ export default function AdminAbstracts() {
                       className="flex-1 px-3 py-2 rounded-lg text-[13px] outline-none"
                       style={{ border: "1px solid #dee2e6" }}
                     />
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 flex-wrap">
                       {a.status !== "under_review" && (
                         <button onClick={() => handleAction(a.id, "under_review")} className="px-3 py-2 rounded-lg text-[12px] font-semibold" style={{ background: "#e6f4f5", color: "#0E6E74" }}>Review</button>
                       )}

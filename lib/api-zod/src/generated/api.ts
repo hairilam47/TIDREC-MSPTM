@@ -484,6 +484,7 @@ export const GetAbstractsResponseItem = zod.object({
   "coAuthors": zod.string().nullish(),
   "status": zod.enum(['submitted', 'under_review', 'accepted', 'rejected', 'revision_requested']),
   "reviewNotes": zod.string().nullish(),
+  "reviewedBy": zod.string().nullish(),
   "abstractCode": zod.string().optional(),
   "fileUrl": zod.string().nullish(),
   "createdAt": zod.string()
@@ -522,6 +523,7 @@ export const GetAbstractResponse = zod.object({
   "coAuthors": zod.string().nullish(),
   "status": zod.enum(['submitted', 'under_review', 'accepted', 'rejected', 'revision_requested']),
   "reviewNotes": zod.string().nullish(),
+  "reviewedBy": zod.string().nullish(),
   "abstractCode": zod.string().optional(),
   "fileUrl": zod.string().nullish(),
   "createdAt": zod.string()
@@ -538,6 +540,7 @@ export const UpdateAbstractParams = zod.object({
 export const UpdateAbstractBody = zod.object({
   "status": zod.enum(['submitted', 'under_review', 'accepted', 'rejected', 'revision_requested']).optional(),
   "reviewNotes": zod.string().optional(),
+  "reviewedBy": zod.string().optional(),
   "title": zod.string().optional(),
   "body": zod.string().optional()
 })
@@ -553,6 +556,7 @@ export const UpdateAbstractResponse = zod.object({
   "coAuthors": zod.string().nullish(),
   "status": zod.enum(['submitted', 'under_review', 'accepted', 'rejected', 'revision_requested']),
   "reviewNotes": zod.string().nullish(),
+  "reviewedBy": zod.string().nullish(),
   "abstractCode": zod.string().optional(),
   "fileUrl": zod.string().nullish(),
   "createdAt": zod.string()
@@ -669,7 +673,21 @@ export const RequestUploadUrlResponse = zod.object({
 
 
 /**
- * @summary Get event summary statistics
+ * @summary Get event settings / CMS content (admin)
+ */
+export const GetSettingsResponse = zod.record(zod.string(), zod.string())
+
+
+/**
+ * @summary Update event settings (admin)
+ */
+export const PutSettingsBody = zod.record(zod.string(), zod.string())
+
+export const PutSettingsResponse = zod.record(zod.string(), zod.string())
+
+
+/**
+ * @summary Get event summary statistics (admin)
  */
 export const GetStatsSummaryResponse = zod.object({
   "totalRegistrations": zod.number(),

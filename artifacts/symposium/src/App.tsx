@@ -22,14 +22,19 @@ import Notifications from "@/pages/portal/Notifications";
 import Support from "@/pages/portal/Support";
 
 import AdminDashboard from "@/pages/admin/Dashboard";
+import AdminAnalytics from "@/pages/admin/Analytics";
 import AdminRegistrations from "@/pages/admin/Registrations";
+import AdminPayments from "@/pages/admin/Payments";
+import AdminInvoices from "@/pages/admin/Invoices";
 import AdminAbstracts from "@/pages/admin/Abstracts";
 import AdminSpeakers from "@/pages/admin/Speakers";
 import AdminProgramme from "@/pages/admin/Programme";
 import AdminSponsors from "@/pages/admin/Sponsors";
 import AdminUsers from "@/pages/admin/Users";
 import AdminAnnouncements from "@/pages/admin/Announcements";
+import AdminEmails from "@/pages/admin/Emails";
 import AdminReports from "@/pages/admin/Reports";
+import AdminSettings from "@/pages/admin/Settings";
 
 const queryClient = new QueryClient();
 
@@ -79,8 +84,17 @@ function Router() {
       <Route path="/admin">
         <RequireAdmin><AdminDashboard /></RequireAdmin>
       </Route>
+      <Route path="/admin/analytics">
+        <RequireAdmin><AdminAnalytics /></RequireAdmin>
+      </Route>
       <Route path="/admin/registrations">
         <RequireAdmin><AdminRegistrations /></RequireAdmin>
+      </Route>
+      <Route path="/admin/payments">
+        <RequireAdmin><AdminPayments /></RequireAdmin>
+      </Route>
+      <Route path="/admin/invoices">
+        <RequireAdmin><AdminInvoices /></RequireAdmin>
       </Route>
       <Route path="/admin/abstracts">
         <RequireAdmin><AdminAbstracts /></RequireAdmin>
@@ -100,8 +114,14 @@ function Router() {
       <Route path="/admin/announcements">
         <RequireAdmin><AdminAnnouncements /></RequireAdmin>
       </Route>
+      <Route path="/admin/emails">
+        <RequireAdmin><AdminEmails /></RequireAdmin>
+      </Route>
       <Route path="/admin/reports">
         <RequireAdmin><AdminReports /></RequireAdmin>
+      </Route>
+      <Route path="/admin/settings">
+        <RequireAdmin><AdminSettings /></RequireAdmin>
       </Route>
 
       <Route component={NotFound} />

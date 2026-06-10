@@ -1,10 +1,11 @@
 import { Router } from "express";
 import { db, registrationsTable, abstractsTable, speakersTable, sessionsTable, usersTable } from "@workspace/db";
 import { eq, count, sum } from "drizzle-orm";
+import { requireAdmin } from "../lib/auth";
 
 const router = Router();
 
-router.get("/stats/summary", async (_req, res) => {
+router.get("/stats/summary", requireAdmin, async (_req, res) => {
   try {
     const [totalRegsResult] = await db.select({ count: count() }).from(registrationsTable);
     const [totalAbstractsResult] = await db.select({ count: count() }).from(abstractsTable);

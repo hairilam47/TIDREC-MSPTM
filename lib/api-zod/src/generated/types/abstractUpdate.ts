@@ -10,6 +10,7 @@ import type { AbstractUpdateStatus } from './abstractUpdateStatus';
 export interface AbstractUpdate {
   status?: AbstractUpdateStatus;
   reviewNotes?: string;
+  reviewedBy?: string;
   title?: string;
   body?: string;
 }

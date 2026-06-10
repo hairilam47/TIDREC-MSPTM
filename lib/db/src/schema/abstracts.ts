@@ -23,6 +23,7 @@ export const abstractsTable = pgTable("abstracts", {
   fileUrl: text("file_url"),
   status: abstractStatusEnum("status").notNull().default("submitted"),
   reviewNotes: text("review_notes"),
+  reviewedBy: text("reviewed_by"),
   abstractCode: text("abstract_code").notNull().unique(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),

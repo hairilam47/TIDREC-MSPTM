@@ -300,6 +300,8 @@ export interface Abstract {
   status: AbstractStatus;
   /** @nullable */
   reviewNotes?: string | null;
+  /** @nullable */
+  reviewedBy?: string | null;
   abstractCode?: string;
   /** @nullable */
   fileUrl?: string | null;
@@ -311,6 +313,8 @@ export interface UploadUrlRequest {
   size: number;
   contentType: string;
 }
+
+export interface SettingsMap {[key: string]: string}
 
 export interface UploadUrlResponse {
   uploadURL: string;
@@ -348,6 +352,7 @@ export const AbstractUpdateStatus = {
 export interface AbstractUpdate {
   status?: AbstractUpdateStatus;
   reviewNotes?: string;
+  reviewedBy?: string;
   title?: string;
   body?: string;
 }

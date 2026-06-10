@@ -14,7 +14,11 @@ import {
   Menu,
   ClipboardList,
   CreditCard,
+  Receipt,
   Shield,
+  TrendingUp,
+  Settings,
+  Mail,
 } from "lucide-react";
 
 export default function AdminLayout({ children, title }: { children: React.ReactNode; title?: string }) {
@@ -37,6 +41,7 @@ export default function AdminLayout({ children, title }: { children: React.React
       label: "OVERVIEW",
       items: [
         { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
+        { href: "/admin/analytics", label: "Analytics", icon: TrendingUp },
         { href: "/admin/reports", label: "Reports", icon: BarChart3 },
       ],
     },
@@ -44,6 +49,8 @@ export default function AdminLayout({ children, title }: { children: React.React
       label: "MANAGEMENT",
       items: [
         { href: "/admin/registrations", label: "Registrations", icon: ClipboardList },
+        { href: "/admin/payments", label: "Payments", icon: CreditCard },
+        { href: "/admin/invoices", label: "Invoices", icon: Receipt },
         { href: "/admin/abstracts", label: "Abstracts", icon: FileText },
         { href: "/admin/speakers", label: "Speakers", icon: Mic2 },
         { href: "/admin/programme", label: "Programme", icon: Calendar },
@@ -54,7 +61,8 @@ export default function AdminLayout({ children, title }: { children: React.React
       label: "ADMINISTRATION",
       items: [
         { href: "/admin/users", label: "Users", icon: Users },
-        { href: "/admin/announcements", label: "Announcements", icon: Bell },
+        { href: "/admin/emails", label: "Emails", icon: Mail },
+        { href: "/admin/settings", label: "Settings", icon: Settings },
       ],
     },
   ];

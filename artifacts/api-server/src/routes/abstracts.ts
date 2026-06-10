@@ -24,6 +24,7 @@ async function formatAbstract(a: typeof abstractsTable.$inferSelect) {
     fileUrl: a.fileUrl ?? null,
     status: a.status,
     reviewNotes: a.reviewNotes,
+    reviewedBy: a.reviewedBy ?? null,
     abstractCode: a.abstractCode,
     createdAt: a.createdAt.toISOString(),
   };
@@ -103,10 +104,11 @@ router.patch("/abstracts/:id", requireAuth, async (req: AuthRequest, res) => {
       res.status(403).json({ error: "Forbidden" });
       return;
     }
-    const { status, reviewNotes, title, body } = req.body;
+    const { status, reviewNotes, reviewedBy, title, body } = req.body;
     const updateData: Record<string, unknown> = { updatedAt: new Date() };
     if (isAdmin && status) updateData.status = status;
     if (isAdmin && reviewNotes !== undefined) updateData.reviewNotes = reviewNotes;
+    if (isAdmin && reviewedBy !== undefined) updateData.reviewedBy = reviewedBy;
     if (isOwner && title) updateData.title = title;
     if (isOwner && body) updateData.body = body;
     const [updated] = await db.update(abstractsTable).set(updateData).where(eq(abstractsTable.id, id)).returning();

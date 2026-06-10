@@ -11,6 +11,7 @@ import announcementsRouter from "./announcements";
 import statsRouter from "./stats";
 import storageRouter from "./storage";
 import usersRouter from "./users";
+import settingsRouter from "./settings";
 
 const router: IRouter = Router();
 
@@ -26,5 +27,6 @@ router.use(announcementsRouter);
 router.use(statsRouter);
 router.use(storageRouter);
 router.use(usersRouter);
+router.use(settingsRouter);
 
 export default router;
