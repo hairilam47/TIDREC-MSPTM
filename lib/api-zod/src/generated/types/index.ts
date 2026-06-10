@@ -8,6 +8,7 @@
 
 export * from './abstract';
 export * from './abstractAbstractType';
+export * from './abstractHistoryItem';
 export * from './abstractInput';
 export * from './abstractInputAbstractType';
 export * from './abstractStatus';
@@ -31,6 +32,7 @@ export * from './registrationInput';
 export * from './registrationPaymentStatus';
 export * from './registrationUpdate';
 export * from './registrationUpdatePaymentStatus';
+export * from './reminderResponse';
 export * from './session';
 export * from './sessionInput';
 export * from './sessionInputSessionType';

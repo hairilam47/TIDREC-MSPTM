@@ -362,6 +362,7 @@ export interface Announcement {
   title: string;
   body: string;
   important?: boolean;
+  audience?: string;
   createdAt: string;
 }
 
@@ -369,6 +370,25 @@ export interface AnnouncementInput {
   title: string;
   body: string;
   important?: boolean;
+  audience?: string;
+}
+
+export interface AbstractHistoryItem {
+  id: number;
+  /** @nullable */
+  fromStatus?: string | null;
+  toStatus: string;
+  /** @nullable */
+  changedBy?: string | null;
+  /** @nullable */
+  notes?: string | null;
+  createdAt: string;
+}
+
+export interface ReminderResponse {
+  success: boolean;
+  reminderId: number;
+  sentAt: string;
 }
 
 export type UserRoleUpdateRole = typeof UserRoleUpdateRole[keyof typeof UserRoleUpdateRole];

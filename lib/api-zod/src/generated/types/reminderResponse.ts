@@ -6,9 +6,8 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export interface AnnouncementInput {
-  title: string;
-  body: string;
-  important?: boolean;
-  audience?: string;
+export interface ReminderResponse {
+  success: boolean;
+  reminderId: number;
+  sentAt: string;
 }

@@ -24,6 +24,71 @@ export default function AdminReports() {
 
   const topCountries = [...(stats?.registrationsByCountry ?? [])].sort((a, b) => b.count - a.count).slice(0, 10);
 
+  const exportPdf = () => {
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) return;
+    const topCountriesHtml = topCountries.map((c) => `<tr><td>${c.country}</td><td>${c.count}</td></tr>`).join("");
+    const catHtml = (stats?.registrationsByCategory ?? []).sort((a, b) => b.count - a.count).map((c) => `<tr><td class="cap">${c.category.replace(/_/g, " ")}</td><td>${c.count}</td></tr>`).join("");
+    const abstractTotal = stats?.totalAbstracts ?? 0;
+    const acceptRate = abstractTotal > 0 ? Math.round(((stats?.acceptedAbstracts ?? 0) / abstractTotal) * 100) : 0;
+    const html = `<!DOCTYPE html><html><head><title>SATBDS 2027 Event Report</title><style>
+      *{box-sizing:border-box;margin:0;padding:0}
+      body{font-family:Arial,sans-serif;font-size:12px;color:#333;padding:20mm}
+      h1{font-size:20px;color:#0B2744;margin-bottom:4px}
+      .meta{color:#6c757d;font-size:11px;margin-bottom:20px}
+      h2{font-size:13px;font-weight:bold;color:#0E6E74;margin:20px 0 8px;border-bottom:2px solid #0E6E74;padding-bottom:4px;text-transform:uppercase;letter-spacing:.05em}
+      .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+      .kpi{border:1px solid #dee2e6;padding:10px;border-radius:6px}
+      .kpi-value{font-size:18px;font-weight:bold;color:#0E6E74}
+      .kpi-label{font-size:10px;color:#6c757d;text-transform:uppercase;margin-top:2px}
+      table{width:100%;border-collapse:collapse;margin-bottom:16px}
+      th{background:#f8f9fa;text-align:left;padding:6px 10px;font-size:11px;text-transform:uppercase;border-bottom:2px solid #dee2e6;color:#6c757d}
+      td{padding:6px 10px;border-bottom:1px solid #f1f3f5;font-size:12px}
+      tr:last-child td{border-bottom:none}
+      .cap{text-transform:capitalize}
+      .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+      .footer{margin-top:30px;text-align:center;font-size:10px;color:#adb5bd;border-top:1px solid #dee2e6;padding-top:10px}
+      @media print{@page{margin:15mm}body{padding:0}}
+    </style></head><body>
+      <h1>SATBDS 2027 — Event Report</h1>
+      <p class="meta">Generated: ${new Date().toLocaleString("en-GB", { day: "2-digit", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })} · 3rd Southeast Asia Ticks and Tick-borne Diseases Symposium · 22–23 March 2027</p>
+      <h2>Summary Statistics</h2>
+      <div class="kpi-grid">
+        <div class="kpi"><div class="kpi-value">${stats?.totalRegistrations ?? 0}</div><div class="kpi-label">Registrations</div></div>
+        <div class="kpi"><div class="kpi-value">MYR ${(stats?.totalRevenue ?? 0).toLocaleString("en-MY", { minimumFractionDigits: 2 })}</div><div class="kpi-label">Revenue</div></div>
+        <div class="kpi"><div class="kpi-value">${stats?.totalAbstracts ?? 0}</div><div class="kpi-label">Abstracts</div></div>
+        <div class="kpi"><div class="kpi-value">${acceptRate}%</div><div class="kpi-label">Acceptance Rate</div></div>
+      </div>
+      <div class="grid2">
+        <div>
+          <h2>Registrations by Category</h2>
+          <table><thead><tr><th>Category</th><th>Count</th></tr></thead><tbody>${catHtml || "<tr><td colspan=2>No data</td></tr>"}</tbody></table>
+        </div>
+        <div>
+          <h2>Top Countries</h2>
+          <table><thead><tr><th>Country</th><th>Count</th></tr></thead><tbody>${topCountriesHtml || "<tr><td colspan=2>No data</td></tr>"}</tbody></table>
+        </div>
+      </div>
+      <h2>Abstract Review Status</h2>
+      <table><thead><tr><th>Status</th><th>Count</th><th>% of Total</th></tr></thead><tbody>
+        <tr><td>Pending Review</td><td>${stats?.pendingAbstracts ?? 0}</td><td>${abstractTotal > 0 ? Math.round(((stats?.pendingAbstracts ?? 0) / abstractTotal) * 100) : 0}%</td></tr>
+        <tr><td>Accepted</td><td>${stats?.acceptedAbstracts ?? 0}</td><td>${acceptRate}%</td></tr>
+        <tr><td>Rejected</td><td>${stats?.rejectedAbstracts ?? 0}</td><td>${abstractTotal > 0 ? Math.round(((stats?.rejectedAbstracts ?? 0) / abstractTotal) * 100) : 0}%</td></tr>
+      </tbody></table>
+      <h2>Payment Status</h2>
+      <table><thead><tr><th>Status</th><th>Count</th></tr></thead><tbody>
+        <tr><td>Paid</td><td>${(registrations ?? []).filter((r) => r.paymentStatus === "paid").length}</td></tr>
+        <tr><td>Pending</td><td>${(registrations ?? []).filter((r) => r.paymentStatus === "pending").length}</td></tr>
+        <tr><td>Overdue</td><td>${(registrations ?? []).filter((r) => r.paymentStatus === "overdue").length}</td></tr>
+        <tr><td>Waived</td><td>${(registrations ?? []).filter((r) => r.paymentStatus === "waived").length}</td></tr>
+      </tbody></table>
+      <div class="footer">SATBDS 2027 · Malaysian Society for Parasitology and Tropical Medicine (MSPTM) · TIDREC@UM</div>
+    </body></html>`;
+    printWindow.document.write(html);
+    printWindow.document.close();
+    setTimeout(() => printWindow.print(), 500);
+  };
+
   const exportCSV = () => {
     const rows = [
       ["Metric", "Value"],
@@ -62,9 +127,12 @@ export default function AdminReports() {
 
   return (
     <AdminLayout title="Reports">
-      <div className="flex justify-end mb-5">
-        <button onClick={exportCSV} className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-[13px] font-medium" style={{ background: "#0E6E74", color: "#fff" }}>
+      <div className="flex justify-end gap-2 mb-5">
+        <button onClick={exportCSV} className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-[13px] font-medium" style={{ background: "#e6f4f5", color: "#0E6E74", border: "1px solid #b2d8db" }}>
           <Download className="w-4 h-4" /> Export CSV
+        </button>
+        <button onClick={exportPdf} className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-[13px] font-medium text-white" style={{ background: "#0B2744" }}>
+          <Download className="w-4 h-4" /> Export PDF
         </button>
       </div>
 

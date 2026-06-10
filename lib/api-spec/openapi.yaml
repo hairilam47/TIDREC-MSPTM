@@ -530,6 +530,27 @@ paths:
               schema:
                 $ref: "#/components/schemas/Registration"
 
+  /registrations/{id}/remind:
+    post:
+      operationId: sendPaymentReminder
+      tags: [registrations]
+      summary: Log a payment reminder sent to a delegate (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Reminder logged
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReminderResponse"
+        "404":
+          description: Not found
+
   /abstracts:
     get:
       operationId: getAbstracts
@@ -605,6 +626,27 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Abstract"
+
+  /abstracts/{id}/history:
+    get:
+      operationId: getAbstractHistory
+      tags: [registrations]
+      summary: Get status history for an abstract (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Status history
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AbstractHistoryItem"
 
   /users:
     get:
@@ -1172,6 +1214,8 @@ components:
           type: string
         important:
           type: boolean
+        audience:
+          type: string
         createdAt:
           type: string
 
@@ -1185,6 +1229,36 @@ components:
           type: string
         important:
           type: boolean
+        audience:
+          type: string
+
+    AbstractHistoryItem:
+      type: object
+      required: [id, toStatus, createdAt]
+      properties:
+        id:
+          type: integer
+        fromStatus:
+          type: ["string", "null"]
+        toStatus:
+          type: string
+        changedBy:
+          type: ["string", "null"]
+        notes:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    ReminderResponse:
+      type: object
+      required: [success, reminderId, sentAt]
+      properties:
+        success:
+          type: boolean
+        reminderId:
+          type: integer
+        sentAt:
+          type: string
 
     UserRoleUpdate:
       type: object

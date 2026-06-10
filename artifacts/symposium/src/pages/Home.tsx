@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "wouter";
 import { MapPin, Clock, Users, Building, HeartPulse, GraduationCap, ChevronRight, FileText, Stethoscope, FlaskConical, Briefcase } from "lucide-react";
-import { useGetSessions, useGetSpeakers, useGetSponsors } from "@workspace/api-client-react";
+import { useGetSessions, useGetSpeakers, useGetSponsors, useGetSettings } from "@workspace/api-client-react";
 
 import headerImg from "@assets/[HEADER]_3rd_Southeast_Asia_Ticks_and_Tick-borne_Diseases_Symp_1781130713404.png";
 import bannerImg from "@assets/[BANNER]_3rd_Southeast_Asia_Ticks_and_Tick-borne_Diseases_Symp_1781130718946.png";
@@ -14,6 +14,14 @@ export default function Home() {
   const { data: sessions } = useGetSessions();
   const { data: speakers } = useGetSpeakers();
   const { data: sponsors } = useGetSponsors();
+  const { data: cms } = useGetSettings();
+
+  const eventDates = cms?.event_dates ?? "22–23 March 2027";
+  const eventVenue = cms?.event_venue ?? "Sunway Putra Hotel";
+  const eventCity = cms?.event_city ?? "Kuala Lumpur, Malaysia";
+  const heroSubtitle = cms?.hero_subtitle ?? "Advancing knowledge on tick biology, tick-borne pathogens, and integrated management strategies across Southeast Asia.";
+  const aboutText = cms?.about_text ?? "The SATBDS symposium brings together researchers, clinicians, veterinarians, and public health professionals from across Southeast Asia to share the latest advances in tick biology and tick-borne disease research.";
+  const organisers = `${cms?.organiser_primary ?? "MSPTM"} & ${cms?.organiser_secondary ?? "TIDREC@UM"}`;
 
   const featuredSessions = sessions?.slice(0, 4) || [];
   const featuredSpeakers = speakers?.slice(0, 4) || [];
@@ -50,15 +58,15 @@ export default function Home() {
           <div className="relative z-10 max-w-7xl mx-auto px-4 py-24 md:py-32 flex flex-col md:flex-row items-center gap-12">
             <div className="flex-1 text-center md:text-left">
               <div className="inline-flex items-center gap-2 bg-primary/20 text-primary-foreground px-4 py-2 rounded-full mb-6 text-sm font-semibold tracking-wide border border-primary/30">
-                <Clock className="w-4 h-4" /> 22–23 March 2027
+                <Clock className="w-4 h-4" /> {eventDates}
                 <span className="mx-2 opacity-50">|</span>
-                <MapPin className="w-4 h-4" /> Sunway Putra Hotel, KL
+                <MapPin className="w-4 h-4" /> {eventVenue}, KL
               </div>
               <h2 className="font-serif text-4xl md:text-6xl max-w-4xl leading-tight mb-6 text-white">
-                3rd Southeast Asia Ticks and Tick-Borne Diseases Symposium
+                {cms?.event_name ?? "3rd Southeast Asia Ticks and Tick-Borne Diseases Symposium"}
               </h2>
               <p className="text-xl md:text-2xl text-muted/80 max-w-2xl mb-10">
-                Uniting the World Against Tropical Diseases in a Changing Climate.
+                {heroSubtitle}
               </p>
               <div className="flex flex-col sm:flex-row items-center md:justify-start gap-4">
                 <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 h-14 px-8 text-lg w-full sm:w-auto">
@@ -112,10 +120,10 @@ export default function Home() {
             <div>
               <h2 className="text-3xl md:text-5xl font-serif font-bold text-secondary mb-6">About The Symposium</h2>
               <p className="text-lg text-muted-foreground mb-6 leading-relaxed">
-                The 3rd Southeast Asia Ticks and Tick-Borne Diseases Symposium (SATBDS 2027) brings together leading researchers, public health officials, and medical professionals to address the growing threat of tick-borne pathogens in the region.
+                {aboutText}
               </p>
               <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
-                Organised by the Malaysian Society of Parasitology and Tropical Medicine (MSPTM) and the Tropical Infectious Diseases Research & Education Centre (TIDREC@UM).
+                Organised by {organisers}. Venue: {eventVenue}, {eventCity}.
               </p>
               
               <div className="bg-accent/10 border-l-4 border-accent p-6 rounded-r-lg mb-8">

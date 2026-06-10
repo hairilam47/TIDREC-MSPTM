@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { db, registrationsTable, usersTable } from "@workspace/db";
+import { db, registrationsTable, usersTable, paymentRemindersTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
 import { requireAuth, requireAdmin, type AuthRequest } from "../lib/auth";
 import crypto from "node:crypto";
@@ -143,6 +143,25 @@ router.patch("/registrations/:id", requireAdmin, async (req, res) => {
       return;
     }
     res.json(await formatRegistration(reg));
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.post("/registrations/:id/remind", requireAdmin, async (req: AuthRequest, res) => {
+  try {
+    const id = parseInt(String(req.params.id));
+    const [reg] = await db.select().from(registrationsTable).where(eq(registrationsTable.id, id)).limit(1);
+    if (!reg) {
+      res.status(404).json({ error: "Registration not found" });
+      return;
+    }
+    const [reminder] = await db.insert(paymentRemindersTable).values({
+      registrationId: id,
+      sentBy: req.user?.email || "admin",
+    }).returning();
+    res.json({ success: true, reminderId: reminder.id, sentAt: reminder.createdAt.toISOString() });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal server error" });

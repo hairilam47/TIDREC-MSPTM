@@ -21,6 +21,7 @@ import type {
 
 import type {
   Abstract,
+  AbstractHistoryItem,
   AbstractInput,
   AbstractUpdate,
   Announcement,
@@ -34,6 +35,7 @@ import type {
   Registration,
   RegistrationInput,
   RegistrationUpdate,
+  ReminderResponse,
   Session,
   SessionInput,
   SettingsMap,
@@ -2189,6 +2191,76 @@ export const useUpdateRegistration = <TError = ErrorType<unknown>,
       return useMutation(getUpdateRegistrationMutationOptions(options));
     }
 
+export const getSendPaymentReminderUrl = (id: number,) => {
+
+
+
+
+  return `/api/registrations/${id}/remind`
+}
+
+/**
+ * @summary Log a payment reminder sent to a delegate (admin)
+ */
+export const sendPaymentReminder = async (id: number, options?: RequestInit): Promise<ReminderResponse> => {
+
+  return customFetch<ReminderResponse>(getSendPaymentReminderUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+export const getSendPaymentReminderMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof sendPaymentReminder>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof sendPaymentReminder>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['sendPaymentReminder'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof sendPaymentReminder>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  sendPaymentReminder(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SendPaymentReminderMutationResult = NonNullable<Awaited<ReturnType<typeof sendPaymentReminder>>>
+
+    export type SendPaymentReminderMutationError = ErrorType<void>
+
+    /**
+ * @summary Log a payment reminder sent to a delegate (admin)
+ */
+export const useSendPaymentReminder = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof sendPaymentReminder>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof sendPaymentReminder>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+      return useMutation(getSendPaymentReminderMutationOptions(options));
+    }
+
 export const getGetAbstractsUrl = () => {
 
 
@@ -2485,6 +2557,83 @@ export const useUpdateAbstract = <TError = ErrorType<unknown>,
       > => {
       return useMutation(getUpdateAbstractMutationOptions(options));
     }
+
+export const getGetAbstractHistoryUrl = (id: number,) => {
+
+
+
+
+  return `/api/abstracts/${id}/history`
+}
+
+/**
+ * @summary Get status history for an abstract (admin)
+ */
+export const getAbstractHistory = async (id: number, options?: RequestInit): Promise<AbstractHistoryItem[]> => {
+
+  return customFetch<AbstractHistoryItem[]>(getGetAbstractHistoryUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetAbstractHistoryQueryKey = (id: number,) => {
+    return [
+    `/api/abstracts/${id}/history`
+    ] as const;
+    }
+
+
+export const getGetAbstractHistoryQueryOptions = <TData = Awaited<ReturnType<typeof getAbstractHistory>>, TError = ErrorType<unknown>>(id: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getAbstractHistory>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetAbstractHistoryQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAbstractHistory>>> = ({ signal }) => getAbstractHistory(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAbstractHistory>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetAbstractHistoryQueryResult = NonNullable<Awaited<ReturnType<typeof getAbstractHistory>>>
+export type GetAbstractHistoryQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get status history for an abstract (admin)
+ */
+
+export function useGetAbstractHistory<TData = Awaited<ReturnType<typeof getAbstractHistory>>, TError = ErrorType<unknown>>(
+ id: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getAbstractHistory>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetAbstractHistoryQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
 
 export const getGetUsersUrl = () => {
 

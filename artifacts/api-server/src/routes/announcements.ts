@@ -11,6 +11,7 @@ function formatAnnouncement(a: typeof announcementsTable.$inferSelect) {
     title: a.title,
     body: a.body,
     important: a.important,
+    audience: a.audience ?? "all",
     createdAt: a.createdAt.toISOString(),
   };
 }
@@ -28,10 +29,10 @@ router.get("/announcements", async (_req, res) => {
 router.patch("/announcements/:id", requireAdmin, async (req, res) => {
   try {
     const id = parseInt(String(req.params.id));
-    const { title, body, important } = req.body;
+    const { title, body, important, audience } = req.body;
     const [updated] = await db
       .update(announcementsTable)
-      .set({ title, body, important: important ?? undefined })
+      .set({ title, body, important: important ?? undefined, audience: audience ?? undefined })
       .where(eq(announcementsTable.id, id))
       .returning();
     if (!updated) {
@@ -58,7 +59,7 @@ router.delete("/announcements/:id", requireAdmin, async (req, res) => {
 
 router.post("/announcements", requireAdmin, async (req, res) => {
   try {
-    const { title, body, important } = req.body;
+    const { title, body, important, audience } = req.body;
     if (!title || !body) {
       res.status(400).json({ error: "Missing required fields" });
       return;
@@ -67,6 +68,7 @@ router.post("/announcements", requireAdmin, async (req, res) => {
       title,
       body,
       important: important || false,
+      audience: audience || "all",
     }).returning();
     res.status(201).json(formatAnnouncement(announcement));
   } catch (err) {

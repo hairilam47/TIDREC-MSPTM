@@ -11,5 +11,6 @@ export interface Announcement {
   title: string;
   body: string;
   important?: boolean;
+  audience?: string;
   createdAt: string;
 }

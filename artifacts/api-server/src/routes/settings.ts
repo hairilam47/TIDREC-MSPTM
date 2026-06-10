@@ -20,7 +20,7 @@ const DEFAULT_SETTINGS: Record<string, string> = {
   early_bird_deadline: "01 March 2027",
 };
 
-router.get("/settings", requireAdmin, async (_req, res) => {
+router.get("/settings", async (_req, res) => {
   try {
     const rows = await db.select().from(settingsTable);
     const result: Record<string, string> = { ...DEFAULT_SETTINGS };

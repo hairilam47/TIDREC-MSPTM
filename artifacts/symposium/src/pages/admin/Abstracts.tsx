@@ -1,9 +1,53 @@
 import React from "react";
 import AdminLayout from "@/components/AdminLayout";
-import { useGetAbstracts, useUpdateAbstract } from "@workspace/api-client-react";
-import { Search, ChevronDown, CheckCircle, XCircle, Edit3, Eye } from "lucide-react";
+import { useGetAbstracts, useUpdateAbstract, useGetAbstractHistory } from "@workspace/api-client-react";
+import { Search, ChevronDown, CheckCircle, XCircle, Edit3, Eye, Clock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
+
+const STATUS_LABEL: Record<string, string> = {
+  submitted: "Submitted",
+  under_review: "Under Review",
+  accepted: "Accepted",
+  rejected: "Rejected",
+  revision_requested: "Revision Requested",
+};
+
+const STATUS_COLOR: Record<string, string> = {
+  submitted: "#0E6E74",
+  under_review: "#856404",
+  accepted: "#0a5c39",
+  rejected: "#842029",
+  revision_requested: "#856404",
+};
+
+function AbstractHistorySection({ abstractId }: { abstractId: number }) {
+  const { data: history, isLoading } = useGetAbstractHistory(abstractId);
+  if (isLoading) return <div className="text-[12px] py-2" style={{ color: "#adb5bd" }}>Loading history…</div>;
+  if (!history || history.length === 0) return <div className="text-[12px] py-2" style={{ color: "#adb5bd" }}>No status changes recorded yet.</div>;
+  return (
+    <div className="space-y-2">
+      {[...history].reverse().map((h) => (
+        <div key={h.id} className="flex items-start gap-3 text-[12px]">
+          <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style={{ background: `${STATUS_COLOR[h.toStatus] ?? "#6c757d"}22` }}>
+            <Clock className="w-3 h-3" style={{ color: STATUS_COLOR[h.toStatus] ?? "#6c757d" }} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              {h.fromStatus && (
+                <><span style={{ color: "#6c757d" }}>{STATUS_LABEL[h.fromStatus] ?? h.fromStatus}</span><span style={{ color: "#adb5bd" }}>→</span></>
+              )}
+              <span className="font-semibold" style={{ color: STATUS_COLOR[h.toStatus] ?? "#212529" }}>{STATUS_LABEL[h.toStatus] ?? h.toStatus}</span>
+              {h.changedBy && <span style={{ color: "#adb5bd" }}>by {h.changedBy}</span>}
+            </div>
+            {h.notes && <div style={{ color: "#6c757d" }} className="mt-0.5 truncate">{h.notes}</div>}
+            <div style={{ color: "#adb5bd" }}>{new Date(h.createdAt).toLocaleString("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}</div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 const STATUS_STYLES: Record<string, { bg: string; color: string; label: string }> = {
   submitted: { bg: "#e6f4f5", color: "#0E6E74", label: "Submitted" },
@@ -203,7 +247,7 @@ export default function AdminAbstracts() {
                     </div>
                   )}
 
-                  <div className="flex flex-col sm:flex-row gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2 mb-4">
                     <input
                       type="text"
                       placeholder="Add review note (optional)"
@@ -226,6 +270,14 @@ export default function AdminAbstracts() {
                         <XCircle className="w-3.5 h-3.5" /> Reject
                       </button>
                     </div>
+                  </div>
+
+                  {/* Status history */}
+                  <div className="pt-3" style={{ borderTop: "1px solid #f1f3f5" }}>
+                    <div className="text-[11px] font-semibold uppercase tracking-wide mb-2" style={{ color: "#6c757d" }}>
+                      <Clock className="w-3 h-3 inline mr-1" />Status History
+                    </div>
+                    <AbstractHistorySection abstractId={a.id} />
                   </div>
                 </div>
               )}

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { db, abstractsTable, usersTable } from "@workspace/db";
+import { db, abstractsTable, usersTable, abstractHistoryTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
 import { requireAuth, requireAdmin, type AuthRequest } from "../lib/auth";
 import crypto from "node:crypto";
@@ -112,7 +112,42 @@ router.patch("/abstracts/:id", requireAuth, async (req: AuthRequest, res) => {
     if (isOwner && title) updateData.title = title;
     if (isOwner && body) updateData.body = body;
     const [updated] = await db.update(abstractsTable).set(updateData).where(eq(abstractsTable.id, id)).returning();
+
+    if (isAdmin && status && status !== existing.status) {
+      await db.insert(abstractHistoryTable).values({
+        abstractId: id,
+        fromStatus: existing.status,
+        toStatus: status,
+        changedBy: reviewedBy || req.user!.email || "admin",
+        notes: reviewNotes || null,
+      });
+    }
+
     res.json(await formatAbstract(updated));
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.get("/abstracts/:id/history", requireAdmin, async (req, res) => {
+  try {
+    const id = parseInt(String(req.params.id));
+    const history = await db
+      .select()
+      .from(abstractHistoryTable)
+      .where(eq(abstractHistoryTable.abstractId, id))
+      .orderBy(abstractHistoryTable.createdAt);
+    res.json(
+      history.map((h) => ({
+        id: h.id,
+        fromStatus: h.fromStatus,
+        toStatus: h.toStatus,
+        changedBy: h.changedBy,
+        notes: h.notes,
+        createdAt: h.createdAt.toISOString(),
+      }))
+    );
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal server error" });

@@ -471,6 +471,20 @@ export const UpdateRegistrationResponse = zod.object({
 
 
 /**
+ * @summary Log a payment reminder sent to a delegate (admin)
+ */
+export const SendPaymentReminderParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const SendPaymentReminderResponse = zod.object({
+  "success": zod.boolean(),
+  "reminderId": zod.number(),
+  "sentAt": zod.string()
+})
+
+
+/**
  * @summary List all abstracts (admin) or current user's abstracts
  */
 export const GetAbstractsResponseItem = zod.object({
@@ -564,6 +578,24 @@ export const UpdateAbstractResponse = zod.object({
 
 
 /**
+ * @summary Get status history for an abstract (admin)
+ */
+export const GetAbstractHistoryParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const GetAbstractHistoryResponseItem = zod.object({
+  "id": zod.number(),
+  "fromStatus": zod.string().nullish(),
+  "toStatus": zod.string(),
+  "changedBy": zod.string().nullish(),
+  "notes": zod.string().nullish(),
+  "createdAt": zod.string()
+})
+export const GetAbstractHistoryResponse = zod.array(GetAbstractHistoryResponseItem)
+
+
+/**
  * @summary List all users (admin)
  */
 export const GetUsersResponseItem = zod.object({
@@ -612,6 +644,7 @@ export const GetAnnouncementsResponseItem = zod.object({
   "title": zod.string(),
   "body": zod.string(),
   "important": zod.boolean().optional(),
+  "audience": zod.string().optional(),
   "createdAt": zod.string()
 })
 export const GetAnnouncementsResponse = zod.array(GetAnnouncementsResponseItem)
@@ -623,7 +656,8 @@ export const GetAnnouncementsResponse = zod.array(GetAnnouncementsResponseItem)
 export const CreateAnnouncementBody = zod.object({
   "title": zod.string(),
   "body": zod.string(),
-  "important": zod.boolean().optional()
+  "important": zod.boolean().optional(),
+  "audience": zod.string().optional()
 })
 
 
@@ -637,7 +671,8 @@ export const UpdateAnnouncementParams = zod.object({
 export const UpdateAnnouncementBody = zod.object({
   "title": zod.string(),
   "body": zod.string(),
-  "important": zod.boolean().optional()
+  "important": zod.boolean().optional(),
+  "audience": zod.string().optional()
 })
 
 export const UpdateAnnouncementResponse = zod.object({
@@ -645,6 +680,7 @@ export const UpdateAnnouncementResponse = zod.object({
   "title": zod.string(),
   "body": zod.string(),
   "important": zod.boolean().optional(),
+  "audience": zod.string().optional(),
   "createdAt": zod.string()
 })
 

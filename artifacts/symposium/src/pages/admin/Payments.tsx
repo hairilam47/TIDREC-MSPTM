@@ -1,6 +1,6 @@
 import React from "react";
 import AdminLayout from "@/components/AdminLayout";
-import { useGetRegistrations, useUpdateRegistration } from "@workspace/api-client-react";
+import { useGetRegistrations, useUpdateRegistration, useSendPaymentReminder } from "@workspace/api-client-react";
 import { Search, ChevronDown, Bell } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -22,6 +22,7 @@ const CATEGORY_FEES: Record<string, number> = {
 export default function AdminPayments() {
   const { data: registrations, refetch } = useGetRegistrations();
   const updateMutation = useUpdateRegistration();
+  const reminderMutation = useSendPaymentReminder();
   const { toast } = useToast();
   const [search, setSearch] = React.useState("");
   const [statusFilter, setStatusFilter] = React.useState("all");
@@ -52,8 +53,19 @@ export default function AdminPayments() {
     );
   };
 
-  const sendReminder = (r: { firstName?: string; lastName?: string; email?: string }) => {
-    toast({ title: `Reminder queued for ${r.firstName} ${r.lastName}`, description: `Will be sent to ${r.email}` });
+  const sendReminder = (r: { id: number; firstName?: string; lastName?: string; email?: string }) => {
+    reminderMutation.mutate(
+      { id: r.id },
+      {
+        onSuccess: (data) => {
+          toast({
+            title: `Reminder logged for ${r.firstName} ${r.lastName}`,
+            description: `Sent at ${new Date(data.sentAt).toLocaleString("en-GB")} · reminder #${data.reminderId}`,
+          });
+        },
+        onError: () => toast({ title: "Reminder failed", variant: "destructive" }),
+      }
+    );
   };
 
   return (
@@ -135,8 +147,8 @@ export default function AdminPayments() {
                         {r.paymentStatus !== "overdue" && r.paymentStatus !== "paid" && r.paymentStatus !== "waived" && (
                           <button onClick={() => updateStatus(r.id, "overdue", r.category)} className="px-2.5 py-1.5 rounded text-[11px] font-semibold" style={{ background: "#f8d7da", color: "#842029" }}>Overdue</button>
                         )}
-                        {r.paymentStatus === "pending" || r.paymentStatus === "overdue" ? (
-                          <button onClick={() => sendReminder(r)} className="flex items-center gap-1 px-2.5 py-1.5 rounded text-[11px] font-semibold" style={{ background: "#fff3cd", color: "#856404" }}>
+                        {(r.paymentStatus === "pending" || r.paymentStatus === "overdue") ? (
+                          <button onClick={() => sendReminder(r)} disabled={reminderMutation.isPending} className="flex items-center gap-1 px-2.5 py-1.5 rounded text-[11px] font-semibold" style={{ background: "#fff3cd", color: "#856404" }}>
                             <Bell className="w-3 h-3" /> Remind
                           </button>
                         ) : null}

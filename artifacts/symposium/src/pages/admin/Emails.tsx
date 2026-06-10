@@ -42,7 +42,7 @@ export default function AdminEmails() {
 
   const save = () => {
     if (!validate()) return;
-    const data = { title, body, important };
+    const data = { title, body, important, audience };
     const audienceLabel = AUDIENCE_OPTIONS.find((o) => o.value === audience)?.label ?? "all delegates";
     const onSuccess = () => {
       refetch();

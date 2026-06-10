@@ -7,6 +7,7 @@ export const announcementsTable = pgTable("announcements", {
   title: text("title").notNull(),
   body: text("body").notNull(),
   important: boolean("important").default(false).notNull(),
+  audience: text("audience").default("all").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
