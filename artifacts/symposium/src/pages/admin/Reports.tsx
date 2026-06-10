@@ -27,8 +27,13 @@ export default function AdminReports() {
   const exportPdf = () => {
     const printWindow = window.open("", "_blank");
     if (!printWindow) return;
-    // Inject compiled page styles so shared font tokens (--app-font-sans, etc.) are available
-    const pageStyles = Array.from(document.querySelectorAll("style")).map((el) => el.outerHTML).join("");
+    // Inject compiled page styles so shared font tokens (--app-font-sans etc.) are available.
+    // Copies inline <style> elements (dev) and resolves <link> hrefs to absolute URLs (prod).
+    const inlineStyles = Array.from(document.querySelectorAll("style")).map((el) => el.outerHTML).join("");
+    const linkedStyles = Array.from(document.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]'))
+      .map((el) => `<link rel="stylesheet" href="${el.href}">`)
+      .join("");
+    const pageStyles = inlineStyles + linkedStyles;
     const topCountriesHtml = topCountries.map((c) => `<tr><td>${c.country}</td><td>${c.count}</td></tr>`).join("");
     const catHtml = (stats?.registrationsByCategory ?? []).sort((a, b) => b.count - a.count).map((c) => `<tr><td class="cap">${c.category.replace(/_/g, " ")}</td><td>${c.count}</td></tr>`).join("");
     const abstractTotal = stats?.totalAbstracts ?? 0;
