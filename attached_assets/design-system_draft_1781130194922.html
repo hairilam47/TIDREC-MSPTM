@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>APRC4 Design System & Templates</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+/* =====================
+   DESIGN SYSTEM TOKENS
+   ===================== */
+:root {
+  /* Primary Brand Colors — extracted from APRC4's deep teal/navy + gold accent */
+  --brand-navy:       #0B2744;
+  --brand-teal:       #0E6E74;
+  --brand-teal-light: #1A9BA3;
+  --brand-teal-pale:  #E6F4F5;
+  --brand-gold:       #C89B3C;
+  --brand-gold-pale:  #FDF6E8;
+
+  /* Neutral Grays */
+  --gray-50:  #F8F9FA;
+  --gray-100: #F1F3F5;
+  --gray-200: #E9ECEF;
+  --gray-300: #DEE2E6;
+  --gray-400: #CED4DA;
+  --gray-500: #ADB5BD;
+  --gray-600: #6C757D;
+  --gray-700: #495057;
+  --gray-800: #343A40;
+  --gray-900: #212529;
+
+  /* Semantic */
+  --success:  #198754;
+  --warning:  #FFC107;
+  --danger:   #DC3545;
+  --info:     #0E6E74;
+
+  /* Typography */
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body:    'Inter', -apple-system, sans-serif;
+
+  /* Spacing */
+  --space-xs:  4px;
+  --space-sm:  8px;
+  --space-md:  16px;
+  --space-lg:  24px;
+  --space-xl:  40px;
+  --space-2xl: 64px;
+
+  /* Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 20px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.10);
+}
+
+/* ============ BASE ============ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-body); color: var(--gray-800); background: var(--gray-50); font-size: 15px; line-height: 1.6; }
+a { color: var(--brand-teal); text-decoration: none; }
+a:hover { text-decoration: underline; }
+img { max-width: 100%; display: block; }
+
+/* ============ TABS NAV ============ */
+.tab-nav {
+  display: flex;
+  gap: 0;
+  background: var(--brand-navy);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 3px solid var(--brand-gold);
+}
+.tab-btn {
+  flex: 1;
+  padding: 14px 20px;
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.65);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: all .2s;
+  text-transform: uppercase;
+}
+.tab-btn:hover { color: #fff; background: rgba(255,255,255,0.06); }
+.tab-btn.active {
+  color: var(--brand-gold);
+  background: rgba(200,155,60,0.12);
+  border-bottom: 3px solid var(--brand-gold);
+  margin-bottom: -3px;
+}
+
+/* ============ PANELS ============ */
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* ============ BUTTONS ============ */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: 14px; font-weight: 500;
+  cursor: pointer; border: none;
+  transition: all .15s;
+  text-decoration: none;
+}
+.btn-primary { background: var(--brand-teal); color: #fff; }
+.btn-primary:hover { background: var(--brand-teal-light); color: #fff; text-decoration: none; }
+.btn-outline { background: transparent; color: var(--brand-teal); border: 1.5px solid var(--brand-teal); }
+.btn-outline:hover { background: var(--brand-teal-pale); text-decoration: none; }
+.btn-gold { background: var(--brand-gold); color: #fff; }
+.btn-gold:hover { background: #a87e2c; color: #fff; text-decoration: none; }
+.btn-sm { padding: 7px 14px; font-size: 13px; }
+.btn-lg { padding: 14px 28px; font-size: 16px; }
+
+/* ============ BADGE ============ */
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 100px;
+  font-size: 12px; font-weight: 500;
+}
+.badge-teal { background: var(--brand-teal-pale); color: var(--brand-teal); }
+.badge-gold { background: var(--brand-gold-pale); color: #8a6a24; }
+.badge-navy { background: rgba(11,39,68,.08); color: var(--brand-navy); }
+.badge-success { background: #d1e7dd; color: #0a5c39; }
+.badge-warning { background: #fff3cd; color: #856404; }
+.badge-danger  { background: #f8d7da; color: #842029; }
+
+/* ============ CARD ============ */
+.card {
+  background: #fff;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--gray-200);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+.card-body { padding: var(--space-lg); }
+.card-header {
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--gray-200);
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--space-md);
+}
+.card-title { font-size: 15px; font-weight: 600; color: var(--gray-900); }
+
+/* ============ FORM ELEMENTS ============ */
+.form-group { margin-bottom: var(--space-md); }
+label { display: block; font-size: 13px; font-weight: 500; color: var(--gray-700); margin-bottom: 6px; }
+input[type=text], input[type=email], input[type=password], input[type=search],
+input[type=number], select, textarea {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid var(--gray-300);
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--gray-800);
+  background: #fff;
+  transition: border .15s, box-shadow .15s;
+  outline: none;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--brand-teal);
+  box-shadow: 0 0 0 3px rgba(14,110,116,0.12);
+}
+
+/* ============ TABLE ============ */
+table { width: 100%; border-collapse: collapse; }
+thead { background: var(--gray-50); }
+thead th { padding: 10px 14px; font-size: 12px; font-weight: 600; color: var(--gray-600); text-transform: uppercase; letter-spacing: .05em; text-align: left; border-bottom: 1px solid var(--gray-200); }
+tbody td { padding: 13px 14px; font-size: 14px; border-bottom: 1px solid var(--gray-100); vertical-align: middle; }
+tbody tr:hover { background: var(--gray-50); }
+
+/* ============ STAT CARD ============ */
+.stat-card {
+  background: #fff;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  box-shadow: var(--shadow-sm);
+}
+.stat-label { font-size: 12px; font-weight: 500; color: var(--gray-600); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; }
+.stat-value { font-size: 28px; font-weight: 700; color: var(--gray-900); line-height: 1; }
+.stat-sub { font-size: 13px; color: var(--gray-500); margin-top: 4px; }
+.stat-icon {
+  width: 40px; height: 40px; border-radius: var(--radius-md);
+  background: var(--brand-teal-pale);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; color: var(--brand-teal); margin-bottom: 12px;
+}
+
+/* ============ GRID HELPERS ============ */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-lg); }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-lg); }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-lg); }
+@media (max-width: 768px) {
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+}
+
+/* ============ AVATAR ============ */
+.avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 600; flex-shrink: 0;
+  background: var(--brand-teal-pale); color: var(--brand-teal);
+}
+
+/* ============ SECTION UTILITY ============ */
+.section { padding: var(--space-2xl) 0; }
+.section-sm { padding: var(--space-xl) 0; }
+.container { max-width: 1160px; margin: 0 auto; padding: 0 var(--space-xl); }
+.section-tag {
+  font-size: 12px; font-weight: 600; color: var(--brand-teal);
+  text-transform: uppercase; letter-spacing: .1em;
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 10px;
+}
+.section-tag::after {
+  content: ''; display: block; height: 1px; width: 32px; background: var(--brand-teal);
+}
+.section-title { font-family: var(--font-display); font-size: clamp(24px, 4vw, 38px); color: var(--brand-navy); line-height: 1.2; margin-bottom: var(--space-md); }
+.section-body { font-size: 16px; color: var(--gray-600); max-width: 640px; line-height: 1.75; }
+.text-center { text-align: center; }
+.text-center .section-tag { justify-content: center; }
+.text-center .section-tag::after { display: none; }
+.text-center .section-body { margin: 0 auto; }
+
+/* ============ DIVIDER ============ */
+.divider { border: none; border-top: 1px solid var(--gray-200); margin: var(--space-lg) 0; }
+
+/* ============ DESIGN SYSTEM PANEL ============ */
+.ds-section { margin-bottom: 40px; }
+.ds-section h2 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; color: var(--gray-500); margin-bottom: 20px; padding-bottom: 8px; border-bottom: 1px solid var(--gray-200); }
+.swatch-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+.swatch { width: 80px; text-align: center; }
+.swatch-color { height: 52px; border-radius: var(--radius-md); margin-bottom: 6px; border: 1px solid rgba(0,0,0,0.06); }
+.swatch-name { font-size: 11px; color: var(--gray-600); font-weight: 500; }
+.swatch-hex  { font-size: 10px; color: var(--gray-500); font-family: monospace; }
+.type-sample { margin-bottom: 16px; display: flex; align-items: baseline; gap: 16px; }
+.type-label { font-size: 11px; color: var(--gray-500); width: 120px; flex-shrink: 0; font-family: monospace; }
+.component-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 16px; }
+
+/* ============ MARKETING: NAVBAR ============ */
+.mkt-nav {
+  background: var(--brand-navy);
+  padding: 0 var(--space-xl);
+  display: flex; align-items: center; justify-content: space-between;
+  height: 64px;
+  position: relative;
+}
+.mkt-logo {
+  font-family: var(--font-display);
+  font-size: 18px; color: #fff;
+  display: flex; align-items: center; gap: 10px;
+}
+.mkt-logo-icon {
+  width: 34px; height: 34px; border-radius: var(--radius-md);
+  background: var(--brand-gold);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; font-style: normal;
+}
+.mkt-links { display: flex; gap: 2px; }
+.mkt-links a { color: rgba(255,255,255,.75); font-size: 13px; padding: 8px 14px; border-radius: var(--radius-md); transition: all .15s; }
+.mkt-links a:hover { color: #fff; background: rgba(255,255,255,.08); text-decoration: none; }
+.mkt-links a.active { color: var(--brand-gold); }
+
+/* ============ MARKETING: HERO ============ */
+.mkt-hero {
+  background: var(--brand-navy);
+  padding: 80px var(--space-xl) 100px;
+  position: relative; overflow: hidden;
+}
+.mkt-hero::before {
+  content: '';
+  position: absolute; top: -80px; right: -60px;
+  width: 500px; height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(14,110,116,0.3) 0%, transparent 70%);
+}
+.hero-inner { max-width: 1160px; margin: 0 auto; position: relative; z-index: 1; }
+.hero-tag { font-size: 12px; font-weight: 600; color: var(--brand-gold); text-transform: uppercase; letter-spacing: .12em; margin-bottom: 16px; }
+.hero-title { font-family: var(--font-display); font-size: clamp(32px, 5vw, 56px); color: #fff; line-height: 1.1; margin-bottom: 20px; max-width: 700px; }
+.hero-subtitle { font-size: 17px; color: rgba(255,255,255,.7); max-width: 560px; line-height: 1.7; margin-bottom: 36px; }
+.hero-cta { display: flex; gap: 12px; flex-wrap: wrap; }
+.hero-date-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(200,155,60,.15);
+  border: 1px solid rgba(200,155,60,.35);
+  border-radius: var(--radius-xl);
+  padding: 6px 14px 6px 8px;
+  margin-bottom: 24px;
+}
+.hero-date-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--brand-gold); }
+.hero-date-text { font-size: 13px; color: var(--brand-gold); font-weight: 500; }
+
+/* ============ MARKETING: COUNT BAR ============ */
+.count-bar { background: var(--brand-teal); padding: 20px var(--space-xl); }
+.count-bar-inner { max-width: 1160px; margin: 0 auto; display: flex; justify-content: space-around; gap: var(--space-lg); flex-wrap: wrap; }
+.count-item { text-align: center; }
+.count-number { font-size: 28px; font-weight: 700; color: #fff; line-height: 1; }
+.count-label  { font-size: 12px; color: rgba(255,255,255,.75); text-transform: uppercase; letter-spacing: .06em; margin-top: 4px; }
+
+/* ============ MARKETING: FEATURE CARD ============ */
+.feature-card {
+  background: #fff;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg) var(--space-lg) var(--space-xl);
+  transition: box-shadow .2s, transform .2s;
+}
+.feature-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.feature-icon {
+  width: 48px; height: 48px;
+  border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; margin-bottom: var(--space-md);
+}
+.feature-icon.teal { background: var(--brand-teal-pale); }
+.feature-icon.gold { background: var(--brand-gold-pale); }
+.feature-icon.navy { background: rgba(11,39,68,.06); }
+.feature-title { font-size: 15px; font-weight: 600; color: var(--gray-900); margin-bottom: 6px; }
+.feature-desc  { font-size: 14px; color: var(--gray-600); line-height: 1.65; }
+
+/* ============ MARKETING: SPEAKER CARD ============ */
+.speaker-card {
+  background: #fff;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow .2s;
+}
+.speaker-card:hover { box-shadow: var(--shadow-md); }
+.speaker-photo {
+  height: 200px; background: linear-gradient(135deg, var(--brand-teal-pale), var(--gray-100));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 56px; font-family: var(--font-display); color: var(--brand-teal);
+  font-weight: 700;
+}
+.speaker-info { padding: var(--space-md); }
+.speaker-name { font-size: 15px; font-weight: 600; color: var(--gray-900); }
+.speaker-country { font-size: 12px; color: var(--gray-500); display: flex; align-items: center; gap: 4px; }
+.speaker-topic { font-size: 13px; color: var(--brand-teal); margin-top: 6px; }
+
+/* ============ MARKETING: SPONSOR GRID ============ */
+.sponsor-logo {
+  display: flex; align-items: center; justify-content: center;
+  height: 72px; background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md); padding: 16px 24px;
+  font-size: 14px; font-weight: 600; color: var(--gray-600);
+}
+
+/* ============ MARKETING: FOOTER ============ */
+.mkt-footer {
+  background: var(--brand-navy);
+  padding: var(--space-2xl) var(--space-xl) var(--space-lg);
+}
+.footer-inner { max-width: 1160px; margin: 0 auto; }
+.footer-cols { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: var(--space-xl); }
+.footer-logo { font-family: var(--font-display); font-size: 20px; color: #fff; margin-bottom: 12px; }
+.footer-desc { font-size: 14px; color: rgba(255,255,255,.55); line-height: 1.7; }
+.footer-heading { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: rgba(255,255,255,.4); margin-bottom: 14px; }
+.footer-links { list-style: none; }
+.footer-links li { margin-bottom: 8px; }
+.footer-links a { color: rgba(255,255,255,.65); font-size: 14px; }
+.footer-links a:hover { color: #fff; }
+.footer-bar { border-top: 1px solid rgba(255,255,255,.1); padding-top: var(--space-lg); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+.footer-copy { font-size: 13px; color: rgba(255,255,255,.4); }
+.footer-socials { display: flex; gap: 12px; }
+.social-btn {
+  width: 34px; height: 34px;
+  border-radius: var(--radius-md);
+  background: rgba(255,255,255,.08);
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(255,255,255,.65); font-size: 16px;
+  transition: all .15s; text-decoration: none;
+}
+.social-btn:hover { background: rgba(255,255,255,.16); color: #fff; }
+
+/* ============ CUSTOMER: SIDEBAR ============ */
+.portal-shell { display: flex; min-height: 100vh; }
+.sidebar {
+  width: 240px; flex-shrink: 0;
+  background: var(--brand-navy);
+  display: flex; flex-direction: column;
+}
+.sidebar-logo {
+  padding: 20px 20px 14px;
+  font-family: var(--font-display);
+  font-size: 16px; color: #fff;
+  display: flex; align-items: center; gap: 10px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.sidebar-nav { flex: 1; padding: 12px 10px; }
+.nav-section { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; color: rgba(255,255,255,.3); padding: 12px 10px 6px; }
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 10px;
+  border-radius: var(--radius-md);
+  color: rgba(255,255,255,.65);
+  font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: all .15s; margin-bottom: 1px;
+  text-decoration: none;
+}
+.nav-item svg { flex-shrink: 0; }
+.nav-item:hover { color: #fff; background: rgba(255,255,255,.07); text-decoration: none; }
+.nav-item.active { color: var(--brand-gold); background: rgba(200,155,60,.12); }
+.nav-item .badge-count {
+  margin-left: auto; background: var(--brand-teal);
+  color: #fff; font-size: 11px; font-weight: 600;
+  padding: 1px 7px; border-radius: 100px;
+}
+.sidebar-user {
+  padding: 14px 16px;
+  border-top: 1px solid rgba(255,255,255,.08);
+  display: flex; align-items: center; gap: 10px;
+}
+.sidebar-user-info { flex: 1; min-width: 0; }
+.sidebar-user-name  { font-size: 13px; font-weight: 500; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sidebar-user-role  { font-size: 11px; color: rgba(255,255,255,.45); }
+
+/* ============ PORTAL: MAIN AREA ============ */
+.portal-main { flex: 1; background: var(--gray-50); overflow-y: auto; }
+.portal-topbar {
+  background: #fff;
+  padding: 0 var(--space-lg);
+  height: 58px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid var(--gray-200);
+  position: sticky; top: 0; z-index: 50;
+}
+.topbar-title { font-size: 16px; font-weight: 600; color: var(--gray-900); }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+.icon-btn {
+  width: 36px; height: 36px;
+  border-radius: var(--radius-md);
+  background: none; border: 1px solid var(--gray-200);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all .15s; color: var(--gray-600); font-size: 16px;
+}
+.icon-btn:hover { background: var(--gray-100); color: var(--gray-900); }
+.portal-content { padding: var(--space-lg) var(--space-xl); }
+
+/* ============ TIMELINE ============ */
+.timeline { list-style: none; position: relative; padding-left: 28px; }
+.timeline::before { content: ''; position: absolute; left: 7px; top: 0; bottom: 0; width: 2px; background: var(--gray-200); }
+.timeline-item { position: relative; margin-bottom: 20px; }
+.timeline-dot {
+  position: absolute; left: -28px; top: 3px;
+  width: 14px; height: 14px; border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 2px var(--brand-teal);
+  background: var(--brand-teal);
+}
+.timeline-dot.pending { background: var(--gray-300); box-shadow: 0 0 0 2px var(--gray-300); }
+.timeline-date { font-size: 12px; color: var(--gray-500); margin-bottom: 2px; }
+.timeline-event { font-size: 14px; color: var(--gray-800); font-weight: 500; }
+.timeline-desc  { font-size: 13px; color: var(--gray-500); }
+
+/* ============ TABS WITHIN PAGES ============ */
+.page-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--gray-200); margin-bottom: var(--space-lg); }
+.page-tab {
+  padding: 10px 18px; font-size: 14px; font-weight: 500;
+  color: var(--gray-600); cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px; transition: all .15s;
+  background: none; border-left: none; border-right: none; border-top: none;
+}
+.page-tab:hover { color: var(--gray-900); }
+.page-tab.active { color: var(--brand-teal); border-bottom-color: var(--brand-teal); }
+
+/* ============ BREADCRUMB ============ */
+.breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--gray-500); margin-bottom: var(--space-md); }
+.breadcrumb a { color: var(--gray-500); }
+.breadcrumb a:hover { color: var(--gray-800); }
+.breadcrumb-sep { color: var(--gray-400); }
+.breadcrumb-current { color: var(--gray-800); font-weight: 500; }
+
+/* ============ PROGRESS BAR ============ */
+.progress-bar { height: 6px; background: var(--gray-200); border-radius: 100px; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--brand-teal); border-radius: 100px; }
+
+/* ============ ALERT ============ */
+.alert {
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  display: flex; gap: 10px; align-items: flex-start;
+  margin-bottom: var(--space-md);
+}
+.alert-info    { background: var(--brand-teal-pale); color: #055160; border-left: 3px solid var(--brand-teal); }
+.alert-success { background: #d1e7dd; color: #0a3622; border-left: 3px solid var(--success); }
+.alert-warning { background: #fff3cd; color: #664d03; border-left: 3px solid var(--warning); }
+.alert-danger  { background: #f8d7da; color: #58151c; border-left: 3px solid var(--danger); }
+
+/* ============ ADMIN SPECIFIC ============ */
+.admin-page-header {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  margin-bottom: var(--space-lg); gap: var(--space-md); flex-wrap: wrap;
+}
+.admin-page-title { font-size: 22px; font-weight: 700; color: var(--gray-900); }
+.admin-page-sub   { font-size: 14px; color: var(--gray-500); margin-top: 2px; }
+.admin-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* Step indicator */
+.step-indicator { display: flex; gap: 0; margin-bottom: var(--space-xl); }
+.step-item { flex: 1; position: relative; }
+.step-item::after {
+  content: ''; position: absolute; top: 16px; left: calc(50% + 20px);
+  right: calc(-50% + 20px); height: 2px; background: var(--gray-200);
+}
+.step-item:last-child::after { display: none; }
+.step-num {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--gray-200); color: var(--gray-500);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 600; margin: 0 auto 8px;
+  position: relative; z-index: 1;
+}
+.step-item.done .step-num { background: var(--success); color: #fff; }
+.step-item.active .step-num { background: var(--brand-teal); color: #fff; box-shadow: 0 0 0 3px rgba(14,110,116,0.2); }
+.step-label { font-size: 12px; text-align: center; color: var(--gray-500); }
+.step-item.active .step-label { color: var(--brand-teal); font-weight: 500; }
+.step-item.done .step-label  { color: var(--success); }
+
+/* Dropdown menu */
+.dropdown { position: relative; display: inline-block; }
+.dropdown-menu {
+  position: absolute; top: calc(100% + 4px); right: 0;
+  background: #fff; border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg); box-shadow: var(--shadow-lg);
+  min-width: 180px; padding: 6px; z-index: 200;
+}
+.dropdown-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px; border-radius: var(--radius-md);
+  font-size: 13px; color: var(--gray-700);
+  cursor: pointer; transition: background .12s;
+}
+.dropdown-item:hover { background: var(--gray-100); color: var(--gray-900); }
+.dropdown-item.danger { color: var(--danger); }
+.dropdown-item.danger:hover { background: #fff0f0; }
+.dropdown-divider { border: none; border-top: 1px solid var(--gray-200); margin: 4px 0; }
+
+/* Quick stat trend */
+.trend-up   { color: var(--success); font-size: 12px; font-weight: 500; }
+.trend-down { color: var(--danger); font-size: 12px; font-weight: 500; }
+</style>
+</head>
+<body>
+
+<!-- ========================== TOP-LEVEL TAB NAV ========================== -->
+<nav class="tab-nav">
+  <button class="tab-btn active" onclick="showPanel('design-system')">Design System</button>
+  <button class="tab-btn" onclick="showPanel('marketing')">Marketing Site</button>
+  <button class="tab-btn" onclick="showPanel('customer')">Customer Portal</button>
+  <button class="tab-btn" onclick="showPanel('admin')">Admin Portal</button>
+</nav>
+
+
+<!-- ======================================================
+     PANEL 1: DESIGN SYSTEM
+     ====================================================== -->
+<div class="panel active" id="panel-design-system">
+<div style="max-width:1000px; margin:0 auto; padding:40px 40px;">
+
+  <div style="margin-bottom:40px;">
+    <div class="section-tag">Brand Extracted from APRC4</div>
+    <h1 style="font-family:var(--font-display); font-size:32px; color:var(--brand-navy); margin-bottom:10px;">Design System</h1>
+    <p style="color:var(--gray-600); max-width:560px; font-size:15px; line-height:1.7;">
+      Tokens, components, and patterns derived from the APRC4 conference site — modernised for product use across marketing, customer, and admin surfaces.
+    </p>
+  </div>
+
+  <!-- COLORS -->
+  <div class="ds-section">
+    <h2>Color Palette</h2>
+    <div class="swatch-grid">
+      <div class="swatch"><div class="swatch-color" style="background:#0B2744;"></div><div class="swatch-name">Navy</div><div class="swatch-hex">#0B2744</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#0E6E74;"></div><div class="swatch-name">Teal</div><div class="swatch-hex">#0E6E74</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#1A9BA3;"></div><div class="swatch-name">Teal Light</div><div class="swatch-hex">#1A9BA3</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#E6F4F5;"></div><div class="swatch-name">Teal Pale</div><div class="swatch-hex">#E6F4F5</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#C89B3C;"></div><div class="swatch-name">Gold</div><div class="swatch-hex">#C89B3C</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#FDF6E8;"></div><div class="swatch-name">Gold Pale</div><div class="swatch-hex">#FDF6E8</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#F8F9FA; border:1px solid #dee2e6;"></div><div class="swatch-name">Gray 50</div><div class="swatch-hex">#F8F9FA</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#6C757D;"></div><div class="swatch-name">Gray 600</div><div class="swatch-hex">#6C757D</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#212529;"></div><div class="swatch-name">Gray 900</div><div class="swatch-hex">#212529</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#198754;"></div><div class="swatch-name">Success</div><div class="swatch-hex">#198754</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#FFC107;"></div><div class="swatch-name">Warning</div><div class="swatch-hex">#FFC107</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#DC3545;"></div><div class="swatch-name">Danger</div><div class="swatch-hex">#DC3545</div></div>
+    </div>
+  </div>
+
+  <!-- TYPOGRAPHY -->
+  <div class="ds-section">
+    <h2>Typography</h2>
+    <div class="type-sample"><span class="type-label">Display / H1</span><span style="font-family:var(--font-display); font-size:36px; color:var(--brand-navy); font-weight:700;">Playfair Display, 700</span></div>
+    <div class="type-sample"><span class="type-label">H2 Section</span><span style="font-family:var(--font-display); font-size:26px; color:var(--brand-navy); font-weight:700;">Section heading style</span></div>
+    <div class="type-sample"><span class="type-label">Body / UI Sans</span><span style="font-size:16px; color:var(--gray-700);">Inter 400 — default body and UI text at 16px / 1.6</span></div>
+    <div class="type-sample"><span class="type-label">UI Label</span><span style="font-size:13px; font-weight:500; color:var(--gray-700);">Inter 500 — 13px labels, nav links, card titles</span></div>
+    <div class="type-sample"><span class="type-label">Caption / Meta</span><span style="font-size:12px; color:var(--gray-500); text-transform:uppercase; letter-spacing:.08em; font-weight:600;">Uppercase 600 — section tags, table headers</span></div>
+  </div>
+
+  <!-- BUTTONS -->
+  <div class="ds-section">
+    <h2>Buttons</h2>
+    <div class="component-row">
+      <a class="btn btn-primary">Primary</a>
+      <a class="btn btn-outline">Outline</a>
+      <a class="btn btn-gold">Gold / CTA</a>
+      <a class="btn btn-primary btn-sm">Small</a>
+      <a class="btn btn-primary btn-lg">Large</a>
+    </div>
+  </div>
+
+  <!-- BADGES -->
+  <div class="ds-section">
+    <h2>Badges</h2>
+    <div class="component-row">
+      <span class="badge badge-teal">Conference</span>
+      <span class="badge badge-gold">Keynote</span>
+      <span class="badge badge-navy">Speaker</span>
+      <span class="badge badge-success">Approved</span>
+      <span class="badge badge-warning">Pending</span>
+      <span class="badge badge-danger">Rejected</span>
+    </div>
+  </div>
+
+  <!-- ALERTS -->
+  <div class="ds-section">
+    <h2>Alerts</h2>
+    <div class="alert alert-info">ℹ️ Early bird registration closes on 30 June 2025.</div>
+    <div class="alert alert-success">✅ Your abstract has been submitted successfully.</div>
+    <div class="alert alert-warning">⚠️ Payment confirmation is required within 48 hours.</div>
+    <div class="alert alert-danger">❌ Your session slot has been removed. Please resubmit.</div>
+  </div>
+
+  <!-- CARDS -->
+  <div class="ds-section">
+    <h2>Cards</h2>
+    <div class="grid-3">
+      <div class="card"><div class="card-body">
+        <div class="feature-icon teal" style="margin-bottom:12px;">🧬</div>
+        <div style="font-weight:600; color:var(--gray-900); margin-bottom:6px;">Feature Card</div>
+        <div style="font-size:14px; color:var(--gray-600);">Standard card with icon, title, and supporting description text.</div>
+      </div></div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">List Card</span><span class="badge badge-teal">3 items</span></div>
+        <div class="card-body" style="padding-top:12px;">
+          <div style="display:flex; flex-direction:column; gap:10px;">
+            <div style="display:flex; justify-content:space-between; font-size:14px;"><span>Keynote Session</span><span class="badge badge-gold">9:00 AM</span></div>
+            <div style="display:flex; justify-content:space-between; font-size:14px;"><span>Workshop A</span><span class="badge badge-teal">11:00 AM</span></div>
+            <div style="display:flex; justify-content:space-between; font-size:14px;"><span>Panel Discussion</span><span class="badge badge-navy">2:00 PM</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">📋</div>
+        <div class="stat-label">Abstracts Submitted</div>
+        <div class="stat-value">247</div>
+        <div class="stat-sub">↑ 12% vs last year</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FORM ELEMENTS -->
+  <div class="ds-section">
+    <h2>Form Elements</h2>
+    <div class="grid-2">
+      <div>
+        <div class="form-group"><label>Full name</label><input type="text" placeholder="Dr. Jane Smith"></div>
+        <div class="form-group"><label>Email address</label><input type="email" placeholder="jane@university.edu"></div>
+        <div class="form-group"><label>Category</label>
+          <select>
+            <option>Healthcare Professional</option>
+            <option>Researcher</option>
+            <option>Student</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <div class="form-group"><label>Abstract</label><textarea rows="5" placeholder="Enter your abstract text here..."></textarea></div>
+        <div class="form-group"><label>Search</label><input type="search" placeholder="Search speakers, sessions…"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROGRESS & TIMELINE -->
+  <div class="ds-section">
+    <h2>Progress & Timeline</h2>
+    <div class="grid-2">
+      <div>
+        <div style="margin-bottom:16px;">
+          <div style="display:flex; justify-content:space-between; font-size:13px; color:var(--gray-600); margin-bottom:6px;"><span>Registration</span><span>72%</span></div>
+          <div class="progress-bar"><div class="progress-fill" style="width:72%;"></div></div>
+        </div>
+        <div style="margin-bottom:16px;">
+          <div style="display:flex; justify-content:space-between; font-size:13px; color:var(--gray-600); margin-bottom:6px;"><span>Abstract Review</span><span>45%</span></div>
+          <div class="progress-bar"><div class="progress-fill" style="width:45%; background:var(--brand-gold);"></div></div>
+        </div>
+      </div>
+      <ul class="timeline">
+        <li class="timeline-item"><div class="timeline-dot"></div><div class="timeline-date">15 Mar 2025</div><div class="timeline-event">Abstract Submission Opens</div></li>
+        <li class="timeline-item"><div class="timeline-dot"></div><div class="timeline-date">30 Jun 2025</div><div class="timeline-event">Early Bird Registration Closes</div></li>
+        <li class="timeline-item"><div class="timeline-dot pending"></div><div class="timeline-date">29–1 Oct 2025</div><div class="timeline-event">Conference Days</div><div class="timeline-desc">PARKROYAL Penang</div></li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+</div>
+
+
+<!-- ======================================================
+     PANEL 2: MARKETING SITE
+     ====================================================== -->
+<div class="panel" id="panel-marketing">
+
+  <!-- NAV -->
+  <nav class="mkt-nav">
+    <div class="mkt-logo">
+      <span class="mkt-logo-icon">🌏</span>
+      APRC4
+    </div>
+    <div class="mkt-links">
+      <a href="#" class="active">Home</a>
+      <a href="#">About</a>
+      <a href="#">Programme</a>
+      <a href="#">Speakers</a>
+      <a href="#">Sponsors</a>
+      <a href="#">Penang</a>
+      <a href="#">Contact</a>
+    </div>
+    <a class="btn btn-gold btn-sm">Register Now</a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="mkt-hero">
+    <div class="hero-inner">
+      <div class="hero-date-badge">
+        <div class="hero-date-dot"></div>
+        <span class="hero-date-text">29 Sep – 1 Oct 2025 · Penang, Malaysia</span>
+      </div>
+      <div class="hero-tag">4th Asia Pacific Rickettsial Conference</div>
+      <h1 class="hero-title">Confronting Rickettsial & Tropical Diseases</h1>
+      <p class="hero-subtitle">Integrated strategies for global health — bringing together researchers, clinicians, and scientists from across the Asia-Pacific region.</p>
+      <div class="hero-cta">
+        <a class="btn btn-gold btn-lg">Register Now</a>
+        <a class="btn btn-outline btn-lg" style="color:rgba(255,255,255,.8); border-color:rgba(255,255,255,.3);">View Programme</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS BAR -->
+  <div class="count-bar">
+    <div class="count-bar-inner">
+      <div class="count-item"><div class="count-number">400+</div><div class="count-label">Delegates</div></div>
+      <div class="count-item"><div class="count-number">30+</div><div class="count-label">Invited Speakers</div></div>
+      <div class="count-item"><div class="count-number">3</div><div class="count-label">Conference Days</div></div>
+      <div class="count-item"><div class="count-number">12+</div><div class="count-label">Countries</div></div>
+      <div class="count-item"><div class="count-number">15+</div><div class="count-label">Sponsors</div></div>
+    </div>
+  </div>
+
+  <!-- ABOUT SECTION -->
+  <section class="section" style="background:#fff;">
+    <div class="container">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center;">
+        <div>
+          <div class="section-tag">About APRC4</div>
+          <h2 class="section-title">A landmark platform for infectious disease research</h2>
+          <p class="section-body">The 4th Asia Pacific Rickettsial Conference, held in conjunction with the 61st Annual Scientific Conference of MSPTM, gathers leading experts to explore advancements in rickettsial and tropical diseases.</p>
+          <div style="margin-top:var(--space-lg); display:flex; gap:10px; flex-wrap:wrap;">
+            <a class="btn btn-primary">Read More</a>
+            <a class="btn btn-outline">View Committee</a>
+          </div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <div class="alert alert-info" style="margin:0;">📅 Early Bird Registration closes <strong>30 June 2025</strong></div>
+          <div class="alert alert-info" style="margin:0;">📄 Abstract submission closes <strong>30 June 2025</strong></div>
+          <div style="background:var(--brand-gold-pale); border-left:3px solid var(--brand-gold); border-radius:var(--radius-md); padding:12px 16px; font-size:14px; color:#8a6a24;">🏆 HRDCorp Claimable — eligible under SBL (Non-Registered Training Provider)</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HIGHLIGHTS SECTION -->
+  <section class="section" style="background:var(--gray-50);">
+    <div class="container">
+      <div class="text-center" style="margin-bottom:var(--space-xl);">
+        <div class="section-tag">Event Highlights</div>
+        <h2 class="section-title">What to expect</h2>
+        <p class="section-body">Concurrent sessions at APRC4 and MSPTM will foster innovation, knowledge exchange, and collaboration.</p>
+      </div>
+      <div class="grid-3" style="grid-template-columns:repeat(3,1fr);">
+        <div class="feature-card"><div class="feature-icon teal">🎤</div><div class="feature-title">Keynote & Plenary Sessions</div><div class="feature-desc">Inspiring addresses from renowned global experts offering critical insights into infectious disease research.</div></div>
+        <div class="feature-card"><div class="feature-icon gold">🔬</div><div class="feature-title">Comprehensive Scientific Programme</div><div class="feature-desc">Joint international conference drawing leading researchers, healthcare professionals, and industry stakeholders.</div></div>
+        <div class="feature-card"><div class="feature-icon navy">🤝</div><div class="feature-title">Networking & Collaboration</div><div class="feature-desc">Dedicated opportunities to build connections, explore partnerships, and advance research initiatives.</div></div>
+        <div class="feature-card"><div class="feature-icon teal">📊</div><div class="feature-title">Research Presentations</div><div class="feature-desc">Oral presentations featuring groundbreaking research, including opportunities for early-career scientists.</div></div>
+        <div class="feature-card"><div class="feature-icon gold">🖼️</div><div class="feature-title">Poster Sessions</div><div class="feature-desc">Interactive poster sessions displaying innovative discoveries and fostering idea-sharing among participants.</div></div>
+        <div class="feature-card"><div class="feature-icon navy">🏆</div><div class="feature-title">Student Presentation Competition</div><div class="feature-desc">A dedicated competition for postgraduate students to present their research and showcase emerging talent.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SPEAKERS -->
+  <section class="section" style="background:#fff;">
+    <div class="container">
+      <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:var(--space-xl);">
+        <div>
+          <div class="section-tag">Invited Speakers</div>
+          <h2 class="section-title">Meet the experts</h2>
+        </div>
+        <a class="btn btn-outline">View All Speakers</a>
+      </div>
+      <div class="grid-3">
+        <div class="speaker-card"><div class="speaker-photo">DS</div><div class="speaker-info"><div class="speaker-name">Dr Wolf Schmidt</div><div class="speaker-country">🇩🇪 Germany</div><div class="speaker-topic">Vector biology & pathogen transmission</div></div></div>
+        <div class="speaker-card"><div class="speaker-photo">SK</div><div class="speaker-info"><div class="speaker-name">Prof Suresh V Kuchipudi</div><div class="speaker-country">🇺🇸 United States</div><div class="speaker-topic">Zoonotic disease epidemiology</div></div></div>
+        <div class="speaker-card"><div class="speaker-photo">RM</div><div class="speaker-info"><div class="speaker-name">Dr Rachele</div><div class="speaker-country">🇲🇾 Malaysia</div><div class="speaker-topic">Tropical disease diagnostics</div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHO SHOULD ATTEND -->
+  <section class="section" style="background:var(--brand-navy);">
+    <div class="container">
+      <div class="text-center" style="margin-bottom:var(--space-xl);">
+        <div class="section-tag" style="color:var(--brand-gold); justify-content:center;">Who Should Attend</div>
+        <h2 class="section-title" style="color:#fff;">Built for the global health community</h2>
+      </div>
+      <div class="grid-4">
+        <div style="text-align:center; padding:var(--space-lg);">
+          <div style="font-size:36px; margin-bottom:12px;">🩺</div>
+          <div style="font-size:15px; font-weight:600; color:#fff; margin-bottom:6px;">Healthcare Professionals</div>
+          <div style="font-size:13px; color:rgba(255,255,255,.6);">Infectious disease specialists, physicians, clinicians</div>
+        </div>
+        <div style="text-align:center; padding:var(--space-lg);">
+          <div style="font-size:36px; margin-bottom:12px;">🧪</div>
+          <div style="font-size:15px; font-weight:600; color:#fff; margin-bottom:6px;">Researchers & Scientists</div>
+          <div style="font-size:13px; color:rgba(255,255,255,.6);">Epidemiologists, microbiologists, immunologists</div>
+        </div>
+        <div style="text-align:center; padding:var(--space-lg);">
+          <div style="font-size:36px; margin-bottom:12px;">🎓</div>
+          <div style="font-size:15px; font-weight:600; color:#fff; margin-bottom:6px;">Educators & Students</div>
+          <div style="font-size:13px; color:rgba(255,255,255,.6);">Faculty and postgraduate students in tropical medicine</div>
+        </div>
+        <div style="text-align:center; padding:var(--space-lg);">
+          <div style="font-size:36px; margin-bottom:12px;">🏭</div>
+          <div style="font-size:15px; font-weight:600; color:#fff; margin-bottom:6px;">Industry Professionals</div>
+          <div style="font-size:13px; color:rgba(255,255,255,.6);">Pharma, diagnostics, and biotech representatives</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SPONSORS -->
+  <section class="section" style="background:#fff;">
+    <div class="container">
+      <div class="text-center" style="margin-bottom:var(--space-xl);">
+        <div class="section-tag">Sponsors & Partners</div>
+        <h2 class="section-title">Supported by industry leaders</h2>
+      </div>
+      <div style="margin-bottom:20px;"><div style="font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--brand-gold); text-align:center; margin-bottom:12px;">Platinum</div>
+        <div style="display:flex; justify-content:center; gap:16px;">
+          <div class="sponsor-logo" style="width:200px;">Thermo Fisher Scientific</div>
+        </div>
+      </div>
+      <div style="margin-bottom:20px;"><div style="font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--gray-500); text-align:center; margin-bottom:12px;">Silver</div>
+        <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap;">
+          <div class="sponsor-logo">Accuflex × QuantaBio</div>
+          <div class="sponsor-logo">Insensory</div>
+          <div class="sponsor-logo">New England Biolabs</div>
+        </div>
+      </div>
+      <div style="text-align:center; margin-top:32px;"><a class="btn btn-outline">Download Sponsorship Prospectus</a></div>
+    </div>
+  </section>
+
+  <!-- CTA BANNER -->
+  <section style="background:var(--brand-teal); padding:var(--space-2xl) var(--space-xl);">
+    <div style="max-width:700px; margin:0 auto; text-align:center;">
+      <h2 style="font-family:var(--font-display); font-size:32px; color:#fff; margin-bottom:16px;">Don't miss APRC4 2025</h2>
+      <p style="font-size:16px; color:rgba(255,255,255,.8); margin-bottom:28px;">Join hundreds of global experts at PARKROYAL Penang this October.</p>
+      <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+        <a class="btn btn-gold btn-lg">Register Now</a>
+        <a class="btn btn-lg" style="background:rgba(255,255,255,.15); color:#fff; border:none;">Submit Abstract</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="mkt-footer">
+    <div class="footer-inner">
+      <div class="footer-cols">
+        <div>
+          <div class="footer-logo">🌏 APRC4 2025</div>
+          <div class="footer-desc">4th Asia Pacific Rickettsial Conference, held in conjunction with the 61st Annual Scientific Conference of MSPTM, Penang, Malaysia.</div>
+        </div>
+        <div>
+          <div class="footer-heading">Navigation</div>
+          <ul class="footer-links">
+            <li><a href="#">Home</a></li><li><a href="#">About</a></li>
+            <li><a href="#">Programme</a></li><li><a href="#">Speakers</a></li><li><a href="#">Contact</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-heading">Delegates</div>
+          <ul class="footer-links">
+            <li><a href="#">Registration</a></li><li><a href="#">Abstract Submission</a></li>
+            <li><a href="#">Student Travel Grant</a></li><li><a href="#">Accommodation</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-heading">Organisers</div>
+          <ul class="footer-links">
+            <li><a href="#">MSPTM</a></li><li><a href="#">TIDREC</a></li>
+            <li><a href="#">IMR</a></li><li><a href="#">Liverpool</a></li><li><a href="#">MORU</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bar">
+        <div class="footer-copy">© 2025 APRC4. All rights reserved. Developed by Anderes Fourdy Events.</div>
+        <div class="footer-socials">
+          <a class="social-btn" title="Facebook">f</a>
+          <a class="social-btn" title="Instagram">ig</a>
+          <a class="social-btn" title="LinkedIn">in</a>
+          <a class="social-btn" title="X / Twitter">𝕏</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+
+<!-- ======================================================
+     PANEL 3: CUSTOMER PORTAL
+     ====================================================== -->
+<div class="panel" id="panel-customer">
+<div class="portal-shell" style="min-height:860px;">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <span style="font-size:20px;">🌏</span> APRC4
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">Main</div>
+      <a class="nav-item active" href="#">📋 Dashboard</a>
+      <a class="nav-item" href="#">🎟️ My Registration</a>
+      <a class="nav-item" href="#">📄 My Abstracts <span class="badge-count">2</span></a>
+      <a class="nav-item" href="#">📅 Programme</a>
+      <a class="nav-item" href="#">🎤 Speakers</a>
+      <div class="nav-section">Account</div>
+      <a class="nav-item" href="#">👤 Profile</a>
+      <a class="nav-item" href="#">🔔 Notifications <span class="badge-count">3</span></a>
+      <a class="nav-item" href="#">🧾 Invoices</a>
+      <a class="nav-item" href="#">💬 Support</a>
+    </nav>
+    <div class="sidebar-user">
+      <div class="avatar">JD</div>
+      <div class="sidebar-user-info">
+        <div class="sidebar-user-name">Dr Jane Doe</div>
+        <div class="sidebar-user-role">Delegate · Researcher</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="portal-main">
+    <div class="portal-topbar">
+      <span class="topbar-title">My Dashboard</span>
+      <div class="topbar-right">
+        <button class="icon-btn" title="Notifications">🔔</button>
+        <button class="icon-btn" title="Settings">⚙️</button>
+        <div class="avatar" style="cursor:pointer;">JD</div>
+      </div>
+    </div>
+
+    <div class="portal-content">
+
+      <!-- WELCOME BANNER -->
+      <div style="background:var(--brand-navy); border-radius:var(--radius-lg); padding:var(--space-lg) var(--space-xl); margin-bottom:var(--space-lg); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+        <div>
+          <div style="font-size:18px; font-weight:600; color:#fff; margin-bottom:4px;">Welcome back, Dr Doe 👋</div>
+          <div style="font-size:14px; color:rgba(255,255,255,.65);">APRC4 Conference · 29 Sep – 1 Oct 2025 · PARKROYAL Penang</div>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <a class="btn btn-gold btn-sm">Download Badge</a>
+          <a class="btn btn-sm" style="background:rgba(255,255,255,.1); color:#fff; border:none;">View Schedule</a>
+        </div>
+      </div>
+
+      <!-- STAT CARDS -->
+      <div class="grid-4" style="margin-bottom:var(--space-lg);">
+        <div class="stat-card">
+          <div class="stat-icon">🎟️</div>
+          <div class="stat-label">Registration</div>
+          <div class="stat-value" style="font-size:18px; color:var(--success);">Confirmed</div>
+          <div class="stat-sub">Early Bird Rate</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📄</div>
+          <div class="stat-label">Abstracts</div>
+          <div class="stat-value">2</div>
+          <div class="stat-sub">1 accepted, 1 pending</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📅</div>
+          <div class="stat-label">Sessions Saved</div>
+          <div class="stat-value">7</div>
+          <div class="stat-sub">Across 3 days</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🧾</div>
+          <div class="stat-label">Invoices</div>
+          <div class="stat-value" style="font-size:18px; color:var(--success);">Paid</div>
+          <div class="stat-sub">MYR 1,200.00</div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-bottom:var(--space-lg);">
+
+        <!-- MY ABSTRACTS -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">My Abstracts</span>
+            <a class="btn btn-outline btn-sm">Submit New</a>
+          </div>
+          <div class="card-body" style="padding:0;">
+            <table>
+              <thead><tr><th>Title</th><th>Type</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><div style="font-weight:500; font-size:13px; color:var(--gray-900);">Rickettsia prevalence in Selangor</div><div style="font-size:12px; color:var(--gray-500);">Abstract #A-0041</div></td>
+                  <td><span class="badge badge-teal">Oral</span></td>
+                  <td><span class="badge badge-success">Accepted</span></td>
+                </tr>
+                <tr>
+                  <td><div style="font-weight:500; font-size:13px; color:var(--gray-900);">Diagnostic accuracy of PCR methods</div><div style="font-size:12px; color:var(--gray-500);">Abstract #A-0099</div></td>
+                  <td><span class="badge badge-navy">Poster</span></td>
+                  <td><span class="badge badge-warning">Under Review</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- UPCOMING -->
+        <div class="card">
+          <div class="card-header"><span class="card-title">Important Dates</span></div>
+          <div class="card-body" style="padding-top:12px;">
+            <ul class="timeline">
+              <li class="timeline-item"><div class="timeline-dot"></div><div class="timeline-date">30 Jun 2025</div><div class="timeline-event">Early Bird Registration Closes</div></li>
+              <li class="timeline-item"><div class="timeline-dot"></div><div class="timeline-date">30 Jun 2025</div><div class="timeline-event">Abstract Submission Closes</div></li>
+              <li class="timeline-item"><div class="timeline-dot"></div><div class="timeline-date">15 Aug 2025</div><div class="timeline-event">Speaker Notification</div></li>
+              <li class="timeline-item"><div class="timeline-dot pending"></div><div class="timeline-date">29 Sep 2025</div><div class="timeline-event">Conference Day 1</div><div class="timeline-desc">PARKROYAL Penang</div></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- MY SCHEDULE PREVIEW -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">My Saved Sessions</span>
+          <div style="display:flex; gap:8px;">
+            <button class="page-tab active" style="padding:6px 12px; font-size:13px; border:1px solid var(--gray-200); border-radius:var(--radius-md); background:var(--brand-teal-pale); color:var(--brand-teal); cursor:pointer;">Day 1</button>
+            <button class="page-tab" style="padding:6px 12px; font-size:13px; border:1px solid var(--gray-200); border-radius:var(--radius-md); background:none; color:var(--gray-600); cursor:pointer;">Day 2</button>
+            <button class="page-tab" style="padding:6px 12px; font-size:13px; border:1px solid var(--gray-200); border-radius:var(--radius-md); background:none; color:var(--gray-600); cursor:pointer;">Day 3</button>
+          </div>
+        </div>
+        <div class="card-body" style="padding:0;">
+          <table>
+            <thead><tr><th>Time</th><th>Session</th><th>Room</th><th>Type</th></tr></thead>
+            <tbody>
+              <tr><td style="color:var(--gray-500); font-size:13px;">09:00</td><td>Opening Ceremony & Keynote</td><td>Ballroom A</td><td><span class="badge badge-gold">Keynote</span></td></tr>
+              <tr><td style="color:var(--gray-500); font-size:13px;">11:00</td><td>Rickettsia Diagnostics Workshop</td><td>Hall B</td><td><span class="badge badge-teal">Workshop</span></td></tr>
+              <tr><td style="color:var(--gray-500); font-size:13px;">14:00</td><td>Vector Control Strategies — Panel</td><td>Ballroom A</td><td><span class="badge badge-navy">Panel</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+</div>
+
+
+<!-- ======================================================
+     PANEL 4: ADMIN PORTAL
+     ====================================================== -->
+<div class="panel" id="panel-admin">
+<div class="portal-shell" style="min-height:860px;">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <span style="font-size:20px;">⚙️</span> APRC4 Admin
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">Overview</div>
+      <a class="nav-item active" href="#">📊 Dashboard</a>
+      <a class="nav-item" href="#">📈 Analytics</a>
+      <div class="nav-section">Registrations</div>
+      <a class="nav-item" href="#">🎟️ Registrations <span class="badge-count">247</span></a>
+      <a class="nav-item" href="#">💳 Payments</a>
+      <a class="nav-item" href="#">🧾 Invoices</a>
+      <div class="nav-section">Content</div>
+      <a class="nav-item" href="#">📄 Abstracts <span class="badge-count">89</span></a>
+      <a class="nav-item" href="#">🎤 Speakers</a>
+      <a class="nav-item" href="#">📅 Programme</a>
+      <a class="nav-item" href="#">🏷️ Sponsors</a>
+      <div class="nav-section">System</div>
+      <a class="nav-item" href="#">👥 Users</a>
+      <a class="nav-item" href="#">✉️ Emails</a>
+      <a class="nav-item" href="#">⚙️ Settings</a>
+    </nav>
+    <div class="sidebar-user">
+      <div class="avatar" style="background:var(--brand-gold-pale); color:#8a6a24;">AD</div>
+      <div class="sidebar-user-info">
+        <div class="sidebar-user-name">Admin User</div>
+        <div class="sidebar-user-role">Super Administrator</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="portal-main">
+    <div class="portal-topbar">
+      <span class="topbar-title">Admin Dashboard</span>
+      <div class="topbar-right">
+        <button class="icon-btn">🔔</button>
+        <a class="btn btn-primary btn-sm">+ New Announcement</a>
+      </div>
+    </div>
+
+    <div class="portal-content">
+
+      <!-- KPI STATS -->
+      <div class="grid-4" style="margin-bottom:var(--space-lg);">
+        <div class="stat-card">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+            <div class="stat-label">Total Registrations</div>
+            <span class="trend-up">↑ 18%</span>
+          </div>
+          <div class="stat-value">247</div>
+          <div class="progress-bar" style="margin-top:10px;"><div class="progress-fill" style="width:62%;"></div></div>
+          <div class="stat-sub">62% of 400 target</div>
+        </div>
+        <div class="stat-card">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+            <div class="stat-label">Abstracts Received</div>
+            <span class="trend-up">↑ 5%</span>
+          </div>
+          <div class="stat-value">189</div>
+          <div class="progress-bar" style="margin-top:10px;"><div class="progress-fill" style="width:47%; background:var(--brand-gold);"></div></div>
+          <div class="stat-sub">89 pending review</div>
+        </div>
+        <div class="stat-card">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+            <div class="stat-label">Revenue (MYR)</div>
+            <span class="trend-up">↑ 22%</span>
+          </div>
+          <div class="stat-value">296,400</div>
+          <div class="stat-sub">Payments received</div>
+        </div>
+        <div class="stat-card">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+            <div class="stat-label">Pending Payments</div>
+            <span class="trend-down">12 outstanding</span>
+          </div>
+          <div class="stat-value" style="color:var(--warning);">12</div>
+          <div class="stat-sub">MYR 14,400 at risk</div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-bottom:var(--space-lg);">
+
+        <!-- RECENT REGISTRATIONS TABLE -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Recent Registrations</span>
+            <a class="btn btn-outline btn-sm">View All</a>
+          </div>
+          <div class="card-body" style="padding:0;">
+            <table>
+              <thead><tr><th>Delegate</th><th>Category</th><th>Status</th><th>Amount</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><div style="display:flex; align-items:center; gap:8px;"><div class="avatar" style="width:28px; height:28px; font-size:11px;">JS</div><div><div style="font-size:13px; font-weight:500;">Dr Jane Smith</div><div style="font-size:11px; color:var(--gray-500);">Malaysia</div></div></div></td>
+                  <td><span class="badge badge-teal">Researcher</span></td>
+                  <td><span class="badge badge-success">Paid</span></td>
+                  <td style="font-size:13px; font-weight:500;">MYR 1,200</td>
+                </tr>
+                <tr>
+                  <td><div style="display:flex; align-items:center; gap:8px;"><div class="avatar" style="width:28px; height:28px; font-size:11px;">AL</div><div><div style="font-size:13px; font-weight:500;">Prof Ahmad Lee</div><div style="font-size:11px; color:var(--gray-500);">Singapore</div></div></div></td>
+                  <td><span class="badge badge-navy">Speaker</span></td>
+                  <td><span class="badge badge-success">Waived</span></td>
+                  <td style="font-size:13px; font-weight:500;">—</td>
+                </tr>
+                <tr>
+                  <td><div style="display:flex; align-items:center; gap:8px;"><div class="avatar" style="width:28px; height:28px; font-size:11px;">KT</div><div><div style="font-size:13px; font-weight:500;">Ms Kim Thanh</div><div style="font-size:11px; color:var(--gray-500);">Vietnam</div></div></div></td>
+                  <td><span class="badge badge-gold">Student</span></td>
+                  <td><span class="badge badge-warning">Pending</span></td>
+                  <td style="font-size:13px; font-weight:500;">MYR 800</td>
+                </tr>
+                <tr>
+                  <td><div style="display:flex; align-items:center; gap:8px;"><div class="avatar" style="width:28px; height:28px; font-size:11px;">RB</div><div><div style="font-size:13px; font-weight:500;">Dr Raj Bhatia</div><div style="font-size:11px; color:var(--gray-500);">India</div></div></div></td>
+                  <td><span class="badge badge-teal">Researcher</span></td>
+                  <td><span class="badge badge-danger">Overdue</span></td>
+                  <td style="font-size:13px; font-weight:500;">MYR 1,200</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ABSTRACT REVIEW QUEUE -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Abstract Review Queue</span>
+            <span class="badge badge-warning">89 pending</span>
+          </div>
+          <div class="card-body" style="padding:0;">
+            <table>
+              <thead><tr><th>Abstract</th><th>Type</th><th>Action</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><div style="font-size:13px; font-weight:500;">#A-0112 — Scrub typhus serology study</div><div style="font-size:11px; color:var(--gray-500);">Dr A. Rahman · Oral</div></td>
+                  <td><span class="badge badge-teal">Oral</span></td>
+                  <td><div style="display:flex; gap:6px;"><button class="btn btn-sm" style="background:var(--success); color:#fff; font-size:12px; padding:4px 10px;">Accept</button><button class="btn btn-sm" style="background:var(--danger); color:#fff; font-size:12px; padding:4px 10px;">Reject</button></div></td>
+                </tr>
+                <tr>
+                  <td><div style="font-size:13px; font-weight:500;">#A-0115 — Flea-borne rickettsia genomics</div><div style="font-size:11px; color:var(--gray-500);">Ms Y. Liu · Poster</div></td>
+                  <td><span class="badge badge-navy">Poster</span></td>
+                  <td><div style="display:flex; gap:6px;"><button class="btn btn-sm" style="background:var(--success); color:#fff; font-size:12px; padding:4px 10px;">Accept</button><button class="btn btn-sm" style="background:var(--danger); color:#fff; font-size:12px; padding:4px 10px;">Reject</button></div></td>
+                </tr>
+                <tr>
+                  <td><div style="font-size:13px; font-weight:500;">#A-0118 — Tetracycline resistance patterns</div><div style="font-size:11px; color:var(--gray-500);">Dr P. Santos · Oral</div></td>
+                  <td><span class="badge badge-teal">Oral</span></td>
+                  <td><div style="display:flex; gap:6px;"><button class="btn btn-sm" style="background:var(--success); color:#fff; font-size:12px; padding:4px 10px;">Accept</button><button class="btn btn-sm" style="background:var(--danger); color:#fff; font-size:12px; padding:4px 10px;">Reject</button></div></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- REGISTRATION STEP FLOW DEMO -->
+      <div class="card" style="margin-bottom:var(--space-lg);">
+        <div class="card-header"><span class="card-title">Registration Approval Workflow</span><span class="badge badge-teal">Step 2 of 4</span></div>
+        <div class="card-body">
+          <div class="step-indicator" style="margin-bottom:var(--space-lg);">
+            <div class="step-item done"><div class="step-num">✓</div><div class="step-label">Submission</div></div>
+            <div class="step-item active"><div class="step-num">2</div><div class="step-label">Payment Review</div></div>
+            <div class="step-item"><div class="step-num">3</div><div class="step-label">Confirmation</div></div>
+            <div class="step-item"><div class="step-num">4</div><div class="step-label">Badge Issued</div></div>
+          </div>
+          <div class="alert alert-warning">⚠️ 12 registrations are awaiting payment verification. Review and confirm within 48 hours to secure slots.</div>
+          <div style="display:flex; gap:10px;">
+            <a class="btn btn-primary">Review Pending Payments</a>
+            <a class="btn btn-outline">Send Payment Reminder</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- EMAIL / ANNOUNCEMENTS -->
+      <div class="card">
+        <div class="card-header"><span class="card-title">Send Announcement</span></div>
+        <div class="card-body">
+          <div class="grid-2">
+            <div>
+              <div class="form-group"><label>Subject</label><input type="text" value="Early Bird Closes in 7 Days — Register Now"></div>
+              <div class="form-group"><label>Audience</label>
+                <select>
+                  <option>All Registered Delegates</option>
+                  <option>Pending Payment Only</option>
+                  <option>Accepted Abstract Authors</option>
+                  <option>Students</option>
+                </select>
+              </div>
+              <div class="form-group"><label>Message</label><textarea rows="4" placeholder="Type your announcement…">Dear Delegate, early bird registration closes on 30 June 2025. Register now to secure your spot at APRC4.</textarea></div>
+              <div style="display:flex; gap:8px;"><a class="btn btn-primary">Send Email</a><a class="btn btn-outline">Preview</a></div>
+            </div>
+            <div>
+              <div style="font-size:13px; font-weight:500; color:var(--gray-700); margin-bottom:12px;">Recent Announcements</div>
+              <div style="display:flex; flex-direction:column; gap:10px;">
+                <div style="padding:12px; background:var(--gray-50); border-radius:var(--radius-md); border:1px solid var(--gray-200);">
+                  <div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span style="font-size:13px; font-weight:500;">Abstract notification sent</span><span style="font-size:11px; color:var(--gray-500);">3 days ago</span></div>
+                  <div style="font-size:12px; color:var(--gray-500);">Sent to 189 abstract authors · 94% opened</div>
+                </div>
+                <div style="padding:12px; background:var(--gray-50); border-radius:var(--radius-md); border:1px solid var(--gray-200);">
+                  <div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span style="font-size:13px; font-weight:500;">Welcome email to new registrants</span><span style="font-size:11px; color:var(--gray-500);">1 week ago</span></div>
+                  <div style="font-size:12px; color:var(--gray-500);">Sent to 247 delegates · 88% opened</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+</div>
+
+
+<script>
+function showPanel(name) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+</script>
+</body>
+</html>
