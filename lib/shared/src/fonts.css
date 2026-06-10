@@ -5,3 +5,9 @@
   --app-font-serif: 'Playfair Display', serif;
   --app-font-mono: Menlo, monospace;
 }
+
+@theme inline {
+  --font-sans: var(--app-font-sans);
+  --font-serif: var(--app-font-serif);
+  --font-mono: var(--app-font-mono);
+}
