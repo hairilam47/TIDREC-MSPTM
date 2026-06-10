@@ -1,93 +1,135 @@
 import React from "react";
 import PortalLayout from "@/components/PortalLayout";
 import { useGetAbstracts } from "@workspace/api-client-react";
-import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { Plus, FileText, Loader2, ArrowRight } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+
+const STATUS_STYLES: Record<string, { bg: string; color: string; label: string }> = {
+  submitted: { bg: "#e6f4f5", color: "#0E6E74", label: "Submitted" },
+  under_review: { bg: "#fff3cd", color: "#856404", label: "Under Review" },
+  accepted: { bg: "#d1e7dd", color: "#0a5c39", label: "Accepted" },
+  rejected: { bg: "#f8d7da", color: "#842029", label: "Rejected" },
+  revision_requested: { bg: "#fff3cd", color: "#856404", label: "Revision Needed" },
+};
 
 export default function Abstracts() {
   const { data: abstracts, isLoading } = useGetAbstracts();
 
-  const getStatusBadgeVariant = (status: string) => {
-    switch (status) {
-      case 'accepted': return 'default';
-      case 'rejected': return 'destructive';
-      case 'under_review': return 'secondary';
-      case 'revision_requested': return 'outline';
-      default: return 'outline';
-    }
-  };
-
   return (
-    <PortalLayout>
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="text-3xl font-serif font-bold text-foreground mb-2">My Abstracts</h1>
-          <p className="text-muted-foreground">Manage your abstract submissions for the symposium.</p>
-        </div>
-        <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90">
-          <Link href="/portal/abstracts/new">
-            <Plus className="w-4 h-4 mr-2" />
-            Submit New Abstract
-          </Link>
-        </Button>
+    <PortalLayout title="My Abstracts">
+      <div className="flex items-center justify-between mb-6">
+        <p className="text-sm" style={{ color: "#6c757d" }}>
+          Submit and track your abstract submissions for SATBDS 2027.
+        </p>
+        <Link href="/portal/abstracts/new">
+          <button
+            className="flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] font-semibold text-white"
+            style={{ background: "#0E6E74" }}
+          >
+            <Plus className="w-4 h-4" /> Submit New Abstract
+          </button>
+        </Link>
       </div>
 
       {isLoading ? (
-        <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>
+        <div className="flex justify-center py-16">
+          <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#0E6E74" }} />
+        </div>
       ) : abstracts && abstracts.length > 0 ? (
-        <div className="grid gap-6">
-          {abstracts.map((abstract) => (
-            <Card key={abstract.id}>
-              <CardHeader className="flex flex-row justify-between items-start pb-2">
-                <div>
-                  <Badge variant="outline" className="mb-2 font-mono text-xs">{abstract.abstractCode}</Badge>
-                  <CardTitle className="text-xl font-serif leading-tight">{abstract.title}</CardTitle>
-                </div>
-                <Badge variant={getStatusBadgeVariant(abstract.status)} className="capitalize shrink-0 ml-4">
-                  {abstract.status.replace('_', ' ')}
-                </Badge>
-              </CardHeader>
-              <CardContent>
-                <div className="flex gap-6 text-sm text-muted-foreground mt-4">
-                  <div className="flex items-center gap-1">
-                    <FileText className="w-4 h-4" />
-                    <span className="capitalize">{abstract.abstractType} Presentation</span>
-                  </div>
-                  {abstract.createdAt && (
-                    <div className="flex items-center gap-1">
-                      <span className="font-medium text-foreground">Submitted:</span> {new Date(abstract.createdAt).toLocaleDateString()}
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-              <CardFooter className="bg-muted/50 border-t border-border py-3">
-                <Button variant="link" className="px-0 text-primary" asChild>
-                  <Link href={`/portal/abstracts/${abstract.id}`}>
-                    View Details <ArrowRight className="w-4 h-4 ml-1" />
-                  </Link>
-                </Button>
-              </CardFooter>
-            </Card>
-          ))}
+        <div className="bg-white rounded-xl overflow-hidden" style={{ border: "1px solid #e9ecef" }}>
+          <table className="w-full">
+            <thead style={{ background: "#f8f9fa" }}>
+              <tr>
+                {["Code", "Title", "Type", "Status", "Submitted", ""].map((h) => (
+                  <th
+                    key={h}
+                    className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider"
+                    style={{ color: "#6c757d", borderBottom: "1px solid #e9ecef" }}
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {abstracts.map((a) => {
+                const sc = STATUS_STYLES[a.status] ?? STATUS_STYLES.submitted;
+                return (
+                  <tr key={a.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-3.5" style={{ borderBottom: "1px solid #f1f3f5" }}>
+                      <code className="text-[11px] font-mono bg-gray-100 px-1.5 py-0.5 rounded">
+                        {a.abstractCode}
+                      </code>
+                    </td>
+                    <td className="px-4 py-3.5 max-w-xs" style={{ borderBottom: "1px solid #f1f3f5" }}>
+                      <div className="text-[14px] font-medium leading-snug" style={{ color: "#212529" }}>
+                        {a.title.length > 50 ? a.title.slice(0, 50) + "…" : a.title}
+                      </div>
+                      {a.reviewNotes && (
+                        <div className="text-[11px] mt-0.5" style={{ color: "#856404" }}>
+                          Reviewer notes available
+                        </div>
+                      )}
+                    </td>
+                    <td className="px-4 py-3.5 capitalize text-[13px]" style={{ color: "#6c757d", borderBottom: "1px solid #f1f3f5" }}>
+                      {a.abstractType}
+                    </td>
+                    <td className="px-4 py-3.5" style={{ borderBottom: "1px solid #f1f3f5" }}>
+                      <span
+                        className="text-[11px] font-semibold px-2.5 py-1 rounded-full"
+                        style={{ background: sc.bg, color: sc.color }}
+                      >
+                        {sc.label}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3.5 text-[13px]" style={{ color: "#6c757d", borderBottom: "1px solid #f1f3f5" }}>
+                      {new Date(a.createdAt).toLocaleDateString("en-GB", {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                      })}
+                    </td>
+                    <td className="px-4 py-3.5" style={{ borderBottom: "1px solid #f1f3f5" }}>
+                      <Link
+                        href={`/portal/abstracts/${a.id}`}
+                        className="flex items-center gap-1 text-[13px] font-medium no-underline"
+                        style={{ color: "#0E6E74" }}
+                      >
+                        View <ArrowRight className="w-3.5 h-3.5" />
+                      </Link>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       ) : (
-        <Card className="text-center py-16 px-4 bg-muted/30 border-dashed">
-          <div className="flex justify-center mb-4">
-            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-              <FileText className="w-8 h-8 text-primary" />
-            </div>
+        <div
+          className="bg-white rounded-xl p-16 text-center"
+          style={{ border: "1px dashed #dee2e6" }}
+        >
+          <div
+            className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
+            style={{ background: "#e6f4f5" }}
+          >
+            <FileText className="w-8 h-8" style={{ color: "#0E6E74" }} />
           </div>
-          <h3 className="text-xl font-serif font-bold mb-2">No Abstracts Submitted</h3>
-          <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-            You haven't submitted any abstracts yet. Share your research with the global tropical diseases community.
+          <h3 className="text-xl font-serif font-bold mb-2" style={{ color: "#212529" }}>
+            No Abstracts Yet
+          </h3>
+          <p className="text-sm mb-6 max-w-sm mx-auto" style={{ color: "#6c757d" }}>
+            Share your research with the global tick and tick-borne diseases community.
           </p>
-          <Button asChild>
-            <Link href="/portal/abstracts/new">Submit Your First Abstract</Link>
-          </Button>
-        </Card>
+          <Link href="/portal/abstracts/new">
+            <button
+              className="px-5 py-2.5 rounded-lg text-[14px] font-semibold text-white"
+              style={{ background: "#0E6E74" }}
+            >
+              Submit Your First Abstract
+            </button>
+          </Link>
+        </div>
       )}
     </PortalLayout>
   );

@@ -27,7 +27,9 @@ import type {
   AnnouncementInput,
   AuthResponse,
   HealthStatus,
+  Invoice,
   LoginInput,
+  ProfileUpdate,
   RegisterInput,
   Registration,
   RegistrationInput,
@@ -419,6 +421,77 @@ export function useGetMe<TData = Awaited<ReturnType<typeof getMe>>, TError = Err
 
 
 
+
+export const getUpdateMeUrl = () => {
+
+
+
+
+  return `/api/auth/me`
+}
+
+/**
+ * @summary Update current user profile
+ */
+export const updateMe = async (profileUpdate: ProfileUpdate, options?: RequestInit): Promise<User> => {
+
+  return customFetch<User>(getUpdateMeUrl(),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      profileUpdate,)
+  }
+);}
+
+
+
+
+export const getUpdateMeMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateMe>>, TError,{data: BodyType<ProfileUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateMe>>, TError,{data: BodyType<ProfileUpdate>}, TContext> => {
+
+const mutationKey = ['updateMe'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateMe>>, {data: BodyType<ProfileUpdate>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  updateMe(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateMeMutationResult = NonNullable<Awaited<ReturnType<typeof updateMe>>>
+    export type UpdateMeMutationBody = BodyType<ProfileUpdate>
+    export type UpdateMeMutationError = ErrorType<void>
+
+    /**
+ * @summary Update current user profile
+ */
+export const useUpdateMe = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateMe>>, TError,{data: BodyType<ProfileUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateMe>>,
+        TError,
+        {data: BodyType<ProfileUpdate>},
+        TContext
+      > => {
+      return useMutation(getUpdateMeMutationOptions(options));
+    }
 
 export const getGetSpeakersUrl = () => {
 
@@ -935,6 +1008,83 @@ export const useCreateSession = <TError = ErrorType<unknown>,
       return useMutation(getCreateSessionMutationOptions(options));
     }
 
+export const getGetSavedSessionsUrl = () => {
+
+
+
+
+  return `/api/sessions/saved`
+}
+
+/**
+ * @summary Get current user's saved sessions
+ */
+export const getSavedSessions = async ( options?: RequestInit): Promise<number[]> => {
+
+  return customFetch<number[]>(getGetSavedSessionsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetSavedSessionsQueryKey = () => {
+    return [
+    `/api/sessions/saved`
+    ] as const;
+    }
+
+
+export const getGetSavedSessionsQueryOptions = <TData = Awaited<ReturnType<typeof getSavedSessions>>, TError = ErrorType<void>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getSavedSessions>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetSavedSessionsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSavedSessions>>> = ({ signal }) => getSavedSessions({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getSavedSessions>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetSavedSessionsQueryResult = NonNullable<Awaited<ReturnType<typeof getSavedSessions>>>
+export type GetSavedSessionsQueryError = ErrorType<void>
+
+
+/**
+ * @summary Get current user's saved sessions
+ */
+
+export function useGetSavedSessions<TData = Awaited<ReturnType<typeof getSavedSessions>>, TError = ErrorType<void>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getSavedSessions>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetSavedSessionsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
 export const getGetSessionUrl = (id: number,) => {
 
 
@@ -1152,6 +1302,146 @@ export const useDeleteSession = <TError = ErrorType<unknown>,
         TContext
       > => {
       return useMutation(getDeleteSessionMutationOptions(options));
+    }
+
+export const getSaveSessionUrl = (id: number,) => {
+
+
+
+
+  return `/api/sessions/${id}/save`
+}
+
+/**
+ * @summary Save a session to personal schedule
+ */
+export const saveSession = async (id: number, options?: RequestInit): Promise<void> => {
+
+  return customFetch<void>(getSaveSessionUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+export const getSaveSessionMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof saveSession>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof saveSession>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['saveSession'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof saveSession>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  saveSession(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SaveSessionMutationResult = NonNullable<Awaited<ReturnType<typeof saveSession>>>
+
+    export type SaveSessionMutationError = ErrorType<void>
+
+    /**
+ * @summary Save a session to personal schedule
+ */
+export const useSaveSession = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof saveSession>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof saveSession>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+      return useMutation(getSaveSessionMutationOptions(options));
+    }
+
+export const getUnsaveSessionUrl = (id: number,) => {
+
+
+
+
+  return `/api/sessions/${id}/save`
+}
+
+/**
+ * @summary Remove session from personal schedule
+ */
+export const unsaveSession = async (id: number, options?: RequestInit): Promise<void> => {
+
+  return customFetch<void>(getUnsaveSessionUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+export const getUnsaveSessionMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof unsaveSession>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof unsaveSession>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['unsaveSession'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof unsaveSession>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  unsaveSession(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UnsaveSessionMutationResult = NonNullable<Awaited<ReturnType<typeof unsaveSession>>>
+
+    export type UnsaveSessionMutationError = ErrorType<void>
+
+    /**
+ * @summary Remove session from personal schedule
+ */
+export const useUnsaveSession = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof unsaveSession>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof unsaveSession>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+      return useMutation(getUnsaveSessionMutationOptions(options));
     }
 
 export const getGetSponsorsUrl = () => {
@@ -1657,6 +1947,83 @@ export function useGetMyRegistration<TData = Awaited<ReturnType<typeof getMyRegi
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getGetMyRegistrationQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getGetMyInvoiceUrl = () => {
+
+
+
+
+  return `/api/registrations/me/invoice`
+}
+
+/**
+ * @summary Get current user's invoice
+ */
+export const getMyInvoice = async ( options?: RequestInit): Promise<Invoice> => {
+
+  return customFetch<Invoice>(getGetMyInvoiceUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetMyInvoiceQueryKey = () => {
+    return [
+    `/api/registrations/me/invoice`
+    ] as const;
+    }
+
+
+export const getGetMyInvoiceQueryOptions = <TData = Awaited<ReturnType<typeof getMyInvoice>>, TError = ErrorType<void>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getMyInvoice>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetMyInvoiceQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getMyInvoice>>> = ({ signal }) => getMyInvoice({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getMyInvoice>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetMyInvoiceQueryResult = NonNullable<Awaited<ReturnType<typeof getMyInvoice>>>
+export type GetMyInvoiceQueryError = ErrorType<void>
+
+
+/**
+ * @summary Get current user's invoice
+ */
+
+export function useGetMyInvoice<TData = Awaited<ReturnType<typeof getMyInvoice>>, TError = ErrorType<void>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getMyInvoice>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetMyInvoiceQueryOptions(options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

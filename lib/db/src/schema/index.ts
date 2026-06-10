@@ -6,3 +6,4 @@ export * from "./registrations";
 export * from "./abstracts";
 export * from "./announcements";
 export * from "./payments";
+export * from "./saved_sessions";

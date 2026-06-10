@@ -71,6 +71,29 @@ export const GetMeResponse = zod.object({
 
 
 /**
+ * @summary Update current user profile
+ */
+export const UpdateMeBody = zod.object({
+  "firstName": zod.string().optional(),
+  "lastName": zod.string().optional(),
+  "institution": zod.string().optional(),
+  "country": zod.string().optional()
+})
+
+export const UpdateMeResponse = zod.object({
+  "id": zod.number(),
+  "email": zod.string(),
+  "firstName": zod.string(),
+  "lastName": zod.string(),
+  "institution": zod.string().nullish(),
+  "country": zod.string().nullish(),
+  "category": zod.string().nullish(),
+  "role": zod.enum(['attendee', 'admin']),
+  "createdAt": zod.string()
+})
+
+
+/**
  * @summary List all speakers
  */
 export const GetSpeakersResponseItem = zod.object({
@@ -188,6 +211,13 @@ export const CreateSessionBody = zod.object({
 
 
 /**
+ * @summary Get current user's saved sessions
+ */
+export const GetSavedSessionsResponseItem = zod.number()
+export const GetSavedSessionsResponse = zod.array(GetSavedSessionsResponseItem)
+
+
+/**
  * @summary Get a session by ID
  */
 export const GetSessionParams = zod.object({
@@ -244,6 +274,22 @@ export const UpdateSessionResponse = zod.object({
  * @summary Delete a session (admin)
  */
 export const DeleteSessionParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+/**
+ * @summary Save a session to personal schedule
+ */
+export const SaveSessionParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+/**
+ * @summary Remove session from personal schedule
+ */
+export const UnsaveSessionParams = zod.object({
   "id": zod.coerce.number()
 })
 
@@ -349,6 +395,27 @@ export const GetMyRegistrationResponse = zod.object({
   "paymentAmount": zod.number().nullish(),
   "registrationCode": zod.string().optional(),
   "createdAt": zod.string()
+})
+
+
+/**
+ * @summary Get current user's invoice
+ */
+export const GetMyInvoiceResponse = zod.object({
+  "invoiceNumber": zod.string(),
+  "registrationCode": zod.string(),
+  "category": zod.string(),
+  "amount": zod.number(),
+  "currency": zod.string(),
+  "status": zod.enum(['pending', 'paid', 'overdue', 'waived']),
+  "issuedAt": zod.string(),
+  "paidAt": zod.string().nullish(),
+  "delegate": zod.object({
+  "name": zod.string(),
+  "email": zod.string(),
+  "institution": zod.string().nullish(),
+  "country": zod.string().nullish()
+})
 })
 
 

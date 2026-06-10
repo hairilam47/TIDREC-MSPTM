@@ -103,6 +103,25 @@ paths:
                 $ref: "#/components/schemas/User"
         "401":
           description: Unauthorized
+    patch:
+      operationId: updateMe
+      tags: [auth]
+      summary: Update current user profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProfileUpdate"
+      responses:
+        "200":
+          description: Updated profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Unauthorized
 
   /speakers:
     get:
@@ -225,6 +244,23 @@ paths:
               schema:
                 $ref: "#/components/schemas/Session"
 
+  /sessions/saved:
+    get:
+      operationId: getSavedSessions
+      tags: [sessions]
+      summary: Get current user's saved sessions
+      responses:
+        "200":
+          description: List of saved session IDs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: integer
+        "401":
+          description: Unauthorized
+
   /sessions/{id}:
     get:
       operationId: getSession
@@ -281,6 +317,38 @@ paths:
       responses:
         "204":
           description: Deleted
+
+  /sessions/{id}/save:
+    post:
+      operationId: saveSession
+      tags: [sessions]
+      summary: Save a session to personal schedule
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "201":
+          description: Session saved
+        "401":
+          description: Unauthorized
+    delete:
+      operationId: unsaveSession
+      tags: [sessions]
+      summary: Remove session from personal schedule
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Removed
+        "401":
+          description: Unauthorized
 
   /sponsors:
     get:
@@ -396,6 +464,21 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Registration"
+        "404":
+          description: No registration found
+
+  /registrations/me/invoice:
+    get:
+      operationId: getMyInvoice
+      tags: [registrations]
+      summary: Get current user's invoice
+      responses:
+        "200":
+          description: Invoice details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Invoice"
         "404":
           description: No registration found
 
@@ -636,6 +719,18 @@ components:
         createdAt:
           type: string
 
+    ProfileUpdate:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        institution:
+          type: string
+        country:
+          type: string
+
     Speaker:
       type: object
       required: [id, name, country, topic]
@@ -801,6 +896,43 @@ components:
           enum: [pending, paid, overdue, waived]
         paymentAmount:
           type: number
+
+    Invoice:
+      type: object
+      required: [invoiceNumber, registrationCode, category, amount, currency, status, issuedAt, delegate]
+      properties:
+        invoiceNumber:
+          type: string
+        registrationCode:
+          type: string
+        category:
+          type: string
+        amount:
+          type: number
+        currency:
+          type: string
+        status:
+          type: string
+          enum: [pending, paid, overdue, waived]
+        issuedAt:
+          type: string
+        paidAt:
+          type: ["string", "null"]
+        delegate:
+          $ref: "#/components/schemas/InvoiceDelegate"
+
+    InvoiceDelegate:
+      type: object
+      required: [name, email]
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        institution:
+          type: ["string", "null"]
+        country:
+          type: ["string", "null"]
 
     Abstract:
       type: object

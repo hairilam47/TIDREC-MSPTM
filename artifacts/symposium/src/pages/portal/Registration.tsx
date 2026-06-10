@@ -1,174 +1,255 @@
 import React from "react";
 import PortalLayout from "@/components/PortalLayout";
-import { useGetMyRegistration, useCreateRegistration } from "@workspace/api-client-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useGetMyRegistration, useGetMe, useCreateRegistration } from "@workspace/api-client-react";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react";
+import { Loader2, CheckCircle, AlertCircle, Clock, ClipboardList } from "lucide-react";
 
-const schema = z.object({
-  category: z.string().min(1, "Please select a category"),
-  dietaryRequirements: z.string().optional(),
-  specialNeeds: z.string().optional(),
-});
+const CATEGORY_LABELS: Record<string, string> = {
+  healthcare_professional: "Healthcare Professional",
+  researcher: "Researcher / Scientist",
+  educator: "Educator",
+  student: "Student",
+  industry: "Industry Professional",
+};
+
+const CATEGORY_FEES: Record<string, { early: number; regular: number }> = {
+  healthcare_professional: { early: 800, regular: 1000 },
+  researcher: { early: 800, regular: 1000 },
+  educator: { early: 600, regular: 800 },
+  student: { early: 400, regular: 500 },
+  industry: { early: 1200, regular: 1500 },
+};
+
+const PAYMENT_STATUS_CONFIG: Record<string, { bg: string; color: string; label: string; icon: React.ReactNode }> = {
+  paid: { bg: "#d1e7dd", color: "#0a5c39", label: "Paid", icon: <CheckCircle className="w-4 h-4" /> },
+  pending: { bg: "#fff3cd", color: "#856404", label: "Payment Pending", icon: <Clock className="w-4 h-4" /> },
+  overdue: { bg: "#f8d7da", color: "#842029", label: "Overdue", icon: <AlertCircle className="w-4 h-4" /> },
+  waived: { bg: "#e6f4f5", color: "#0E6E74", label: "Waived", icon: <CheckCircle className="w-4 h-4" /> },
+};
 
 export default function Registration() {
-  const { data: registration, isLoading, refetch } = useGetMyRegistration();
-  const createMutation = useCreateRegistration();
+  const { data: registration, isLoading: loadingReg, refetch } = useGetMyRegistration();
+  const { data: user } = useGetMe();
   const { toast } = useToast();
+  const createMutation = useCreateRegistration();
 
-  const form = useForm<z.infer<typeof schema>>({
-    resolver: zodResolver(schema),
-    defaultValues: { category: "", dietaryRequirements: "", specialNeeds: "" },
-  });
+  const [selectedCategory, setSelectedCategory] = React.useState(user?.category || "");
 
-  const onSubmit = (data: z.infer<typeof schema>) => {
-    createMutation.mutate({ data }, {
-      onSuccess: () => {
-        toast({ title: "Registration submitted", description: "Your symposium registration has been received." });
-        refetch();
+  const handleRegister = () => {
+    if (!selectedCategory) {
+      toast({ title: "Please select a category", variant: "destructive" });
+      return;
+    }
+    createMutation.mutate(
+      { data: { category: selectedCategory } },
+      {
+        onSuccess: () => {
+          toast({ title: "Registration submitted", description: "Your registration has been received." });
+          refetch();
+        },
+        onError: () => {
+          toast({ title: "Registration failed", description: "Please try again.", variant: "destructive" });
+        },
       },
-      onError: (error) => {
-        toast({ title: "Registration failed", description: error.message, variant: "destructive" });
-      }
-    });
+    );
   };
 
-  if (isLoading) return <PortalLayout><div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div></PortalLayout>;
+  if (loadingReg) {
+    return (
+      <PortalLayout title="My Registration">
+        <div className="flex justify-center py-16">
+          <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#0E6E74" }} />
+        </div>
+      </PortalLayout>
+    );
+  }
+
+  if (!registration) {
+    return (
+      <PortalLayout title="My Registration">
+        <div className="max-w-xl mx-auto">
+          <div
+            className="bg-white rounded-xl p-8"
+            style={{ border: "1px solid #e9ecef" }}
+          >
+            <div
+              className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
+              style={{ background: "#e6f4f5" }}
+            >
+              <ClipboardList className="w-6 h-6" style={{ color: "#0E6E74" }} />
+            </div>
+            <h2 className="text-xl font-serif font-bold mb-2" style={{ color: "#0B2744" }}>
+              Complete Registration
+            </h2>
+            <p className="text-sm mb-6" style={{ color: "#6c757d" }}>
+              Select your category to complete your SATBDS 2027 registration.
+            </p>
+
+            <div className="space-y-2 mb-6">
+              {Object.entries(CATEGORY_LABELS).map(([key, label]) => {
+                const fees = CATEGORY_FEES[key];
+                return (
+                  <label
+                    key={key}
+                    className="flex items-center gap-3 p-4 rounded-xl cursor-pointer transition-all"
+                    style={{
+                      border: selectedCategory === key ? "2px solid #0E6E74" : "1px solid #e9ecef",
+                      background: selectedCategory === key ? "#e6f4f5" : "#fff",
+                    }}
+                  >
+                    <input
+                      type="radio"
+                      name="category"
+                      value={key}
+                      checked={selectedCategory === key}
+                      onChange={() => setSelectedCategory(key)}
+                      className="w-4 h-4"
+                      style={{ accentColor: "#0E6E74" }}
+                    />
+                    <div className="flex-1">
+                      <div className="text-[14px] font-semibold" style={{ color: "#212529" }}>{label}</div>
+                      {fees && (
+                        <div className="text-[12px]" style={{ color: "#6c757d" }}>
+                          Early bird: MYR {fees.early} · Regular: MYR {fees.regular}
+                        </div>
+                      )}
+                    </div>
+                  </label>
+                );
+              })}
+            </div>
+
+            <button
+              onClick={handleRegister}
+              disabled={!selectedCategory || createMutation.isPending}
+              className="w-full py-3 rounded-xl font-semibold text-white flex items-center justify-center gap-2"
+              style={{ background: selectedCategory ? "#0E6E74" : "#adb5bd", transition: "background 0.15s" }}
+            >
+              {createMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
+              Submit Registration
+            </button>
+          </div>
+        </div>
+      </PortalLayout>
+    );
+  }
+
+  const sc = PAYMENT_STATUS_CONFIG[registration.paymentStatus] ?? PAYMENT_STATUS_CONFIG.pending;
 
   return (
-    <PortalLayout>
-      <div className="mb-8">
-        <h1 className="text-3xl font-serif font-bold text-foreground mb-2">My Registration</h1>
-        <p className="text-muted-foreground">Manage your conference registration and details.</p>
-      </div>
+    <PortalLayout title="My Registration">
+      <div className="max-w-2xl">
+        {/* Status header */}
+        <div
+          className="rounded-xl p-5 mb-6 flex items-center gap-4"
+          style={{ background: sc.bg, border: `1px solid ${sc.bg}` }}
+        >
+          <div style={{ color: sc.color }}>{sc.icon}</div>
+          <div>
+            <div className="font-semibold text-[15px]" style={{ color: sc.color }}>{sc.label}</div>
+            <div className="text-[13px]" style={{ color: sc.color, opacity: 0.8 }}>
+              Registration Code: <strong>{registration.registrationCode}</strong>
+            </div>
+          </div>
+        </div>
 
-      {registration ? (
-        <Card className="border-primary/20">
-          <CardHeader className="bg-primary/5 border-b border-border">
-            <div className="flex justify-between items-start">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {/* Attendee info */}
+          <div className="bg-white rounded-xl p-5" style={{ border: "1px solid #e9ecef" }}>
+            <h3 className="text-[11px] font-bold uppercase tracking-wider mb-4" style={{ color: "#6c757d" }}>
+              Attendee Information
+            </h3>
+            <div className="space-y-3">
               <div>
-                <CardTitle className="text-2xl font-serif text-primary">Registration Confirmed</CardTitle>
-                <CardDescription>Registration ID: {registration.registrationCode}</CardDescription>
-              </div>
-              <Badge variant={registration.paymentStatus === 'paid' ? 'default' : 'secondary'} className="text-sm">
-                {registration.paymentStatus.toUpperCase()}
-              </Badge>
-            </div>
-          </CardHeader>
-          <CardContent className="pt-6 grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="space-y-4">
-              <div>
-                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-1">Attendee Information</h3>
-                <p className="font-medium text-lg">{registration.firstName} {registration.lastName}</p>
-                <p className="text-muted-foreground">{registration.email}</p>
-                <p className="text-muted-foreground">{registration.institution}, {registration.country}</p>
+                <div className="text-[12px] font-medium mb-0.5" style={{ color: "#adb5bd" }}>Full Name</div>
+                <div className="text-[14px] font-semibold" style={{ color: "#212529" }}>
+                  {registration.firstName} {registration.lastName}
+                </div>
               </div>
               <div>
-                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-1">Category</h3>
-                <p className="capitalize">{registration.category.replace('_', ' ')}</p>
+                <div className="text-[12px] font-medium mb-0.5" style={{ color: "#adb5bd" }}>Email</div>
+                <div className="text-[14px]" style={{ color: "#495057" }}>{registration.email}</div>
               </div>
-            </div>
-            <div className="space-y-4">
+              {registration.institution && (
+                <div>
+                  <div className="text-[12px] font-medium mb-0.5" style={{ color: "#adb5bd" }}>Institution</div>
+                  <div className="text-[14px]" style={{ color: "#495057" }}>{registration.institution}</div>
+                </div>
+              )}
+              {registration.country && (
+                <div>
+                  <div className="text-[12px] font-medium mb-0.5" style={{ color: "#adb5bd" }}>Country</div>
+                  <div className="text-[14px]" style={{ color: "#495057" }}>{registration.country}</div>
+                </div>
+              )}
               <div>
-                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-1">Payment Details</h3>
-                <div className="bg-muted p-4 rounded-lg">
-                  <div className="flex justify-between mb-2">
-                    <span className="text-muted-foreground">Amount Due</span>
-                    <span className="font-bold">${registration.paymentAmount || 0}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Status</span>
-                    <span className="capitalize">{registration.paymentStatus}</span>
-                  </div>
-                  {registration.paymentStatus === 'pending' && (
-                    <Button className="w-full mt-4 bg-accent text-accent-foreground hover:bg-accent/90">
-                      Proceed to Payment
-                    </Button>
-                  )}
+                <div className="text-[12px] font-medium mb-0.5" style={{ color: "#adb5bd" }}>Category</div>
+                <div className="text-[14px] capitalize" style={{ color: "#495057" }}>
+                  {CATEGORY_LABELS[registration.category] || registration.category}
                 </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
-      ) : (
-        <Card>
-          <CardHeader>
-            <CardTitle>Complete Your Registration</CardTitle>
-            <CardDescription>Please provide additional details to finalize your registration.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <FormField
-                  control={form.control}
-                  name="category"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Registration Category</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a category" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="healthcare_professional">Healthcare Professional</SelectItem>
-                          <SelectItem value="researcher">Researcher / Scientist</SelectItem>
-                          <SelectItem value="educator">Educator</SelectItem>
-                          <SelectItem value="student">Student</SelectItem>
-                          <SelectItem value="industry">Industry Professional</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="dietaryRequirements"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Dietary Requirements (Optional)</FormLabel>
-                      <FormControl>
-                        <Textarea placeholder="e.g. Vegetarian, Halal, Gluten-free" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="specialNeeds"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Special Needs / Accessibility (Optional)</FormLabel>
-                      <FormControl>
-                        <Textarea placeholder="Please let us know if you require any specific accommodations" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+          </div>
 
-                <Button type="submit" disabled={createMutation.isPending}>
-                  {createMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Submit Registration
-                </Button>
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
-      )}
+          {/* Payment info */}
+          <div className="bg-white rounded-xl p-5" style={{ border: "1px solid #e9ecef" }}>
+            <h3 className="text-[11px] font-bold uppercase tracking-wider mb-4" style={{ color: "#6c757d" }}>
+              Payment Details
+            </h3>
+            <div className="rounded-xl p-4 mb-4" style={{ background: "#f8f9fa" }}>
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-[13px]" style={{ color: "#6c757d" }}>Registration Fee</span>
+                <span className="text-[16px] font-bold" style={{ color: "#212529" }}>
+                  MYR {registration.paymentAmount?.toLocaleString() ?? "TBD"}
+                </span>
+              </div>
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-[13px]" style={{ color: "#6c757d" }}>Currency</span>
+                <span className="text-[13px]" style={{ color: "#495057" }}>Malaysian Ringgit (MYR)</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-[13px]" style={{ color: "#6c757d" }}>Status</span>
+                <span
+                  className="text-[12px] font-semibold px-2.5 py-1 rounded-full"
+                  style={{ background: sc.bg, color: sc.color }}
+                >
+                  {sc.label}
+                </span>
+              </div>
+            </div>
+            <div className="text-[12px] mb-2" style={{ color: "#6c757d" }}>
+              Registered: {new Date(registration.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
+            </div>
+            {registration.paymentStatus === "pending" && (
+              <div
+                className="rounded-lg p-3 text-[12px]"
+                style={{ background: "#fff3cd", color: "#664d03" }}
+              >
+                Payment instructions will be sent to your registered email. Please complete payment within 48 hours to secure your spot.
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Event details */}
+        <div className="bg-white rounded-xl p-5 mt-5" style={{ border: "1px solid #e9ecef" }}>
+          <h3 className="text-[11px] font-bold uppercase tracking-wider mb-4" style={{ color: "#6c757d" }}>
+            Event Details
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {[
+              { label: "Event", value: "3rd SATBDS 2027" },
+              { label: "Date", value: "22–23 March 2027" },
+              { label: "Venue", value: "Sunway Putra Hotel, Kuala Lumpur" },
+            ].map(({ label, value }) => (
+              <div key={label}>
+                <div className="text-[12px] font-medium mb-0.5" style={{ color: "#adb5bd" }}>{label}</div>
+                <div className="text-[13px] font-medium" style={{ color: "#212529" }}>{value}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </PortalLayout>
   );
 }

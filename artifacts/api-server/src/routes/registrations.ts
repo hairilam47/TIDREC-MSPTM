@@ -79,6 +79,38 @@ router.get("/registrations/me", requireAuth, async (req: AuthRequest, res) => {
   }
 });
 
+router.get("/registrations/me/invoice", requireAuth, async (req: AuthRequest, res) => {
+  try {
+    const userId = req.user!.userId;
+    const [reg] = await db.select().from(registrationsTable).where(eq(registrationsTable.userId, userId)).limit(1);
+    if (!reg) {
+      res.status(404).json({ error: "No registration found" });
+      return;
+    }
+    const [user] = await db.select().from(usersTable).where(eq(usersTable.id, userId)).limit(1);
+    const invoiceNumber = "INV-" + reg.registrationCode.replace("REG-", "");
+    res.json({
+      invoiceNumber,
+      registrationCode: reg.registrationCode,
+      category: reg.category,
+      amount: reg.paymentAmount ? parseFloat(reg.paymentAmount) : 0,
+      currency: "MYR",
+      status: reg.paymentStatus,
+      issuedAt: reg.createdAt.toISOString(),
+      paidAt: null,
+      delegate: {
+        name: user ? `${user.firstName} ${user.lastName}` : "",
+        email: user?.email || "",
+        institution: user?.institution || null,
+        country: user?.country || null,
+      },
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 router.get("/registrations/:id", requireAdmin, async (req, res) => {
   try {
     const id = parseInt(String(req.params.id));

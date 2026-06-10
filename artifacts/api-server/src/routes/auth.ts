@@ -92,6 +92,36 @@ router.post("/auth/logout", (_req, res) => {
   res.json({ message: "Logged out" });
 });
 
+router.patch("/auth/me", requireAuth, async (req: AuthRequest, res) => {
+  try {
+    const { firstName, lastName, institution, country } = req.body;
+    const updateData: Record<string, unknown> = { updatedAt: new Date() };
+    if (firstName) updateData.firstName = firstName;
+    if (lastName) updateData.lastName = lastName;
+    if (institution !== undefined) updateData.institution = institution || null;
+    if (country !== undefined) updateData.country = country || null;
+    const [user] = await db.update(usersTable).set(updateData).where(eq(usersTable.id, req.user!.userId)).returning();
+    if (!user) {
+      res.status(404).json({ error: "User not found" });
+      return;
+    }
+    res.json({
+      id: user.id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      institution: user.institution,
+      country: user.country,
+      category: user.category,
+      role: user.role,
+      createdAt: user.createdAt.toISOString(),
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 router.get("/auth/me", requireAuth, async (req: AuthRequest, res) => {
   try {
     const [user] = await db.select().from(usersTable).where(eq(usersTable.id, req.user!.userId)).limit(1);

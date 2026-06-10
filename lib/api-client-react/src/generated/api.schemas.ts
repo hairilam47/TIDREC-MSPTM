@@ -63,6 +63,13 @@ export interface AuthResponse {
   user: User;
 }
 
+export interface ProfileUpdate {
+  firstName?: string;
+  lastName?: string;
+  institution?: string;
+  country?: string;
+}
+
 export interface Speaker {
   id: number;
   name: string;
@@ -225,6 +232,38 @@ export const RegistrationUpdatePaymentStatus = {
 export interface RegistrationUpdate {
   paymentStatus?: RegistrationUpdatePaymentStatus;
   paymentAmount?: number;
+}
+
+export type InvoiceStatus = typeof InvoiceStatus[keyof typeof InvoiceStatus];
+
+
+export const InvoiceStatus = {
+  pending: 'pending',
+  paid: 'paid',
+  overdue: 'overdue',
+  waived: 'waived',
+} as const;
+
+export interface InvoiceDelegate {
+  name: string;
+  email: string;
+  /** @nullable */
+  institution?: string | null;
+  /** @nullable */
+  country?: string | null;
+}
+
+export interface Invoice {
+  invoiceNumber: string;
+  registrationCode: string;
+  category: string;
+  amount: number;
+  currency: string;
+  status: InvoiceStatus;
+  issuedAt: string;
+  /** @nullable */
+  paidAt?: string | null;
+  delegate: InvoiceDelegate;
 }
 
 export type AbstractAbstractType = typeof AbstractAbstractType[keyof typeof AbstractAbstractType];

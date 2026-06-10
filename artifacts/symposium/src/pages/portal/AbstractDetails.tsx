@@ -2,100 +2,139 @@ import React from "react";
 import PortalLayout from "@/components/PortalLayout";
 import { useGetAbstract } from "@workspace/api-client-react";
 import { useRoute, Link } from "wouter";
-import { ArrowLeft, Loader2, FileText } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { ArrowLeft, Loader2, FileText, Calendar } from "lucide-react";
+
+const STATUS_STYLES: Record<string, { bg: string; color: string; label: string }> = {
+  submitted: { bg: "#e6f4f5", color: "#0E6E74", label: "Submitted" },
+  under_review: { bg: "#fff3cd", color: "#856404", label: "Under Review" },
+  accepted: { bg: "#d1e7dd", color: "#0a5c39", label: "Accepted" },
+  rejected: { bg: "#f8d7da", color: "#842029", label: "Rejected" },
+  revision_requested: { bg: "#fff3cd", color: "#856404", label: "Revision Needed" },
+};
 
 export default function AbstractDetails() {
   const [, params] = useRoute("/portal/abstracts/:id");
   const id = params?.id ? parseInt(params.id, 10) : 0;
-  
   const { data: abstract, isLoading } = useGetAbstract(id);
 
   if (isLoading) {
     return (
-      <PortalLayout>
-        <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>
+      <PortalLayout title="Abstract Details">
+        <div className="flex justify-center py-16">
+          <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#0E6E74" }} />
+        </div>
       </PortalLayout>
     );
   }
 
   if (!abstract) {
     return (
-      <PortalLayout>
-        <div className="text-center py-12">
-          <h2 className="text-2xl font-serif font-bold mb-2">Abstract Not Found</h2>
-          <Button asChild variant="outline">
-            <Link href="/portal/abstracts">Back to Abstracts</Link>
-          </Button>
+      <PortalLayout title="Abstract Details">
+        <div className="text-center py-16">
+          <p className="text-lg font-medium mb-4" style={{ color: "#6c757d" }}>Abstract not found.</p>
+          <Link href="/portal/abstracts">
+            <button className="px-4 py-2 rounded-lg text-[13px] font-medium" style={{ border: "1px solid #e9ecef", color: "#6c757d" }}>
+              Back to Abstracts
+            </button>
+          </Link>
         </div>
       </PortalLayout>
     );
   }
 
+  const sc = STATUS_STYLES[abstract.status] ?? STATUS_STYLES.submitted;
+
   return (
-    <PortalLayout>
-      <div className="mb-6">
-        <Button variant="ghost" size="sm" asChild className="mb-4 text-muted-foreground hover:text-foreground">
-          <Link href="/portal/abstracts">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Abstracts
-          </Link>
-        </Button>
-        <div className="flex justify-between items-start">
-          <div>
-            <h1 className="text-3xl font-serif font-bold text-foreground mb-2">{abstract.title}</h1>
-            <div className="flex items-center gap-4 text-sm text-muted-foreground">
-              <span className="font-mono bg-muted px-2 py-1 rounded">{abstract.abstractCode}</span>
-              <span className="flex items-center gap-1"><FileText className="w-4 h-4" /> {abstract.abstractType} Presentation</span>
-              <span>Submitted: {new Date(abstract.createdAt).toLocaleDateString()}</span>
+    <PortalLayout title="Abstract Details">
+      <div className="max-w-3xl">
+        <Link href="/portal/abstracts" className="flex items-center gap-1.5 text-[13px] mb-5 no-underline" style={{ color: "#6c757d" }}>
+          <ArrowLeft className="w-4 h-4" /> Back to Abstracts
+        </Link>
+
+        {/* Header card */}
+        <div className="bg-white rounded-xl p-6 mb-5" style={{ border: "1px solid #e9ecef" }}>
+          <div className="flex items-start justify-between gap-4 mb-3">
+            <code className="text-[12px] font-mono bg-gray-100 px-2.5 py-1 rounded" style={{ color: "#495057" }}>
+              {abstract.abstractCode}
+            </code>
+            <span
+              className="text-[12px] font-semibold px-3 py-1 rounded-full flex-shrink-0"
+              style={{ background: sc.bg, color: sc.color }}
+            >
+              {sc.label}
+            </span>
+          </div>
+          <h1 className="text-2xl font-serif font-bold mb-3 leading-snug" style={{ color: "#0B2744" }}>
+            {abstract.title}
+          </h1>
+          <div className="flex items-center gap-4 flex-wrap">
+            <div className="flex items-center gap-1.5 text-[13px]" style={{ color: "#6c757d" }}>
+              <FileText className="w-4 h-4" />
+              <span className="capitalize">{abstract.abstractType} Presentation</span>
+            </div>
+            <div className="flex items-center gap-1.5 text-[13px]" style={{ color: "#6c757d" }}>
+              <Calendar className="w-4 h-4" />
+              Submitted {new Date(abstract.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
             </div>
           </div>
-          <Badge className="text-sm capitalize" variant={abstract.status === 'accepted' ? 'default' : abstract.status === 'rejected' ? 'destructive' : 'secondary'}>
-            {abstract.status.replace('_', ' ')}
-          </Badge>
         </div>
-      </div>
 
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle>Abstract Content</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="prose dark:prose-invert max-w-none">
-            <p className="whitespace-pre-wrap">{abstract.body}</p>
-          </div>
-        </CardContent>
-      </Card>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Metadata</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <span className="text-sm text-muted-foreground block mb-1">Keywords</span>
-              <p>{abstract.keywords || "None provided"}</p>
-            </div>
-            <div>
-              <span className="text-sm text-muted-foreground block mb-1">Co-Authors</span>
-              <p>{abstract.coAuthors || "None provided"}</p>
-            </div>
-          </CardContent>
-        </Card>
-
+        {/* Reviewer notes (if any) */}
         {abstract.reviewNotes && (
-          <Card className="border-accent/50 bg-accent/5">
-            <CardHeader>
-              <CardTitle className="text-lg text-accent">Reviewer Notes</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="whitespace-pre-wrap text-sm">{abstract.reviewNotes}</p>
-            </CardContent>
-          </Card>
+          <div
+            className="rounded-xl p-5 mb-5"
+            style={{ background: "#fff3cd", border: "1px solid #ffe69c" }}
+          >
+            <div className="text-[11px] font-bold uppercase tracking-wider mb-2" style={{ color: "#856404" }}>
+              Reviewer Notes
+            </div>
+            <p className="text-[14px] whitespace-pre-wrap" style={{ color: "#664d03" }}>
+              {abstract.reviewNotes}
+            </p>
+          </div>
         )}
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {/* Abstract body */}
+          <div className="md:col-span-2 bg-white rounded-xl p-6" style={{ border: "1px solid #e9ecef" }}>
+            <h2 className="text-[13px] font-bold uppercase tracking-wider mb-4" style={{ color: "#6c757d" }}>Abstract</h2>
+            <p className="text-[14px] whitespace-pre-wrap leading-relaxed" style={{ color: "#212529" }}>
+              {abstract.body}
+            </p>
+          </div>
+
+          {/* Metadata */}
+          <div className="space-y-4">
+            {abstract.keywords && (
+              <div className="bg-white rounded-xl p-4" style={{ border: "1px solid #e9ecef" }}>
+                <div className="text-[11px] font-bold uppercase tracking-wider mb-2" style={{ color: "#6c757d" }}>Keywords</div>
+                <div className="flex flex-wrap gap-1.5">
+                  {abstract.keywords.split(",").map((kw, i) => (
+                    <span
+                      key={i}
+                      className="text-[12px] px-2 py-0.5 rounded-full"
+                      style={{ background: "#e6f4f5", color: "#0E6E74" }}
+                    >
+                      {kw.trim()}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+            {abstract.coAuthors && (
+              <div className="bg-white rounded-xl p-4" style={{ border: "1px solid #e9ecef" }}>
+                <div className="text-[11px] font-bold uppercase tracking-wider mb-2" style={{ color: "#6c757d" }}>Co-Authors</div>
+                <p className="text-[13px]" style={{ color: "#495057" }}>{abstract.coAuthors}</p>
+              </div>
+            )}
+            {abstract.submitterName && (
+              <div className="bg-white rounded-xl p-4" style={{ border: "1px solid #e9ecef" }}>
+                <div className="text-[11px] font-bold uppercase tracking-wider mb-2" style={{ color: "#6c757d" }}>Submitter</div>
+                <p className="text-[13px] font-medium" style={{ color: "#212529" }}>{abstract.submitterName}</p>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </PortalLayout>
   );
