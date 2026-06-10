@@ -29,7 +29,6 @@ export default function Home() {
       <header className="bg-secondary text-secondary-foreground border-b border-sidebar-border sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <h1 className="font-serif text-2xl text-accent font-bold">SATBDS 2027</h1>
           </div>
           <nav className="hidden md:flex items-center gap-6">
             <Link href="/" className="hover:text-accent transition-colors font-medium">Home</Link>
