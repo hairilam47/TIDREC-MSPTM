@@ -1,6 +1,6 @@
 kind = "web"
 previewPath = "/"
-title = "SATBDS 2027 Symposium"
+title = "Marketing Site"
 version = "1.0.0"
 id = "artifacts/symposium"
 router = "path"
