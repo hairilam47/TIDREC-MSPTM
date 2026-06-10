@@ -1,11 +1,13 @@
-import { Router, type IRouter, type Request, type Response } from "express";
+import { Router, type IRouter, type Response } from "express";
 import { Readable } from "stream";
 import {
   RequestUploadUrlBody,
   RequestUploadUrlResponse,
 } from "@workspace/api-zod";
 import { ObjectStorageService, ObjectNotFoundError } from "../lib/objectStorage";
-import { ObjectPermission } from "../lib/objectAcl";
+import { requireAuth, type AuthRequest } from "../lib/auth";
+import { db, abstractsTable } from "@workspace/db";
+import { eq } from "drizzle-orm";
 
 const router: IRouter = Router();
 const objectStorageService = new ObjectStorageService();
@@ -14,10 +16,9 @@ const objectStorageService = new ObjectStorageService();
  * POST /storage/uploads/request-url
  *
  * Request a presigned URL for file upload.
- * The client sends JSON metadata (name, size, contentType) — NOT the file.
- * Then uploads the file directly to the returned presigned URL.
+ * Requires authentication — only registered delegates and admins may upload.
  */
-router.post("/storage/uploads/request-url", async (req: Request, res: Response) => {
+router.post("/storage/uploads/request-url", requireAuth, async (req: AuthRequest, res: Response) => {
   const parsed = RequestUploadUrlBody.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: "Missing or invalid required fields" });
@@ -48,9 +49,8 @@ router.post("/storage/uploads/request-url", async (req: Request, res: Response) 
  *
  * Serve public assets from PUBLIC_OBJECT_SEARCH_PATHS.
  * These are unconditionally public — no authentication or ACL checks.
- * IMPORTANT: Always provide this endpoint when object storage is set up.
  */
-router.get("/storage/public-objects/*filePath", async (req: Request, res: Response) => {
+router.get("/storage/public-objects/*filePath", async (req: AuthRequest, res: Response) => {
   try {
     const raw = req.params.filePath;
     const filePath = Array.isArray(raw) ? raw.join("/") : raw;
@@ -80,32 +80,33 @@ router.get("/storage/public-objects/*filePath", async (req: Request, res: Respon
 /**
  * GET /storage/objects/*
  *
- * Serve object entities from PRIVATE_OBJECT_DIR.
- * These are served from a separate path from /public-objects and can optionally
- * be protected with authentication or ACL checks based on the use case.
+ * Serve private object entities from PRIVATE_OBJECT_DIR.
+ * Requires authentication. Admins may access any object.
+ * Delegates may only access files attached to their own abstracts.
  */
-router.get("/storage/objects/*path", async (req: Request, res: Response) => {
+router.get("/storage/objects/*path", requireAuth, async (req: AuthRequest, res: Response) => {
   try {
     const raw = req.params.path;
     const wildcardPath = Array.isArray(raw) ? raw.join("/") : raw;
     const objectPath = `/objects/${wildcardPath}`;
+
+    const isAdmin = req.user!.role === "admin";
+
+    if (!isAdmin) {
+      const fileUrl = objectPath;
+      const [abstract] = await db
+        .select()
+        .from(abstractsTable)
+        .where(eq(abstractsTable.fileUrl, fileUrl))
+        .limit(1);
+
+      if (!abstract || abstract.userId !== req.user!.userId) {
+        res.status(403).json({ error: "Forbidden" });
+        return;
+      }
+    }
+
     const objectFile = await objectStorageService.getObjectEntityFile(objectPath);
-
-    // --- Protected route example (uncomment when using replit-auth) ---
-    // if (!req.isAuthenticated()) {
-    //   res.status(401).json({ error: "Unauthorized" });
-    //   return;
-    // }
-    // const canAccess = await objectStorageService.canAccessObjectEntity({
-    //   userId: req.user.id,
-    //   objectFile,
-    //   requestedPermission: ObjectPermission.READ,
-    // });
-    // if (!canAccess) {
-    //   res.status(403).json({ error: "Forbidden" });
-    //   return;
-    // }
-
     const response = await objectStorageService.downloadObject(objectFile);
 
     res.status(response.status);
