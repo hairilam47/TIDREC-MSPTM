@@ -84,34 +84,6 @@ export default function Home() {
           </div>
         </section>
         
-        {/* 3. Stats bar */}
-        <section className="bg-primary text-primary-foreground py-12 border-y border-primary-border relative z-20 shadow-lg">
-          <div className="max-w-7xl mx-auto px-4">
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-8 text-center divide-x divide-white/10">
-              <div className="flex flex-col">
-                <span className="text-4xl font-bold font-serif mb-2">400+</span>
-                <span className="text-sm opacity-80 uppercase tracking-wider">Delegates</span>
-              </div>
-              <div className="flex flex-col">
-                <span className="text-4xl font-bold font-serif mb-2">30+</span>
-                <span className="text-sm opacity-80 uppercase tracking-wider">Speakers</span>
-              </div>
-              <div className="flex flex-col">
-                <span className="text-4xl font-bold font-serif mb-2">2</span>
-                <span className="text-sm opacity-80 uppercase tracking-wider">Days</span>
-              </div>
-              <div className="flex flex-col">
-                <span className="text-4xl font-bold font-serif mb-2">15+</span>
-                <span className="text-sm opacity-80 uppercase tracking-wider">Countries</span>
-              </div>
-              <div className="flex flex-col">
-                <span className="text-4xl font-bold font-serif mb-2">10+</span>
-                <span className="text-sm opacity-80 uppercase tracking-wider">Sponsors</span>
-              </div>
-            </div>
-          </div>
-        </section>
-
         {/* 4. About section */}
         <section id="about" className="py-24 bg-background">
           <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
