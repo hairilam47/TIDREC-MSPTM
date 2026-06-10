@@ -13,4 +13,5 @@ export interface AbstractInput {
   abstractType: AbstractInputAbstractType;
   keywords?: string;
   coAuthors?: string;
+  fileUrl?: string;
 }

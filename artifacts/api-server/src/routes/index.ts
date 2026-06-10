@@ -9,6 +9,7 @@ import registrationsRouter from "./registrations";
 import abstractsRouter from "./abstracts";
 import announcementsRouter from "./announcements";
 import statsRouter from "./stats";
+import storageRouter from "./storage";
 
 const router: IRouter = Router();
 
@@ -22,5 +23,6 @@ router.use(registrationsRouter);
 router.use(abstractsRouter);
 router.use(announcementsRouter);
 router.use(statsRouter);
+router.use(storageRouter);
 
 export default router;

@@ -21,6 +21,7 @@ async function formatAbstract(a: typeof abstractsTable.$inferSelect) {
     abstractType: a.abstractType,
     keywords: a.keywords,
     coAuthors: a.coAuthors,
+    fileUrl: a.fileUrl ?? null,
     status: a.status,
     reviewNotes: a.reviewNotes,
     abstractCode: a.abstractCode,
@@ -46,7 +47,7 @@ router.get("/abstracts", requireAuth, async (req: AuthRequest, res) => {
 
 router.post("/abstracts", requireAuth, async (req: AuthRequest, res) => {
   try {
-    const { title, body, abstractType, keywords, coAuthors } = req.body;
+    const { title, body, abstractType, keywords, coAuthors, fileUrl } = req.body;
     if (!title || !body || !abstractType) {
       res.status(400).json({ error: "Missing required fields" });
       return;
@@ -58,6 +59,7 @@ router.post("/abstracts", requireAuth, async (req: AuthRequest, res) => {
       abstractType,
       keywords: keywords || null,
       coAuthors: coAuthors || null,
+      fileUrl: fileUrl || null,
       status: "submitted",
       abstractCode: generateAbstractCode(),
     }).returning();

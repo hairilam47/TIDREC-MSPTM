@@ -485,6 +485,7 @@ export const GetAbstractsResponseItem = zod.object({
   "status": zod.enum(['submitted', 'under_review', 'accepted', 'rejected', 'revision_requested']),
   "reviewNotes": zod.string().nullish(),
   "abstractCode": zod.string().optional(),
+  "fileUrl": zod.string().nullish(),
   "createdAt": zod.string()
 })
 export const GetAbstractsResponse = zod.array(GetAbstractsResponseItem)
@@ -498,7 +499,8 @@ export const CreateAbstractBody = zod.object({
   "body": zod.string(),
   "abstractType": zod.enum(['oral', 'poster']),
   "keywords": zod.string().optional(),
-  "coAuthors": zod.string().optional()
+  "coAuthors": zod.string().optional(),
+  "fileUrl": zod.string().optional()
 })
 
 
@@ -521,6 +523,7 @@ export const GetAbstractResponse = zod.object({
   "status": zod.enum(['submitted', 'under_review', 'accepted', 'rejected', 'revision_requested']),
   "reviewNotes": zod.string().nullish(),
   "abstractCode": zod.string().optional(),
+  "fileUrl": zod.string().nullish(),
   "createdAt": zod.string()
 })
 
@@ -551,6 +554,7 @@ export const UpdateAbstractResponse = zod.object({
   "status": zod.enum(['submitted', 'under_review', 'accepted', 'rejected', 'revision_requested']),
   "reviewNotes": zod.string().nullish(),
   "abstractCode": zod.string().optional(),
+  "fileUrl": zod.string().nullish(),
   "createdAt": zod.string()
 })
 
@@ -575,6 +579,21 @@ export const CreateAnnouncementBody = zod.object({
   "title": zod.string(),
   "body": zod.string(),
   "important": zod.boolean().optional()
+})
+
+
+/**
+ * @summary Request a presigned URL for file upload
+ */
+export const RequestUploadUrlBody = zod.object({
+  "name": zod.string(),
+  "size": zod.number(),
+  "contentType": zod.string()
+})
+
+export const RequestUploadUrlResponse = zod.object({
+  "uploadURL": zod.string(),
+  "objectPath": zod.string()
 })
 
 

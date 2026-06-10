@@ -24,5 +24,7 @@ export interface Abstract {
   /** @nullable */
   reviewNotes?: string | null;
   abstractCode?: string;
+  /** @nullable */
+  fileUrl?: string | null;
   createdAt: string;
 }

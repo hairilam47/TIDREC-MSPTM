@@ -42,5 +42,7 @@ export * from './sponsorInput';
 export * from './sponsorInputTier';
 export * from './sponsorTier';
 export * from './statsSummary';
+export * from './uploadUrlRequest';
+export * from './uploadUrlResponse';
 export * from './user';
 export * from './userRole';

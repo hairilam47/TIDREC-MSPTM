@@ -301,7 +301,20 @@ export interface Abstract {
   /** @nullable */
   reviewNotes?: string | null;
   abstractCode?: string;
+  /** @nullable */
+  fileUrl?: string | null;
   createdAt: string;
+}
+
+export interface UploadUrlRequest {
+  name: string;
+  size: number;
+  contentType: string;
+}
+
+export interface UploadUrlResponse {
+  uploadURL: string;
+  objectPath: string;
 }
 
 export type AbstractInputAbstractType = typeof AbstractInputAbstractType[keyof typeof AbstractInputAbstractType];
@@ -318,6 +331,7 @@ export interface AbstractInput {
   abstractType: AbstractInputAbstractType;
   keywords?: string;
   coAuthors?: string;
+  fileUrl?: string;
 }
 
 export type AbstractUpdateStatus = typeof AbstractUpdateStatus[keyof typeof AbstractUpdateStatus];

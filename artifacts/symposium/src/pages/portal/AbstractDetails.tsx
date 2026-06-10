@@ -2,7 +2,7 @@ import React from "react";
 import PortalLayout from "@/components/PortalLayout";
 import { useGetAbstract } from "@workspace/api-client-react";
 import { useRoute, Link } from "wouter";
-import { ArrowLeft, Loader2, FileText, Calendar } from "lucide-react";
+import { ArrowLeft, Loader2, FileText, Calendar, Download } from "lucide-react";
 
 const STATUS_STYLES: Record<string, { bg: string; color: string; label: string }> = {
   submitted: { bg: "#e6f4f5", color: "#0E6E74", label: "Submitted" },
@@ -79,12 +79,9 @@ export default function AbstractDetails() {
           </div>
         </div>
 
-        {/* Reviewer notes (if any) */}
+        {/* Reviewer notes */}
         {abstract.reviewNotes && (
-          <div
-            className="rounded-xl p-5 mb-5"
-            style={{ background: "#fff3cd", border: "1px solid #ffe69c" }}
-          >
+          <div className="rounded-xl p-5 mb-5" style={{ background: "#fff3cd", border: "1px solid #ffe69c" }}>
             <div className="text-[11px] font-bold uppercase tracking-wider mb-2" style={{ color: "#856404" }}>
               Reviewer Notes
             </div>
@@ -110,11 +107,7 @@ export default function AbstractDetails() {
                 <div className="text-[11px] font-bold uppercase tracking-wider mb-2" style={{ color: "#6c757d" }}>Keywords</div>
                 <div className="flex flex-wrap gap-1.5">
                   {abstract.keywords.split(",").map((kw, i) => (
-                    <span
-                      key={i}
-                      className="text-[12px] px-2 py-0.5 rounded-full"
-                      style={{ background: "#e6f4f5", color: "#0E6E74" }}
-                    >
+                    <span key={i} className="text-[12px] px-2 py-0.5 rounded-full" style={{ background: "#e6f4f5", color: "#0E6E74" }}>
                       {kw.trim()}
                     </span>
                   ))}
@@ -131,6 +124,21 @@ export default function AbstractDetails() {
               <div className="bg-white rounded-xl p-4" style={{ border: "1px solid #e9ecef" }}>
                 <div className="text-[11px] font-bold uppercase tracking-wider mb-2" style={{ color: "#6c757d" }}>Submitter</div>
                 <p className="text-[13px] font-medium" style={{ color: "#212529" }}>{abstract.submitterName}</p>
+              </div>
+            )}
+            {abstract.fileUrl && (
+              <div className="bg-white rounded-xl p-4" style={{ border: "1px solid #e9ecef" }}>
+                <div className="text-[11px] font-bold uppercase tracking-wider mb-2" style={{ color: "#6c757d" }}>Abstract Document</div>
+                <a
+                  href={`/api/storage${abstract.fileUrl}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-[13px] font-medium no-underline px-3 py-2 rounded-lg"
+                  style={{ background: "#e6f4f5", color: "#0E6E74" }}
+                >
+                  <Download className="w-4 h-4" />
+                  Download Document
+                </a>
               </div>
             )}
           </div>

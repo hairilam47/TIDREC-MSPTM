@@ -20,6 +20,7 @@ export const abstractsTable = pgTable("abstracts", {
   abstractType: abstractTypeEnum("abstract_type").notNull(),
   keywords: text("keywords"),
   coAuthors: text("co_authors"),
+  fileUrl: text("file_url"),
   status: abstractStatusEnum("status").notNull().default("submitted"),
   reviewNotes: text("review_notes"),
   abstractCode: text("abstract_code").notNull().unique(),
