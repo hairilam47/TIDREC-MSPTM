@@ -64,13 +64,6 @@ export default function Home() {
             {/* Date/venue pill + CTAs overlaid at the bottom-left */}
             <div className="absolute bottom-0 left-0 right-0 px-6 pb-8 z-10">
               <div className="max-w-7xl mx-auto">
-                <div className="inline-flex items-center gap-2 text-white px-4 py-2 rounded-full mb-4 text-sm font-semibold tracking-wide border border-white/30 bg-white/10 backdrop-blur-sm">
-                  <CalendarDays className="w-4 h-4 text-accent" />
-                  {eventDates}
-                  <span className="mx-1 opacity-40">|</span>
-                  <MapPin className="w-4 h-4 text-accent" />
-                  {eventVenue}, KL
-                </div>
                 <div className="flex flex-col sm:flex-row gap-4">
                   <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 h-12 px-8 text-base w-full sm:w-auto">
                     <Link href="/register">Register Now</Link>
