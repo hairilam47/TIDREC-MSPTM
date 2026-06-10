@@ -10,6 +10,7 @@ import abstractsRouter from "./abstracts";
 import announcementsRouter from "./announcements";
 import statsRouter from "./stats";
 import storageRouter from "./storage";
+import usersRouter from "./users";
 
 const router: IRouter = Router();
 
@@ -24,5 +25,6 @@ router.use(abstractsRouter);
 router.use(announcementsRouter);
 router.use(statsRouter);
 router.use(storageRouter);
+router.use(usersRouter);
 
 export default router;

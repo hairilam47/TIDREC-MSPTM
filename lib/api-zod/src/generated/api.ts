@@ -560,6 +560,47 @@ export const UpdateAbstractResponse = zod.object({
 
 
 /**
+ * @summary List all users (admin)
+ */
+export const GetUsersResponseItem = zod.object({
+  "id": zod.number(),
+  "email": zod.string(),
+  "firstName": zod.string(),
+  "lastName": zod.string(),
+  "institution": zod.string().nullish(),
+  "country": zod.string().nullish(),
+  "category": zod.string().nullish(),
+  "role": zod.enum(['attendee', 'admin']),
+  "createdAt": zod.string()
+})
+export const GetUsersResponse = zod.array(GetUsersResponseItem)
+
+
+/**
+ * @summary Update user role (admin)
+ */
+export const UpdateUserParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const UpdateUserBody = zod.object({
+  "role": zod.enum(['attendee', 'admin'])
+})
+
+export const UpdateUserResponse = zod.object({
+  "id": zod.number(),
+  "email": zod.string(),
+  "firstName": zod.string(),
+  "lastName": zod.string(),
+  "institution": zod.string().nullish(),
+  "country": zod.string().nullish(),
+  "category": zod.string().nullish(),
+  "role": zod.enum(['attendee', 'admin']),
+  "createdAt": zod.string()
+})
+
+
+/**
  * @summary List all announcements
  */
 export const GetAnnouncementsResponseItem = zod.object({
@@ -579,6 +620,36 @@ export const CreateAnnouncementBody = zod.object({
   "title": zod.string(),
   "body": zod.string(),
   "important": zod.boolean().optional()
+})
+
+
+/**
+ * @summary Update an announcement (admin)
+ */
+export const UpdateAnnouncementParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const UpdateAnnouncementBody = zod.object({
+  "title": zod.string(),
+  "body": zod.string(),
+  "important": zod.boolean().optional()
+})
+
+export const UpdateAnnouncementResponse = zod.object({
+  "id": zod.number(),
+  "title": zod.string(),
+  "body": zod.string(),
+  "important": zod.boolean().optional(),
+  "createdAt": zod.string()
+})
+
+
+/**
+ * @summary Delete an announcement (admin)
+ */
+export const DeleteAnnouncementParams = zod.object({
+  "id": zod.coerce.number()
 })
 
 
@@ -607,6 +678,9 @@ export const GetStatsSummaryResponse = zod.object({
   "totalSessions": zod.number(),
   "pendingPayments": zod.number(),
   "pendingAbstracts": zod.number(),
+  "totalRevenue": zod.number().optional(),
+  "acceptedAbstracts": zod.number().optional(),
+  "rejectedAbstracts": zod.number().optional(),
   "registrationsByCategory": zod.array(zod.object({
   "category": zod.string(),
   "count": zod.number()

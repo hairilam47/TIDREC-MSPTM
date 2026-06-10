@@ -15,6 +15,9 @@ export interface StatsSummary {
   totalSessions: number;
   pendingPayments: number;
   pendingAbstracts: number;
+  totalRevenue?: number;
+  acceptedAbstracts?: number;
+  rejectedAbstracts?: number;
   registrationsByCategory?: CategoryCount[];
   registrationsByCountry?: CountryCount[];
 }

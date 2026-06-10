@@ -366,6 +366,18 @@ export interface AnnouncementInput {
   important?: boolean;
 }
 
+export type UserRoleUpdateRole = typeof UserRoleUpdateRole[keyof typeof UserRoleUpdateRole];
+
+
+export const UserRoleUpdateRole = {
+  attendee: 'attendee',
+  admin: 'admin',
+} as const;
+
+export interface UserRoleUpdate {
+  role: UserRoleUpdateRole;
+}
+
 export interface CategoryCount {
   category: string;
   count: number;
@@ -383,6 +395,9 @@ export interface StatsSummary {
   totalSessions: number;
   pendingPayments: number;
   pendingAbstracts: number;
+  totalRevenue?: number;
+  acceptedAbstracts?: number;
+  rejectedAbstracts?: number;
   registrationsByCategory?: CategoryCount[];
   registrationsByCountry?: CountryCount[];
 }

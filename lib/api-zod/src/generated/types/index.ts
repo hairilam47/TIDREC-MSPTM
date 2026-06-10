@@ -46,3 +46,5 @@ export * from './uploadUrlRequest';
 export * from './uploadUrlResponse';
 export * from './user';
 export * from './userRole';
+export * from './userRoleUpdate';
+export * from './userRoleUpdateRole';

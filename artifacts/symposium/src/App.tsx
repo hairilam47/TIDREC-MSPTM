@@ -3,11 +3,12 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
-import { RequireAuth } from "@/lib/auth";
+import { RequireAuth, RequireAdmin } from "@/lib/auth";
 
 import Home from "@/pages/Home";
 import Login from "@/pages/auth/Login";
 import Register from "@/pages/auth/Register";
+
 import Dashboard from "@/pages/portal/Dashboard";
 import Registration from "@/pages/portal/Registration";
 import Abstracts from "@/pages/portal/Abstracts";
@@ -20,6 +21,16 @@ import Profile from "@/pages/portal/Profile";
 import Notifications from "@/pages/portal/Notifications";
 import Support from "@/pages/portal/Support";
 
+import AdminDashboard from "@/pages/admin/Dashboard";
+import AdminRegistrations from "@/pages/admin/Registrations";
+import AdminAbstracts from "@/pages/admin/Abstracts";
+import AdminSpeakers from "@/pages/admin/Speakers";
+import AdminProgramme from "@/pages/admin/Programme";
+import AdminSponsors from "@/pages/admin/Sponsors";
+import AdminUsers from "@/pages/admin/Users";
+import AdminAnnouncements from "@/pages/admin/Announcements";
+import AdminReports from "@/pages/admin/Reports";
+
 const queryClient = new QueryClient();
 
 function Router() {
@@ -29,6 +40,7 @@ function Router() {
       <Route path="/login" component={Login} />
       <Route path="/register" component={Register} />
 
+      {/* Delegate Portal */}
       <Route path="/portal">
         <RequireAuth><Dashboard /></RequireAuth>
       </Route>
@@ -61,6 +73,35 @@ function Router() {
       </Route>
       <Route path="/portal/support">
         <RequireAuth><Support /></RequireAuth>
+      </Route>
+
+      {/* Admin Portal */}
+      <Route path="/admin">
+        <RequireAdmin><AdminDashboard /></RequireAdmin>
+      </Route>
+      <Route path="/admin/registrations">
+        <RequireAdmin><AdminRegistrations /></RequireAdmin>
+      </Route>
+      <Route path="/admin/abstracts">
+        <RequireAdmin><AdminAbstracts /></RequireAdmin>
+      </Route>
+      <Route path="/admin/speakers">
+        <RequireAdmin><AdminSpeakers /></RequireAdmin>
+      </Route>
+      <Route path="/admin/programme">
+        <RequireAdmin><AdminProgramme /></RequireAdmin>
+      </Route>
+      <Route path="/admin/sponsors">
+        <RequireAdmin><AdminSponsors /></RequireAdmin>
+      </Route>
+      <Route path="/admin/users">
+        <RequireAdmin><AdminUsers /></RequireAdmin>
+      </Route>
+      <Route path="/admin/announcements">
+        <RequireAdmin><AdminAnnouncements /></RequireAdmin>
+      </Route>
+      <Route path="/admin/reports">
+        <RequireAdmin><AdminReports /></RequireAdmin>
       </Route>
 
       <Route component={NotFound} />

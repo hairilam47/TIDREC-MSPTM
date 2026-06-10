@@ -25,6 +25,37 @@ router.get("/announcements", async (_req, res) => {
   }
 });
 
+router.patch("/announcements/:id", requireAdmin, async (req, res) => {
+  try {
+    const id = parseInt(String(req.params.id));
+    const { title, body, important } = req.body;
+    const [updated] = await db
+      .update(announcementsTable)
+      .set({ title, body, important: important ?? undefined })
+      .where(eq(announcementsTable.id, id))
+      .returning();
+    if (!updated) {
+      res.status(404).json({ error: "Not found" });
+      return;
+    }
+    res.json(formatAnnouncement(updated));
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.delete("/announcements/:id", requireAdmin, async (req, res) => {
+  try {
+    const id = parseInt(String(req.params.id));
+    await db.delete(announcementsTable).where(eq(announcementsTable.id, id));
+    res.status(204).end();
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 router.post("/announcements", requireAdmin, async (req, res) => {
   try {
     const { title, body, important } = req.body;

@@ -27,3 +27,31 @@ export function RequireAuth({ children }: { children: React.ReactNode }) {
 
   return <>{children}</>;
 }
+
+export function RequireAdmin({ children }: { children: React.ReactNode }) {
+  const [, setLocation] = useLocation();
+  const { data: user, isLoading, isError } = useGetMe({
+    query: {
+      retry: false,
+      queryKey: getGetMeQueryKey(),
+    }
+  });
+
+  React.useEffect(() => {
+    if (isError) {
+      setLocation("/login");
+    } else if (user && user.role !== "admin") {
+      setLocation("/portal");
+    }
+  }, [isError, user, setLocation]);
+
+  if (isLoading) {
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  }
+
+  if (!user || user.role !== "admin") {
+    return null;
+  }
+
+  return <>{children}</>;
+}
