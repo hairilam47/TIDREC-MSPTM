@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "wouter";
-import { MapPin, Clock, Users, Building, HeartPulse, GraduationCap, ChevronRight, FileText } from "lucide-react";
+import { MapPin, Clock, Users, Building, HeartPulse, GraduationCap, ChevronRight, FileText, CalendarDays } from "lucide-react";
 import { useGetSessions, useGetSpeakers, useGetSponsors, useGetSettings } from "@workspace/api-client-react";
 
 import bannerImg from "@assets/[BANNER]_3rd_Southeast_Asia_Ticks_and_Tick-borne_Diseases_Symp_1781130718946.png";
@@ -15,6 +15,7 @@ export default function Home() {
   const { data: sponsors } = useGetSponsors();
   const { data: cms } = useGetSettings();
 
+  const eventDates = cms?.event_dates ?? "22–23 March 2027";
   const eventVenue = cms?.event_venue ?? "Sunway Putra Hotel";
   const eventCity = cms?.event_city ?? "Kuala Lumpur, Malaysia";
   const aboutText = cms?.about_text ?? "The SATBDS symposium brings together researchers, clinicians, veterinarians, and public health professionals from across Southeast Asia to share the latest advances in tick biology and tick-borne disease research.";
@@ -48,22 +49,39 @@ export default function Home() {
 
       <main className="flex-1">
         {/* 2. Hero section */}
-        <section style={{ background: "#0B2744" }} className="relative overflow-hidden">
-          <div className="max-w-6xl mx-auto">
+        <section style={{ background: "#0B2744" }} className="relative">
+          {/* Full-width banner — object-contain preserves all poster content */}
+          <div className="relative w-full">
             <img
               src={bannerImg}
               alt="SATBDS 2027 — 3rd Southeast Asia Ticks and Tick-borne Diseases Symposium"
               className="w-full h-auto block"
-              style={{ objectFit: "contain" }}
             />
-          </div>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 py-8 px-4" style={{ background: "#0B2744" }}>
-            <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 h-14 px-8 text-lg w-full sm:w-auto">
-              <Link href="/register">Register Now</Link>
-            </Button>
-            <Button asChild variant="outline" size="lg" className="bg-transparent border-white text-white hover:bg-white/10 h-14 px-8 text-lg w-full sm:w-auto">
-              <Link href="/portal/programme">View Programme</Link>
-            </Button>
+            {/* Gradient scrim so overlaid text/buttons stay legible */}
+            <div
+              className="absolute bottom-0 left-0 right-0 pointer-events-none"
+              style={{ height: "45%", background: "linear-gradient(to top, rgba(11,39,68,0.95) 0%, rgba(11,39,68,0.5) 55%, transparent 100%)" }}
+            />
+            {/* Date/venue pill + CTAs overlaid at the bottom-left */}
+            <div className="absolute bottom-0 left-0 right-0 px-6 pb-8 z-10">
+              <div className="max-w-7xl mx-auto">
+                <div className="inline-flex items-center gap-2 text-white px-4 py-2 rounded-full mb-4 text-sm font-semibold tracking-wide border border-white/30 bg-white/10 backdrop-blur-sm">
+                  <CalendarDays className="w-4 h-4 text-accent" />
+                  {eventDates}
+                  <span className="mx-1 opacity-40">|</span>
+                  <MapPin className="w-4 h-4 text-accent" />
+                  {eventVenue}, KL
+                </div>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 h-12 px-8 text-base w-full sm:w-auto">
+                    <Link href="/register">Register Now</Link>
+                  </Button>
+                  <Button asChild variant="outline" size="lg" className="bg-transparent border-white text-white hover:bg-white/10 h-12 px-8 text-base w-full sm:w-auto">
+                    <Link href="/portal/programme">View Programme</Link>
+                  </Button>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
         
