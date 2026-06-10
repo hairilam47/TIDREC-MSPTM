@@ -1,10 +1,20 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import crypto from "node:crypto";
 
-if (!process.env.JWT_SECRET) {
-  throw new Error("JWT_SECRET environment variable must be set. Refusing to start with an insecure default.");
+let JWT_SECRET: string;
+
+if (process.env.JWT_SECRET) {
+  JWT_SECRET = process.env.JWT_SECRET;
+} else if (process.env.NODE_ENV === "production") {
+  throw new Error("JWT_SECRET environment variable must be set in production.");
+} else {
+  JWT_SECRET = crypto.randomBytes(32).toString("hex");
+  console.warn(
+    "[AUTH] JWT_SECRET is not set. Using a random ephemeral secret for this process. " +
+    "All tokens will be invalidated on restart. Set JWT_SECRET in your environment."
+  );
 }
-const JWT_SECRET = process.env.JWT_SECRET;
 
 export interface JwtPayload {
   userId: number;

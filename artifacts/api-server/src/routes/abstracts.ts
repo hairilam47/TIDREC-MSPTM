@@ -70,7 +70,7 @@ router.post("/abstracts", requireAuth, async (req: AuthRequest, res) => {
 
 router.get("/abstracts/:id", requireAuth, async (req: AuthRequest, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(String(req.params.id));
     const [abstract] = await db.select().from(abstractsTable).where(eq(abstractsTable.id, id)).limit(1);
     if (!abstract) {
       res.status(404).json({ error: "Abstract not found" });
@@ -89,7 +89,7 @@ router.get("/abstracts/:id", requireAuth, async (req: AuthRequest, res) => {
 
 router.patch("/abstracts/:id", requireAuth, async (req: AuthRequest, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(String(req.params.id));
     const [existing] = await db.select().from(abstractsTable).where(eq(abstractsTable.id, id)).limit(1);
     if (!existing) {
       res.status(404).json({ error: "Abstract not found" });

@@ -47,7 +47,7 @@ router.post("/sponsors", requireAdmin, async (req, res) => {
 
 router.put("/sponsors/:id", requireAdmin, async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(String(req.params.id));
     const { name, tier, logoUrl, website } = req.body;
     const [sponsor] = await db.update(sponsorsTable)
       .set({ name, tier, logoUrl: logoUrl || null, website: website || null, updatedAt: new Date() })
@@ -66,7 +66,7 @@ router.put("/sponsors/:id", requireAdmin, async (req, res) => {
 
 router.delete("/sponsors/:id", requireAdmin, async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(String(req.params.id));
     await db.delete(sponsorsTable).where(eq(sponsorsTable.id, id));
     res.status(204).end();
   } catch (err) {

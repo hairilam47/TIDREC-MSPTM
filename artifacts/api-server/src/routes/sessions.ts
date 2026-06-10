@@ -62,7 +62,7 @@ router.post("/sessions", requireAdmin, async (req, res) => {
 
 router.get("/sessions/:id", async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(String(req.params.id));
     const [session] = await db.select().from(sessionsTable).where(eq(sessionsTable.id, id)).limit(1);
     if (!session) {
       res.status(404).json({ error: "Session not found" });
@@ -77,7 +77,7 @@ router.get("/sessions/:id", async (req, res) => {
 
 router.put("/sessions/:id", requireAdmin, async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(String(req.params.id));
     const { title, day, startTime, endTime, room, sessionType, description, speakerId } = req.body;
     const [session] = await db.update(sessionsTable)
       .set({
@@ -106,7 +106,7 @@ router.put("/sessions/:id", requireAdmin, async (req, res) => {
 
 router.delete("/sessions/:id", requireAdmin, async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(String(req.params.id));
     await db.delete(sessionsTable).where(eq(sessionsTable.id, id));
     res.status(204).end();
   } catch (err) {

@@ -62,7 +62,7 @@ router.post("/speakers", requireAdmin, async (req, res) => {
 
 router.get("/speakers/:id", async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(String(req.params.id));
     const [speaker] = await db.select().from(speakersTable).where(eq(speakersTable.id, id)).limit(1);
     if (!speaker) {
       res.status(404).json({ error: "Speaker not found" });
@@ -77,7 +77,7 @@ router.get("/speakers/:id", async (req, res) => {
 
 router.put("/speakers/:id", requireAdmin, async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(String(req.params.id));
     const { name, country, institution, topic, bio, photoUrl } = req.body;
     const [speaker] = await db.update(speakersTable)
       .set({
@@ -105,7 +105,7 @@ router.put("/speakers/:id", requireAdmin, async (req, res) => {
 
 router.delete("/speakers/:id", requireAdmin, async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(String(req.params.id));
     await db.delete(speakersTable).where(eq(speakersTable.id, id));
     res.status(204).end();
   } catch (err) {

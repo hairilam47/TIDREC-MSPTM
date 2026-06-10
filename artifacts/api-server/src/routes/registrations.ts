@@ -81,7 +81,7 @@ router.get("/registrations/me", requireAuth, async (req: AuthRequest, res) => {
 
 router.get("/registrations/:id", requireAdmin, async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(String(req.params.id));
     const [reg] = await db.select().from(registrationsTable).where(eq(registrationsTable.id, id)).limit(1);
     if (!reg) {
       res.status(404).json({ error: "Registration not found" });
@@ -96,7 +96,7 @@ router.get("/registrations/:id", requireAdmin, async (req, res) => {
 
 router.patch("/registrations/:id", requireAdmin, async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = parseInt(String(req.params.id));
     const { paymentStatus, paymentAmount } = req.body;
     const [reg] = await db.update(registrationsTable)
       .set({
