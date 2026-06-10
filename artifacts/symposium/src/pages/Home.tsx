@@ -4,10 +4,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "wouter";
-import { MapPin, Clock, Users, Building, HeartPulse, GraduationCap, ChevronRight, FileText, Stethoscope, FlaskConical, Briefcase } from "lucide-react";
+import { MapPin, Clock, Users, Building, HeartPulse, GraduationCap, ChevronRight, FileText } from "lucide-react";
 import { useGetSessions, useGetSpeakers, useGetSponsors, useGetSettings } from "@workspace/api-client-react";
 
-import headerImg from "@assets/[HEADER]_3rd_Southeast_Asia_Ticks_and_Tick-borne_Diseases_Symp_1781130713404.png";
 import bannerImg from "@assets/[BANNER]_3rd_Southeast_Asia_Ticks_and_Tick-borne_Diseases_Symp_1781130718946.png";
 
 export default function Home() {
@@ -16,10 +15,8 @@ export default function Home() {
   const { data: sponsors } = useGetSponsors();
   const { data: cms } = useGetSettings();
 
-  const eventDates = cms?.event_dates ?? "22–23 March 2027";
   const eventVenue = cms?.event_venue ?? "Sunway Putra Hotel";
   const eventCity = cms?.event_city ?? "Kuala Lumpur, Malaysia";
-  const heroSubtitle = cms?.hero_subtitle ?? "Advancing knowledge on tick biology, tick-borne pathogens, and integrated management strategies across Southeast Asia.";
   const aboutText = cms?.about_text ?? "The SATBDS symposium brings together researchers, clinicians, veterinarians, and public health professionals from across Southeast Asia to share the latest advances in tick biology and tick-borne disease research.";
   const organisers = `${cms?.organiser_primary ?? "MSPTM"} & ${cms?.organiser_secondary ?? "TIDREC@UM"}`;
 
@@ -51,38 +48,22 @@ export default function Home() {
 
       <main className="flex-1">
         {/* 2. Hero section */}
-        <section className="bg-secondary relative overflow-hidden text-secondary-foreground">
-          <div className="absolute inset-0 z-0 opacity-20">
-            <img src={headerImg} alt="Symposium background" className="w-full h-full object-cover" />
+        <section style={{ background: "#0B2744" }} className="relative overflow-hidden">
+          <div className="max-w-6xl mx-auto">
+            <img
+              src={bannerImg}
+              alt="SATBDS 2027 — 3rd Southeast Asia Ticks and Tick-borne Diseases Symposium"
+              className="w-full h-auto block"
+              style={{ objectFit: "contain" }}
+            />
           </div>
-          <div className="relative z-10 max-w-7xl mx-auto px-4 py-24 md:py-32 flex flex-col md:flex-row items-center gap-12">
-            <div className="flex-1 text-center md:text-left">
-              <div className="inline-flex items-center gap-2 bg-primary/20 text-primary-foreground px-4 py-2 rounded-full mb-6 text-sm font-semibold tracking-wide border border-primary/30">
-                <Clock className="w-4 h-4" /> {eventDates}
-                <span className="mx-2 opacity-50">|</span>
-                <MapPin className="w-4 h-4" /> {eventVenue}, KL
-              </div>
-              <h2 className="font-serif text-4xl md:text-6xl max-w-4xl leading-tight mb-6 text-white">
-                {cms?.event_name ?? "3rd Southeast Asia Ticks and Tick-Borne Diseases Symposium"}
-              </h2>
-              <p className="text-xl md:text-2xl text-muted/80 max-w-2xl mb-10">
-                {heroSubtitle}
-              </p>
-              <div className="flex flex-col sm:flex-row items-center md:justify-start gap-4">
-                <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 h-14 px-8 text-lg w-full sm:w-auto">
-                  <Link href="/register">Register Now</Link>
-                </Button>
-                <Button asChild variant="outline" size="lg" className="bg-transparent border-white text-white hover:bg-white/10 h-14 px-8 text-lg w-full sm:w-auto">
-                  <Link href="/portal/programme">View Programme</Link>
-                </Button>
-              </div>
-            </div>
-            <div className="flex-1 w-full max-w-lg hidden md:block">
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl border-4 border-white/10 transform rotate-2 hover:rotate-0 transition-transform duration-500">
-                <img src={bannerImg} alt="SATBDS Banner" className="w-full h-auto" />
-                <div className="absolute inset-0 bg-gradient-to-tr from-secondary/80 to-transparent mix-blend-multiply pointer-events-none"></div>
-              </div>
-            </div>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 py-8 px-4" style={{ background: "#0B2744" }}>
+            <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 h-14 px-8 text-lg w-full sm:w-auto">
+              <Link href="/register">Register Now</Link>
+            </Button>
+            <Button asChild variant="outline" size="lg" className="bg-transparent border-white text-white hover:bg-white/10 h-14 px-8 text-lg w-full sm:w-auto">
+              <Link href="/portal/programme">View Programme</Link>
+            </Button>
           </div>
         </section>
         
