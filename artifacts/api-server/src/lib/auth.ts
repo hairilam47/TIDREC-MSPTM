@@ -1,7 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET || "satbds-2027-secret-key";
+if (!process.env.JWT_SECRET) {
+  throw new Error("JWT_SECRET environment variable must be set. Refusing to start with an insecure default.");
+}
+const JWT_SECRET = process.env.JWT_SECRET;
 
 export interface JwtPayload {
   userId: number;

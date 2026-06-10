@@ -348,11 +348,15 @@ export default function Home() {
             <ul className="space-y-3 text-sm text-muted/70">
               <li>Malaysian Society of Parasitology and Tropical Medicine (MSPTM)</li>
               <li>Tropical Infectious Diseases Research & Education Centre (TIDREC@UM)</li>
+              <li className="pt-3 border-t border-white/10">
+                <span className="text-white font-medium block mb-1">Contact Us</span>
+                <a href="mailto:events@msptm.network" className="hover:text-accent transition-colors">events@msptm.network</a>
+              </li>
             </ul>
           </div>
         </div>
         <div className="max-w-7xl mx-auto px-4 mt-16 pt-8 border-t border-white/10 text-center text-sm text-muted/50">
-          <p>&copy; 2027 SATBDS. All rights reserved.</p>
+          <p>&copy; 2027 SATBDS. All rights reserved. | Contact: <a href="mailto:events@msptm.network" className="hover:text-accent transition-colors">events@msptm.network</a></p>
         </div>
       </footer>
     </div>
