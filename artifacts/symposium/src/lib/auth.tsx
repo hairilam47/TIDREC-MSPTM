@@ -1,5 +1,5 @@
 import React from "react";
-import { useGetMe } from "@workspace/api-client-react";
+import { useGetMe, getGetMeQueryKey } from "@workspace/api-client-react";
 import { useLocation } from "wouter";
 
 export function RequireAuth({ children }: { children: React.ReactNode }) {
@@ -7,6 +7,7 @@ export function RequireAuth({ children }: { children: React.ReactNode }) {
   const { data: user, isLoading, isError } = useGetMe({
     query: {
       retry: false,
+      queryKey: getGetMeQueryKey(),
     }
   });
 
