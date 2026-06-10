@@ -358,6 +358,11 @@ export async function customFetch<T = unknown>(
     }
   }
 
+  const satbdsToken = typeof window !== 'undefined' ? localStorage.getItem('satbds_token') : null;
+  if (satbdsToken && !headers.has("authorization")) {
+    headers.set("authorization", `Bearer ${satbdsToken}`);
+  }
+
   const requestInfo = { method, url: resolveUrl(input) };
 
   const response = await fetch(input, { ...init, method, headers });

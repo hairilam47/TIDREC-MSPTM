@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "SATBDS 2027 Symposium"
+version = "1.0.0"
+id = "artifacts/symposium"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 24486
+
+[services.development]
+run = "pnpm --filter @workspace/symposium run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/symposium", "run", "build" ]
+publicDir = "artifacts/symposium/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24486"
+BASE_PATH = "/"

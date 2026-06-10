@@ -3,20 +3,33 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: SATBDS 2027 Symposium API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: auth
+    description: Authentication operations
+  - name: speakers
+    description: Speaker operations
+  - name: sessions
+    description: Programme session operations
+  - name: sponsors
+    description: Sponsor operations
+  - name: registrations
+    description: Registration operations
+  - name: announcements
+    description: Announcement operations
+  - name: stats
+    description: Summary statistics
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +37,533 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /auth/register:
+    post:
+      operationId: register
+      tags: [auth]
+      summary: Register a new attendee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterInput"
+      responses:
+        "201":
+          description: Registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
+          description: Validation error
+
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginInput"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Invalid credentials
+
+  /auth/logout:
+    post:
+      operationId: logout
+      tags: [auth]
+      summary: Logout
+      responses:
+        "200":
+          description: Logged out
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current user profile
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Unauthorized
+
+  /speakers:
+    get:
+      operationId: getSpeakers
+      tags: [speakers]
+      summary: List all speakers
+      responses:
+        "200":
+          description: List of speakers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Speaker"
+    post:
+      operationId: createSpeaker
+      tags: [speakers]
+      summary: Create a speaker (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SpeakerInput"
+      responses:
+        "201":
+          description: Speaker created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Speaker"
+
+  /speakers/{id}:
+    get:
+      operationId: getSpeaker
+      tags: [speakers]
+      summary: Get a speaker by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Speaker
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Speaker"
+        "404":
+          description: Not found
+    put:
+      operationId: updateSpeaker
+      tags: [speakers]
+      summary: Update a speaker (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SpeakerInput"
+      responses:
+        "200":
+          description: Updated speaker
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Speaker"
+    delete:
+      operationId: deleteSpeaker
+      tags: [speakers]
+      summary: Delete a speaker (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /sessions:
+    get:
+      operationId: getSessions
+      tags: [sessions]
+      summary: List all programme sessions
+      responses:
+        "200":
+          description: List of sessions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Session"
+    post:
+      operationId: createSession
+      tags: [sessions]
+      summary: Create a session (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SessionInput"
+      responses:
+        "201":
+          description: Session created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Session"
+
+  /sessions/{id}:
+    get:
+      operationId: getSession
+      tags: [sessions]
+      summary: Get a session by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Session
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Session"
+        "404":
+          description: Not found
+    put:
+      operationId: updateSession
+      tags: [sessions]
+      summary: Update a session (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SessionInput"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Session"
+    delete:
+      operationId: deleteSession
+      tags: [sessions]
+      summary: Delete a session (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /sponsors:
+    get:
+      operationId: getSponsors
+      tags: [sponsors]
+      summary: List all sponsors
+      responses:
+        "200":
+          description: List of sponsors
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Sponsor"
+    post:
+      operationId: createSponsor
+      tags: [sponsors]
+      summary: Create a sponsor (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SponsorInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Sponsor"
+
+  /sponsors/{id}:
+    put:
+      operationId: updateSponsor
+      tags: [sponsors]
+      summary: Update a sponsor (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SponsorInput"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Sponsor"
+    delete:
+      operationId: deleteSponsor
+      tags: [sponsors]
+      summary: Delete a sponsor (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /registrations:
+    post:
+      operationId: createRegistration
+      tags: [registrations]
+      summary: Register as a delegate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegistrationInput"
+      responses:
+        "201":
+          description: Registration created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Registration"
+    get:
+      operationId: getRegistrations
+      tags: [registrations]
+      summary: List all registrations (admin)
+      responses:
+        "200":
+          description: List of registrations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Registration"
+
+  /registrations/me:
+    get:
+      operationId: getMyRegistration
+      tags: [registrations]
+      summary: Get current user's registration
+      responses:
+        "200":
+          description: My registration
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Registration"
+        "404":
+          description: No registration found
+
+  /registrations/{id}:
+    get:
+      operationId: getRegistration
+      tags: [registrations]
+      summary: Get a registration by ID (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Registration
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Registration"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateRegistration
+      tags: [registrations]
+      summary: Update registration status (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegistrationUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Registration"
+
+  /abstracts:
+    get:
+      operationId: getAbstracts
+      tags: [registrations]
+      summary: List all abstracts (admin) or current user's abstracts
+      responses:
+        "200":
+          description: List of abstracts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Abstract"
+    post:
+      operationId: createAbstract
+      tags: [registrations]
+      summary: Submit an abstract
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AbstractInput"
+      responses:
+        "201":
+          description: Abstract submitted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Abstract"
+
+  /abstracts/{id}:
+    get:
+      operationId: getAbstract
+      tags: [registrations]
+      summary: Get an abstract by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Abstract
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Abstract"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateAbstract
+      tags: [registrations]
+      summary: Update abstract status (admin) or edit own abstract
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AbstractUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Abstract"
+
+  /announcements:
+    get:
+      operationId: getAnnouncements
+      tags: [announcements]
+      summary: List all announcements
+      responses:
+        "200":
+          description: List of announcements
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Announcement"
+    post:
+      operationId: createAnnouncement
+      tags: [announcements]
+      summary: Create an announcement (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AnnouncementInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Announcement"
+
+  /stats/summary:
+    get:
+      operationId: getStatsSummary
+      tags: [stats]
+      summary: Get event summary statistics
+      responses:
+        "200":
+          description: Summary statistics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StatsSummary"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +574,359 @@ components:
       required:
         - status
 
+    RegisterInput:
+      type: object
+      required: [email, password, firstName, lastName, institution, country, category]
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        institution:
+          type: string
+        country:
+          type: string
+        category:
+          type: string
+          enum: [healthcare_professional, researcher, educator, student, industry]
+
+    LoginInput:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+
+    AuthResponse:
+      type: object
+      required: [token, user]
+      properties:
+        token:
+          type: string
+        user:
+          $ref: "#/components/schemas/User"
+
+    User:
+      type: object
+      required: [id, email, firstName, lastName, role, createdAt]
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        institution:
+          type: ["string", "null"]
+        country:
+          type: ["string", "null"]
+        category:
+          type: ["string", "null"]
+        role:
+          type: string
+          enum: [attendee, admin]
+        createdAt:
+          type: string
+
+    Speaker:
+      type: object
+      required: [id, name, country, topic]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        country:
+          type: string
+        institution:
+          type: ["string", "null"]
+        topic:
+          type: string
+        bio:
+          type: ["string", "null"]
+        photoUrl:
+          type: ["string", "null"]
+        initials:
+          type: string
+
+    SpeakerInput:
+      type: object
+      required: [name, country, topic]
+      properties:
+        name:
+          type: string
+        country:
+          type: string
+        institution:
+          type: string
+        topic:
+          type: string
+        bio:
+          type: string
+        photoUrl:
+          type: string
+
+    Session:
+      type: object
+      required: [id, title, day, startTime, sessionType]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        day:
+          type: integer
+        startTime:
+          type: string
+        endTime:
+          type: ["string", "null"]
+        room:
+          type: ["string", "null"]
+        sessionType:
+          type: string
+          enum: [keynote, panel, workshop, oral, poster, opening, closing]
+        description:
+          type: ["string", "null"]
+        speakerId:
+          type: ["integer", "null"]
+        speakerName:
+          type: ["string", "null"]
+
+    SessionInput:
+      type: object
+      required: [title, day, startTime, sessionType]
+      properties:
+        title:
+          type: string
+        day:
+          type: integer
+        startTime:
+          type: string
+        endTime:
+          type: string
+        room:
+          type: string
+        sessionType:
+          type: string
+          enum: [keynote, panel, workshop, oral, poster, opening, closing]
+        description:
+          type: string
+        speakerId:
+          type: integer
+
+    Sponsor:
+      type: object
+      required: [id, name, tier]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        tier:
+          type: string
+          enum: [platinum, gold, silver, bronze]
+        logoUrl:
+          type: ["string", "null"]
+        website:
+          type: ["string", "null"]
+
+    SponsorInput:
+      type: object
+      required: [name, tier]
+      properties:
+        name:
+          type: string
+        tier:
+          type: string
+          enum: [platinum, gold, silver, bronze]
+        logoUrl:
+          type: string
+        website:
+          type: string
+
+    Registration:
+      type: object
+      required: [id, userId, category, paymentStatus, createdAt]
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        institution:
+          type: ["string", "null"]
+        country:
+          type: ["string", "null"]
+        category:
+          type: string
+        paymentStatus:
+          type: string
+          enum: [pending, paid, overdue, waived]
+        paymentAmount:
+          type: ["number", "null"]
+        registrationCode:
+          type: string
+        createdAt:
+          type: string
+
+    RegistrationInput:
+      type: object
+      required: [category]
+      properties:
+        category:
+          type: string
+        dietaryRequirements:
+          type: string
+        specialNeeds:
+          type: string
+
+    RegistrationUpdate:
+      type: object
+      properties:
+        paymentStatus:
+          type: string
+          enum: [pending, paid, overdue, waived]
+        paymentAmount:
+          type: number
+
+    Abstract:
+      type: object
+      required: [id, userId, title, abstractType, status, createdAt]
+      properties:
+        id:
+          type: integer
+        userId:
+          type: integer
+        submitterName:
+          type: ["string", "null"]
+        title:
+          type: string
+        body:
+          type: string
+        abstractType:
+          type: string
+          enum: [oral, poster]
+        keywords:
+          type: ["string", "null"]
+        coAuthors:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: [submitted, under_review, accepted, rejected, revision_requested]
+        reviewNotes:
+          type: ["string", "null"]
+        abstractCode:
+          type: string
+        createdAt:
+          type: string
+
+    AbstractInput:
+      type: object
+      required: [title, body, abstractType]
+      properties:
+        title:
+          type: string
+        body:
+          type: string
+        abstractType:
+          type: string
+          enum: [oral, poster]
+        keywords:
+          type: string
+        coAuthors:
+          type: string
+
+    AbstractUpdate:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [submitted, under_review, accepted, rejected, revision_requested]
+        reviewNotes:
+          type: string
+        title:
+          type: string
+        body:
+          type: string
+
+    Announcement:
+      type: object
+      required: [id, title, body, createdAt]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        body:
+          type: string
+        important:
+          type: boolean
+        createdAt:
+          type: string
+
+    AnnouncementInput:
+      type: object
+      required: [title, body]
+      properties:
+        title:
+          type: string
+        body:
+          type: string
+        important:
+          type: boolean
+
+    StatsSummary:
+      type: object
+      required: [totalRegistrations, totalAbstracts, totalSpeakers, totalSessions, pendingPayments, pendingAbstracts]
+      properties:
+        totalRegistrations:
+          type: integer
+        totalAbstracts:
+          type: integer
+        totalSpeakers:
+          type: integer
+        totalSessions:
+          type: integer
+        pendingPayments:
+          type: integer
+        pendingAbstracts:
+          type: integer
+        registrationsByCategory:
+          type: array
+          items:
+            $ref: "#/components/schemas/CategoryCount"
+        registrationsByCountry:
+          type: array
+          items:
+            $ref: "#/components/schemas/CountryCount"
+
+    CategoryCount:
+      type: object
+      required: [category, count]
+      properties:
+        category:
+          type: string
+        count:
+          type: integer
+
+    CountryCount:
+      type: object
+      required: [country, count]
+      properties:
+        country:
+          type: string
+        count:
+          type: integer
