@@ -31,7 +31,7 @@ export default function AdminLayout({ children, title }: { children: React.React
     logoutMutation.mutate(undefined, {
       onSuccess: () => {
         localStorage.removeItem("satbds_token");
-        setLocation("/login");
+        window.location.href = "/login";
       },
     });
   };
@@ -211,14 +211,14 @@ export default function AdminLayout({ children, title }: { children: React.React
               <Shield className="w-3 h-3" />
               Admin
             </span>
-            <Link href="/portal">
+            <a href="/portal">
               <button
                 className="px-3 py-1.5 rounded-lg text-[12px] font-medium border"
                 style={{ borderColor: "#e9ecef", color: "#6c757d" }}
               >
                 Delegate View
               </button>
-            </Link>
+            </a>
           </div>
         </header>
 

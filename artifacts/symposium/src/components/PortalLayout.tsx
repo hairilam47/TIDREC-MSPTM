@@ -28,7 +28,7 @@ export default function PortalLayout({ children, title }: { children: React.Reac
     logoutMutation.mutate(undefined, {
       onSuccess: () => {
         localStorage.removeItem("satbds_token");
-        setLocation("/login");
+        window.location.href = "/login";
       },
     });
   };

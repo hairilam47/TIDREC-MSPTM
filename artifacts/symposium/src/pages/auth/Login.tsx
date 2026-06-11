@@ -26,7 +26,7 @@ export default function Login() {
     loginMutation.mutate({ data }, {
       onSuccess: (res) => {
         localStorage.setItem("satbds_token", res.token);
-        setLocation("/portal");
+        window.location.href = res.user.role === "admin" ? "/admin" : "/portal";
       }
     });
   };

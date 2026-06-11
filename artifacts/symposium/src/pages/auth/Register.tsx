@@ -137,14 +137,14 @@ export default function Register() {
               title: "Registration complete!",
               description: "Welcome to SATBDS 2027. Your delegate portal is ready.",
             });
-            setLocation("/portal");
+            window.location.href = "/portal";
           },
           onError: () => {
             toast({
               title: "Account created",
               description: "Please complete your conference registration in your portal.",
             });
-            setLocation("/portal/registration");
+            window.location.href = "/portal/registration";
           },
         });
       },
