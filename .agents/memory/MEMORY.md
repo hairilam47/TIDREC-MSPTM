@@ -1,1 +1,2 @@
 - [Three-portal split pattern](three-portal-split.md) — zero-code-duplication approach: new artifacts alias @/ → symposium/src via fs.strict=false, custom local auth.tsx for cross-portal window.location.href redirects, wouter base="" so existing absolute /portal/* and /admin/* hrefs work unchanged.
+- [Portal Design System](portal-design-system.md) — gold accent = admin portal, teal accent = customer portal; shared CARD_STYLE, Badge, status colour tokens

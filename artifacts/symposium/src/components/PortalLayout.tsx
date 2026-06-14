@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 
 export default function PortalLayout({ children, title }: { children: React.ReactNode; title?: string }) {
-  const [location, setLocation] = useLocation();
+  const [location] = useLocation();
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const { data: user } = useGetMe();
   const { data: announcements } = useGetAnnouncements();
@@ -81,20 +81,21 @@ export default function PortalLayout({ children, title }: { children: React.Reac
 
   const SidebarContent = () => (
     <div
-      style={{ background: "#0B2744", width: 240 }}
+      style={{ background: "#0B2744", width: 240, borderRight: "1px solid rgba(14,110,116,0.3)" }}
       className="flex flex-col h-screen overflow-y-auto flex-shrink-0"
     >
-      <div className="px-5 pt-5 pb-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+      {/* Branding — teal accent bottom border distinguishes portal from admin */}
+      <div className="px-5 pt-5 pb-4" style={{ borderBottom: "3px solid #0E6E74" }}>
         <div className="flex items-center gap-3">
           <div
-            style={{ background: "#C89B3C" }}
+            style={{ background: "#0E6E74" }}
             className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-sm font-bold flex-shrink-0"
           >
             S
           </div>
           <div>
             <div className="text-white font-serif font-bold text-sm leading-tight">SATBDS 2027</div>
-            <div className="text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>
+            <div className="text-xs font-semibold" style={{ color: "#4DC8CE" }}>
               Participant Portal
             </div>
           </div>
@@ -106,7 +107,7 @@ export default function PortalLayout({ children, title }: { children: React.Reac
           <div key={section.label} className="mb-1">
             <div
               className="text-[10px] font-bold tracking-widest uppercase px-2.5 pt-3 pb-1.5"
-              style={{ color: "rgba(255,255,255,0.3)" }}
+              style={{ color: "rgba(77,200,206,0.5)" }}
             >
               {section.label}
             </div>
@@ -121,8 +122,8 @@ export default function PortalLayout({ children, title }: { children: React.Reac
                   className="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-[13px] font-medium transition-all mb-0.5 no-underline"
                   style={
                     active
-                      ? { color: "#C89B3C", background: "rgba(200,155,60,0.12)" }
-                      : { color: "rgba(255,255,255,0.65)" }
+                      ? { color: "#4DC8CE", background: "rgba(14,110,116,0.15)", borderLeft: "2px solid #0E6E74" }
+                      : { color: "rgba(255,255,255,0.65)", borderLeft: "2px solid transparent" }
                   }
                 >
                   <Icon className="w-4 h-4 flex-shrink-0" />
@@ -154,7 +155,7 @@ export default function PortalLayout({ children, title }: { children: React.Reac
             <div className="text-white text-[13px] font-medium truncate">
               {user?.firstName} {user?.lastName}
             </div>
-            <div className="text-[11px] truncate" style={{ color: "rgba(255,255,255,0.4)" }}>
+            <div className="text-[11px] truncate" style={{ color: "#4DC8CE" }}>
               {user?.email}
             </div>
           </div>
@@ -180,7 +181,7 @@ export default function PortalLayout({ children, title }: { children: React.Reac
   );
 
   return (
-    <div className="flex min-h-screen" style={{ background: "#F8F9FA" }}>
+    <div className="flex min-h-screen" style={{ background: "#F5F7FA" }}>
       <div className="hidden lg:flex">
         <SidebarContent />
       </div>
@@ -197,9 +198,10 @@ export default function PortalLayout({ children, title }: { children: React.Reac
       )}
 
       <div className="flex-1 flex flex-col min-w-0">
+        {/* Header — teal top accent strip distinguishes portal from admin */}
         <header
           className="bg-white sticky top-0 z-40 flex items-center justify-between px-6"
-          style={{ height: 58, borderBottom: "1px solid #e9ecef" }}
+          style={{ height: 58, borderBottom: "1px solid #e9ecef", borderTop: "3px solid #0E6E74" }}
         >
           <div className="flex items-center gap-3">
             <button
@@ -216,7 +218,7 @@ export default function PortalLayout({ children, title }: { children: React.Reac
           <div className="flex items-center gap-2">
             <Link href="/portal/notifications">
               <button
-                className="w-9 h-9 rounded-lg flex items-center justify-center relative"
+                className="w-9 h-9 rounded-lg flex items-center justify-center relative transition-colors hover:bg-gray-50"
                 style={{ border: "1px solid #e9ecef", color: "#6c757d", background: "none" }}
               >
                 <Bell className="w-4 h-4" />
