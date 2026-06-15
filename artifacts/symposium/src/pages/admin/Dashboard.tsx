@@ -11,7 +11,7 @@ import { Link } from "wouter";
 import {
   Users, FileText, DollarSign, TrendingUp,
   CheckCircle, XCircle, Edit3, ArrowRight,
-  ClipboardList, BarChart2,
+  ClipboardList, BarChart2, ArrowUp, ArrowDown,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -133,6 +133,38 @@ export default function AdminDashboard() {
     return [...regEvents, ...absEvents]
       .sort((a, b) => new Date(b.ts).getTime() - new Date(a.ts).getTime())
       .slice(0, 5);
+  }, [registrations, abstracts]);
+
+  /* ── Month-over-month trend pills (computed from real data) ── */
+  const monthTrends = React.useMemo(() => {
+    const now = new Date();
+    const thisYM = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+    const prevDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const prevYM = `${prevDate.getFullYear()}-${String(prevDate.getMonth() + 1).padStart(2, "0")}`;
+
+    const countByMonth = (items: { createdAt: string }[]) => {
+      const map: Record<string, number> = {};
+      items.forEach((it) => { const ym = it.createdAt.slice(0, 7); map[ym] = (map[ym] ?? 0) + 1; });
+      return map;
+    };
+
+    const computeTrend = (byMonth: Record<string, number>): { dir: "up" | "down" | "flat"; label: string } | null => {
+      const curr = byMonth[thisYM] ?? 0;
+      const prev = byMonth[prevYM] ?? 0;
+      if (prev === 0 && curr === 0) return null;
+      if (prev === 0) return { dir: "up", label: "New this month" };
+      const pct = Math.round(((curr - prev) / prev) * 100);
+      if (pct === 0) return { dir: "flat", label: "No change" };
+      return { dir: pct > 0 ? "up" : "down", label: `${pct > 0 ? "+" : ""}${pct}% this month` };
+    };
+
+    const regMap = countByMonth(registrations ?? []);
+    const absMap = countByMonth(abstracts ?? []);
+
+    return {
+      registrations: computeTrend(regMap),
+      abstracts: computeTrend(absMap),
+    };
   }, [registrations, abstracts]);
 
   /* ── Derived chart data ── */
@@ -262,35 +294,59 @@ export default function AdminDashboard() {
                 value: stats?.totalRegistrations ?? 0,
                 sub: `${stats?.pendingPayments ?? 0} pending payment`,
                 icon: Users, iconBg: "#e6f4f5", iconColor: "#0E6E74", accent: "#0E6E74",
+                trend: monthTrends.registrations,
               },
               {
                 label: "Abstracts",
                 value: stats?.totalAbstracts ?? 0,
                 sub: `${stats?.pendingAbstracts ?? 0} awaiting review`,
                 icon: FileText, iconBg: "#FDF6E8", iconColor: "#C89B3C", accent: "#C89B3C",
+                trend: monthTrends.abstracts,
               },
               {
                 label: "Revenue (MYR)",
                 value: (stats?.totalRevenue ?? 0).toLocaleString("en-MY", { minimumFractionDigits: 0 }),
                 sub: `${stats?.pendingPayments ?? 0} pending`,
                 icon: DollarSign, iconBg: "#d1e7dd", iconColor: "#0a5c39", accent: "#0a5c39",
+                trend: monthTrends.registrations, // revenue mirrors registration trend
               },
               {
                 label: "Acceptance Rate",
                 value: stats?.totalAbstracts ? `${acceptanceRate}%` : "—",
                 sub: `${stats?.acceptedAbstracts ?? 0} accepted · ${stats?.rejectedAbstracts ?? 0} rejected`,
                 icon: TrendingUp, iconBg: "#FDF6E8", iconColor: "#C89B3C", accent: "#C89B3C",
+                trend: monthTrends.abstracts,
               },
             ].map((k) => {
               const Icon = k.icon;
+              const t = k.trend;
               return (
                 <div key={k.label} className="bg-white rounded-xl overflow-hidden" style={CARD}>
                   <div style={{ height: 3, background: k.accent }} />
                   <div className="p-4">
-                    <div className="mb-3">
+                    <div className="flex items-start justify-between mb-3">
                       <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: k.iconBg }}>
                         <Icon className="w-4 h-4" style={{ color: k.iconColor }} />
                       </div>
+                      {t ? (
+                        <div
+                          className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-bold"
+                          style={
+                            t.dir === "up"
+                              ? { background: "#d1e7dd", color: "#0a5c39" }
+                              : t.dir === "down"
+                              ? { background: "#f8d7da", color: "#842029" }
+                              : { background: "#e9ecef", color: "#6c757d" }
+                          }
+                        >
+                          {t.dir === "up" ? <ArrowUp className="w-2.5 h-2.5" /> : t.dir === "down" ? <ArrowDown className="w-2.5 h-2.5" /> : null}
+                          {t.label}
+                        </div>
+                      ) : (
+                        <div className="flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-semibold" style={{ background: "#e9ecef", color: "#adb5bd" }}>
+                          — no data
+                        </div>
+                      )}
                     </div>
                     <div className="text-[26px] font-bold leading-none mb-1" style={{ color: "#212529" }}>{k.value}</div>
                     <div className="text-[11px] font-semibold uppercase tracking-wider mb-0.5" style={{ color: "#6c757d" }}>{k.label}</div>
