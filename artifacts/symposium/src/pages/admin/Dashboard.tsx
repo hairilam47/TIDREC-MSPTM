@@ -9,9 +9,9 @@ import {
 } from "@workspace/api-client-react";
 import { Link } from "wouter";
 import {
-  Users, FileText, DollarSign, TrendingUp, TrendingDown,
-  CheckCircle, XCircle, Edit3, ArrowRight, ArrowUp,
-  Minus, ClipboardList, BarChart2,
+  Users, FileText, DollarSign, TrendingUp,
+  CheckCircle, XCircle, Edit3, ArrowRight,
+  ClipboardList, BarChart2,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -109,6 +109,31 @@ export default function AdminDashboard() {
   const pendingAbstracts = (abstracts ?? [])
     .filter((a) => a.status === "submitted" || a.status === "under_review")
     .slice(0, 6);
+
+  /* ── Combined recent activity (registrations + abstracts, newest 5) ── */
+  const recentActivity = React.useMemo(() => {
+    const regEvents = (registrations ?? []).map((r) => ({
+      key: `reg-${r.id}`,
+      name: (`${r.firstName ?? ""} ${r.lastName ?? ""}`.trim() || r.email) ?? "—",
+      initials: `${r.firstName?.[0] ?? ""}${r.lastName?.[0] ?? ""}`.toUpperCase() || "?",
+      action: "registered as delegate",
+      detail: r.category?.replace(/_/g, " ") ?? "",
+      ts: r.createdAt,
+      avatarBg: "#0B2744",
+    }));
+    const absEvents = (abstracts ?? []).map((a) => ({
+      key: `abs-${a.id}`,
+      name: a.submitterName ?? "Unknown",
+      initials: (a.submitterName ?? "?").split(" ").map((w: string) => w[0]).slice(0, 2).join("").toUpperCase() || "?",
+      action: "submitted an abstract",
+      detail: a.abstractType?.replace(/_/g, " ") ?? "",
+      ts: a.createdAt,
+      avatarBg: "#0E6E74",
+    }));
+    return [...regEvents, ...absEvents]
+      .sort((a, b) => new Date(b.ts).getTime() - new Date(a.ts).getTime())
+      .slice(0, 5);
+  }, [registrations, abstracts]);
 
   /* ── Derived chart data ── */
   const paymentStatusData = React.useMemo(() => {
@@ -237,28 +262,24 @@ export default function AdminDashboard() {
                 value: stats?.totalRegistrations ?? 0,
                 sub: `${stats?.pendingPayments ?? 0} pending payment`,
                 icon: Users, iconBg: "#e6f4f5", iconColor: "#0E6E74", accent: "#0E6E74",
-                trend: "+12%", trendUp: true,
               },
               {
                 label: "Abstracts",
                 value: stats?.totalAbstracts ?? 0,
                 sub: `${stats?.pendingAbstracts ?? 0} awaiting review`,
                 icon: FileText, iconBg: "#FDF6E8", iconColor: "#C89B3C", accent: "#C89B3C",
-                trend: "+8%", trendUp: true,
               },
               {
                 label: "Revenue (MYR)",
                 value: (stats?.totalRevenue ?? 0).toLocaleString("en-MY", { minimumFractionDigits: 0 }),
                 sub: `${stats?.pendingPayments ?? 0} pending`,
                 icon: DollarSign, iconBg: "#d1e7dd", iconColor: "#0a5c39", accent: "#0a5c39",
-                trend: "+15%", trendUp: true,
               },
               {
                 label: "Acceptance Rate",
                 value: stats?.totalAbstracts ? `${acceptanceRate}%` : "—",
                 sub: `${stats?.acceptedAbstracts ?? 0} accepted · ${stats?.rejectedAbstracts ?? 0} rejected`,
                 icon: TrendingUp, iconBg: "#FDF6E8", iconColor: "#C89B3C", accent: "#C89B3C",
-                trend: null, trendUp: true,
               },
             ].map((k) => {
               const Icon = k.icon;
@@ -266,16 +287,10 @@ export default function AdminDashboard() {
                 <div key={k.label} className="bg-white rounded-xl overflow-hidden" style={CARD}>
                   <div style={{ height: 3, background: k.accent }} />
                   <div className="p-4">
-                    <div className="flex items-start justify-between mb-2">
+                    <div className="mb-3">
                       <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: k.iconBg }}>
                         <Icon className="w-4 h-4" style={{ color: k.iconColor }} />
                       </div>
-                      {k.trend && (
-                        <div className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-bold" style={{ background: k.trendUp ? "#d1e7dd" : "#f8d7da", color: k.trendUp ? "#0a5c39" : "#842029" }}>
-                          {k.trendUp ? <ArrowUp className="w-2.5 h-2.5" /> : <TrendingDown className="w-2.5 h-2.5" />}
-                          {k.trend}
-                        </div>
-                      )}
                     </div>
                     <div className="text-[26px] font-bold leading-none mb-1" style={{ color: "#212529" }}>{k.value}</div>
                     <div className="text-[11px] font-semibold uppercase tracking-wider mb-0.5" style={{ color: "#6c757d" }}>{k.label}</div>
@@ -320,21 +335,27 @@ export default function AdminDashboard() {
             <div className="bg-white rounded-xl overflow-hidden" style={CARD}>
               <SectionHeader title="Recent Activity" href="/admin/registrations" />
               <div className="px-4 py-2">
-                {recentRegs.length === 0 ? (
+                {recentActivity.length === 0 ? (
                   <div className="py-8 text-center text-[13px]" style={{ color: "#adb5bd" }}>No activity yet</div>
-                ) : recentRegs.slice(0, 6).map((r) => {
-                  const ini = `${r.firstName?.[0] ?? ""}${r.lastName?.[0] ?? ""}`.toUpperCase() || "?";
-                  const ps = PAYMENT_BADGE[r.paymentStatus] ?? PAYMENT_BADGE.pending;
+                ) : recentActivity.map((ev) => {
+                  const ts = new Date(ev.ts);
+                  const timeStr = ts.toLocaleDateString("en-GB", { day: "2-digit", month: "short" }) +
+                    " · " + ts.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
                   return (
-                    <div key={r.id} className="flex items-center gap-3 py-2.5" style={{ borderBottom: "1px solid #f8f9fa" }}>
-                      <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0" style={{ background: "#0B2744" }}>
-                        {ini}
+                    <div key={ev.key} className="flex items-start gap-3 py-2.5" style={{ borderBottom: "1px solid #f8f9fa" }}>
+                      <div
+                        className="w-8 h-8 rounded-full flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0 mt-0.5"
+                        style={{ background: ev.avatarBg }}
+                      >
+                        {ev.initials}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="text-[13px] font-medium truncate" style={{ color: "#212529" }}>{r.firstName} {r.lastName}</div>
-                        <div className="text-[11px] capitalize" style={{ color: "#6c757d" }}>{r.category?.replace(/_/g, " ")}</div>
+                        <div className="text-[13px] font-medium truncate" style={{ color: "#212529" }}>{ev.name}</div>
+                        <div className="text-[11px] capitalize" style={{ color: "#6c757d" }}>
+                          {ev.action}{ev.detail ? ` · ${ev.detail}` : ""}
+                        </div>
+                        <div className="text-[10px] mt-0.5" style={{ color: "#adb5bd" }}>{timeStr}</div>
                       </div>
-                      <Badge bg={ps.bg} color={ps.color}>{r.paymentStatus}</Badge>
                     </div>
                   );
                 })}
