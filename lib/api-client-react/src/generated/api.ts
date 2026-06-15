@@ -30,6 +30,7 @@ import type {
   HealthStatus,
   Invoice,
   LoginInput,
+  MonthlyRegistrationCount,
   ProfileUpdate,
   RegisterInput,
   Registration,
@@ -3358,6 +3359,83 @@ export function useGetStatsSummary<TData = Awaited<ReturnType<typeof getStatsSum
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getGetStatsSummaryQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getGetRegistrationsByMonthUrl = () => {
+
+
+
+
+  return `/api/stats/registrations-by-month`
+}
+
+/**
+ * @summary Get registration counts grouped by year-month (admin)
+ */
+export const getRegistrationsByMonth = async ( options?: RequestInit): Promise<MonthlyRegistrationCount[]> => {
+
+  return customFetch<MonthlyRegistrationCount[]>(getGetRegistrationsByMonthUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetRegistrationsByMonthQueryKey = () => {
+    return [
+    `/api/stats/registrations-by-month`
+    ] as const;
+    }
+
+
+export const getGetRegistrationsByMonthQueryOptions = <TData = Awaited<ReturnType<typeof getRegistrationsByMonth>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getRegistrationsByMonth>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetRegistrationsByMonthQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getRegistrationsByMonth>>> = ({ signal }) => getRegistrationsByMonth({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getRegistrationsByMonth>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetRegistrationsByMonthQueryResult = NonNullable<Awaited<ReturnType<typeof getRegistrationsByMonth>>>
+export type GetRegistrationsByMonthQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get registration counts grouped by year-month (admin)
+ */
+
+export function useGetRegistrationsByMonth<TData = Awaited<ReturnType<typeof getRegistrationsByMonth>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getRegistrationsByMonth>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetRegistrationsByMonthQueryOptions(options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

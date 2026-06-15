@@ -427,3 +427,9 @@ export interface StatsSummary {
   registrationsByCountry?: CountryCount[];
 }
 
+export interface MonthlyRegistrationCount {
+  /** Year-month in YYYY-MM format */
+  month: string;
+  count: number;
+}
+

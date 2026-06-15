@@ -746,3 +746,13 @@ export const GetStatsSummaryResponse = zod.object({
 })
 
 
+/**
+ * @summary Get registration counts grouped by year-month (admin)
+ */
+export const GetRegistrationsByMonthResponseItem = zod.object({
+  "month": zod.string().describe('Year-month in YYYY-MM format'),
+  "count": zod.number()
+})
+export const GetRegistrationsByMonthResponse = zod.array(GetRegistrationsByMonthResponseItem)
+
+

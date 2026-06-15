@@ -822,6 +822,21 @@ paths:
               schema:
                 $ref: "#/components/schemas/StatsSummary"
 
+  /stats/registrations-by-month:
+    get:
+      operationId: getRegistrationsByMonth
+      tags: [stats]
+      summary: Get registration counts grouped by year-month (admin)
+      responses:
+        "200":
+          description: Monthly registration counts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MonthlyRegistrationCount"
+
 components:
   schemas:
     HealthStatus:
@@ -1314,5 +1329,15 @@ components:
       properties:
         country:
           type: string
+        count:
+          type: integer
+
+    MonthlyRegistrationCount:
+      type: object
+      required: [month, count]
+      properties:
+        month:
+          type: string
+          description: Year-month in YYYY-MM format
         count:
           type: integer

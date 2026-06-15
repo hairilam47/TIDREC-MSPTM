@@ -6,6 +6,7 @@ import {
   useGetAbstracts,
   useUpdateAbstract,
   useGetMe,
+  useGetRegistrationsByMonth,
 } from "@workspace/api-client-react";
 import { Link } from "wouter";
 import {
@@ -47,8 +48,8 @@ const CATEGORY_FEES: Record<string, number> = {
   industry: 1000,
 };
 
-/* ── Mock monthly registration trend (Mar 2026 – Mar 2027) ── */
-const MONTHLY_TREND = [
+/* ── Fallback monthly trend shown when API returns no rows ── */
+const MONTHLY_TREND_FALLBACK = [
   { month: "Mar '26", count: 0 },
   { month: "Apr",     count: 2 },
   { month: "May",     count: 5 },
@@ -101,6 +102,7 @@ export default function AdminDashboard() {
   const { data: stats } = useGetStatsSummary();
   const { data: registrations } = useGetRegistrations();
   const { data: abstracts, refetch: refetchAbstracts } = useGetAbstracts();
+  const { data: monthlyData } = useGetRegistrationsByMonth();
   const updateAbstractMutation = useUpdateAbstract();
   const { toast } = useToast();
   const [reviewNote, setReviewNote] = React.useState<Record<number, string>>({});
@@ -208,14 +210,29 @@ export default function AdminDashboard() {
     { name: "Needs Revision", value: (abstracts ?? []).filter((a) => a.status === "revision_requested").length },
   ].filter((d) => d.value > 0), [abstracts]);
 
-  /* ── Merge real reg count into trend ── */
-  const trendData = React.useMemo(() => {
-    const real = stats?.totalRegistrations ?? 0;
-    return MONTHLY_TREND.map((d, i) => ({
-      ...d,
-      count: i === MONTHLY_TREND.length - 1 ? real || d.count : d.count,
-    }));
-  }, [stats]);
+  /* ── Build trend data from real API response; fall back to mock when empty ── */
+  const { trendData, trendSubtitle } = React.useMemo(() => {
+    if (!monthlyData || monthlyData.length === 0) {
+      return { trendData: MONTHLY_TREND_FALLBACK, trendSubtitle: "Mar 2026 – Mar 2027" };
+    }
+    const fmt = (ym: string) => {
+      const [year, mon] = ym.split("-");
+      const d = new Date(Number(year), Number(mon) - 1, 1);
+      const shortMonth = d.toLocaleString("en-US", { month: "short" });
+      const shortYear = `'${year.slice(2)}`;
+      return `${shortMonth} ${shortYear}`;
+    };
+    const data = monthlyData.map((r) => ({ month: fmt(r.month), count: r.count }));
+    const first = monthlyData[0].month;
+    const last = monthlyData[monthlyData.length - 1].month;
+    const fmtFull = (ym: string) => {
+      const [year, mon] = ym.split("-");
+      const d = new Date(Number(year), Number(mon) - 1, 1);
+      return d.toLocaleString("en-US", { month: "short", year: "numeric" });
+    };
+    const subtitle = first === last ? fmtFull(first) : `${fmtFull(first)} – ${fmtFull(last)}`;
+    return { trendData: data, trendSubtitle: subtitle };
+  }, [monthlyData]);
 
   const acceptanceRate = stats?.totalAbstracts
     ? Math.round(((stats.acceptedAbstracts ?? 0) / stats.totalAbstracts) * 100)
@@ -363,7 +380,7 @@ export default function AdminDashboard() {
             <div className="xl:col-span-2 bg-white rounded-xl overflow-hidden" style={CARD}>
               <div className="px-5 py-4" style={{ borderBottom: "1px solid #f1f3f5" }}>
                 <div className="text-[14px] font-semibold mb-0.5" style={{ color: "#212529" }}>Registration Trend</div>
-                <div className="text-[12px]" style={{ color: "#adb5bd" }}>Mar 2026 – Mar 2027</div>
+                <div className="text-[12px]" style={{ color: "#adb5bd" }}>{trendSubtitle}</div>
               </div>
               <div className="p-4">
                 <ResponsiveContainer width="100%" height={200}>

@@ -24,6 +24,7 @@ export * from './invoice';
 export * from './invoiceDelegate';
 export * from './invoiceStatus';
 export * from './loginInput';
+export * from './monthlyRegistrationCount';
 export * from './profileUpdate';
 export * from './registerInput';
 export * from './registerInputCategory';

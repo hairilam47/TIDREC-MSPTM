@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { db, registrationsTable, abstractsTable, speakersTable, sessionsTable, usersTable } from "@workspace/db";
-import { eq, count, sum } from "drizzle-orm";
+import { eq, count, sum, sql } from "drizzle-orm";
 import { requireAdmin } from "../lib/auth";
 
 const router = Router();
@@ -46,6 +46,24 @@ router.get("/stats/summary", requireAdmin, async (_req, res) => {
         .filter((r) => r.country)
         .map((r) => ({ country: r.country!, count: Number(r.count) })),
     });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.get("/stats/registrations-by-month", requireAdmin, async (_req, res) => {
+  try {
+    const rows = await db
+      .select({
+        month: sql<string>`to_char(${registrationsTable.createdAt}, 'YYYY-MM')`,
+        count: count(),
+      })
+      .from(registrationsTable)
+      .groupBy(sql`to_char(${registrationsTable.createdAt}, 'YYYY-MM')`)
+      .orderBy(sql`to_char(${registrationsTable.createdAt}, 'YYYY-MM')`);
+
+    res.json(rows.map((r) => ({ month: r.month, count: Number(r.count) })));
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal server error" });
