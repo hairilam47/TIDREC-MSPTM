@@ -1,5 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "wouter";
+import { AnimatePresence, motion } from "framer-motion";
 import { useGetMe, useLogout } from "@workspace/api-client-react";
 import {
   LayoutDashboard,
@@ -216,7 +217,7 @@ export default function AdminLayout({ children, title }: { children: React.React
               <Shield className="w-3 h-3" />
               Admin
             </span>
-            <a href="/portal">
+            <a href="/portal/">
               <button
                 className="px-3 py-1.5 rounded-lg text-[12px] font-medium border transition-colors hover:bg-gray-50"
                 style={{ borderColor: "#e9ecef", color: "#6c757d" }}
@@ -227,7 +228,19 @@ export default function AdminLayout({ children, title }: { children: React.React
           </div>
         </header>
 
-        <main className="flex-1 p-6 lg:p-8">{children}</main>
+        <main className="flex-1 p-6 lg:p-8">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={location}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+            >
+              {children}
+            </motion.div>
+          </AnimatePresence>
+        </main>
       </div>
     </div>
   );

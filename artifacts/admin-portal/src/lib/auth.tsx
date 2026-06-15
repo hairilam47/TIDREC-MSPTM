@@ -30,7 +30,7 @@ export function RequireAdmin({ children }: { children: React.ReactNode }) {
       window.location.href = "/login";
     } else if (user && user.role !== "admin") {
       // Non-admin authenticated users → redirect to customer portal
-      window.location.href = "/portal";
+      window.location.href = "/portal/";
     }
   }, [isError, user]);
 

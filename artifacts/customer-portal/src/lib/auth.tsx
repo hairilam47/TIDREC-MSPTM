@@ -29,7 +29,7 @@ export function RequireAdmin({ children }: { children: React.ReactNode }) {
     if (isError) {
       window.location.href = "/login";
     } else if (user && user.role !== "admin") {
-      window.location.href = "/portal";
+      window.location.href = "/portal/";
     }
   }, [isError, user]);
 

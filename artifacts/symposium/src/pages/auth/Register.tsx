@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
+import { motion } from "framer-motion";
 import { useRegister, useCreateRegistration } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -137,7 +138,7 @@ export default function Register() {
               title: "Registration complete!",
               description: "Welcome to SATBDS 2027. Your delegate portal is ready.",
             });
-            window.location.href = "/portal";
+            window.location.href = "/portal/";
           },
           onError: () => {
             toast({
@@ -202,6 +203,12 @@ export default function Register() {
           })}
         </div>
 
+        <motion.div
+          key={step}
+          initial={{ opacity: 0, x: 12 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.25, ease: "easeOut" }}
+        >
         <Card className="bg-white shadow-2xl">
           {/* Step 1 — Account */}
           {step === 1 && (
@@ -479,6 +486,7 @@ export default function Register() {
             )}
           </div>
         </Card>
+        </motion.div>
       </div>
     </div>
   );

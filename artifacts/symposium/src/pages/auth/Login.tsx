@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
 
 const schema = z.object({
   email: z.string().email(),
@@ -26,14 +27,19 @@ export default function Login() {
     loginMutation.mutate({ data }, {
       onSuccess: (res) => {
         localStorage.setItem("satbds_token", res.token);
-        window.location.href = res.user.role === "admin" ? "/admin" : "/portal";
+        window.location.href = res.user.role === "admin" ? "/admin/" : "/portal/";
       }
     });
   };
 
   return (
     <div className="min-h-screen bg-background flex flex-col justify-center items-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md bg-card p-8 rounded-xl shadow-lg border border-border">
+      <motion.div
+        initial={{ opacity: 0, y: 18 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35, ease: "easeOut" }}
+        className="sm:mx-auto sm:w-full sm:max-w-md bg-card p-8 rounded-xl shadow-lg border border-border"
+      >
         <h2 className="text-center text-3xl font-serif font-bold text-foreground mb-8">
           Sign in to your account
         </h2>
@@ -80,7 +86,7 @@ export default function Login() {
             Register now
           </Link>
         </p>
-      </div>
+      </motion.div>
     </div>
   );
 }
