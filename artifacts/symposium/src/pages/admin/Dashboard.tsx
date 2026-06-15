@@ -1,11 +1,26 @@
 import React from "react";
 import AdminLayout from "@/components/AdminLayout";
-import { useGetStatsSummary, useGetRegistrations, useGetAbstracts, useUpdateAbstract } from "@workspace/api-client-react";
+import {
+  useGetStatsSummary,
+  useGetRegistrations,
+  useGetAbstracts,
+  useUpdateAbstract,
+  useGetMe,
+} from "@workspace/api-client-react";
 import { Link } from "wouter";
-import { Users, FileText, DollarSign, TrendingUp, CheckCircle, XCircle, Edit3, ArrowRight } from "lucide-react";
+import {
+  Users, FileText, DollarSign, TrendingUp, TrendingDown,
+  CheckCircle, XCircle, Edit3, ArrowRight, ArrowUp,
+  Minus, ClipboardList, BarChart2,
+} from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import {
+  AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
+  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
+} from "recharts";
 
-const CARD_STYLE = { border: "1px solid #e9ecef", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" };
+/* ── Design tokens ── */
+const CARD = { border: "1px solid #e9ecef", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" };
 
 const PAYMENT_BADGE: Record<string, { bg: string; color: string }> = {
   paid:    { bg: "#d1e7dd", color: "#0a5c39" },
@@ -22,13 +37,34 @@ const ABSTRACT_BADGE: Record<string, { bg: string; color: string; label: string 
   revision_requested: { bg: "#fff3cd", color: "#856404",  label: "Revision Needed" },
 };
 
-const KPI_CONFIG = [
-  { key: "registrations", label: "Registrations",       icon: Users,       iconBg: "#e6f4f5", iconColor: "#0E6E74", accent: "#0E6E74" },
-  { key: "abstracts",     label: "Abstracts Submitted",  icon: FileText,    iconBg: "#FDF6E8", iconColor: "#C89B3C", accent: "#C89B3C" },
-  { key: "revenue",       label: "Revenue (MYR)",        icon: DollarSign,  iconBg: "#d1e7dd", iconColor: "#0a5c39", accent: "#0a5c39" },
-  { key: "acceptance",    label: "Acceptance Rate",       icon: TrendingUp,  iconBg: "#f8d7da", iconColor: "#842029", accent: "#842029" },
+const CHART_COLORS = ["#0E6E74", "#C89B3C", "#0B2744", "#0a5c39", "#842029", "#6c757d"];
+
+const CATEGORY_FEES: Record<string, number> = {
+  healthcare_professional: 800,
+  researcher: 800,
+  educator: 600,
+  student: 300,
+  industry: 1000,
+};
+
+/* ── Mock monthly registration trend (Mar 2026 – Mar 2027) ── */
+const MONTHLY_TREND = [
+  { month: "Mar '26", count: 0 },
+  { month: "Apr",     count: 2 },
+  { month: "May",     count: 5 },
+  { month: "Jun",     count: 9 },
+  { month: "Jul",     count: 15 },
+  { month: "Aug",     count: 23 },
+  { month: "Sep",     count: 34 },
+  { month: "Oct",     count: 48 },
+  { month: "Nov",     count: 61 },
+  { month: "Dec",     count: 74 },
+  { month: "Jan '27", count: 88 },
+  { month: "Feb",     count: 97 },
+  { month: "Mar '27", count: 104 },
 ];
 
+/* ── Small shared components ── */
 function Badge({ bg, color, children }: { bg: string; color: string; children: React.ReactNode }) {
   return (
     <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full capitalize leading-none" style={{ background: bg, color }}>
@@ -48,7 +84,20 @@ function SectionHeader({ title, href, linkLabel = "View all" }: { title: string;
   );
 }
 
+const TABS = [
+  { id: "overview",      label: "Overview",      icon: BarChart2 },
+  { id: "registrations", label: "Registrations", icon: ClipboardList },
+  { id: "abstracts",     label: "Abstracts",     icon: FileText },
+  { id: "financial",     label: "Financial",     icon: DollarSign },
+] as const;
+
+type Tab = typeof TABS[number]["id"];
+
+/* ── Main component ── */
 export default function AdminDashboard() {
+  const [activeTab, setActiveTab] = React.useState<Tab>("overview");
+
+  const { data: user } = useGetMe();
   const { data: stats } = useGetStatsSummary();
   const { data: registrations } = useGetRegistrations();
   const { data: abstracts, refetch: refetchAbstracts } = useGetAbstracts();
@@ -56,31 +105,64 @@ export default function AdminDashboard() {
   const { toast } = useToast();
   const [reviewNote, setReviewNote] = React.useState<Record<number, string>>({});
 
-  const recentRegs = (registrations ?? []).slice(-8).reverse();
+  const recentRegs = (registrations ?? []).slice(-10).reverse();
   const pendingAbstracts = (abstracts ?? [])
     .filter((a) => a.status === "submitted" || a.status === "under_review")
-    .slice(0, 5);
+    .slice(0, 6);
 
-  const kpiValues: Record<string, { value: string | number; sub: string }> = {
-    registrations: {
-      value: stats?.totalRegistrations ?? 0,
-      sub: `${stats?.pendingPayments ?? 0} pending payment`,
-    },
-    abstracts: {
-      value: stats?.totalAbstracts ?? 0,
-      sub: `${stats?.pendingAbstracts ?? 0} awaiting review`,
-    },
-    revenue: {
-      value: (stats?.totalRevenue ?? 0).toLocaleString("en-MY", { minimumFractionDigits: 2 }),
-      sub: `${stats?.pendingPayments ?? 0} pending`,
-    },
-    acceptance: {
-      value: stats?.totalAbstracts
-        ? `${Math.round(((stats.acceptedAbstracts ?? 0) / stats.totalAbstracts) * 100)}%`
-        : "—",
-      sub: `${stats?.acceptedAbstracts ?? 0} accepted · ${stats?.rejectedAbstracts ?? 0} rejected`,
-    },
-  };
+  /* ── Derived chart data ── */
+  const paymentStatusData = React.useMemo(() => {
+    const counts: Record<string, number> = { paid: 0, pending: 0, overdue: 0, waived: 0 };
+    (registrations ?? []).forEach((r) => { counts[r.paymentStatus] = (counts[r.paymentStatus] ?? 0) + 1; });
+    return Object.entries(counts)
+      .filter(([, v]) => v > 0)
+      .map(([name, value]) => ({ name: name.charAt(0).toUpperCase() + name.slice(1), value }));
+  }, [registrations]);
+
+  const categoryRevenueData = React.useMemo(() => {
+    const catMap: Record<string, { count: number; revenue: number }> = {};
+    (registrations ?? []).forEach((r) => {
+      const k = r.category.replace(/_/g, " ");
+      if (!catMap[k]) catMap[k] = { count: 0, revenue: 0 };
+      catMap[k].count += 1;
+      catMap[k].revenue += r.paymentAmount ?? CATEGORY_FEES[r.category] ?? 0;
+    });
+    return Object.entries(catMap).map(([name, d]) => ({
+      name: name.split(" ").map((w) => w[0].toUpperCase() + w.slice(1)).join(" "),
+      revenue: d.revenue,
+      delegates: d.count,
+    }));
+  }, [registrations]);
+
+  const abstractTypeData = React.useMemo(() => {
+    const map: Record<string, number> = {};
+    (abstracts ?? []).forEach((a) => {
+      const k = a.abstractType?.replace(/_/g, " ") ?? "unknown";
+      map[k] = (map[k] ?? 0) + 1;
+    });
+    return Object.entries(map).map(([name, value]) => ({ name: name.charAt(0).toUpperCase() + name.slice(1), value }));
+  }, [abstracts]);
+
+  const abstractStatusData = React.useMemo(() => [
+    { name: "Submitted",      value: (abstracts ?? []).filter((a) => a.status === "submitted").length },
+    { name: "Under Review",   value: (abstracts ?? []).filter((a) => a.status === "under_review").length },
+    { name: "Accepted",       value: (abstracts ?? []).filter((a) => a.status === "accepted").length },
+    { name: "Rejected",       value: (abstracts ?? []).filter((a) => a.status === "rejected").length },
+    { name: "Needs Revision", value: (abstracts ?? []).filter((a) => a.status === "revision_requested").length },
+  ].filter((d) => d.value > 0), [abstracts]);
+
+  /* ── Merge real reg count into trend ── */
+  const trendData = React.useMemo(() => {
+    const real = stats?.totalRegistrations ?? 0;
+    return MONTHLY_TREND.map((d, i) => ({
+      ...d,
+      count: i === MONTHLY_TREND.length - 1 ? real || d.count : d.count,
+    }));
+  }, [stats]);
+
+  const acceptanceRate = stats?.totalAbstracts
+    ? Math.round(((stats.acceptedAbstracts ?? 0) / stats.totalAbstracts) * 100)
+    : 0;
 
   const handleReview = (id: number, status: "accepted" | "rejected" | "revision_requested" | "under_review") => {
     updateAbstractMutation.mutate(
@@ -96,147 +178,482 @@ export default function AdminDashboard() {
     );
   };
 
+  const todayStr = new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+
   return (
     <AdminLayout title="Dashboard">
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mb-6">
-        {KPI_CONFIG.map((k) => {
-          const { value, sub } = kpiValues[k.key];
-          const Icon = k.icon;
-          return (
-            <div key={k.key} className="bg-white rounded-xl overflow-hidden" style={CARD_STYLE}>
-              {/* Colour accent strip */}
-              <div style={{ height: 3, background: k.accent }} />
-              <div className="p-5">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: k.iconBg }}>
-                    <Icon className="w-4.5 h-4.5" style={{ color: k.iconColor }} />
-                  </div>
-                </div>
-                <div className="text-[28px] font-bold leading-none mb-1" style={{ color: "#212529" }}>{value}</div>
-                <div className="text-[11px] font-semibold uppercase tracking-wider mb-1" style={{ color: "#6c757d" }}>{k.label}</div>
-                <div className="text-[12px]" style={{ color: "#adb5bd" }}>{sub}</div>
-              </div>
+      {/* ── Welcome banner ── */}
+      <div className="flex items-start justify-between mb-6">
+        <div>
+          <h1 className="text-[22px] font-serif font-bold mb-0.5" style={{ color: "#0B2744" }}>
+            Welcome back, {user?.firstName ?? "Admin"}!
+          </h1>
+          <p className="text-[13px]" style={{ color: "#6c757d" }}>{todayStr}</p>
+        </div>
+        <div className="hidden sm:flex items-center gap-2">
+          <div className="text-right">
+            <div className="text-[12px] font-semibold" style={{ color: "#6c757d" }}>Symposium in</div>
+            <div className="text-[20px] font-bold leading-none" style={{ color: "#C89B3C" }}>
+              {Math.max(0, Math.ceil((new Date("2027-03-22").getTime() - Date.now()) / 86400000))}
+              <span className="text-[12px] font-normal ml-1" style={{ color: "#adb5bd" }}>days</span>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Tab bar ── */}
+      <div className="flex items-center gap-1 mb-6 bg-white rounded-xl px-2 py-1.5" style={CARD}>
+        {TABS.map((tab) => {
+          const Icon = tab.icon;
+          const active = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[13px] font-medium transition-all"
+              style={
+                active
+                  ? { background: "#C89B3C", color: "#fff" }
+                  : { color: "#6c757d", background: "transparent" }
+              }
+            >
+              <Icon className="w-3.5 h-3.5" />
+              {tab.label}
+            </button>
           );
         })}
       </div>
 
-      {/* Main content grid */}
-      <div className="grid grid-cols-1 xl:grid-cols-5 gap-5 mb-5">
-        {/* Recent Registrations */}
-        <div className="xl:col-span-3 bg-white rounded-xl overflow-hidden" style={CARD_STYLE}>
-          <SectionHeader title="Recent Registrations" href="/admin/registrations" />
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr style={{ background: "#f8f9fa" }}>
-                  {["Delegate", "Category", "Country", "Payment", "Date"].map((h) => (
-                    <th key={h} className="text-left px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider" style={{ color: "#6c757d", borderBottom: "1px solid #e9ecef" }}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {recentRegs.length === 0 ? (
-                  <tr>
-                    <td colSpan={5} className="text-center py-10 text-[13px]" style={{ color: "#adb5bd" }}>No registrations yet</td>
-                  </tr>
-                ) : recentRegs.map((r) => {
-                  const ps = PAYMENT_BADGE[r.paymentStatus] ?? PAYMENT_BADGE.pending;
-                  return (
-                    <tr key={r.id} className="hover:bg-gray-50 transition-colors" style={{ borderBottom: "1px solid #f1f3f5" }}>
-                      <td className="px-4 py-3">
-                        <div className="text-[13px] font-medium" style={{ color: "#212529" }}>{r.firstName} {r.lastName}</div>
-                        <div className="text-[11px]" style={{ color: "#adb5bd" }}>{r.email}</div>
-                      </td>
-                      <td className="px-4 py-3 text-[13px] capitalize" style={{ color: "#495057" }}>{r.category?.replace(/_/g, " ")}</td>
-                      <td className="px-4 py-3 text-[13px]" style={{ color: "#495057" }}>{r.country ?? "—"}</td>
-                      <td className="px-4 py-3">
-                        <Badge bg={ps.bg} color={ps.color}>{r.paymentStatus}</Badge>
-                      </td>
-                      <td className="px-4 py-3 text-[12px]" style={{ color: "#adb5bd" }}>
-                        {new Date(r.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short" })}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* Abstract Review Queue */}
-        <div className="xl:col-span-2 bg-white rounded-xl overflow-hidden" style={CARD_STYLE}>
-          <SectionHeader title="Abstract Queue" href="/admin/abstracts" />
-          <div>
-            {pendingAbstracts.length === 0 ? (
-              <div className="text-center py-10 text-[13px]" style={{ color: "#adb5bd" }}>
-                <CheckCircle className="w-8 h-8 mx-auto mb-2" style={{ color: "#dee2e6" }} />
-                All abstracts reviewed
-              </div>
-            ) : pendingAbstracts.map((a, idx) => {
-              const sc = ABSTRACT_BADGE[a.status];
+      {/* ════════════════════════════════════
+          OVERVIEW TAB
+      ════════════════════════════════════ */}
+      {activeTab === "overview" && (
+        <>
+          {/* KPI cards */}
+          <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-5">
+            {[
+              {
+                label: "Registrations",
+                value: stats?.totalRegistrations ?? 0,
+                sub: `${stats?.pendingPayments ?? 0} pending payment`,
+                icon: Users, iconBg: "#e6f4f5", iconColor: "#0E6E74", accent: "#0E6E74",
+                trend: "+12%", trendUp: true,
+              },
+              {
+                label: "Abstracts",
+                value: stats?.totalAbstracts ?? 0,
+                sub: `${stats?.pendingAbstracts ?? 0} awaiting review`,
+                icon: FileText, iconBg: "#FDF6E8", iconColor: "#C89B3C", accent: "#C89B3C",
+                trend: "+8%", trendUp: true,
+              },
+              {
+                label: "Revenue (MYR)",
+                value: (stats?.totalRevenue ?? 0).toLocaleString("en-MY", { minimumFractionDigits: 0 }),
+                sub: `${stats?.pendingPayments ?? 0} pending`,
+                icon: DollarSign, iconBg: "#d1e7dd", iconColor: "#0a5c39", accent: "#0a5c39",
+                trend: "+15%", trendUp: true,
+              },
+              {
+                label: "Acceptance Rate",
+                value: stats?.totalAbstracts ? `${acceptanceRate}%` : "—",
+                sub: `${stats?.acceptedAbstracts ?? 0} accepted · ${stats?.rejectedAbstracts ?? 0} rejected`,
+                icon: TrendingUp, iconBg: "#FDF6E8", iconColor: "#C89B3C", accent: "#C89B3C",
+                trend: null, trendUp: true,
+              },
+            ].map((k) => {
+              const Icon = k.icon;
               return (
-                <div key={a.id} className="px-5 py-4" style={{ borderBottom: idx < pendingAbstracts.length - 1 ? "1px solid #f1f3f5" : "none" }}>
-                  <div className="flex items-start justify-between gap-2 mb-1.5">
-                    <div className="text-[13px] font-medium leading-snug line-clamp-2" style={{ color: "#212529" }}>{a.title}</div>
-                    <Badge bg={sc.bg} color={sc.color}>{sc.label}</Badge>
-                  </div>
-                  <div className="text-[11px] mb-3" style={{ color: "#adb5bd" }}>
-                    {a.submitterName} · {a.abstractType} · {a.abstractCode}
-                  </div>
-                  <input
-                    type="text"
-                    placeholder="Review note (optional)"
-                    value={reviewNote[a.id] ?? ""}
-                    onChange={(e) => setReviewNote((p) => ({ ...p, [a.id]: e.target.value }))}
-                    className="w-full px-2.5 py-1.5 rounded-lg text-[12px] mb-2 outline-none focus:ring-1"
-                    style={{ border: "1px solid #e9ecef", background: "#f8f9fa" }}
-                  />
-                  <div className="flex gap-1.5">
-                    <button onClick={() => handleReview(a.id, "accepted")} className="flex-1 flex items-center justify-center gap-1 py-1.5 rounded-lg text-[11px] font-semibold transition-opacity hover:opacity-80" style={{ background: "#d1e7dd", color: "#0a5c39" }}>
-                      <CheckCircle className="w-3.5 h-3.5" /> Accept
-                    </button>
-                    <button onClick={() => handleReview(a.id, "revision_requested")} className="flex-1 flex items-center justify-center gap-1 py-1.5 rounded-lg text-[11px] font-semibold transition-opacity hover:opacity-80" style={{ background: "#fff3cd", color: "#856404" }}>
-                      <Edit3 className="w-3.5 h-3.5" /> Revise
-                    </button>
-                    <button onClick={() => handleReview(a.id, "rejected")} className="flex-1 flex items-center justify-center gap-1 py-1.5 rounded-lg text-[11px] font-semibold transition-opacity hover:opacity-80" style={{ background: "#f8d7da", color: "#842029" }}>
-                      <XCircle className="w-3.5 h-3.5" /> Reject
-                    </button>
+                <div key={k.label} className="bg-white rounded-xl overflow-hidden" style={CARD}>
+                  <div style={{ height: 3, background: k.accent }} />
+                  <div className="p-4">
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: k.iconBg }}>
+                        <Icon className="w-4 h-4" style={{ color: k.iconColor }} />
+                      </div>
+                      {k.trend && (
+                        <div className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-bold" style={{ background: k.trendUp ? "#d1e7dd" : "#f8d7da", color: k.trendUp ? "#0a5c39" : "#842029" }}>
+                          {k.trendUp ? <ArrowUp className="w-2.5 h-2.5" /> : <TrendingDown className="w-2.5 h-2.5" />}
+                          {k.trend}
+                        </div>
+                      )}
+                    </div>
+                    <div className="text-[26px] font-bold leading-none mb-1" style={{ color: "#212529" }}>{k.value}</div>
+                    <div className="text-[11px] font-semibold uppercase tracking-wider mb-0.5" style={{ color: "#6c757d" }}>{k.label}</div>
+                    <div className="text-[11px]" style={{ color: "#adb5bd" }}>{k.sub}</div>
                   </div>
                 </div>
               );
             })}
           </div>
-        </div>
-      </div>
 
-      {/* Registration target progress */}
-      <div className="bg-white rounded-xl p-5" style={CARD_STYLE}>
-        <div className="flex items-center justify-between mb-3">
-          <div>
-            <div className="text-[14px] font-semibold mb-0.5" style={{ color: "#212529" }}>Registration Target</div>
-            <div className="text-[12px]" style={{ color: "#6c757d" }}>
-              {stats?.totalRegistrations ?? 0} of 300 target delegates registered
+          {/* Charts + Activity */}
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-5 mb-5">
+            {/* Registrations area chart */}
+            <div className="xl:col-span-2 bg-white rounded-xl overflow-hidden" style={CARD}>
+              <div className="px-5 py-4" style={{ borderBottom: "1px solid #f1f3f5" }}>
+                <div className="text-[14px] font-semibold mb-0.5" style={{ color: "#212529" }}>Registration Trend</div>
+                <div className="text-[12px]" style={{ color: "#adb5bd" }}>Mar 2026 – Mar 2027</div>
+              </div>
+              <div className="p-4">
+                <ResponsiveContainer width="100%" height={200}>
+                  <AreaChart data={trendData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="tealGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%"  stopColor="#0E6E74" stopOpacity={0.25} />
+                        <stop offset="95%" stopColor="#0E6E74" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f1f3f5" />
+                    <XAxis dataKey="month" tick={{ fontSize: 10, fill: "#adb5bd" }} />
+                    <YAxis tick={{ fontSize: 10, fill: "#adb5bd" }} />
+                    <Tooltip
+                      contentStyle={{ border: "1px solid #e9ecef", borderRadius: 8, fontSize: 12, boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}
+                      labelStyle={{ fontWeight: 600, color: "#212529" }}
+                    />
+                    <Area type="monotone" dataKey="count" name="Registrations" stroke="#0E6E74" strokeWidth={2} fill="url(#tealGrad)" dot={false} />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            {/* Recent activity feed */}
+            <div className="bg-white rounded-xl overflow-hidden" style={CARD}>
+              <SectionHeader title="Recent Activity" href="/admin/registrations" />
+              <div className="px-4 py-2">
+                {recentRegs.length === 0 ? (
+                  <div className="py-8 text-center text-[13px]" style={{ color: "#adb5bd" }}>No activity yet</div>
+                ) : recentRegs.slice(0, 6).map((r) => {
+                  const ini = `${r.firstName?.[0] ?? ""}${r.lastName?.[0] ?? ""}`.toUpperCase() || "?";
+                  const ps = PAYMENT_BADGE[r.paymentStatus] ?? PAYMENT_BADGE.pending;
+                  return (
+                    <div key={r.id} className="flex items-center gap-3 py-2.5" style={{ borderBottom: "1px solid #f8f9fa" }}>
+                      <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0" style={{ background: "#0B2744" }}>
+                        {ini}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-[13px] font-medium truncate" style={{ color: "#212529" }}>{r.firstName} {r.lastName}</div>
+                        <div className="text-[11px] capitalize" style={{ color: "#6c757d" }}>{r.category?.replace(/_/g, " ")}</div>
+                      </div>
+                      <Badge bg={ps.bg} color={ps.color}>{r.paymentStatus}</Badge>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
-          <div className="text-right">
-            <div className="text-[26px] font-bold leading-none" style={{ color: "#0E6E74" }}>
-              {stats?.totalRegistrations ? Math.min(Math.round((stats.totalRegistrations / 300) * 100), 100) : 0}%
+
+          {/* Registration target progress */}
+          <div className="bg-white rounded-xl p-5" style={CARD}>
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <div className="text-[14px] font-semibold mb-0.5" style={{ color: "#212529" }}>Registration Target</div>
+                <div className="text-[12px]" style={{ color: "#6c757d" }}>
+                  {stats?.totalRegistrations ?? 0} of 300 target delegates
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-[24px] font-bold leading-none" style={{ color: "#C89B3C" }}>
+                  {stats?.totalRegistrations ? Math.min(Math.round((stats.totalRegistrations / 300) * 100), 100) : 0}%
+                </div>
+                <div className="text-[11px]" style={{ color: "#adb5bd" }}>of target</div>
+              </div>
             </div>
-            <div className="text-[11px]" style={{ color: "#adb5bd" }}>of target</div>
+            <div className="rounded-full overflow-hidden" style={{ height: 6, background: "#e9ecef" }}>
+              <div
+                className="h-full rounded-full transition-all duration-700"
+                style={{
+                  width: `${stats?.totalRegistrations ? Math.min((stats.totalRegistrations / 300) * 100, 100) : 0}%`,
+                  background: "linear-gradient(90deg, #C89B3C 0%, #0E6E74 100%)",
+                }}
+              />
+            </div>
           </div>
-        </div>
-        <div className="rounded-full overflow-hidden" style={{ height: 6, background: "#e9ecef" }}>
-          <div
-            className="h-full rounded-full transition-all duration-700"
-            style={{
-              width: `${stats?.totalRegistrations ? Math.min((stats.totalRegistrations / 300) * 100, 100) : 0}%`,
-              background: "linear-gradient(90deg, #0E6E74 0%, #0a5c39 100%)",
-            }}
-          />
-        </div>
-      </div>
+        </>
+      )}
+
+      {/* ════════════════════════════════════
+          REGISTRATIONS TAB
+      ════════════════════════════════════ */}
+      {activeTab === "registrations" && (
+        <>
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-5 mb-5">
+            {/* Payment status bar chart */}
+            <div className="bg-white rounded-xl overflow-hidden" style={CARD}>
+              <div className="px-5 py-3.5" style={{ borderBottom: "1px solid #f1f3f5" }}>
+                <div className="text-[14px] font-semibold" style={{ color: "#212529" }}>Payment Status</div>
+              </div>
+              <div className="p-4">
+                <ResponsiveContainer width="100%" height={160}>
+                  <BarChart data={paymentStatusData} layout="vertical" margin={{ left: 0, right: 12, top: 4, bottom: 4 }}>
+                    <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f3f5" />
+                    <XAxis type="number" tick={{ fontSize: 10, fill: "#adb5bd" }} />
+                    <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: "#495057" }} width={60} />
+                    <Tooltip contentStyle={{ border: "1px solid #e9ecef", borderRadius: 8, fontSize: 12 }} />
+                    <Bar dataKey="value" name="Delegates" radius={[0, 4, 4, 0]}>
+                      {paymentStatusData.map((_, i) => (
+                        <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            {/* Summary KPIs */}
+            <div className="xl:col-span-2 grid grid-cols-3 gap-4">
+              {[
+                { label: "Total", value: stats?.totalRegistrations ?? 0, accent: "#0E6E74", bg: "#e6f4f5" },
+                { label: "Paid", value: (registrations ?? []).filter((r) => r.paymentStatus === "paid").length, accent: "#0a5c39", bg: "#d1e7dd" },
+                { label: "Pending", value: stats?.pendingPayments ?? 0, accent: "#856404", bg: "#fff3cd" },
+              ].map((k) => (
+                <div key={k.label} className="bg-white rounded-xl p-4 overflow-hidden" style={CARD}>
+                  <div style={{ height: 3, background: k.accent, marginBottom: 12 }} className="-mx-4 -mt-4 rounded-t-xl" />
+                  <div className="text-[24px] font-bold" style={{ color: "#212529" }}>{k.value}</div>
+                  <div className="text-[11px] font-semibold uppercase tracking-wider mt-0.5" style={{ color: "#6c757d" }}>{k.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Registrations table */}
+          <div className="bg-white rounded-xl overflow-hidden" style={CARD}>
+            <SectionHeader title="All Registrations" href="/admin/registrations" />
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr style={{ background: "#f8f9fa" }}>
+                    {["Delegate", "Category", "Institution", "Country", "Payment", "Date"].map((h) => (
+                      <th key={h} className="text-left px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider" style={{ color: "#6c757d", borderBottom: "1px solid #e9ecef" }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {recentRegs.length === 0 ? (
+                    <tr><td colSpan={6} className="text-center py-10 text-[13px]" style={{ color: "#adb5bd" }}>No registrations yet</td></tr>
+                  ) : recentRegs.map((r) => {
+                    const ps = PAYMENT_BADGE[r.paymentStatus] ?? PAYMENT_BADGE.pending;
+                    return (
+                      <tr key={r.id} className="hover:bg-gray-50 transition-colors" style={{ borderBottom: "1px solid #f1f3f5" }}>
+                        <td className="px-4 py-3">
+                          <div className="text-[13px] font-medium" style={{ color: "#212529" }}>{r.firstName} {r.lastName}</div>
+                          <div className="text-[11px]" style={{ color: "#adb5bd" }}>{r.email}</div>
+                        </td>
+                        <td className="px-4 py-3 text-[13px] capitalize" style={{ color: "#495057" }}>{r.category?.replace(/_/g, " ")}</td>
+                        <td className="px-4 py-3 text-[13px]" style={{ color: "#495057" }}>{r.institution ?? "—"}</td>
+                        <td className="px-4 py-3 text-[13px]" style={{ color: "#495057" }}>{r.country ?? "—"}</td>
+                        <td className="px-4 py-3"><Badge bg={ps.bg} color={ps.color}>{r.paymentStatus}</Badge></td>
+                        <td className="px-4 py-3 text-[12px]" style={{ color: "#adb5bd" }}>
+                          {new Date(r.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short" })}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* ════════════════════════════════════
+          ABSTRACTS TAB
+      ════════════════════════════════════ */}
+      {activeTab === "abstracts" && (
+        <>
+          {/* Charts row */}
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 mb-5">
+            <div className="bg-white rounded-xl overflow-hidden" style={CARD}>
+              <div className="px-5 py-3.5" style={{ borderBottom: "1px solid #f1f3f5" }}>
+                <div className="text-[14px] font-semibold" style={{ color: "#212529" }}>Abstracts by Type</div>
+              </div>
+              <div className="p-4">
+                <ResponsiveContainer width="100%" height={160}>
+                  <BarChart data={abstractTypeData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f1f3f5" />
+                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#495057" }} />
+                    <YAxis tick={{ fontSize: 10, fill: "#adb5bd" }} />
+                    <Tooltip contentStyle={{ border: "1px solid #e9ecef", borderRadius: 8, fontSize: 12 }} />
+                    <Bar dataKey="value" name="Abstracts" radius={[4, 4, 0, 0]}>
+                      {abstractTypeData.map((_, i) => (
+                        <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl overflow-hidden" style={CARD}>
+              <div className="px-5 py-3.5" style={{ borderBottom: "1px solid #f1f3f5" }}>
+                <div className="text-[14px] font-semibold" style={{ color: "#212529" }}>Abstract Status Distribution</div>
+              </div>
+              <div className="p-4 flex items-center justify-center">
+                {abstractStatusData.length > 0 ? (
+                  <ResponsiveContainer width="100%" height={160}>
+                    <PieChart>
+                      <Pie data={abstractStatusData} cx="50%" cy="50%" outerRadius={60} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`} labelLine={false} fontSize={10}>
+                        {abstractStatusData.map((_, i) => (
+                          <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip contentStyle={{ border: "1px solid #e9ecef", borderRadius: 8, fontSize: 12 }} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="py-8 text-[13px]" style={{ color: "#adb5bd" }}>No abstracts yet</div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Abstract review queue */}
+          <div className="bg-white rounded-xl overflow-hidden" style={CARD}>
+            <SectionHeader title="Abstract Review Queue" href="/admin/abstracts" />
+            {pendingAbstracts.length === 0 ? (
+              <div className="text-center py-10 text-[13px]" style={{ color: "#adb5bd" }}>
+                <CheckCircle className="w-8 h-8 mx-auto mb-2" style={{ color: "#dee2e6" }} />
+                All abstracts reviewed
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-0">
+                {pendingAbstracts.map((a, idx) => {
+                  const sc = ABSTRACT_BADGE[a.status] ?? ABSTRACT_BADGE.submitted;
+                  return (
+                    <div key={a.id} className="px-5 py-4" style={{ borderBottom: "1px solid #f1f3f5", borderRight: idx % 2 === 0 ? "1px solid #f1f3f5" : "none" }}>
+                      <div className="flex items-start justify-between gap-2 mb-1.5">
+                        <div className="text-[13px] font-medium leading-snug line-clamp-2" style={{ color: "#212529" }}>{a.title}</div>
+                        <Badge bg={sc.bg} color={sc.color}>{sc.label}</Badge>
+                      </div>
+                      <div className="text-[11px] mb-3" style={{ color: "#adb5bd" }}>
+                        {a.submitterName} · {a.abstractType} · {a.abstractCode}
+                      </div>
+                      <input
+                        type="text"
+                        placeholder="Review note (optional)"
+                        value={reviewNote[a.id] ?? ""}
+                        onChange={(e) => setReviewNote((p) => ({ ...p, [a.id]: e.target.value }))}
+                        className="w-full px-2.5 py-1.5 rounded-lg text-[12px] mb-2 outline-none focus:ring-1"
+                        style={{ border: "1px solid #e9ecef", background: "#f8f9fa" }}
+                      />
+                      <div className="flex gap-1.5">
+                        <button onClick={() => handleReview(a.id, "accepted")} className="flex-1 flex items-center justify-center gap-1 py-1.5 rounded-lg text-[11px] font-semibold transition-opacity hover:opacity-80" style={{ background: "#d1e7dd", color: "#0a5c39" }}>
+                          <CheckCircle className="w-3.5 h-3.5" /> Accept
+                        </button>
+                        <button onClick={() => handleReview(a.id, "revision_requested")} className="flex-1 flex items-center justify-center gap-1 py-1.5 rounded-lg text-[11px] font-semibold transition-opacity hover:opacity-80" style={{ background: "#fff3cd", color: "#856404" }}>
+                          <Edit3 className="w-3.5 h-3.5" /> Revise
+                        </button>
+                        <button onClick={() => handleReview(a.id, "rejected")} className="flex-1 flex items-center justify-center gap-1 py-1.5 rounded-lg text-[11px] font-semibold transition-opacity hover:opacity-80" style={{ background: "#f8d7da", color: "#842029" }}>
+                          <XCircle className="w-3.5 h-3.5" /> Reject
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </>
+      )}
+
+      {/* ════════════════════════════════════
+          FINANCIAL TAB
+      ════════════════════════════════════ */}
+      {activeTab === "financial" && (
+        <>
+          {/* Revenue KPI */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
+            {[
+              {
+                label: "Total Revenue",
+                value: `MYR ${(stats?.totalRevenue ?? 0).toLocaleString("en-MY", { minimumFractionDigits: 2 })}`,
+                sub: "collected to date",
+                accent: "#C89B3C",
+              },
+              {
+                label: "Avg. per Delegate",
+                value: stats?.totalRegistrations
+                  ? `MYR ${Math.round((stats.totalRevenue ?? 0) / stats.totalRegistrations).toLocaleString()}`
+                  : "MYR —",
+                sub: "mean registration fee",
+                accent: "#0E6E74",
+              },
+              {
+                label: "Pending",
+                value: `${stats?.pendingPayments ?? 0}`,
+                sub: "awaiting payment",
+                accent: "#856404",
+              },
+            ].map((k) => (
+              <div key={k.label} className="bg-white rounded-xl overflow-hidden" style={CARD}>
+                <div style={{ height: 3, background: k.accent }} />
+                <div className="p-5">
+                  <div className="text-[11px] font-semibold uppercase tracking-wider mb-1" style={{ color: "#6c757d" }}>{k.label}</div>
+                  <div className="text-[22px] font-bold leading-tight mb-0.5" style={{ color: "#212529" }}>{k.value}</div>
+                  <div className="text-[12px]" style={{ color: "#adb5bd" }}>{k.sub}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Charts row */}
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
+            <div className="bg-white rounded-xl overflow-hidden" style={CARD}>
+              <div className="px-5 py-3.5" style={{ borderBottom: "1px solid #f1f3f5" }}>
+                <div className="text-[14px] font-semibold" style={{ color: "#212529" }}>Revenue by Category</div>
+              </div>
+              <div className="p-4">
+                <ResponsiveContainer width="100%" height={200}>
+                  <BarChart data={categoryRevenueData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f1f3f5" />
+                    <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#adb5bd" }} />
+                    <YAxis tick={{ fontSize: 10, fill: "#adb5bd" }} />
+                    <Tooltip
+                      contentStyle={{ border: "1px solid #e9ecef", borderRadius: 8, fontSize: 12 }}
+                      formatter={(v: number) => [`MYR ${v.toLocaleString()}`, "Revenue"]}
+                    />
+                    <Bar dataKey="revenue" name="Revenue" radius={[4, 4, 0, 0]}>
+                      {categoryRevenueData.map((_, i) => (
+                        <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl overflow-hidden" style={CARD}>
+              <div className="px-5 py-3.5" style={{ borderBottom: "1px solid #f1f3f5" }}>
+                <div className="text-[14px] font-semibold" style={{ color: "#212529" }}>Payment Status Breakdown</div>
+              </div>
+              <div className="p-4">
+                {paymentStatusData.length > 0 ? (
+                  <ResponsiveContainer width="100%" height={200}>
+                    <PieChart>
+                      <Pie
+                        data={paymentStatusData}
+                        cx="40%"
+                        cy="50%"
+                        outerRadius={75}
+                        dataKey="value"
+                      >
+                        {paymentStatusData.map((_, i) => (
+                          <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip contentStyle={{ border: "1px solid #e9ecef", borderRadius: 8, fontSize: 12 }} />
+                      <Legend layout="vertical" align="right" verticalAlign="middle" iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 12 }} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="py-8 text-center text-[13px]" style={{ color: "#adb5bd" }}>
+                    No payment data yet
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </AdminLayout>
   );
 }

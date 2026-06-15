@@ -219,12 +219,27 @@ export default function AdminLayout({ children, title }: { children: React.React
             </span>
             <a href="/portal/">
               <button
-                className="px-3 py-1.5 rounded-lg text-[12px] font-medium border transition-colors hover:bg-gray-50"
+                className="hidden sm:block px-3 py-1.5 rounded-lg text-[12px] font-medium border transition-colors hover:bg-gray-50"
                 style={{ borderColor: "#e9ecef", color: "#6c757d" }}
               >
                 Delegate View
               </button>
             </a>
+            <div
+              className="w-8 h-8 rounded-full flex items-center justify-center text-white text-[12px] font-bold flex-shrink-0 select-none"
+              style={{ background: "#C89B3C" }}
+              title={user ? `${user.firstName} ${user.lastName}` : "Admin"}
+            >
+              {initials}
+            </div>
+            <button
+              onClick={handleLogout}
+              className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors hover:bg-gray-100"
+              style={{ color: "#6c757d" }}
+              title="Sign out"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
           </div>
         </header>
 
