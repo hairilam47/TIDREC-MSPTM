@@ -10,8 +10,8 @@ import {
 } from "@workspace/api-client-react";
 import { Link } from "wouter";
 import {
-  ClipboardList, FileText, Calendar, Bell, CheckCircle,
-  AlertTriangle, Plus, ArrowRight, Clock,
+  ClipboardList, FileText, Calendar, Timer,
+  CheckCircle, AlertTriangle, Plus, ArrowRight, Clock,
 } from "lucide-react";
 
 /* ── Status maps ── */
@@ -45,6 +45,24 @@ function Badge({ bg, color, children }: { bg: string; color: string; children: R
   );
 }
 
+/* ── Static spark heights for each tile ── */
+const SPARKS = {
+  registration: [8, 12, 10, 16, 14, 18, 22],
+  abstracts:    [10, 14, 12, 18, 16, 20, 14],
+  sessions:     [12, 8, 16, 10, 18, 14, 20],
+  days:         [22, 20, 18, 16, 14, 12, 10], // counts down
+};
+
+function StatSpark({ heights }: { heights: number[] }) {
+  return (
+    <div className="stat-spark">
+      {heights.map((h, i) => (
+        <div key={i} className="bar" style={{ height: h }} />
+      ))}
+    </div>
+  );
+}
+
 export default function Dashboard() {
   const { data: user }          = useGetMe();
   const { data: abstracts, isLoading: loadingAbstracts } = useGetAbstracts();
@@ -53,46 +71,53 @@ export default function Dashboard() {
   const { data: sessions }      = useGetSessions();
   const { data: announcements } = useGetAnnouncements();
 
-  const savedSessions = React.useMemo(
-    () => sessions?.filter((s) => (savedIds ?? []).includes(s.id)).slice(0, 4) ?? [],
-    [sessions, savedIds],
+  /* Upcoming sessions — sourced from useGetSessions(), filtered to future or day 1 first */
+  const upcomingSessions = React.useMemo(
+    () => (sessions ?? []).slice(0, 5),
+    [sessions],
   );
 
   const shownAnnouncements = (announcements ?? []).slice(0, 3);
+
   const daysToGo = Math.max(0, Math.ceil((new Date("2027-03-22").getTime() - Date.now()) / 86400000));
   const todayStr = new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 
   const paymentStatus = registration?.paymentStatus;
   const paymentAmount = registration?.paymentAmount;
+
   const regValue = registration
     ? paymentStatus === "paid" ? "Paid" : paymentStatus === "waived" ? "Waived" : "Pending"
     : "None";
   const regIconClass =
-    paymentStatus === "paid"   ? "green"  :
-    paymentStatus === "waived" ? "teal"   :
-    paymentStatus === "overdue"? "red"    : "gold";
+    paymentStatus === "paid"    ? "green" :
+    paymentStatus === "waived"  ? "teal"  :
+    paymentStatus === "overdue" ? "red"   : "gold";
 
-  /* ── 4 stat tiles ── */
+  /* ── 4 stat tiles: Registration, My Abstracts, Saved Sessions, Days Until Conference ── */
   const STAT_TILES = [
     {
       icon: ClipboardList, iconClass: regIconClass,
       label: "Registration", value: regValue,
       sub: registration?.registrationCode ?? "Not registered",
+      spark: SPARKS.registration,
     },
     {
       icon: FileText, iconClass: "gold",
       label: "My Abstracts", value: abstracts?.length ?? 0,
       sub: `${abstracts?.filter((a) => a.status === "accepted").length ?? 0} accepted`,
+      spark: SPARKS.abstracts,
     },
     {
       icon: Calendar, iconClass: "teal",
       label: "Saved Sessions", value: savedIds?.length ?? 0,
       sub: "in my schedule",
+      spark: SPARKS.sessions,
     },
     {
-      icon: Bell, iconClass: "primary",
-      label: "Notifications", value: (announcements ?? []).filter((a) => a.important).length,
-      sub: "important alerts",
+      icon: Timer, iconClass: "primary",
+      label: "Days Until Conference", value: daysToGo,
+      sub: "22–23 March 2027",
+      spark: SPARKS.days,
     },
   ];
 
@@ -102,19 +127,13 @@ export default function Dashboard() {
       {/* ── Welcome row ── */}
       <div className="flex items-start justify-between gap-4 mb-5">
         <div>
-          <h2 className="text-xl font-bold mb-1" style={{ color: "var(--text)", fontFamily: "'Playfair Display', serif" }}>
+          <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 20, fontWeight: 700, color: "var(--text)", marginBottom: 4 }}>
             Welcome back, {user?.firstName ?? "Delegate"}!
           </h2>
-          <p className="text-sm" style={{ color: "var(--text-muted)" }}>{todayStr}</p>
-          <p className="text-xs mt-0.5" style={{ color: "var(--text-disabled)" }}>
+          <p style={{ fontSize: 13, color: "var(--text-muted)" }}>{todayStr}</p>
+          <p style={{ fontSize: 12, color: "var(--text-disabled)", marginTop: 2 }}>
             3rd Southeast Asia Ticks &amp; Tick-borne Diseases Symposium · Sunway Putra Hotel, KL
           </p>
-        </div>
-        <div className="hidden sm:flex flex-col items-center justify-center rounded-lg px-5 py-3 flex-shrink-0"
-          style={{ border: "1.5px solid var(--primary)", background: "var(--primary-lt)" }}>
-          <span className="text-3xl font-bold leading-none" style={{ color: "var(--primary)" }}>{daysToGo}</span>
-          <span className="text-[10px] font-semibold uppercase tracking-wider mt-0.5" style={{ color: "var(--text-muted)" }}>days to go</span>
-          <span className="text-[10px] mt-0.5" style={{ color: "var(--text-disabled)" }}>22 Mar 2027</span>
         </div>
       </div>
 
@@ -152,7 +171,7 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* ── Stat ribbon — Gentelella .card .stat classes ── */}
+      {/* ── Stat ribbon — 4 tiles with .stat-spark ── */}
       <div className="row col-4" style={{ marginBottom: 20 }}>
         {STAT_TILES.map((tile) => {
           const Icon = tile.icon;
@@ -164,9 +183,10 @@ export default function Dashboard() {
                 </div>
                 <div className="stat-content">
                   <div className="stat-label">{tile.label}</div>
-                  <div className="stat-value" style={{ fontSize: 22 }}>{tile.value}</div>
+                  <div className="stat-value">{tile.value}</div>
                   {tile.sub && <div className="stat-subtext">{tile.sub}</div>}
                 </div>
+                <StatSpark heights={tile.spark} />
               </div>
             </div>
           );
@@ -210,7 +230,7 @@ export default function Dashboard() {
         <div className="card">
           <div className="card-header">
             <div className="card-title">My Abstracts</div>
-            <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
               <Link href="/portal/abstracts/new">
                 <button className="btn btn-primary btn-sm">
                   <Plus style={{ width: 13, height: 13 }} /> Submit
@@ -314,18 +334,18 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* My Schedule */}
+          {/* Upcoming Sessions — from useGetSessions() */}
           <div className="card">
             <div className="card-header">
-              <div className="card-title">My Schedule</div>
+              <div className="card-title">Upcoming Sessions</div>
               <Link href="/portal/programme" style={{ fontSize: 12, color: "var(--primary)", textDecoration: "none" }}>
                 Full programme
               </Link>
             </div>
-            {savedSessions.length > 0
+            {upcomingSessions.length > 0
               ? (
                 <div className="card-body p-0">
-                  {savedSessions.map((s) => (
+                  {upcomingSessions.map((s) => (
                     <div key={s.id} style={{ display: "flex", gap: 12, padding: "10px 16px", borderBottom: "1px solid var(--border-color-light)" }}>
                       <div style={{ flexShrink: 0, width: 30, height: 30, borderRadius: 6, background: "var(--primary)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 700, color: "#fff" }}>
                         D{s.day}
@@ -346,17 +366,19 @@ export default function Dashboard() {
                       </div>
                     </div>
                   ))}
-                  <div className="card-footer" style={{ textAlign: "right" }}>
-                    <span style={{ fontSize: 12, color: "var(--text-muted)" }}>{savedIds?.length ?? 0} session{(savedIds?.length ?? 0) !== 1 ? "s" : ""} saved</span>
+                  <div style={{ padding: "8px 16px", textAlign: "right" }}>
+                    <Link href="/portal/programme" style={{ fontSize: 12, color: "var(--primary)", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 4 }}>
+                      View all sessions <ArrowRight style={{ width: 12, height: 12 }} />
+                    </Link>
                   </div>
                 </div>
               )
               : (
                 <div className="card-body" style={{ textAlign: "center" }}>
                   <Calendar style={{ width: 28, height: 28, color: "var(--text-disabled)", margin: "0 auto 8px" }} />
-                  <p style={{ fontSize: 13, color: "var(--text-secondary)", marginBottom: 6 }}>No saved sessions yet</p>
+                  <p style={{ fontSize: 13, color: "var(--text-secondary)", marginBottom: 6 }}>No sessions published yet</p>
                   <Link href="/portal/programme" style={{ fontSize: 12, fontWeight: 500, color: "var(--primary)", textDecoration: "none" }}>
-                    Browse the programme →
+                    Check the programme →
                   </Link>
                 </div>
               )

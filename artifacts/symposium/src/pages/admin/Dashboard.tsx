@@ -7,10 +7,11 @@ import {
   useUpdateAbstract,
   useGetMe,
   useGetRegistrationsByMonth,
+  useGetSpeakers,
 } from "@workspace/api-client-react";
 import { Link } from "wouter";
 import {
-  Users, FileText, DollarSign, TrendingUp,
+  Users, FileText, DollarSign, Mic,
   ArrowUp, ArrowDown, BarChart2, ClipboardList, Edit3, CheckCircle, XCircle,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -19,7 +20,7 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
 } from "recharts";
 
-/* ── Badges / status maps ── */
+/* ── Status badge maps ── */
 const PAYMENT_BADGE: Record<string, { bg: string; color: string }> = {
   paid:    { bg: "#d1e7dd", color: "#0a5c39" },
   pending: { bg: "#fff3cd", color: "#856404" },
@@ -47,6 +48,17 @@ const MONTHLY_TREND_FALLBACK = [
   { month: "Mar '27", count: 104 },
 ];
 
+/* ── Tiny spark bar widget ── */
+function StatSpark({ heights }: { heights: number[] }) {
+  return (
+    <div className="stat-spark">
+      {heights.map((h, i) => (
+        <div key={i} className="bar" style={{ height: h }} />
+      ))}
+    </div>
+  );
+}
+
 function Badge({ bg, color, children }: { bg: string; color: string; children: React.ReactNode }) {
   return (
     <span style={{ background: bg, color, fontSize: 11, fontWeight: 600, padding: "2px 8px", borderRadius: 20, display: "inline-block" }}>
@@ -71,6 +83,7 @@ export default function AdminDashboard() {
   const { data: registrations } = useGetRegistrations();
   const { data: abstracts, refetch: refetchAbstracts } = useGetAbstracts();
   const { data: monthlyData }   = useGetRegistrationsByMonth();
+  const { data: speakers }      = useGetSpeakers();
   const updateAbstractMutation  = useUpdateAbstract();
   const { toast }               = useToast();
   const [reviewNote, setReviewNote] = React.useState<Record<number, string>>({});
@@ -79,28 +92,6 @@ export default function AdminDashboard() {
   const pendingAbstracts = (abstracts ?? [])
     .filter((a) => a.status === "submitted" || a.status === "under_review")
     .slice(0, 6);
-
-  const recentActivity = React.useMemo(() => {
-    const regEvents = (registrations ?? []).map((r) => ({
-      key: `reg-${r.id}`,
-      name: (`${r.firstName ?? ""} ${r.lastName ?? ""}`.trim() || r.email) ?? "—",
-      initials: `${r.firstName?.[0] ?? ""}${r.lastName?.[0] ?? ""}`.toUpperCase() || "?",
-      action: "registered as delegate",
-      detail: r.category?.replace(/_/g, " ") ?? "",
-      ts: r.createdAt, avatarBg: "#0B2744",
-    }));
-    const absEvents = (abstracts ?? []).map((a) => ({
-      key: `abs-${a.id}`,
-      name: a.submitterName ?? "Unknown",
-      initials: (a.submitterName ?? "?").split(" ").map((w: string) => w[0]).slice(0, 2).join("").toUpperCase() || "?",
-      action: "submitted an abstract",
-      detail: a.abstractType?.replace(/_/g, " ") ?? "",
-      ts: a.createdAt, avatarBg: "#0E6E74",
-    }));
-    return [...regEvents, ...absEvents]
-      .sort((a, b) => new Date(b.ts).getTime() - new Date(a.ts).getTime())
-      .slice(0, 6);
-  }, [registrations, abstracts]);
 
   const monthTrends = React.useMemo(() => {
     const now = new Date();
@@ -143,12 +134,7 @@ export default function AdminDashboard() {
     }));
   }, [registrations]);
 
-  const abstractTypeData = React.useMemo(() => {
-    const map: Record<string, number> = {};
-    (abstracts ?? []).forEach((a) => { const k = a.abstractType?.replace(/_/g, " ") ?? "unknown"; map[k] = (map[k] ?? 0) + 1; });
-    return Object.entries(map).map(([name, value]) => ({ name: name.charAt(0).toUpperCase() + name.slice(1), value }));
-  }, [abstracts]);
-
+  /* ── Abstract status donut data ── */
   const abstractStatusData = React.useMemo(() => [
     { name: "Submitted",      value: (abstracts ?? []).filter((a) => a.status === "submitted").length },
     { name: "Under Review",   value: (abstracts ?? []).filter((a) => a.status === "under_review").length },
@@ -156,6 +142,13 @@ export default function AdminDashboard() {
     { name: "Rejected",       value: (abstracts ?? []).filter((a) => a.status === "rejected").length },
     { name: "Needs Revision", value: (abstracts ?? []).filter((a) => a.status === "revision_requested").length },
   ].filter((d) => d.value > 0), [abstracts]);
+
+  /* ── Abstract type data ── */
+  const abstractTypeData = React.useMemo(() => {
+    const map: Record<string, number> = {};
+    (abstracts ?? []).forEach((a) => { const k = a.abstractType?.replace(/_/g, " ") ?? "unknown"; map[k] = (map[k] ?? 0) + 1; });
+    return Object.entries(map).map(([name, value]) => ({ name: name.charAt(0).toUpperCase() + name.slice(1), value }));
+  }, [abstracts]);
 
   const { trendData, trendSubtitle } = React.useMemo(() => {
     if (!monthlyData || monthlyData.length === 0) return { trendData: MONTHLY_TREND_FALLBACK, trendSubtitle: "Mar 2026 – Mar 2027" };
@@ -175,8 +168,16 @@ export default function AdminDashboard() {
     return { trendData: data, trendSubtitle: subtitle };
   }, [monthlyData]);
 
-  const acceptanceRate = stats?.totalAbstracts
-    ? Math.round(((stats.acceptedAbstracts ?? 0) / stats.totalAbstracts) * 100) : 0;
+  /* ── Spark bar heights derived from monthly trend ── */
+  const sparkHeights = React.useMemo(() => {
+    const counts = trendData.map((d) => d.count);
+    const max = Math.max(...counts, 1);
+    const last7 = counts.slice(-7);
+    return last7.map((c) => Math.max(4, Math.round((c / max) * 24)));
+  }, [trendData]);
+
+  /* ── Accepted speakers count ── */
+  const acceptedSpeakers = speakers?.length ?? 0;
 
   const handleReview = (id: number, status: "accepted" | "rejected" | "revision_requested" | "under_review") => {
     updateAbstractMutation.mutate(
@@ -191,31 +192,35 @@ export default function AdminDashboard() {
   const todayStr = new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
   const daysToGo = Math.max(0, Math.ceil((new Date("2027-03-22").getTime() - Date.now()) / 86400000));
 
-  /* ── KPI tile data ── */
+  /* ── KPI tiles — Required: Registrations, Revenue, Pending Abstracts, Accepted Speakers ── */
   const KPI_TILES = [
     {
-      label: "Registrations", icon: Users, iconClass: "teal",
+      label: "Total Registrations", icon: Users, iconClass: "teal",
       value: stats?.totalRegistrations ?? 0,
       sub: `${stats?.pendingPayments ?? 0} pending payment`,
       trend: monthTrends.registrations,
-    },
-    {
-      label: "Abstracts", icon: FileText, iconClass: "gold",
-      value: stats?.totalAbstracts ?? 0,
-      sub: `${stats?.pendingAbstracts ?? 0} awaiting review`,
-      trend: monthTrends.abstracts,
+      spark: sparkHeights,
     },
     {
       label: "Revenue (MYR)", icon: DollarSign, iconClass: "green",
       value: `MYR ${(stats?.totalRevenue ?? 0).toLocaleString("en-MY")}`,
       sub: `${stats?.pendingPayments ?? 0} payments pending`,
       trend: monthTrends.registrations,
+      spark: sparkHeights,
     },
     {
-      label: "Acceptance Rate", icon: TrendingUp, iconClass: "primary",
-      value: stats?.totalAbstracts ? `${acceptanceRate}%` : "—",
-      sub: `${stats?.acceptedAbstracts ?? 0} accepted · ${stats?.rejectedAbstracts ?? 0} rejected`,
+      label: "Pending Abstracts", icon: FileText, iconClass: "gold",
+      value: stats?.pendingAbstracts ?? 0,
+      sub: `${stats?.totalAbstracts ?? 0} total submitted`,
       trend: monthTrends.abstracts,
+      spark: sparkHeights.map((h, i) => i % 2 === 0 ? h : Math.max(4, h - 4)),
+    },
+    {
+      label: "Accepted Speakers", icon: Mic, iconClass: "primary",
+      value: acceptedSpeakers,
+      sub: "Confirmed for SATBDS 2027",
+      trend: null,
+      spark: [8, 12, 8, 16, 10, 18, 22],
     },
   ];
 
@@ -225,21 +230,21 @@ export default function AdminDashboard() {
       {/* ── Welcome row ── */}
       <div className="flex items-start justify-between gap-4 mb-5">
         <div>
-          <h2 className="text-xl font-bold mb-0.5" style={{ color: "var(--text)", fontFamily: "'Playfair Display', serif" }}>
+          <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 20, fontWeight: 700, color: "var(--text)", marginBottom: 2 }}>
             Welcome back, {user?.firstName ?? "Admin"}!
           </h2>
-          <p className="text-sm" style={{ color: "var(--text-muted)" }}>{todayStr}</p>
+          <p style={{ fontSize: 13, color: "var(--text-muted)" }}>{todayStr}</p>
         </div>
         <div className="hidden sm:flex flex-col items-center justify-center rounded-lg px-5 py-3 flex-shrink-0"
           style={{ border: "1.5px solid var(--primary)", background: "var(--primary-lt)" }}>
-          <span className="text-3xl font-bold leading-none" style={{ color: "var(--primary)" }}>{daysToGo}</span>
-          <span className="text-[10px] font-semibold uppercase tracking-wider mt-0.5" style={{ color: "var(--text-muted)" }}>days to go</span>
-          <span className="text-[10px] mt-0.5" style={{ color: "var(--text-disabled)" }}>22 Mar 2027</span>
+          <span style={{ fontSize: 28, fontWeight: 700, color: "var(--primary)", lineHeight: 1 }}>{daysToGo}</span>
+          <span style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--text-muted)", marginTop: 2 }}>days to go</span>
+          <span style={{ fontSize: 10, color: "var(--text-disabled)", marginTop: 2 }}>22 Mar 2027</span>
         </div>
       </div>
 
       {/* ── Tab bar ── */}
-      <div className="card mb-5" style={{ padding: "0 8px", borderRadius: "var(--radius-lg)", overflow: "hidden" }}>
+      <div className="card mb-5" style={{ padding: "0 8px", overflow: "visible" }}>
         <div style={{ display: "flex", borderBottom: "2px solid var(--border-color-light)" }}>
           {TABS.map((tab) => {
             const Icon = tab.icon;
@@ -272,8 +277,8 @@ export default function AdminDashboard() {
       ══════════════════════════════════════ */}
       {activeTab === "overview" && (
         <>
-          {/* KPI stat cards — use Gentelella .card + .stat classes */}
-          <div className="row col-4 mb-0" style={{ marginBottom: 16 }}>
+          {/* KPI stat cards — .card .stat .stat-icon .stat-content .stat-spark */}
+          <div className="row col-4" style={{ marginBottom: 16 }}>
             {KPI_TILES.map((k) => {
               const Icon = k.icon;
               const t = k.trend;
@@ -286,25 +291,26 @@ export default function AdminDashboard() {
                     <div className="stat-content">
                       <div className="stat-label">{k.label}</div>
                       <div className="stat-value-row">
-                        <span className="stat-value" style={{ fontSize: 22 }}>{k.value}</span>
+                        <span className="stat-value">{k.value}</span>
                         {t && t.dir !== "flat" && (
                           <span className={`stat-change ${t.dir}`}>
-                            {t.dir === "up" ? <ArrowUp style={{ width: 12, height: 12 }} /> : <ArrowDown style={{ width: 12, height: 12 }} />}
+                            {t.dir === "up" ? <ArrowUp style={{ width: 11, height: 11 }} /> : <ArrowDown style={{ width: 11, height: 11 }} />}
                             {t.label}
                           </span>
                         )}
                       </div>
                       <div className="stat-subtext">{k.sub}</div>
                     </div>
+                    <StatSpark heights={k.spark} />
                   </div>
                 </div>
               );
             })}
           </div>
 
-          {/* Registration trend + Activity */}
+          {/* Registration trend area chart + Recent registrations table */}
           <div className="row col-8-4" style={{ marginBottom: 16 }}>
-            {/* Area chart */}
+            {/* Area chart — registrations by month */}
             <div className="card">
               <div className="card-header">
                 <div>
@@ -334,59 +340,94 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            {/* Recent activity */}
+            {/* Recent registrations table */}
             <div className="card">
               <div className="card-header">
-                <div className="card-title">Recent Activity</div>
+                <div className="card-title">Recent Registrations</div>
                 <Link href="/admin/registrations" style={{ fontSize: 12, color: "var(--primary)", textDecoration: "none" }}>
                   View all
                 </Link>
               </div>
               <div className="card-body p-0">
-                <ul className="activity-list" style={{ padding: "0 4px" }}>
-                  {recentActivity.length === 0
-                    ? <li style={{ padding: "24px 12px", textAlign: "center", color: "var(--text-muted)", fontSize: 13 }}>No activity yet</li>
-                    : recentActivity.map((ev) => {
-                        const ts = new Date(ev.ts);
-                        const timeStr = ts.toLocaleDateString("en-GB", { day: "2-digit", month: "short" }) +
-                          " · " + ts.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
-                        return (
-                          <li key={ev.key} className="activity-item" style={{ padding: "8px 12px" }}>
-                            <div className="activity-avatar" style={{ background: ev.avatarBg }}>{ev.initials}</div>
-                            <div className="activity-body">
-                              <strong>{ev.name}</strong>
-                              {" "}{ev.action}{ev.detail ? ` · ${ev.detail}` : ""}
-                              <div className="activity-time">{timeStr}</div>
-                            </div>
-                          </li>
-                        );
-                      })
-                  }
-                </ul>
+                <div className="table-responsive">
+                  <table className="table">
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Payment</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {recentRegs.length === 0
+                        ? <tr><td colSpan={3} style={{ textAlign: "center", color: "var(--text-muted)", padding: "20px 16px" }}>No registrations yet</td></tr>
+                        : recentRegs.slice(0, 8).map((r) => {
+                            const b = PAYMENT_BADGE[r.paymentStatus] ?? PAYMENT_BADGE.pending;
+                            const name = `${r.firstName ?? ""} ${r.lastName ?? ""}`.trim() || r.email;
+                            return (
+                              <tr key={r.id}>
+                                <td><span className="cell-strong" style={{ fontSize: 12 }}>{name}</span></td>
+                                <td style={{ color: "var(--text-secondary)", textTransform: "capitalize", fontSize: 11 }}>
+                                  {r.category?.replace(/_/g, " ") ?? "—"}
+                                </td>
+                                <td><Badge bg={b.bg} color={b.color}>{r.paymentStatus}</Badge></td>
+                              </tr>
+                            );
+                          })
+                      }
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Registration target progress */}
-          <div className="card">
-            <div className="card-body">
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-                <div>
-                  <div className="card-title">Registration Target</div>
-                  <div className="card-subtitle">{stats?.totalRegistrations ?? 0} of 300 target delegates</div>
-                </div>
-                <span className="stat-value" style={{ color: "var(--primary)", fontSize: 24 }}>
-                  {stats?.totalRegistrations ? Math.min(Math.round((stats.totalRegistrations / 300) * 100), 100) : 0}%
-                </span>
+          {/* Abstracts-by-status donut + Registration target */}
+          <div className="row col-4-8" style={{ marginBottom: 0 }}>
+            {/* Abstracts by status donut */}
+            <div className="card">
+              <div className="card-header">
+                <div className="card-title">Abstracts by Status</div>
               </div>
-              <div className="progress-thin">
-                <div
-                  className="bar"
-                  style={{
-                    width: `${stats?.totalRegistrations ? Math.min((stats.totalRegistrations / 300) * 100, 100) : 0}%`,
-                    background: "linear-gradient(90deg, #0E6E74 0%, #0B2744 100%)",
-                  }}
-                />
+              <div className="card-body">
+                {abstractStatusData.length === 0
+                  ? <div style={{ textAlign: "center", color: "var(--text-muted)", padding: "24px 0", fontSize: 13 }}>No abstracts yet</div>
+                  : (
+                    <ResponsiveContainer width="100%" height={180}>
+                      <PieChart>
+                        <Pie data={abstractStatusData} cx="50%" cy="50%" innerRadius={45} outerRadius={70} paddingAngle={2} dataKey="value">
+                          {abstractStatusData.map((_, i) => <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />)}
+                        </Pie>
+                        <Tooltip contentStyle={{ border: "1px solid var(--border-color)", borderRadius: 6, fontSize: 12 }} />
+                        <Legend wrapperStyle={{ fontSize: 11 }} />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  )
+                }
+              </div>
+            </div>
+
+            {/* Registration target progress */}
+            <div className="card">
+              <div className="card-body">
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+                  <div>
+                    <div className="card-title">Registration Target</div>
+                    <div className="card-subtitle">{stats?.totalRegistrations ?? 0} of 300 target delegates</div>
+                  </div>
+                  <span className="stat-value" style={{ color: "var(--primary)", fontSize: 24 }}>
+                    {stats?.totalRegistrations ? Math.min(Math.round((stats.totalRegistrations / 300) * 100), 100) : 0}%
+                  </span>
+                </div>
+                <div className="progress-thin">
+                  <div
+                    className="bar"
+                    style={{
+                      width: `${stats?.totalRegistrations ? Math.min((stats.totalRegistrations / 300) * 100, 100) : 0}%`,
+                      background: "linear-gradient(90deg, #0E6E74 0%, #0B2744 100%)",
+                    }}
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -402,7 +443,7 @@ export default function AdminDashboard() {
             {/* Registrations table */}
             <div className="card">
               <div className="card-header">
-                <div className="card-title">Recent Registrations</div>
+                <div className="card-title">All Recent Registrations</div>
                 <Link href="/admin/registrations" style={{ fontSize: 12, color: "var(--primary)", textDecoration: "none" }}>
                   View all
                 </Link>
@@ -428,7 +469,7 @@ export default function AdminDashboard() {
                               <tr key={r.id}>
                                 <td><span className="cell-mono">{r.registrationCode ?? "—"}</span></td>
                                 <td><span className="cell-strong">{name}</span></td>
-                                <td style={{ color: "var(--text-secondary)", textTransform: "capitalize" }}>
+                                <td style={{ color: "var(--text-secondary)", textTransform: "capitalize", fontSize: 12 }}>
                                   {r.category?.replace(/_/g, " ") ?? "—"}
                                 </td>
                                 <td><Badge bg={b.bg} color={b.color}>{r.paymentStatus}</Badge></td>
@@ -448,7 +489,7 @@ export default function AdminDashboard() {
                 <div className="card-title">Payment Status</div>
               </div>
               <div className="card-body">
-                <ResponsiveContainer width="100%" height={180}>
+                <ResponsiveContainer width="100%" height={200}>
                   <BarChart data={paymentStatusData} layout="vertical" margin={{ left: 0, right: 12, top: 4, bottom: 4 }}>
                     <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="var(--border-color-light)" />
                     <XAxis type="number" tick={{ fontSize: 10, fill: "var(--text-muted)" }} />
@@ -490,13 +531,13 @@ export default function AdminDashboard() {
       ══════════════════════════════════════ */}
       {activeTab === "abstracts" && (
         <>
-          {/* Abstract stats row */}
+          {/* Abstract stat tiles */}
           <div className="row col-4" style={{ marginBottom: 16 }}>
             {[
-              { label: "Total", value: stats?.totalAbstracts ?? 0, iconClass: "teal" },
-              { label: "Pending Review", value: stats?.pendingAbstracts ?? 0, iconClass: "gold" },
-              { label: "Accepted", value: stats?.acceptedAbstracts ?? 0, iconClass: "green" },
-              { label: "Rejected", value: stats?.rejectedAbstracts ?? 0, iconClass: "red" },
+              { label: "Total Submitted", value: stats?.totalAbstracts ?? 0, iconClass: "teal",    spark: [8,12,10,16,14,18,22] },
+              { label: "Pending Review",  value: stats?.pendingAbstracts ?? 0, iconClass: "gold",  spark: [14,10,18,12,16,20,14] },
+              { label: "Accepted",        value: stats?.acceptedAbstracts ?? 0, iconClass: "green", spark: [6,10,8,14,12,16,20] },
+              { label: "Rejected",        value: stats?.rejectedAbstracts ?? 0, iconClass: "red",  spark: [20,14,18,10,16,12,8] },
             ].map((s) => (
               <div className="card" key={s.label}>
                 <div className="stat">
@@ -507,12 +548,13 @@ export default function AdminDashboard() {
                     <div className="stat-label">{s.label}</div>
                     <div className="stat-value">{s.value}</div>
                   </div>
+                  <StatSpark heights={s.spark} />
                 </div>
               </div>
             ))}
           </div>
 
-          <div className="row col-8-4" style={{ marginBottom: 16 }}>
+          <div className="row col-8-4" style={{ marginBottom: 0 }}>
             {/* Pending abstract review table */}
             <div className="card">
               <div className="card-header">
@@ -591,7 +633,7 @@ export default function AdminDashboard() {
                 <div className="card-title">By Type</div>
               </div>
               <div className="card-body">
-                <ResponsiveContainer width="100%" height={180}>
+                <ResponsiveContainer width="100%" height={200}>
                   <PieChart>
                     <Pie data={abstractTypeData} cx="50%" cy="50%" innerRadius={45} outerRadius={70} paddingAngle={2} dataKey="value">
                       {abstractTypeData.map((_, i) => <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />)}
@@ -611,28 +653,27 @@ export default function AdminDashboard() {
       ══════════════════════════════════════ */}
       {activeTab === "financial" && (
         <>
-          {/* Revenue KPIs */}
           <div className="row col-3" style={{ marginBottom: 16 }}>
             {[
               {
                 label: "Total Revenue (MYR)",
                 value: `MYR ${(stats?.totalRevenue ?? 0).toLocaleString("en-MY")}`,
-                sub: "All confirmed payments",
-                iconClass: "green",
+                sub: "All confirmed payments", iconClass: "green",
+                spark: sparkHeights,
               },
               {
                 label: "Pending Payments",
                 value: stats?.pendingPayments ?? 0,
-                sub: "Awaiting collection",
-                iconClass: "gold",
+                sub: "Awaiting collection", iconClass: "gold",
+                spark: [14,10,18,12,16,20,14],
               },
               {
-                label: "Average Fee (MYR)",
+                label: "Avg. Fee (MYR)",
                 value: stats?.totalRegistrations
                   ? `MYR ${Math.round((stats.totalRevenue ?? 0) / stats.totalRegistrations).toLocaleString("en-MY")}`
                   : "—",
-                sub: "Per delegate",
-                iconClass: "teal",
+                sub: "Per delegate", iconClass: "teal",
+                spark: [10,16,12,18,14,20,24],
               },
             ].map((k) => (
               <div className="card" key={k.label}>
@@ -645,12 +686,12 @@ export default function AdminDashboard() {
                     <div className="stat-value" style={{ fontSize: 18 }}>{k.value}</div>
                     <div className="stat-subtext">{k.sub}</div>
                   </div>
+                  <StatSpark heights={k.spark} />
                 </div>
               </div>
             ))}
           </div>
 
-          {/* Revenue breakdown chart */}
           <div className="card">
             <div className="card-header">
               <div className="card-title">Revenue Breakdown by Category</div>
