@@ -76,9 +76,9 @@ function Badge({ bg, color, children }: { bg: string; color: string; children: R
 
 function SectionHeader({ title, href, linkLabel = "View all" }: { title: string; href: string; linkLabel?: string }) {
   return (
-    <div className="flex items-center justify-between px-5 py-3.5" style={{ borderBottom: "1px solid #f1f3f5" }}>
-      <h2 className="text-[14px] font-semibold" style={{ color: "#212529" }}>{title}</h2>
-      <Link href={href} className="flex items-center gap-1 text-[12px] font-medium no-underline" style={{ color: "#0E6E74" }}>
+    <div className="flex items-center justify-between px-5 py-3" style={{ background: "#0B2744" }}>
+      <h2 className="text-[14px] font-semibold text-white">{title}</h2>
+      <Link href={href} className="flex items-center gap-1 text-[12px] font-medium no-underline" style={{ color: "#C89B3C" }}>
         {linkLabel} <ArrowRight className="w-3.5 h-3.5" />
       </Link>
     </div>
@@ -346,15 +346,22 @@ export default function AdminDashboard() {
               const t = k.trend;
               return (
                 <div key={k.label} className="bg-white rounded-xl overflow-hidden" style={CARD}>
-                  <div style={{ height: 3, background: k.accent }} />
-                  <div className="p-5">
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: k.iconBg }}>
-                        <Icon className="w-4 h-4" style={{ color: k.iconColor }} />
-                      </div>
+                  <div className="flex">
+                    {/* Left colored icon block */}
+                    <div
+                      className="flex items-center justify-center flex-shrink-0"
+                      style={{ background: k.iconBg, width: 80, minHeight: 96 }}
+                    >
+                      <Icon className="w-9 h-9" style={{ color: k.iconColor }} />
+                    </div>
+                    {/* Right metric */}
+                    <div className="flex-1 px-4 py-3 min-w-0">
+                      <div className="text-[28px] font-bold leading-none" style={{ color: "#212529" }}>{k.value}</div>
+                      <div className="text-[10px] font-bold uppercase tracking-wider mt-1.5 mb-0.5" style={{ color: "#6c757d" }}>{k.label}</div>
+                      <div className="text-[11px] mb-1.5" style={{ color: "#adb5bd" }}>{k.sub}</div>
                       {t ? (
                         <div
-                          className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-bold"
+                          className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-bold"
                           style={
                             t.dir === "up"
                               ? { background: "#d1e7dd", color: "#0a5c39" }
@@ -367,15 +374,14 @@ export default function AdminDashboard() {
                           {t.label}
                         </div>
                       ) : (
-                        <div className="flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-semibold" style={{ background: "#e9ecef", color: "#adb5bd" }}>
+                        <div className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-semibold" style={{ background: "#e9ecef", color: "#adb5bd" }}>
                           — no data
                         </div>
                       )}
                     </div>
-                    <div className="text-[26px] font-bold leading-none mb-1" style={{ color: "#212529" }}>{k.value}</div>
-                    <div className="text-[11px] font-semibold uppercase tracking-wider mb-0.5" style={{ color: "#6c757d" }}>{k.label}</div>
-                    <div className="text-[11px]" style={{ color: "#adb5bd" }}>{k.sub}</div>
                   </div>
+                  {/* Bottom accent strip */}
+                  <div style={{ height: 3, background: k.accent }} />
                 </div>
               );
             })}
@@ -385,9 +391,9 @@ export default function AdminDashboard() {
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-5 mb-5">
             {/* Registrations area chart */}
             <div className="xl:col-span-2 bg-white rounded-xl overflow-hidden" style={CARD}>
-              <div className="px-5 py-4" style={{ borderBottom: "1px solid #f1f3f5" }}>
-                <div className="text-[14px] font-semibold mb-0.5" style={{ color: "#212529" }}>Registration Trend</div>
-                <div className="text-[12px]" style={{ color: "#adb5bd" }}>{trendSubtitle}</div>
+              <div className="px-5 py-3" style={{ background: "#0B2744" }}>
+                <div className="text-[14px] font-semibold text-white">Registration Trend</div>
+                <div className="text-[11px] mt-0.5" style={{ color: "rgba(255,255,255,0.5)" }}>{trendSubtitle}</div>
               </div>
               <div className="p-5" style={{ minHeight: 220 }}>
                 <ResponsiveContainer width="100%" height={200}>
@@ -480,8 +486,8 @@ export default function AdminDashboard() {
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-5 mb-5">
             {/* Payment status bar chart */}
             <div className="bg-white rounded-xl overflow-hidden" style={CARD}>
-              <div className="px-5 py-3.5" style={{ borderBottom: "1px solid #f1f3f5" }}>
-                <div className="text-[14px] font-semibold" style={{ color: "#212529" }}>Payment Status</div>
+              <div className="px-5 py-3" style={{ background: "#0B2744" }}>
+                <div className="text-[14px] font-semibold text-white">Payment Status</div>
               </div>
               <div className="p-5" style={{ minHeight: 220 }}>
                 <ResponsiveContainer width="100%" height={180}>
@@ -564,8 +570,8 @@ export default function AdminDashboard() {
           {/* Charts row */}
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 mb-5">
             <div className="bg-white rounded-xl overflow-hidden" style={CARD}>
-              <div className="px-5 py-3.5" style={{ borderBottom: "1px solid #f1f3f5" }}>
-                <div className="text-[14px] font-semibold" style={{ color: "#212529" }}>Abstracts by Type</div>
+              <div className="px-5 py-3" style={{ background: "#0B2744" }}>
+                <div className="text-[14px] font-semibold text-white">Abstracts by Type</div>
               </div>
               <div className="p-5" style={{ minHeight: 220 }}>
                 <ResponsiveContainer width="100%" height={180}>
@@ -585,8 +591,8 @@ export default function AdminDashboard() {
             </div>
 
             <div className="bg-white rounded-xl overflow-hidden" style={CARD}>
-              <div className="px-5 py-3.5" style={{ borderBottom: "1px solid #f1f3f5" }}>
-                <div className="text-[14px] font-semibold" style={{ color: "#212529" }}>Abstract Status Distribution</div>
+              <div className="px-5 py-3" style={{ background: "#0B2744" }}>
+                <div className="text-[14px] font-semibold text-white">Abstract Status Distribution</div>
               </div>
               <div className="p-5 flex items-center justify-center" style={{ minHeight: 220 }}>
                 {abstractStatusData.length > 0 ? (
@@ -669,6 +675,9 @@ export default function AdminDashboard() {
                 value: `MYR ${(stats?.totalRevenue ?? 0).toLocaleString("en-MY", { minimumFractionDigits: 2 })}`,
                 sub: "collected to date",
                 accent: "#C89B3C",
+                iconBg: "#FDF6E8",
+                icon: DollarSign,
+                iconColor: "#C89B3C",
               },
               {
                 label: "Avg. per Delegate",
@@ -677,30 +686,47 @@ export default function AdminDashboard() {
                   : "MYR —",
                 sub: "mean registration fee",
                 accent: "#0E6E74",
+                iconBg: "#e6f4f5",
+                icon: TrendingUp,
+                iconColor: "#0E6E74",
               },
               {
                 label: "Pending",
                 value: `${stats?.pendingPayments ?? 0}`,
                 sub: "awaiting payment",
                 accent: "#856404",
+                iconBg: "#fff3cd",
+                icon: Users,
+                iconColor: "#856404",
               },
-            ].map((k) => (
-              <div key={k.label} className="bg-white rounded-xl overflow-hidden" style={CARD}>
-                <div style={{ height: 3, background: k.accent }} />
-                <div className="p-5">
-                  <div className="text-[11px] font-semibold uppercase tracking-wider mb-1" style={{ color: "#6c757d" }}>{k.label}</div>
-                  <div className="text-[22px] font-bold leading-tight mb-0.5" style={{ color: "#212529" }}>{k.value}</div>
-                  <div className="text-[12px]" style={{ color: "#adb5bd" }}>{k.sub}</div>
+            ].map((k) => {
+              const Icon = k.icon;
+              return (
+                <div key={k.label} className="bg-white rounded-xl overflow-hidden" style={CARD}>
+                  <div className="flex">
+                    <div
+                      className="flex items-center justify-center flex-shrink-0"
+                      style={{ background: k.iconBg, width: 76, minHeight: 88 }}
+                    >
+                      <Icon className="w-8 h-8" style={{ color: k.iconColor }} />
+                    </div>
+                    <div className="flex-1 px-4 py-3 min-w-0">
+                      <div className="text-[22px] font-bold leading-none" style={{ color: "#212529" }}>{k.value}</div>
+                      <div className="text-[10px] font-bold uppercase tracking-wider mt-1.5 mb-0.5" style={{ color: "#6c757d" }}>{k.label}</div>
+                      <div className="text-[11px]" style={{ color: "#adb5bd" }}>{k.sub}</div>
+                    </div>
+                  </div>
+                  <div style={{ height: 3, background: k.accent }} />
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           {/* Charts row */}
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
             <div className="bg-white rounded-xl overflow-hidden" style={CARD}>
-              <div className="px-5 py-3.5" style={{ borderBottom: "1px solid #f1f3f5" }}>
-                <div className="text-[14px] font-semibold" style={{ color: "#212529" }}>Revenue by Category</div>
+              <div className="px-5 py-3" style={{ background: "#0B2744" }}>
+                <div className="text-[14px] font-semibold text-white">Revenue by Category</div>
               </div>
               <div className="p-5" style={{ minHeight: 220 }}>
                 <ResponsiveContainer width="100%" height={200}>
@@ -723,8 +749,8 @@ export default function AdminDashboard() {
             </div>
 
             <div className="bg-white rounded-xl overflow-hidden" style={CARD}>
-              <div className="px-5 py-3.5" style={{ borderBottom: "1px solid #f1f3f5" }}>
-                <div className="text-[14px] font-semibold" style={{ color: "#212529" }}>Payment Status Breakdown</div>
+              <div className="px-5 py-3" style={{ background: "#0B2744" }}>
+                <div className="text-[14px] font-semibold text-white">Payment Status Breakdown</div>
               </div>
               <div className="p-5" style={{ minHeight: 220 }}>
                 {paymentStatusData.length > 0 ? (

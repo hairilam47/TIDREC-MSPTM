@@ -55,15 +55,15 @@ function SectionHeader({
 }) {
   return (
     <div
-      className="flex items-center justify-between px-5 py-3.5"
-      style={{ borderBottom: "1px solid #e9ecef" }}
+      className="flex items-center justify-between px-5 py-3"
+      style={{ background: "#0B2744" }}
     >
-      <span className="text-[14px] font-semibold" style={{ color: "#212529" }}>{title}</span>
+      <span className="text-[14px] font-semibold text-white">{title}</span>
       {href && !action && (
         <Link
           href={href}
           className="flex items-center gap-1 text-[12px] font-medium no-underline"
-          style={{ color: "#0E6E74" }}
+          style={{ color: "#4DC8CE" }}
         >
           View all <ArrowRight className="w-3.5 h-3.5" />
         </Link>
@@ -84,23 +84,21 @@ function StatTile({
   accentColor: string;
 }) {
   return (
-    <div
-      className="bg-white rounded-xl flex items-center gap-4 px-5 py-4 overflow-hidden"
-      style={{ ...CARD, borderLeft: `4px solid ${accentColor}` }}
-    >
-      <div
-        className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
-        style={{ background: `${accentColor}18`, color: accentColor }}
-      >
-        {icon}
-      </div>
-      <div className="min-w-0">
-        <div className="text-[11px] font-semibold uppercase tracking-wider leading-none mb-1" style={{ color: "#6c757d" }}>
-          {label}
+    <div className="bg-white rounded-xl overflow-hidden" style={CARD}>
+      <div className="flex">
+        <div
+          className="flex items-center justify-center flex-shrink-0"
+          style={{ background: `${accentColor}18`, width: 72, minHeight: 80, color: accentColor }}
+        >
+          {icon}
         </div>
-        <div className="text-[20px] font-bold leading-tight" style={{ color: "#212529" }}>{value}</div>
-        {sub && <div className="text-[11px] mt-0.5 truncate" style={{ color: "#adb5bd" }}>{sub}</div>}
+        <div className="flex-1 px-4 py-3 min-w-0">
+          <div className="text-[22px] font-bold leading-none" style={{ color: "#212529" }}>{value}</div>
+          <div className="text-[10px] font-bold uppercase tracking-wider mt-1.5 mb-0.5" style={{ color: "#6c757d" }}>{label}</div>
+          {sub && <div className="text-[11px] truncate" style={{ color: "#adb5bd" }}>{sub}</div>}
+        </div>
       </div>
+      <div style={{ height: 3, background: accentColor }} />
     </div>
   );
 }
