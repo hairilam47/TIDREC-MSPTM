@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "wouter";
 import { MapPin, Clock, Users, Building, ChevronRight, CalendarDays } from "lucide-react";
+import { CountdownBadge } from "@/components/ui/CountdownBadge";
 import { useGetSessions, useGetSpeakers, useGetSponsors, useGetSettings } from "@workspace/api-client-react";
 
 import bannerImg from "@assets/[BANNER]_3rd_Southeast_Asia_Ticks_and_Tick-borne_Diseases_Symp_1781130718946.png";
@@ -38,6 +39,7 @@ export default function Home() {
             <a href="#sponsors" className="hover:text-accent transition-colors font-medium cursor-pointer">Sponsors</a>
           </nav>
           <div className="flex items-center gap-4">
+            <CountdownBadge variant="dark" />
             <Link href="/login" className="hover:text-accent transition-colors font-medium">Login</Link>
             <Button asChild className="bg-accent text-accent-foreground hover:bg-accent/90">
               <Link href="/register">Register Now</Link>
