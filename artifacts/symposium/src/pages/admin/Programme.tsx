@@ -127,7 +127,11 @@ export default function AdminProgramme() {
             </button>
           ))}
         </div>
-        <button className="btn btn-primary" onClick={openCreate}>
+        <button
+          className="btn btn-sm"
+          style={{ background: "var(--primary)", color: "#fff", borderColor: "var(--primary-dk)", transition: "none" }}
+          onClick={openCreate}
+        >
           <Plus style={{ width: 14, height: 14 }} /> Add Session
         </button>
       </div>
