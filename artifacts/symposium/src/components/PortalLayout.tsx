@@ -3,72 +3,89 @@ import { Link, useLocation } from "wouter";
 import { AnimatePresence, motion } from "framer-motion";
 import { useGetMe, useGetAnnouncements, useLogout } from "@workspace/api-client-react";
 
+const NAV_GROUPS = [
+  {
+    section: "Main",
+    items: [
+      { key: "dashboard",    href: "/portal",               label: "Dashboard",       icon: <IcoDash /> },
+      { key: "registration", href: "/portal/registration",  label: "My Registration", icon: <IcoClipboard /> },
+      { key: "abstracts",    href: "/portal/abstracts",     label: "My Abstracts",    icon: <IcoDoc /> },
+      { key: "invoices",     href: "/portal/invoices",      label: "Invoices",        icon: <IcoReceipt /> },
+    ],
+  },
+  {
+    section: "Conference",
+    items: [
+      { key: "programme", href: "/portal/programme", label: "Programme", icon: <IcoCal /> },
+      { key: "speakers",  href: "/portal/speakers",  label: "Speakers",  icon: <IcoUsers /> },
+    ],
+  },
+  {
+    section: "Account",
+    items: [
+      { key: "profile",       href: "/portal/profile",       label: "Profile",        icon: <IcoProfile /> },
+      { key: "notifications", href: "/portal/notifications", label: "Notifications",  icon: <IcoBell /> },
+      { key: "support",       href: "/portal/support",       label: "Support",        icon: <IcoHelp /> },
+    ],
+  },
+];
+
 export default function PortalLayout({ children, title }: { children: React.ReactNode; title?: string }) {
   const [location] = useLocation();
   const [rail, setRail] = React.useState(false);
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [theme, setTheme] = React.useState<"light" | "dark">("light");
   const { data: user } = useGetMe();
   const { data: announcements } = useGetAnnouncements();
   const logoutMutation = useLogout();
 
-  const importantCount = announcements?.filter((a) => a.important).length ?? 0;
+  const unreadCount = announcements?.filter((a) => a.important).length ?? 0;
+
+  /* ── body.data-shell = "portal" + rail / open body classes ── */
+  React.useEffect(() => {
+    document.body.dataset.shell = "portal";
+    return () => { delete document.body.dataset.shell; };
+  }, []);
+
+  React.useEffect(() => {
+    document.body.classList.toggle("sidebar-rail", rail);
+    return () => { document.body.classList.remove("sidebar-rail"); };
+  }, [rail]);
+
+  React.useEffect(() => {
+    document.body.classList.toggle("sidebar-open", mobileOpen);
+    return () => { document.body.classList.remove("sidebar-open"); };
+  }, [mobileOpen]);
+
+  /* ── Theme ── */
+  React.useEffect(() => {
+    try { const v = localStorage.getItem("theme"); if (v === "dark" || v === "light") setTheme(v); } catch (_) {}
+  }, []);
+  const toggleTheme = () => {
+    const next = theme === "dark" ? "light" : "dark";
+    setTheme(next);
+    document.documentElement.setAttribute("data-theme", next);
+    try { localStorage.setItem("theme", next); } catch (_) {}
+  };
 
   const handleLogout = () => {
     logoutMutation.mutate(undefined, {
-      onSuccess: () => {
-        localStorage.removeItem("satbds_token");
-        window.location.href = "/login";
-      },
+      onSuccess: () => { localStorage.removeItem("satbds_token"); window.location.href = "/login"; },
     });
   };
-
-  const navGroups = [
-    {
-      label: "Main",
-      items: [
-        { href: "/portal", label: "Dashboard", icon: <IcoDash /> },
-        { href: "/portal/registration", label: "My Registration", icon: <IcoClipboard /> },
-        { href: "/portal/abstracts", label: "My Abstracts", icon: <IcoDoc /> },
-        { href: "/portal/invoices", label: "Invoices", icon: <IcoReceipt /> },
-      ],
-    },
-    {
-      label: "Conference",
-      items: [
-        { href: "/portal/programme", label: "Programme", icon: <IcoCal /> },
-        { href: "/portal/speakers", label: "Speakers", icon: <IcoUsers /> },
-      ],
-    },
-    {
-      label: "Account",
-      items: [
-        { href: "/portal/profile", label: "Profile", icon: <IcoProfile /> },
-        {
-          href: "/portal/notifications",
-          label: "Notifications",
-          icon: <IcoBell />,
-          badge: importantCount > 0 ? importantCount : undefined,
-        },
-        { href: "/portal/support", label: "Support", icon: <IcoHelp /> },
-      ],
-    },
-  ];
 
   const isActive = (href: string) =>
     href === "/portal" ? location === "/portal" : location.startsWith(href);
 
   const activeLabel =
     title ||
-    navGroups.flatMap((g) => g.items).find((i) => isActive(i.href))?.label ||
+    NAV_GROUPS.flatMap((g) => g.items).find((i) => isActive(i.href))?.label ||
     "Portal";
 
   const initials = user
-    ? `${user.firstName?.[0] ?? ""}${user.lastName?.[0] ?? ""}`.toUpperCase()
+    ? `${user.firstName?.[0] ?? ""}${user.lastName?.[0] ?? ""}`.toUpperCase() || "?"
     : "?";
-
-  const fullName = user
-    ? `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim()
-    : "Delegate";
+  const fullName = user ? `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim() : "Delegate";
 
   const onToggle = () => {
     if (window.innerWidth >= 769) setRail((r) => !r);
@@ -76,38 +93,41 @@ export default function PortalLayout({ children, title }: { children: React.Reac
   };
 
   return (
-    <div
-      className={rail ? "g4-shell g4-portal g4-rail" : "g4-shell g4-portal"}
-      style={{ minHeight: "100vh", background: "var(--body-bg)" }}
-    >
+    <>
       {/* ── Sidebar ── */}
-      <aside className={mobileOpen ? "g4-sidebar mobile-open" : "g4-sidebar"}>
-        <div className="g4-sidebar-brand">
-          <div className="g4-brand-icon">S</div>
-          <div className="g4-brand-name">SATBDS <small>2027</small></div>
+      <aside className={mobileOpen ? "sidebar open" : "sidebar"} aria-label="Delegate Portal navigation">
+        <div className="sidebar-brand">
+          <div className="brand-icon">S</div>
+          <div className="brand-name">Delegate <small>Portal</small></div>
         </div>
 
-        <nav className="g4-sidebar-nav" aria-label="Portal navigation">
-          {navGroups.map((group) => (
-            <div className="g4-nav-group" key={group.label}>
-              <div className="g4-nav-label">{group.label}</div>
+        <nav className="sidebar-nav">
+          {NAV_GROUPS.map((group) => (
+            <div className="nav-group" key={group.section}>
+              <div className="nav-label">{group.section}</div>
               {group.items.map((item) => {
                 const active = isActive(item.href);
-                const badge = (item as { badge?: number }).badge;
+                const hasBadge = item.key === "notifications" && unreadCount > 0;
                 return (
                   <Link
-                    key={item.href}
+                    key={item.key}
                     href={item.href}
-                    className={active ? "g4-nav-link active" : "g4-nav-link"}
+                    className={active ? "nav-link active" : "nav-link"}
                     data-label={item.label}
                     aria-current={active ? "page" : undefined}
                     onClick={() => setMobileOpen(false)}
                   >
-                    {item.icon}
-                    <span className="g4-nav-text">{item.label}</span>
-                    {badge ? (
-                      <span className="g4-badge g4-badge-teal">{badge}</span>
-                    ) : null}
+                    <span className="icon">{item.icon}</span>
+                    <span className="nav-text">{item.label}</span>
+                    {hasBadge && (
+                      <span className="nav-link badge-teal" style={{
+                        marginLeft: "auto", fontSize: 10, fontWeight: 600,
+                        padding: "1px 6px", borderRadius: 3, lineHeight: 1.6,
+                        background: "rgba(14,110,116,0.12)", color: "#0E6E74",
+                      }}>
+                        {unreadCount > 9 ? "9+" : unreadCount}
+                      </span>
+                    )}
                   </Link>
                 );
               })}
@@ -115,12 +135,12 @@ export default function PortalLayout({ children, title }: { children: React.Reac
           ))}
         </nav>
 
-        <div className="g4-sidebar-footer">
-          <div className="g4-sidebar-user" title={fullName}>
-            <div className="g4-user-avatar">{initials}</div>
-            <div className="g4-user-info">
-              <div className="g4-user-name">{fullName}</div>
-              <div className="g4-user-role">Delegate</div>
+        <div className="sidebar-footer">
+          <div className="sidebar-user" title={fullName}>
+            <div className="avatar">{initials}</div>
+            <div className="sidebar-user-info">
+              <div className="name">{fullName}</div>
+              <div className="role">Delegate</div>
             </div>
           </div>
         </div>
@@ -128,79 +148,75 @@ export default function PortalLayout({ children, title }: { children: React.Reac
 
       {/* ── Mobile backdrop ── */}
       {mobileOpen && (
-        <div
-          className="g4-backdrop"
-          onClick={() => setMobileOpen(false)}
-          aria-hidden="true"
-        />
+        <div className="sidebar-backdrop" onClick={() => setMobileOpen(false)} aria-hidden="true" />
       )}
 
       {/* ── Topbar ── */}
-      <header className="g4-topbar">
-        <div className="g4-topbar-left">
-          <button className="g4-sidebar-toggle" type="button" aria-label="Toggle sidebar" onClick={onToggle}>
+      <header className="topbar">
+        <div className="topbar-left">
+          <button className="sidebar-toggle" type="button" aria-label="Toggle sidebar" aria-expanded={mobileOpen || rail} onClick={onToggle}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
               <path d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
-          <nav className="g4-breadcrumb" aria-label="Breadcrumb">
+          <nav className="breadcrumb" aria-label="Breadcrumb">
             <span>Portal</span>
             <span className="sep" aria-hidden="true">›</span>
             <span className="current">{activeLabel}</span>
           </nav>
         </div>
 
-        <div className="g4-search-box">
-          <span className="g4-search-icon">
+        <div className="search-box">
+          <span className="s-icon">
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
               <circle cx="7" cy="7" r="5" /><path d="M11 11l3.5 3.5" />
             </svg>
           </span>
           <input type="text" placeholder="Search…" aria-label="Search" readOnly />
+          <kbd>⌘K</kbd>
         </div>
 
-        <div className="g4-topbar-right">
+        <div className="topbar-right">
+          <button className="tb-btn theme-toggle" type="button" title="Toggle theme" aria-label="Toggle theme" onClick={toggleTheme}>
+            <svg className="theme-icon-dark" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+            </svg>
+            <svg className="theme-icon-light" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+              <circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+            </svg>
+          </button>
+
           <Link href="/portal/notifications">
-            <button
-              className="g4-tb-btn"
-              type="button"
-              title="Notifications"
-              aria-label="Notifications"
-            >
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
-                <path d="M12 3a6 6 0 00-6 6c0 6-3 7-3 7h18s-3-1-3-7a6 6 0 00-6-6z"/>
-                <path d="M10.5 21a1.5 1.5 0 003 0"/>
+            <button className="tb-btn tb-notifications" type="button" title="Notifications" aria-label="Notifications">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+                <path d="M12 3a6 6 0 00-6 6c0 6-3 7-3 7h18s-3-1-3-7a6 6 0 00-6-6z" />
+                <path d="M10.5 21a1.5 1.5 0 003 0" />
               </svg>
-              {importantCount > 0 && (
-                <span className="g4-tb-badge">{importantCount > 9 ? "9+" : importantCount}</span>
-              )}
+              {unreadCount > 0 && <span className="dot" />}
             </button>
           </Link>
 
-          <button
-            className="g4-tb-btn"
-            type="button"
-            title="Sign out"
-            onClick={handleLogout}
-          >
+          <button className="tb-btn" type="button" title="Sign out" aria-label="Sign out" onClick={handleLogout}>
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
               <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
               <polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" />
             </svg>
           </button>
 
-          <button className="g4-tb-avatar" type="button" title={fullName}>{initials}</button>
+          <button className="tb-avatar" type="button" title={`${fullName} — Sign out`} onClick={handleLogout}>
+            {initials}
+          </button>
         </div>
       </header>
 
       {/* ── Main ── */}
-      <main className="g4-main" id="main-content">
-        <div className="g4-page-wrapper">
-          <div className="g4-page-header">
-            <div className="g4-page-header-row">
+      <main className="main" id="main-content" tabIndex={-1}>
+        <div className="page-wrapper">
+          <div className="page-header">
+            <div className="page-header-row">
               <div>
-                <div className="g4-page-pretitle">SATBDS 2027 Delegate Portal</div>
-                <h1 className="g4-page-title">{activeLabel}</h1>
+                <p className="page-pretitle">SATBDS 2027 — Delegate Portal</p>
+                <h1 className="page-title">{activeLabel}</h1>
               </div>
             </div>
           </div>
@@ -217,62 +233,23 @@ export default function PortalLayout({ children, title }: { children: React.Reac
             </motion.div>
           </AnimatePresence>
         </div>
+
+        <footer className="gen-footer">
+          <span>3rd Southeast Asia Ticks &amp; Tick-borne Diseases Symposium · 22–23 March 2027 · Sunway Putra Hotel, KL</span>
+          <span>SATBDS 2027</span>
+        </footer>
       </main>
-    </div>
+    </>
   );
 }
 
-/* ── Icons ── */
-const IcoDash = () => (
-  <svg className="g4-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
-    <rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="4" rx="1.5"/>
-    <rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="10" width="7" height="11" rx="1.5"/>
-  </svg>
-);
-const IcoClipboard = () => (
-  <svg className="g4-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
-    <path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/>
-    <rect x="8" y="2" width="8" height="4" rx="1"/>
-    <line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="12" y2="17"/>
-  </svg>
-);
-const IcoDoc = () => (
-  <svg className="g4-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
-    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/>
-    <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
-  </svg>
-);
-const IcoReceipt = () => (
-  <svg className="g4-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
-    <path d="M5 21V3h14v18l-3-2-3 2-3-2-3 2-2-2z"/><path d="M9 8h6M9 12h6M9 16h4"/>
-  </svg>
-);
-const IcoCal = () => (
-  <svg className="g4-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
-    <rect x="3" y="4" width="18" height="16" rx="2"/>
-    <path d="M3 10h18M8 4v6M16 4v6"/>
-  </svg>
-);
-const IcoUsers = () => (
-  <svg className="g4-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
-    <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
-  </svg>
-);
-const IcoProfile = () => (
-  <svg className="g4-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
-    <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
-  </svg>
-);
-const IcoBell = () => (
-  <svg className="g4-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
-    <path d="M12 3a6 6 0 00-6 6c0 6-3 7-3 7h18s-3-1-3-7a6 6 0 00-6-6z"/>
-    <path d="M10.5 21a1.5 1.5 0 003 0"/>
-  </svg>
-);
-const IcoHelp = () => (
-  <svg className="g4-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
-    <circle cx="12" cy="12" r="10"/>
-    <path d="M9.1 9a3 3 0 015.8 1c0 2-3 3-3 3"/>
-    <circle cx="12" cy="17" r="0.5" fill="currentColor"/>
-  </svg>
-);
+/* ── Icons (function declarations so they hoist above the NAV_GROUPS const) ── */
+function IcoDash() { return <svg className="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="4" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="10" width="7" height="11" rx="1.5"/></svg>; }
+function IcoClipboard() { return <svg className="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="12" y2="17"/></svg>; }
+function IcoDoc() { return <svg className="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>; }
+function IcoReceipt() { return <svg className="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M5 21V3h14v18l-3-2-3 2-3-2-3 2-2-2z"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>; }
+function IcoCal() { return <svg className="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M8 4v6M16 4v6"/></svg>; }
+function IcoUsers() { return <svg className="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>; }
+function IcoProfile() { return <svg className="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>; }
+function IcoBell() { return <svg className="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M12 3a6 6 0 00-6 6c0 6-3 7-3 7h18s-3-1-3-7a6 6 0 00-6-6z"/><path d="M10.5 21a1.5 1.5 0 003 0"/></svg>; }
+function IcoHelp() { return <svg className="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 015.8 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r="0.5" fill="currentColor"/></svg>; }
