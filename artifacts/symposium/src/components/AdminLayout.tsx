@@ -20,6 +20,7 @@ import {
   TrendingUp,
   Settings,
   Mail,
+  ChevronRight,
 } from "lucide-react";
 
 export default function AdminLayout({ children, title }: { children: React.ReactNode; title?: string }) {
@@ -110,7 +111,7 @@ export default function AdminLayout({ children, title }: { children: React.React
         {navSections.map((section) => (
           <div key={section.label} className="mb-1">
             <div
-              className="text-[10px] font-bold tracking-widest uppercase px-2.5 pt-3 pb-1.5"
+              className="text-[11px] font-bold tracking-[0.12em] uppercase px-2.5 pt-3 pb-1.5"
               style={{ color: "rgba(200,155,60,0.5)" }}
             >
               {section.label}
@@ -123,7 +124,7 @@ export default function AdminLayout({ children, title }: { children: React.React
                   key={item.href}
                   href={item.href}
                   onClick={() => setMobileOpen(false)}
-                  className="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-[13px] font-medium transition-all mb-0.5 no-underline"
+                  className="group flex items-center gap-2.5 px-2.5 py-2 rounded-md text-[13px] font-medium transition-all mb-0.5 no-underline"
                   style={
                     active
                       ? { color: "#C89B3C", background: "rgba(200,155,60,0.12)", borderLeft: "3px solid #C89B3C" }
@@ -132,6 +133,10 @@ export default function AdminLayout({ children, title }: { children: React.React
                 >
                   <Icon className="w-4 h-4 flex-shrink-0" />
                   <span className="flex-1">{item.label}</span>
+                  <ChevronRight
+                    className="w-3 h-3 flex-shrink-0 opacity-0 group-hover:opacity-60 transition-opacity"
+                    style={{ color: active ? "#C89B3C" : "rgba(255,255,255,0.5)" }}
+                  />
                 </Link>
               );
             })}

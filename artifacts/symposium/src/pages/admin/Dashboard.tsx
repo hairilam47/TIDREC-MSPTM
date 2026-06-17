@@ -86,10 +86,10 @@ function SectionHeader({ title, href, linkLabel = "View all" }: { title: string;
 }
 
 const TABS = [
-  { id: "overview",      label: "Overview",      icon: BarChart2 },
-  { id: "registrations", label: "Registrations", icon: ClipboardList },
-  { id: "abstracts",     label: "Abstracts",     icon: FileText },
-  { id: "financial",     label: "Financial",     icon: DollarSign },
+  { id: "overview",      label: "Overview",      short: "Ovr.",  icon: BarChart2 },
+  { id: "registrations", label: "Registrations", short: "Regs.", icon: ClipboardList },
+  { id: "abstracts",     label: "Abstracts",     short: "Abs.",  icon: FileText },
+  { id: "financial",     label: "Financial",     short: "Fin.",  icon: DollarSign },
 ] as const;
 
 type Tab = typeof TABS[number]["id"];
@@ -265,23 +265,23 @@ export default function AdminDashboard() {
           <p className="text-[13px]" style={{ color: "#6c757d" }}>{todayStr}</p>
         </div>
         <div
-          className="hidden sm:flex flex-col items-center justify-center rounded-xl px-5 py-3 flex-shrink-0"
-          style={{ border: "1.5px solid #C89B3C", background: "#FEFAF3" }}
+          className="hidden sm:flex items-center gap-3 px-4 py-2 rounded-full flex-shrink-0"
+          style={{ border: "1.5px solid #C89B3C" }}
         >
-          <span className="text-[26px] font-bold leading-none" style={{ color: "#C89B3C" }}>
+          <span className="text-[22px] font-bold leading-none" style={{ color: "#C89B3C" }}>
             {Math.max(0, Math.ceil((new Date("2027-03-22").getTime() - Date.now()) / 86400000))}
           </span>
-          <span className="text-[10px] font-semibold uppercase tracking-wider mt-0.5" style={{ color: "#6c757d" }}>
-            days to go
-          </span>
-          <span className="text-[10px] mt-0.5" style={{ color: "#adb5bd" }}>22 Mar 2027</span>
+          <div>
+            <div className="text-[11px] font-semibold uppercase tracking-wide leading-none" style={{ color: "#C89B3C" }}>days to go</div>
+            <div className="text-[10px] mt-0.5" style={{ color: "#adb5bd" }}>22 Mar 2027</div>
+          </div>
         </div>
       </div>
 
       {/* ── Tab bar ── */}
       <div
-        className="flex items-center bg-white rounded-xl mb-5 overflow-hidden"
-        style={{ ...CARD, paddingLeft: 8, paddingRight: 8 }}
+        className="flex items-center bg-white rounded-xl mb-5"
+        style={{ border: "1px solid #e9ecef", paddingLeft: 8, paddingRight: 8, borderBottom: "2px solid #e9ecef" }}
       >
         {TABS.map((tab) => {
           const Icon = tab.icon;
@@ -290,25 +290,16 @@ export default function AdminDashboard() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className="flex items-center gap-1.5 px-4 py-3.5 text-[13px] transition-all relative"
+              className="flex items-center gap-1.5 px-4 py-3.5 text-[13px] transition-all"
               style={
                 active
-                  ? {
-                      color: "#0B2744",
-                      fontWeight: 600,
-                      borderBottom: "2px solid #C89B3C",
-                      marginBottom: -1,
-                    }
-                  : {
-                      color: "#6c757d",
-                      fontWeight: 500,
-                      borderBottom: "2px solid transparent",
-                      marginBottom: -1,
-                    }
+                  ? { color: "#0B2744", fontWeight: 600, borderBottom: "2px solid #C89B3C", marginBottom: -2 }
+                  : { color: "#6c757d", fontWeight: 500, borderBottom: "2px solid transparent", marginBottom: -2 }
               }
             >
               <Icon className="w-3.5 h-3.5 flex-shrink-0" />
               <span className="hidden sm:inline">{tab.label}</span>
+              <span className="sm:hidden">{tab.short}</span>
             </button>
           );
         })}
@@ -398,7 +389,7 @@ export default function AdminDashboard() {
                 <div className="text-[14px] font-semibold mb-0.5" style={{ color: "#212529" }}>Registration Trend</div>
                 <div className="text-[12px]" style={{ color: "#adb5bd" }}>{trendSubtitle}</div>
               </div>
-              <div className="p-4">
+              <div className="p-5" style={{ minHeight: 220 }}>
                 <ResponsiveContainer width="100%" height={200}>
                   <AreaChart data={trendData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
                     <defs>
@@ -473,7 +464,7 @@ export default function AdminDashboard() {
                 className="h-full rounded-full transition-all duration-700"
                 style={{
                   width: `${stats?.totalRegistrations ? Math.min((stats.totalRegistrations / 300) * 100, 100) : 0}%`,
-                  background: "linear-gradient(90deg, #C89B3C 0%, #0E6E74 100%)",
+                  background: "linear-gradient(90deg, #0E6E74 0%, #0B2744 100%)",
                 }}
               />
             </div>
@@ -492,12 +483,12 @@ export default function AdminDashboard() {
               <div className="px-5 py-3.5" style={{ borderBottom: "1px solid #f1f3f5" }}>
                 <div className="text-[14px] font-semibold" style={{ color: "#212529" }}>Payment Status</div>
               </div>
-              <div className="p-4">
-                <ResponsiveContainer width="100%" height={160}>
+              <div className="p-5" style={{ minHeight: 220 }}>
+                <ResponsiveContainer width="100%" height={180}>
                   <BarChart data={paymentStatusData} layout="vertical" margin={{ left: 0, right: 12, top: 4, bottom: 4 }}>
                     <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f3f5" />
                     <XAxis type="number" tick={{ fontSize: 10, fill: "#adb5bd" }} />
-                    <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: "#495057" }} width={60} />
+                    <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: "#adb5bd" }} width={60} />
                     <Tooltip contentStyle={{ border: "1px solid #e9ecef", borderRadius: 8, fontSize: 12 }} />
                     <Bar dataKey="value" name="Delegates" radius={[0, 4, 4, 0]}>
                       {paymentStatusData.map((_, i) => (
@@ -576,11 +567,11 @@ export default function AdminDashboard() {
               <div className="px-5 py-3.5" style={{ borderBottom: "1px solid #f1f3f5" }}>
                 <div className="text-[14px] font-semibold" style={{ color: "#212529" }}>Abstracts by Type</div>
               </div>
-              <div className="p-4">
-                <ResponsiveContainer width="100%" height={160}>
+              <div className="p-5" style={{ minHeight: 220 }}>
+                <ResponsiveContainer width="100%" height={180}>
                   <BarChart data={abstractTypeData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f1f3f5" />
-                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#495057" }} />
+                    <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#adb5bd" }} />
                     <YAxis tick={{ fontSize: 10, fill: "#adb5bd" }} />
                     <Tooltip contentStyle={{ border: "1px solid #e9ecef", borderRadius: 8, fontSize: 12 }} />
                     <Bar dataKey="value" name="Abstracts" radius={[4, 4, 0, 0]}>
@@ -597,9 +588,9 @@ export default function AdminDashboard() {
               <div className="px-5 py-3.5" style={{ borderBottom: "1px solid #f1f3f5" }}>
                 <div className="text-[14px] font-semibold" style={{ color: "#212529" }}>Abstract Status Distribution</div>
               </div>
-              <div className="p-4 flex items-center justify-center">
+              <div className="p-5 flex items-center justify-center" style={{ minHeight: 220 }}>
                 {abstractStatusData.length > 0 ? (
-                  <ResponsiveContainer width="100%" height={160}>
+                  <ResponsiveContainer width="100%" height={180}>
                     <PieChart>
                       <Pie data={abstractStatusData} cx="50%" cy="50%" outerRadius={60} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`} labelLine={false} fontSize={10}>
                         {abstractStatusData.map((_, i) => (
@@ -711,7 +702,7 @@ export default function AdminDashboard() {
               <div className="px-5 py-3.5" style={{ borderBottom: "1px solid #f1f3f5" }}>
                 <div className="text-[14px] font-semibold" style={{ color: "#212529" }}>Revenue by Category</div>
               </div>
-              <div className="p-4">
+              <div className="p-5" style={{ minHeight: 220 }}>
                 <ResponsiveContainer width="100%" height={200}>
                   <BarChart data={categoryRevenueData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f1f3f5" />
@@ -735,7 +726,7 @@ export default function AdminDashboard() {
               <div className="px-5 py-3.5" style={{ borderBottom: "1px solid #f1f3f5" }}>
                 <div className="text-[14px] font-semibold" style={{ color: "#212529" }}>Payment Status Breakdown</div>
               </div>
-              <div className="p-4">
+              <div className="p-5" style={{ minHeight: 220 }}>
                 {paymentStatusData.length > 0 ? (
                   <ResponsiveContainer width="100%" height={200}>
                     <PieChart>
