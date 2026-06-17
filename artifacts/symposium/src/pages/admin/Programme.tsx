@@ -100,7 +100,13 @@ export default function AdminProgramme() {
       <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 20 }}>
         <div style={{ display: "flex", gap: 6 }}>
           <button
-            className={`btn btn-sm ${dayFilter === "all" ? "btn-primary" : "btn-outline"}`}
+            className="btn btn-sm"
+            style={{
+              background: dayFilter === "all" ? "var(--primary)" : "var(--bg-surface)",
+              color: dayFilter === "all" ? "#fff" : "var(--text-secondary)",
+              borderColor: dayFilter === "all" ? "var(--primary-dk)" : "var(--border-color)",
+              transition: "none",
+            }}
             onClick={() => setDayFilter("all")}
           >
             All Days
@@ -108,7 +114,13 @@ export default function AdminProgramme() {
           {days.map((d) => (
             <button
               key={d}
-              className={`btn btn-sm ${dayFilter === d ? "btn-primary" : "btn-outline"}`}
+              className="btn btn-sm"
+              style={{
+                background: dayFilter === d ? "var(--primary)" : "var(--bg-surface)",
+                color: dayFilter === d ? "#fff" : "var(--text-secondary)",
+                borderColor: dayFilter === d ? "var(--primary-dk)" : "var(--border-color)",
+                transition: "none",
+              }}
               onClick={() => setDayFilter(d)}
             >
               Day {d}
