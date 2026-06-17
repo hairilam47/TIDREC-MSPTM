@@ -140,23 +140,31 @@ export default function AdminSettings() {
         ))}
       </div>
 
-      {/* Bottom save bar */}
+      {/* Sticky bottom save bar */}
       <div
-        className="mt-6 flex items-center justify-between rounded-xl px-6 py-4"
-        style={{ background: "#fff", border: "1px solid #e9ecef" }}
+        className="fixed bottom-0 left-0 right-0 z-30 flex items-center justify-between px-6 py-3"
+        style={{
+          background: "rgba(255,255,255,0.95)",
+          backdropFilter: "blur(8px)",
+          borderTop: "1px solid #e9ecef",
+          boxShadow: "0 -2px 12px rgba(0,0,0,0.06)",
+        }}
       >
-        <p className="text-[13px]" style={{ color: "#6c757d" }}>
-          Scroll back up or use the button on the right to save all changes.
+        <p className="text-[13px] hidden sm:block" style={{ color: "#6c757d" }}>
+          Changes will reflect on the marketing site and portal after saving.
         </p>
         <button
           onClick={save}
           disabled={saving}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-[13px] font-semibold text-white disabled:opacity-60"
+          className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-[13px] font-semibold text-white disabled:opacity-60 ml-auto"
           style={{ background: "#0E6E74" }}
         >
           <Save className="w-4 h-4" /> {saving ? "Saving…" : "Save Changes"}
         </button>
       </div>
+
+      {/* Spacer so last card isn't hidden behind sticky bar */}
+      <div className="h-20" />
     </AdminLayout>
   );
 }

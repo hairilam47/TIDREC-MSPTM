@@ -1,7 +1,7 @@
 import React from "react";
 import AdminLayout from "@/components/AdminLayout";
 import { useGetRegistrations, useUpdateRegistration } from "@workspace/api-client-react";
-import { Search, Download, ChevronDown } from "lucide-react";
+import { Search, Download, ChevronDown, Pencil } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const PAYMENT_STYLES: Record<string, { bg: string; color: string }> = {
@@ -227,10 +227,10 @@ export default function AdminRegistrations() {
                             setEditStatus(r.paymentStatus);
                             setEditAmount(r.paymentAmount != null ? String(r.paymentAmount) : "");
                           }}
-                          className="px-3 py-2 rounded-lg text-[12px] font-medium transition-colors hover:bg-gray-50"
+                          className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-[12px] font-medium transition-colors hover:bg-gray-50"
                           style={{ border: "1px solid #e9ecef", color: "#6c757d" }}
                         >
-                          Edit
+                          <Pencil className="w-3.5 h-3.5" /> Edit
                         </button>
                       )}
                     </td>
