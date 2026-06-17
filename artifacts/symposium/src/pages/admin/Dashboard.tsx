@@ -264,19 +264,25 @@ export default function AdminDashboard() {
           </h1>
           <p className="text-[13px]" style={{ color: "#6c757d" }}>{todayStr}</p>
         </div>
-        <div className="hidden sm:flex items-center gap-2">
-          <div className="text-right">
-            <div className="text-[12px] font-semibold" style={{ color: "#6c757d" }}>Symposium in</div>
-            <div className="text-[20px] font-bold leading-none" style={{ color: "#C89B3C" }}>
-              {Math.max(0, Math.ceil((new Date("2027-03-22").getTime() - Date.now()) / 86400000))}
-              <span className="text-[12px] font-normal ml-1" style={{ color: "#adb5bd" }}>days</span>
-            </div>
-          </div>
+        <div
+          className="hidden sm:flex flex-col items-center justify-center rounded-xl px-5 py-3 flex-shrink-0"
+          style={{ border: "1.5px solid #C89B3C", background: "#FEFAF3" }}
+        >
+          <span className="text-[26px] font-bold leading-none" style={{ color: "#C89B3C" }}>
+            {Math.max(0, Math.ceil((new Date("2027-03-22").getTime() - Date.now()) / 86400000))}
+          </span>
+          <span className="text-[10px] font-semibold uppercase tracking-wider mt-0.5" style={{ color: "#6c757d" }}>
+            days to go
+          </span>
+          <span className="text-[10px] mt-0.5" style={{ color: "#adb5bd" }}>22 Mar 2027</span>
         </div>
       </div>
 
       {/* ── Tab bar ── */}
-      <div className="flex items-center gap-1 mb-6 bg-white rounded-xl px-2 py-1.5" style={CARD}>
+      <div
+        className="flex items-center bg-white rounded-xl mb-5 overflow-hidden"
+        style={{ ...CARD, paddingLeft: 8, paddingRight: 8 }}
+      >
         {TABS.map((tab) => {
           const Icon = tab.icon;
           const active = activeTab === tab.id;
@@ -284,15 +290,25 @@ export default function AdminDashboard() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[13px] font-medium transition-all"
+              className="flex items-center gap-1.5 px-4 py-3.5 text-[13px] transition-all relative"
               style={
                 active
-                  ? { background: "#C89B3C", color: "#fff" }
-                  : { color: "#6c757d", background: "transparent" }
+                  ? {
+                      color: "#0B2744",
+                      fontWeight: 600,
+                      borderBottom: "2px solid #C89B3C",
+                      marginBottom: -1,
+                    }
+                  : {
+                      color: "#6c757d",
+                      fontWeight: 500,
+                      borderBottom: "2px solid transparent",
+                      marginBottom: -1,
+                    }
               }
             >
-              <Icon className="w-3.5 h-3.5" />
-              {tab.label}
+              <Icon className="w-3.5 h-3.5 flex-shrink-0" />
+              <span className="hidden sm:inline">{tab.label}</span>
             </button>
           );
         })}
@@ -340,7 +356,7 @@ export default function AdminDashboard() {
               return (
                 <div key={k.label} className="bg-white rounded-xl overflow-hidden" style={CARD}>
                   <div style={{ height: 3, background: k.accent }} />
-                  <div className="p-4">
+                  <div className="p-5">
                     <div className="flex items-start justify-between mb-3">
                       <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: k.iconBg }}>
                         <Icon className="w-4 h-4" style={{ color: k.iconColor }} />
@@ -452,7 +468,7 @@ export default function AdminDashboard() {
                 <div className="text-[11px]" style={{ color: "#adb5bd" }}>of target</div>
               </div>
             </div>
-            <div className="rounded-full overflow-hidden" style={{ height: 6, background: "#e9ecef" }}>
+            <div className="rounded-full overflow-hidden" style={{ height: 8, background: "#e9ecef" }}>
               <div
                 className="h-full rounded-full transition-all duration-700"
                 style={{

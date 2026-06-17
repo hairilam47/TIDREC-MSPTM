@@ -126,8 +126,8 @@ export default function AdminLayout({ children, title }: { children: React.React
                   className="flex items-center gap-2.5 px-2.5 py-2 rounded-md text-[13px] font-medium transition-all mb-0.5 no-underline"
                   style={
                     active
-                      ? { color: "#C89B3C", background: "rgba(200,155,60,0.12)", borderLeft: "2px solid #C89B3C" }
-                      : { color: "rgba(255,255,255,0.65)", borderLeft: "2px solid transparent" }
+                      ? { color: "#C89B3C", background: "rgba(200,155,60,0.12)", borderLeft: "3px solid #C89B3C" }
+                      : { color: "rgba(255,255,255,0.65)", borderLeft: "3px solid transparent" }
                   }
                 >
                   <Icon className="w-4 h-4 flex-shrink-0" />
@@ -225,8 +225,10 @@ export default function AdminLayout({ children, title }: { children: React.React
                 Delegate View
               </button>
             </a>
+            {/* separator */}
+            <div className="hidden sm:block w-px h-5 flex-shrink-0" style={{ background: "#e9ecef" }} />
             <div
-              className="w-8 h-8 rounded-full flex items-center justify-center text-white text-[12px] font-bold flex-shrink-0 select-none"
+              className="w-8 h-8 rounded-full flex items-center justify-center text-white text-[12px] font-bold flex-shrink-0 select-none cursor-default"
               style={{ background: "#C89B3C" }}
               title={user ? `${user.firstName} ${user.lastName}` : "Admin"}
             >
