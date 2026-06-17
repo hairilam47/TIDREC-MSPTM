@@ -1,4 +1,5 @@
 import React from "react";
+import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 
 export const INPUT_BASE =
@@ -47,10 +48,11 @@ interface ModalShellProps {
 export function ModalShell({ title, onClose, footer, children, size = "lg" }: ModalShellProps) {
   const maxW =
     size === "sm" ? "sm:max-w-sm" : size === "md" ? "sm:max-w-md" : "sm:max-w-lg";
-  return (
+
+  return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center"
-      style={{ background: "rgba(0,0,0,0.45)" }}
+      className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center"
+      style={{ background: "rgba(0,0,0,0.55)" }}
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
@@ -82,7 +84,8 @@ export function ModalShell({ title, onClose, footer, children, size = "lg" }: Mo
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
@@ -105,10 +108,10 @@ export function ConfirmDialog({
   loading = false,
   danger = true,
 }: ConfirmDialogProps) {
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ background: "rgba(0,0,0,0.45)" }}
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
+      style={{ background: "rgba(0,0,0,0.55)" }}
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) onCancel();
       }}
@@ -138,6 +141,7 @@ export function ConfirmDialog({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
