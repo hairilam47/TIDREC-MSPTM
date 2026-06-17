@@ -85,10 +85,10 @@ export default function Home() {
             <div>
               <h2 className="text-3xl md:text-5xl font-serif font-bold text-secondary mb-6">About The Symposium</h2>
               <p className="text-lg text-muted-foreground mb-6 leading-relaxed">
-                {aboutText}
+                The 3rd Southeast Asia Ticks and Tick-borne Diseases Symposium (SEA TTBD 2027), held in conjunction with the 63rd Annual Scientific Conference of the Malaysian Society of Parasitology and Tropical Medicine (MSPTM), brings together researchers, veterinarians, healthcare professionals, and students to discuss the latest advances in tick and tick-borne disease research.
               </p>
               <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
-                Organised by {organisers}. Venue: {eventVenue}, {eventCity}.
+                The symposium provides a platform for sharing knowledge on tick biology, ecology, pathogen discovery, diagnostics, epidemiology, surveillance, and control strategies, while fostering regional collaboration and promoting a One Health approach to addressing tick-borne diseases in Southeast Asia.
               </p>
               
               <div className="bg-accent/10 border-l-4 border-accent p-6 rounded-r-lg mb-8">
