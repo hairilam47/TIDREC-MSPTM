@@ -128,7 +128,7 @@ export default function AdminProgramme() {
           ))}
         </div>
         <button
-          className="btn btn-sm"
+          className="btn btn-sm bg-[color:var(--primary-dk)]"
           style={{ background: "var(--primary)", color: "#fff", borderColor: "var(--primary-dk)", transition: "none" }}
           onClick={openCreate}
         >
