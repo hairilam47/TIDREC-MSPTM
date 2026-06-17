@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "wouter";
-import { MapPin, Clock, Users, Building, HeartPulse, GraduationCap, ChevronRight, FileText, CalendarDays } from "lucide-react";
+import { MapPin, Clock, Users, Building, ChevronRight, CalendarDays } from "lucide-react";
 import { useGetSessions, useGetSpeakers, useGetSponsors, useGetSettings } from "@workspace/api-client-react";
 
 import bannerImg from "@assets/[BANNER]_3rd_Southeast_Asia_Ticks_and_Tick-borne_Diseases_Symp_1781130718946.png";
@@ -190,47 +190,6 @@ export default function Home() {
               <Button asChild variant="outline" className="border-secondary text-secondary hover:bg-secondary hover:text-white">
                 <Link href="/portal/speakers">See All Speakers</Link>
               </Button>
-            </div>
-          </div>
-        </section>
-
-        {/* 7. Who Should Attend */}
-        <section className="py-24 bg-secondary text-secondary-foreground">
-          <div className="max-w-7xl mx-auto px-4">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-5xl font-serif font-bold text-white mb-4">Who Should Attend</h2>
-              <p className="text-lg text-muted/80 max-w-2xl mx-auto">This symposium is designed for a diverse professional audience committed to combating tropical diseases.</p>
-            </div>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              <Card className="bg-white/5 border-white/10 text-white hover:bg-white/10 transition-colors">
-                <CardContent className="p-8 text-center">
-                  <HeartPulse className="w-12 h-12 text-accent mx-auto mb-6" />
-                  <h3 className="font-bold text-xl mb-2">Healthcare Professionals</h3>
-                  <p className="text-sm text-muted/70">Physicians, clinicians, and practitioners managing infectious diseases.</p>
-                </CardContent>
-              </Card>
-              <Card className="bg-white/5 border-white/10 text-white hover:bg-white/10 transition-colors">
-                <CardContent className="p-8 text-center">
-                  <FileText className="w-12 h-12 text-primary-foreground mx-auto mb-6" />
-                  <h3 className="font-bold text-xl mb-2">Researchers & Scientists</h3>
-                  <p className="text-sm text-muted/70">Experts studying tick-borne pathogens and epidemiological trends.</p>
-                </CardContent>
-              </Card>
-              <Card className="bg-white/5 border-white/10 text-white hover:bg-white/10 transition-colors">
-                <CardContent className="p-8 text-center">
-                  <GraduationCap className="w-12 h-12 text-accent mx-auto mb-6" />
-                  <h3 className="font-bold text-xl mb-2">Educators & Students</h3>
-                  <p className="text-sm text-muted/70">Academic faculty and students in public health and medicine.</p>
-                </CardContent>
-              </Card>
-              <Card className="bg-white/5 border-white/10 text-white hover:bg-white/10 transition-colors">
-                <CardContent className="p-8 text-center">
-                  <Building className="w-12 h-12 text-primary-foreground mx-auto mb-6" />
-                  <h3 className="font-bold text-xl mb-2">Industry Professionals</h3>
-                  <p className="text-sm text-muted/70">Pharmaceutical and diagnostic sector representatives.</p>
-                </CardContent>
-              </Card>
             </div>
           </div>
         </section>
