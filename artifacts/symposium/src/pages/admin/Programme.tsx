@@ -100,7 +100,7 @@ export default function AdminProgramme() {
       <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 20 }}>
         <div style={{ display: "flex", gap: 6 }}>
           <button
-            className="btn btn-sm"
+            className="btn btn-sm bg-[color:var(--primary-dk)]"
             style={{
               background: dayFilter === "all" ? "var(--primary)" : "var(--bg-surface)",
               color: dayFilter === "all" ? "#fff" : "var(--text-secondary)",
@@ -131,7 +131,6 @@ export default function AdminProgramme() {
           <Plus style={{ width: 14, height: 14 }} /> Add Session
         </button>
       </div>
-
       {/* Sessions table */}
       <div className="card">
         <div className="card-body p-0">
@@ -197,7 +196,6 @@ export default function AdminProgramme() {
           </div>
         </div>
       </div>
-
       {showModal && (
         <ModalShell
           title={editId ? "Edit Session" : "Add Session"}
@@ -312,7 +310,6 @@ export default function AdminProgramme() {
           </FormField>
         </ModalShell>
       )}
-
       {deleteId && (
         <ConfirmDialog
           title="Delete Session?"
