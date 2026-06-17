@@ -4,13 +4,16 @@ import { useGetMe, useUpdateMe } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { getGetMeQueryKey } from "@workspace/api-client-react";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, CheckCircle, UserCircle } from "lucide-react";
+import { Loader2, CheckCircle } from "lucide-react";
 
 const COUNTRIES = [
   "Malaysia", "Singapore", "Thailand", "Indonesia", "Philippines", "Vietnam",
   "Myanmar", "Cambodia", "Laos", "Brunei", "Australia", "United Kingdom",
   "United States", "Japan", "South Korea", "China", "India", "Other",
 ];
+
+const INPUT_CLS =
+  "w-full px-3.5 py-3 rounded-lg text-[14px] outline-none transition-colors focus:ring-2 focus:ring-[rgba(14,110,116,0.2)] focus:border-[#0E6E74]";
 
 export default function Profile() {
   const queryClient = useQueryClient();
@@ -83,12 +86,17 @@ export default function Profile() {
               <div className="flex items-center gap-2 mt-1">
                 <span
                   className="text-[11px] font-semibold px-2 py-0.5 rounded-full capitalize"
-                  style={{ background: user?.role === "admin" ? "rgba(200,155,60,0.12)" : "#e6f4f5", color: user?.role === "admin" ? "#C89B3C" : "#0E6E74" }}
+                  style={{
+                    background: user?.role === "admin" ? "rgba(200,155,60,0.12)" : "#e6f4f5",
+                    color: user?.role === "admin" ? "#C89B3C" : "#0E6E74",
+                  }}
                 >
                   {user?.role}
                 </span>
                 {user?.category && (
-                  <span className="text-[11px]" style={{ color: "#adb5bd" }}>· {user.category.replace(/_/g, " ")}</span>
+                  <span className="text-[11px]" style={{ color: "#adb5bd" }}>
+                    · {user.category.replace(/_/g, " ")}
+                  </span>
                 )}
               </div>
             </div>
@@ -102,7 +110,7 @@ export default function Profile() {
             <form onSubmit={handleSave} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[13px] font-medium mb-1.5" style={{ color: "#495057" }}>
+                  <label className="block text-[13px] font-semibold mb-1.5" style={{ color: "#495057" }}>
                     First Name <span style={{ color: "#dc3545" }}>*</span>
                   </label>
                   <input
@@ -110,12 +118,13 @@ export default function Profile() {
                     value={form.firstName}
                     onChange={(e) => setForm((f) => ({ ...f, firstName: e.target.value }))}
                     required
-                    className="w-full px-3 py-2.5 rounded-lg text-[14px] outline-none focus:ring-2 ring-teal-200"
+                    placeholder="e.g. Ahmad"
+                    className={INPUT_CLS}
                     style={{ border: "1px solid #dee2e6" }}
                   />
                 </div>
                 <div>
-                  <label className="block text-[13px] font-medium mb-1.5" style={{ color: "#495057" }}>
+                  <label className="block text-[13px] font-semibold mb-1.5" style={{ color: "#495057" }}>
                     Last Name <span style={{ color: "#dc3545" }}>*</span>
                   </label>
                   <input
@@ -123,28 +132,29 @@ export default function Profile() {
                     value={form.lastName}
                     onChange={(e) => setForm((f) => ({ ...f, lastName: e.target.value }))}
                     required
-                    className="w-full px-3 py-2.5 rounded-lg text-[14px] outline-none focus:ring-2 ring-teal-200"
+                    placeholder="e.g. Rahman"
+                    className={INPUT_CLS}
                     style={{ border: "1px solid #dee2e6" }}
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-[13px] font-medium mb-1.5" style={{ color: "#495057" }}>
+                <label className="block text-[13px] font-semibold mb-1.5" style={{ color: "#495057" }}>
                   Email Address
                 </label>
                 <input
                   type="email"
                   value={user?.email ?? ""}
                   disabled
-                  className="w-full px-3 py-2.5 rounded-lg text-[14px]"
+                  className="w-full px-3.5 py-3 rounded-lg text-[14px]"
                   style={{ border: "1px solid #dee2e6", background: "#f8f9fa", color: "#adb5bd" }}
                 />
                 <p className="text-[12px] mt-1" style={{ color: "#adb5bd" }}>Email address cannot be changed.</p>
               </div>
 
               <div>
-                <label className="block text-[13px] font-medium mb-1.5" style={{ color: "#495057" }}>
+                <label className="block text-[13px] font-semibold mb-1.5" style={{ color: "#495057" }}>
                   Institution / Organisation
                 </label>
                 <input
@@ -152,19 +162,19 @@ export default function Profile() {
                   value={form.institution}
                   onChange={(e) => setForm((f) => ({ ...f, institution: e.target.value }))}
                   placeholder="e.g. University of Malaya"
-                  className="w-full px-3 py-2.5 rounded-lg text-[14px] outline-none focus:ring-2 ring-teal-200"
+                  className={INPUT_CLS}
                   style={{ border: "1px solid #dee2e6" }}
                 />
               </div>
 
               <div>
-                <label className="block text-[13px] font-medium mb-1.5" style={{ color: "#495057" }}>
+                <label className="block text-[13px] font-semibold mb-1.5" style={{ color: "#495057" }}>
                   Country
                 </label>
                 <select
                   value={form.country}
                   onChange={(e) => setForm((f) => ({ ...f, country: e.target.value }))}
-                  className="w-full px-3 py-2.5 rounded-lg text-[14px] outline-none focus:ring-2 ring-teal-200"
+                  className={`${INPUT_CLS} bg-white`}
                   style={{ border: "1px solid #dee2e6" }}
                 >
                   <option value="">Select country…</option>
@@ -178,7 +188,7 @@ export default function Profile() {
                 <button
                   type="submit"
                   disabled={updateMutation.isPending}
-                  className="flex items-center gap-2 px-6 py-2.5 rounded-lg text-[14px] font-semibold text-white"
+                  className="flex items-center gap-2 px-6 py-2.5 rounded-lg text-[14px] font-semibold text-white disabled:opacity-60"
                   style={{ background: "#0E6E74" }}
                 >
                   {updateMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
@@ -200,11 +210,18 @@ export default function Profile() {
             <div className="grid grid-cols-2 gap-4">
               {[
                 { label: "Account Type", value: user?.role === "admin" ? "Administrator" : "Delegate" },
-                { label: "Member Since", value: user ? new Date(user.createdAt).toLocaleDateString("en-GB", { month: "long", year: "numeric" }) : "—" },
+                {
+                  label: "Member Since",
+                  value: user
+                    ? new Date(user.createdAt).toLocaleDateString("en-GB", { month: "long", year: "numeric" })
+                    : "—",
+                },
                 { label: "Category", value: user?.category ? user.category.replace(/_/g, " ") : "Not set" },
               ].map(({ label, value }) => (
                 <div key={label}>
-                  <div className="text-[11px] font-bold uppercase tracking-wider mb-0.5" style={{ color: "#adb5bd" }}>{label}</div>
+                  <div className="text-[11px] font-bold uppercase tracking-wider mb-0.5" style={{ color: "#adb5bd" }}>
+                    {label}
+                  </div>
                   <div className="text-[14px] capitalize" style={{ color: "#212529" }}>{value}</div>
                 </div>
               ))}

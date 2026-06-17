@@ -15,6 +15,9 @@ const ALLOWED_TYPES = [
 const ALLOWED_EXT = ".pdf, .doc, .docx";
 const MAX_SIZE_MB = 5;
 
+const INPUT_CLS =
+  "w-full px-3.5 py-3 rounded-lg text-[14px] outline-none transition-colors focus:ring-2 focus:ring-[rgba(14,110,116,0.2)] focus:border-[#0E6E74]";
+
 async function requestUploadUrl(file: File): Promise<{ uploadURL: string; objectPath: string }> {
   const token = localStorage.getItem("satbds_token");
   const res = await fetch("/api/storage/uploads/request-url", {
@@ -151,11 +154,21 @@ export default function NewAbstract() {
             <div className="text-[18px] font-mono font-bold" style={{ color: "#0B2744" }}>{submitted.abstractCode}</div>
           </div>
           <div className="flex gap-3 justify-center">
-            <button onClick={() => setLocation("/portal/abstracts")} className="px-5 py-2.5 rounded-lg text-[13px] font-semibold text-white" style={{ background: "#0E6E74" }}>
+            <button
+              onClick={() => setLocation("/portal/abstracts")}
+              className="px-5 py-2.5 rounded-lg text-[13px] font-semibold text-white"
+              style={{ background: "#0E6E74" }}
+            >
               View All Abstracts
             </button>
             <button
-              onClick={() => { setSubmitted(null); setStep(0); setForm({ title: "", abstractType: "oral", keywords: "", coAuthors: "", body: "" }); setSelectedFile(null); setUploadedObjectPath(null); }}
+              onClick={() => {
+                setSubmitted(null);
+                setStep(0);
+                setForm({ title: "", abstractType: "oral", keywords: "", coAuthors: "", body: "" });
+                setSelectedFile(null);
+                setUploadedObjectPath(null);
+              }}
               className="px-5 py-2.5 rounded-lg text-[13px] font-semibold"
               style={{ border: "1px solid #e9ecef", color: "#6c757d" }}
             >
@@ -189,7 +202,10 @@ export default function NewAbstract() {
                 >
                   {i < step ? <CheckCircle className="w-4 h-4" /> : i + 1}
                 </div>
-                <div className="text-[11px] font-medium text-center" style={{ color: i === step ? "#0E6E74" : i < step ? "#198754" : "#adb5bd" }}>
+                <div
+                  className="text-[11px] font-medium text-center"
+                  style={{ color: i === step ? "#0E6E74" : i < step ? "#198754" : "#adb5bd" }}
+                >
                   {s}
                 </div>
               </div>
@@ -203,10 +219,12 @@ export default function NewAbstract() {
         {/* Step 0: Details & Content */}
         {step === 0 && (
           <div className="bg-white rounded-xl p-6" style={{ border: "1px solid #e9ecef" }}>
-            <h2 className="text-[17px] font-serif font-bold mb-5" style={{ color: "#0B2744" }}>Abstract Details & Content</h2>
-            <div className="space-y-4">
+            <h2 className="text-[17px] font-serif font-bold mb-5" style={{ color: "#0B2744" }}>
+              Abstract Details & Content
+            </h2>
+            <div className="space-y-5">
               <div>
-                <label className="block text-[13px] font-medium mb-1.5" style={{ color: "#495057" }}>
+                <label className="block text-[13px] font-semibold mb-1.5" style={{ color: "#495057" }}>
                   Title <span style={{ color: "#dc3545" }}>*</span>
                 </label>
                 <input
@@ -214,32 +232,47 @@ export default function NewAbstract() {
                   value={form.title}
                   onChange={(e) => set("title", e.target.value)}
                   placeholder="Enter the full title of your presentation"
-                  className="w-full px-3 py-2.5 rounded-lg text-[14px] outline-none"
+                  className={INPUT_CLS}
                   style={{ border: `1px solid ${errors.title ? "#dc3545" : "#dee2e6"}` }}
                 />
                 {errors.title && <p className="text-[12px] mt-1" style={{ color: "#dc3545" }}>{errors.title}</p>}
               </div>
+
               <div>
-                <label className="block text-[13px] font-medium mb-1.5" style={{ color: "#495057" }}>
+                <label className="block text-[13px] font-semibold mb-1.5" style={{ color: "#495057" }}>
                   Presentation Type <span style={{ color: "#dc3545" }}>*</span>
                 </label>
                 <div className="flex gap-3">
                   {(["oral", "poster"] as const).map((t) => (
                     <label
                       key={t}
-                      className="flex items-center gap-2 px-4 py-2.5 rounded-lg cursor-pointer flex-1 justify-center"
-                      style={{ border: form.abstractType === t ? "2px solid #0E6E74" : "1px solid #dee2e6", background: form.abstractType === t ? "#e6f4f5" : "#fff" }}
+                      className="flex items-center gap-2 px-4 py-3 rounded-lg cursor-pointer flex-1 justify-center transition-colors"
+                      style={{
+                        border: form.abstractType === t ? "2px solid #0E6E74" : "1px solid #dee2e6",
+                        background: form.abstractType === t ? "#e6f4f5" : "#fff",
+                      }}
                     >
-                      <input type="radio" name="type" value={t} checked={form.abstractType === t} onChange={() => set("abstractType", t)} className="sr-only" />
-                      <span className="text-[13px] font-medium capitalize" style={{ color: form.abstractType === t ? "#0E6E74" : "#495057" }}>
+                      <input
+                        type="radio"
+                        name="type"
+                        value={t}
+                        checked={form.abstractType === t}
+                        onChange={() => set("abstractType", t)}
+                        className="sr-only"
+                      />
+                      <span
+                        className="text-[13px] font-medium capitalize"
+                        style={{ color: form.abstractType === t ? "#0E6E74" : "#495057" }}
+                      >
                         {t} Presentation
                       </span>
                     </label>
                   ))}
                 </div>
               </div>
+
               <div>
-                <label className="block text-[13px] font-medium mb-1.5" style={{ color: "#495057" }}>
+                <label className="block text-[13px] font-semibold mb-1.5" style={{ color: "#495057" }}>
                   Keywords <span style={{ color: "#dc3545" }}>*</span>
                 </label>
                 <input
@@ -247,27 +280,32 @@ export default function NewAbstract() {
                   value={form.keywords}
                   onChange={(e) => set("keywords", e.target.value)}
                   placeholder="e.g. tick-borne diseases, vector control, epidemiology"
-                  className="w-full px-3 py-2.5 rounded-lg text-[14px] outline-none"
+                  className={INPUT_CLS}
                   style={{ border: `1px solid ${errors.keywords ? "#dc3545" : "#dee2e6"}` }}
                 />
-                {errors.keywords && <p className="text-[12px] mt-1" style={{ color: "#dc3545" }}>{errors.keywords}</p>}
+                {errors.keywords && (
+                  <p className="text-[12px] mt-1" style={{ color: "#dc3545" }}>{errors.keywords}</p>
+                )}
               </div>
+
               <div>
-                <label className="block text-[13px] font-medium mb-1.5" style={{ color: "#495057" }}>
-                  Co-Authors <span className="text-[12px] font-normal" style={{ color: "#adb5bd" }}>(optional)</span>
+                <label className="block text-[13px] font-semibold mb-1.5" style={{ color: "#495057" }}>
+                  Co-Authors{" "}
+                  <span className="text-[12px] font-normal" style={{ color: "#adb5bd" }}>(optional)</span>
                 </label>
                 <input
                   type="text"
                   value={form.coAuthors}
                   onChange={(e) => set("coAuthors", e.target.value)}
                   placeholder="e.g. Dr. Jane Smith (UM), Prof. Ali Hassan (USM)"
-                  className="w-full px-3 py-2.5 rounded-lg text-[14px] outline-none"
+                  className={INPUT_CLS}
                   style={{ border: "1px solid #dee2e6" }}
                 />
               </div>
+
               <div>
                 <div className="flex items-center justify-between mb-1.5">
-                  <label className="text-[13px] font-medium" style={{ color: "#495057" }}>
+                  <label className="text-[13px] font-semibold" style={{ color: "#495057" }}>
                     Abstract Body <span style={{ color: "#dc3545" }}>*</span>
                   </label>
                   <span className="text-[12px]" style={{ color: form.body.length > 2800 ? "#dc3545" : "#adb5bd" }}>
@@ -277,16 +315,23 @@ export default function NewAbstract() {
                 <textarea
                   value={form.body}
                   onChange={(e) => set("body", e.target.value)}
-                  placeholder="Background: ...&#10;Methods: ...&#10;Results: ...&#10;Conclusion: ..."
+                  placeholder={"Background: …\nMethods: …\nResults: …\nConclusion: …"}
                   rows={10}
-                  className="w-full px-3 py-2.5 rounded-lg text-[14px] outline-none resize-y"
-                  style={{ border: `1px solid ${errors.body ? "#dc3545" : "#dee2e6"}`, lineHeight: 1.7 }}
+                  className={`${INPUT_CLS} resize-y`}
+                  style={{
+                    border: `1px solid ${errors.body ? "#dc3545" : "#dee2e6"}`,
+                    lineHeight: 1.7,
+                  }}
                 />
                 {errors.body && <p className="text-[12px] mt-1" style={{ color: "#dc3545" }}>{errors.body}</p>}
               </div>
             </div>
             <div className="flex justify-end mt-6 pt-4" style={{ borderTop: "1px solid #f1f3f5" }}>
-              <button onClick={handleNext} className="px-6 py-2.5 rounded-lg text-[14px] font-semibold text-white" style={{ background: "#0E6E74" }}>
+              <button
+                onClick={handleNext}
+                className="px-6 py-2.5 rounded-lg text-[14px] font-semibold text-white"
+                style={{ background: "#0E6E74" }}
+              >
                 Next: File Upload →
               </button>
             </div>
@@ -296,7 +341,9 @@ export default function NewAbstract() {
         {/* Step 1: File Upload */}
         {step === 1 && (
           <div className="bg-white rounded-xl p-6" style={{ border: "1px solid #e9ecef" }}>
-            <h2 className="text-[17px] font-serif font-bold mb-2" style={{ color: "#0B2744" }}>Upload Abstract Document</h2>
+            <h2 className="text-[17px] font-serif font-bold mb-2" style={{ color: "#0B2744" }}>
+              Upload Abstract Document
+            </h2>
             <p className="text-[13px] mb-6" style={{ color: "#6c757d" }}>
               Upload a formatted copy of your abstract in PDF or Word format. Maximum file size: {MAX_SIZE_MB} MB.
               <span className="ml-1" style={{ color: "#adb5bd" }}>(Optional — you may skip this step)</span>
@@ -328,7 +375,10 @@ export default function NewAbstract() {
             ) : (
               <div className="rounded-xl p-4" style={{ background: "#f8f9fa", border: "1px solid #e9ecef" }}>
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "#e6f4f5" }}>
+                  <div
+                    className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                    style={{ background: "#e6f4f5" }}
+                  >
                     <FileText className="w-5 h-5" style={{ color: "#0E6E74" }} />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -343,7 +393,7 @@ export default function NewAbstract() {
                   {!uploadedObjectPath && (
                     <button
                       onClick={() => { setSelectedFile(null); setFileError(""); }}
-                      className="p-1.5 rounded-lg"
+                      className="p-1.5 rounded-lg transition-colors hover:bg-gray-200"
                       style={{ color: "#6c757d", background: "none" }}
                     >
                       <X className="w-4 h-4" />
@@ -354,19 +404,13 @@ export default function NewAbstract() {
                   <button
                     onClick={handleUpload}
                     disabled={uploading}
-                    className="w-full mt-3 py-2.5 rounded-lg text-[13px] font-semibold text-white flex items-center justify-center gap-2"
+                    className="w-full mt-3 py-2.5 rounded-lg text-[13px] font-semibold text-white flex items-center justify-center gap-2 disabled:opacity-60"
                     style={{ background: "#0E6E74" }}
                   >
                     {uploading ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        Uploading…
-                      </>
+                      <><Loader2 className="w-4 h-4 animate-spin" /> Uploading…</>
                     ) : (
-                      <>
-                        <Upload className="w-4 h-4" />
-                        Upload to Server
-                      </>
+                      <><Upload className="w-4 h-4" /> Upload to Server</>
                     )}
                   </button>
                 )}
@@ -381,14 +425,21 @@ export default function NewAbstract() {
             )}
 
             <div className="flex justify-between mt-6 pt-4" style={{ borderTop: "1px solid #f1f3f5" }}>
-              <button onClick={() => setStep(0)} className="px-5 py-2.5 rounded-lg text-[13px] font-medium" style={{ border: "1px solid #e9ecef", color: "#6c757d" }}>
+              <button
+                onClick={() => setStep(0)}
+                className="px-5 py-2.5 rounded-lg text-[13px] font-medium"
+                style={{ border: "1px solid #e9ecef", color: "#6c757d" }}
+              >
                 ← Back
               </button>
               <button
                 onClick={() => setStep(2)}
                 disabled={!!selectedFile && !uploadedObjectPath}
-                className="px-6 py-2.5 rounded-lg text-[14px] font-semibold text-white"
-                style={{ background: selectedFile && !uploadedObjectPath ? "#adb5bd" : "#0E6E74", cursor: selectedFile && !uploadedObjectPath ? "not-allowed" : "pointer" }}
+                className="px-6 py-2.5 rounded-lg text-[14px] font-semibold text-white disabled:opacity-60"
+                style={{
+                  background: selectedFile && !uploadedObjectPath ? "#adb5bd" : "#0E6E74",
+                  cursor: selectedFile && !uploadedObjectPath ? "not-allowed" : "pointer",
+                }}
               >
                 {selectedFile && !uploadedObjectPath ? "Please upload first" : "Next: Preview →"}
               </button>
@@ -406,25 +457,51 @@ export default function NewAbstract() {
                 { label: "Type", value: form.abstractType === "oral" ? "Oral Presentation" : "Poster Presentation" },
                 { label: "Keywords", value: form.keywords },
                 { label: "Co-Authors", value: form.coAuthors || "—" },
-                { label: "Document", value: selectedFile ? selectedFile.name + (uploadedObjectPath ? " ✓" : " (not uploaded)") : "No file attached" },
+                {
+                  label: "Document",
+                  value: selectedFile
+                    ? selectedFile.name + (uploadedObjectPath ? " ✓" : " (not uploaded)")
+                    : "No file attached",
+                },
               ].map(({ label, value }) => (
                 <div key={label} className="flex gap-4">
-                  <div className="w-28 flex-shrink-0 text-[12px] font-semibold uppercase tracking-wide pt-0.5" style={{ color: "#adb5bd" }}>{label}</div>
+                  <div
+                    className="w-28 flex-shrink-0 text-[12px] font-semibold uppercase tracking-wide pt-0.5"
+                    style={{ color: "#adb5bd" }}
+                  >
+                    {label}
+                  </div>
                   <div className="text-[14px]" style={{ color: "#212529" }}>{value}</div>
                 </div>
               ))}
               <div className="flex gap-4">
-                <div className="w-28 flex-shrink-0 text-[12px] font-semibold uppercase tracking-wide pt-0.5" style={{ color: "#adb5bd" }}>Abstract</div>
-                <div className="text-[13px] rounded-lg p-4 flex-1" style={{ background: "#f8f9fa", color: "#495057", lineHeight: 1.8, whiteSpace: "pre-wrap" }}>
+                <div
+                  className="w-28 flex-shrink-0 text-[12px] font-semibold uppercase tracking-wide pt-0.5"
+                  style={{ color: "#adb5bd" }}
+                >
+                  Abstract
+                </div>
+                <div
+                  className="text-[13px] rounded-lg p-4 flex-1"
+                  style={{ background: "#f8f9fa", color: "#495057", lineHeight: 1.8, whiteSpace: "pre-wrap" }}
+                >
                   {form.body}
                 </div>
               </div>
             </div>
             <div className="flex justify-between mt-6 pt-4" style={{ borderTop: "1px solid #f1f3f5" }}>
-              <button onClick={() => setStep(1)} className="px-5 py-2.5 rounded-lg text-[13px] font-medium" style={{ border: "1px solid #e9ecef", color: "#6c757d" }}>
+              <button
+                onClick={() => setStep(1)}
+                className="px-5 py-2.5 rounded-lg text-[13px] font-medium"
+                style={{ border: "1px solid #e9ecef", color: "#6c757d" }}
+              >
                 ← Back
               </button>
-              <button onClick={() => setStep(3)} className="px-6 py-2.5 rounded-lg text-[14px] font-semibold text-white" style={{ background: "#0E6E74" }}>
+              <button
+                onClick={() => setStep(3)}
+                className="px-6 py-2.5 rounded-lg text-[14px] font-semibold text-white"
+                style={{ background: "#0E6E74" }}
+              >
                 Looks Good →
               </button>
             </div>
@@ -439,8 +516,7 @@ export default function NewAbstract() {
               <div className="text-[13px] mb-1 font-semibold" style={{ color: "#0E6E74" }}>You are about to submit:</div>
               <div className="text-[15px] font-serif font-bold" style={{ color: "#0B2744" }}>{form.title}</div>
               <div className="text-[13px] mt-1" style={{ color: "#495057" }}>
-                {form.abstractType === "oral" ? "Oral Presentation" : "Poster Presentation"} ·{" "}
-                {form.keywords}
+                {form.abstractType === "oral" ? "Oral Presentation" : "Poster Presentation"} · {form.keywords}
               </div>
               {uploadedObjectPath && (
                 <div className="flex items-center gap-1.5 mt-2 text-[12px]" style={{ color: "#0a5c39" }}>
@@ -453,13 +529,17 @@ export default function NewAbstract() {
               Once submitted, your abstract cannot be edited. The organising committee will review it and contact you with the outcome.
             </p>
             <div className="flex justify-between">
-              <button onClick={() => setStep(2)} className="px-5 py-2.5 rounded-lg text-[13px] font-medium" style={{ border: "1px solid #e9ecef", color: "#6c757d" }}>
+              <button
+                onClick={() => setStep(2)}
+                className="px-5 py-2.5 rounded-lg text-[13px] font-medium"
+                style={{ border: "1px solid #e9ecef", color: "#6c757d" }}
+              >
                 ← Back
               </button>
               <button
                 onClick={handleSubmit}
                 disabled={createMutation.isPending}
-                className="flex items-center gap-2 px-6 py-2.5 rounded-lg text-[14px] font-semibold text-white"
+                className="flex items-center gap-2 px-6 py-2.5 rounded-lg text-[14px] font-semibold text-white disabled:opacity-60"
                 style={{ background: "#0E6E74" }}
               >
                 {createMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}

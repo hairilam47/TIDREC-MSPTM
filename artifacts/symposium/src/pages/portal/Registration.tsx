@@ -68,10 +68,7 @@ export default function Registration() {
     return (
       <PortalLayout title="My Registration">
         <div className="max-w-xl mx-auto">
-          <div
-            className="bg-white rounded-xl p-8"
-            style={{ border: "1px solid #e9ecef" }}
-          >
+          <div className="bg-white rounded-xl p-8" style={{ border: "1px solid #e9ecef" }}>
             <div
               className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
               style={{ background: "#e6f4f5" }}
@@ -81,35 +78,41 @@ export default function Registration() {
             <h2 className="text-xl font-serif font-bold mb-2" style={{ color: "#0B2744" }}>
               Complete Registration
             </h2>
-            <p className="text-sm mb-6" style={{ color: "#6c757d" }}>
-              Select your category to complete your SATBDS 2027 registration.
+            <p className="text-[13px] mb-6" style={{ color: "#6c757d" }}>
+              Select your delegate category to register for SATBDS 2027.
             </p>
 
             <div className="space-y-2 mb-6">
               {Object.entries(CATEGORY_LABELS).map(([key, label]) => {
                 const fees = CATEGORY_FEES[key];
+                const selected = selectedCategory === key;
                 return (
                   <label
                     key={key}
                     className="flex items-center gap-3 p-4 rounded-xl cursor-pointer transition-all"
                     style={{
-                      border: selectedCategory === key ? "2px solid #0E6E74" : "1px solid #e9ecef",
-                      background: selectedCategory === key ? "#e6f4f5" : "#fff",
+                      border: selected ? "2px solid #0E6E74" : "1px solid #e9ecef",
+                      background: selected ? "#e6f4f5" : "#fff",
                     }}
                   >
                     <input
                       type="radio"
                       name="category"
                       value={key}
-                      checked={selectedCategory === key}
+                      checked={selected}
                       onChange={() => setSelectedCategory(key)}
-                      className="w-4 h-4"
+                      className="w-4 h-4 flex-shrink-0"
                       style={{ accentColor: "#0E6E74" }}
                     />
                     <div className="flex-1">
-                      <div className="text-[14px] font-semibold" style={{ color: "#212529" }}>{label}</div>
+                      <div
+                        className="text-[14px] font-semibold"
+                        style={{ color: selected ? "#0E6E74" : "#212529" }}
+                      >
+                        {label}
+                      </div>
                       {fees && (
-                        <div className="text-[12px]" style={{ color: "#6c757d" }}>
+                        <div className="text-[12px] mt-0.5" style={{ color: "#6c757d" }}>
                           Early bird: MYR {fees.early} · Regular: MYR {fees.regular}
                         </div>
                       )}
@@ -122,8 +125,8 @@ export default function Registration() {
             <button
               onClick={handleRegister}
               disabled={!selectedCategory || createMutation.isPending}
-              className="w-full py-3 rounded-xl font-semibold text-white flex items-center justify-center gap-2"
-              style={{ background: selectedCategory ? "#0E6E74" : "#adb5bd", transition: "background 0.15s" }}
+              className="w-full py-3 rounded-xl font-semibold text-white flex items-center justify-center gap-2 transition-colors disabled:opacity-60"
+              style={{ background: selectedCategory ? "#0E6E74" : "#adb5bd" }}
             >
               {createMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
               Submit Registration
@@ -218,13 +221,15 @@ export default function Registration() {
               </div>
             </div>
             <div className="text-[12px] mb-2" style={{ color: "#6c757d" }}>
-              Registered: {new Date(registration.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
+              Registered:{" "}
+              {new Date(registration.createdAt).toLocaleDateString("en-GB", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+              })}
             </div>
             {registration.paymentStatus === "pending" && (
-              <div
-                className="rounded-lg p-3 text-[12px]"
-                style={{ background: "#fff3cd", color: "#664d03" }}
-              >
+              <div className="rounded-lg p-3 text-[12px]" style={{ background: "#fff3cd", color: "#664d03" }}>
                 Payment instructions will be sent to your registered email. Please complete payment within 48 hours to secure your spot.
               </div>
             )}

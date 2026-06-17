@@ -41,6 +41,9 @@ const FIELD_GROUPS = [
   },
 ];
 
+const INPUT_CLS =
+  "w-full px-3.5 py-3 rounded-lg text-[14px] outline-none transition-colors focus:ring-2 focus:ring-[rgba(14,110,116,0.2)] focus:border-[#0E6E74]";
+
 export default function AdminSettings() {
   const { toast } = useToast();
   const [values, setValues] = React.useState<Record<string, string>>({});
@@ -78,17 +81,26 @@ export default function AdminSettings() {
   };
 
   if (loading) {
-    return <AdminLayout title="Settings"><div className="text-center py-20" style={{ color: "#adb5bd" }}>Loading…</div></AdminLayout>;
+    return (
+      <AdminLayout title="Settings">
+        <div className="text-center py-20" style={{ color: "#adb5bd" }}>Loading…</div>
+      </AdminLayout>
+    );
   }
 
   return (
     <AdminLayout title="Settings">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2 text-[13px]" style={{ color: "#6c757d" }}>
-          <Info className="w-4 h-4" />
-          Changes to content will reflect on the marketing site and portal after saving.
+          <Info className="w-4 h-4 flex-shrink-0" />
+          Changes reflect on the marketing site and portal after saving.
         </div>
-        <button onClick={save} disabled={saving} className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-[13px] font-semibold text-white" style={{ background: "#0E6E74" }}>
+        <button
+          onClick={save}
+          disabled={saving}
+          className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-[13px] font-semibold text-white disabled:opacity-60"
+          style={{ background: "#0E6E74" }}
+        >
           <Save className="w-4 h-4" /> {saving ? "Saving…" : "Save Changes"}
         </button>
       </div>
@@ -96,17 +108,19 @@ export default function AdminSettings() {
       <div className="space-y-6">
         {FIELD_GROUPS.map((group) => (
           <div key={group.label} className="bg-white rounded-xl p-6" style={{ border: "1px solid #e9ecef" }}>
-            <h3 className="text-[14px] font-semibold mb-4" style={{ color: "#0B2744" }}>{group.label}</h3>
+            <h3 className="text-[14px] font-semibold mb-5" style={{ color: "#0B2744" }}>{group.label}</h3>
             <div className="space-y-4">
               {group.fields.map((f) => (
                 <div key={f.key}>
-                  <label className="block text-[12px] font-medium mb-1.5" style={{ color: "#495057" }}>{f.label}</label>
+                  <label className="block text-[13px] font-semibold mb-1.5" style={{ color: "#495057" }}>
+                    {f.label}
+                  </label>
                   {f.type === "textarea" ? (
                     <textarea
                       value={values[f.key] ?? ""}
                       onChange={(e) => set(f.key, e.target.value)}
                       rows={3}
-                      className="w-full px-3 py-2.5 rounded-lg text-[13px] outline-none resize-none"
+                      className={`${INPUT_CLS} resize-none`}
                       style={{ border: "1px solid #dee2e6", lineHeight: 1.7 }}
                     />
                   ) : (
@@ -114,8 +128,8 @@ export default function AdminSettings() {
                       type="text"
                       value={values[f.key] ?? ""}
                       onChange={(e) => set(f.key, e.target.value)}
-                      placeholder={f.placeholder}
-                      className="w-full px-3 py-2.5 rounded-lg text-[13px] outline-none"
+                      placeholder={(f as { placeholder?: string }).placeholder}
+                      className={INPUT_CLS}
                       style={{ border: "1px solid #dee2e6" }}
                     />
                   )}
@@ -124,6 +138,24 @@ export default function AdminSettings() {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Bottom save bar */}
+      <div
+        className="mt-6 flex items-center justify-between rounded-xl px-6 py-4"
+        style={{ background: "#fff", border: "1px solid #e9ecef" }}
+      >
+        <p className="text-[13px]" style={{ color: "#6c757d" }}>
+          Scroll back up or use the button on the right to save all changes.
+        </p>
+        <button
+          onClick={save}
+          disabled={saving}
+          className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-[13px] font-semibold text-white disabled:opacity-60"
+          style={{ background: "#0E6E74" }}
+        >
+          <Save className="w-4 h-4" /> {saving ? "Saving…" : "Save Changes"}
+        </button>
       </div>
     </AdminLayout>
   );
