@@ -6,11 +6,11 @@ import { useToast } from "@/hooks/use-toast";
 import type { SponsorInput, SponsorInputTier } from "@workspace/api-client-react";
 import { FormField, ModalShell, ConfirmDialog, INPUT_BASE, SELECT_BASE, inputBorder } from "@/components/ui/form-primitives";
 
-const TIER_STYLES: Record<string, { bg: string; color: string; border: string }> = {
-  platinum: { bg: "#f1f3f5", color: "#495057", border: "#dee2e6" },
-  gold: { bg: "#FDF6E8", color: "#8a6a24", border: "#f0d9a0" },
-  silver: { bg: "#f8f9fa", color: "#6c757d", border: "#dee2e6" },
-  bronze: { bg: "#fdf2ec", color: "#8a4a24", border: "#f0c9a0" },
+const TIER_STYLES: Record<string, { bg: string; color: string; borderColor: string }> = {
+  platinum: { bg: "#f1f3f5", color: "#495057", borderColor: "#dee2e6" },
+  gold:     { bg: "#FDF6E8", color: "#8a6a24", borderColor: "#f0d9a0" },
+  silver:   { bg: "#f8f9fa", color: "#6c757d", borderColor: "#dee2e6" },
+  bronze:   { bg: "#fdf2ec", color: "#8a4a24", borderColor: "#f0c9a0" },
 };
 
 const BLANK: SponsorInput = { name: "", tier: "gold", logoUrl: "", website: "" };
@@ -76,17 +76,12 @@ export default function AdminSponsors() {
 
   return (
     <AdminLayout title="Sponsors">
-      <div className="flex justify-between items-center mb-5">
-        <div className="text-[13px]" style={{ color: "#6c757d" }}>
-          {sponsors?.length ?? 0} sponsors across{" "}
-          {tiers.filter((t) => sponsors?.some((s) => s.tier === t)).length} tiers
-        </div>
-        <button
-          onClick={openCreate}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-[13px] font-semibold text-white"
-          style={{ background: "#0E6E74" }}
-        >
-          <Plus className="w-4 h-4" /> Add Sponsor
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+        <span style={{ fontSize: 13, color: "var(--text-muted)" }}>
+          {sponsors?.length ?? 0} sponsors across {tiers.filter((t) => sponsors?.some((s) => s.tier === t)).length} tiers
+        </span>
+        <button className="btn btn-primary" onClick={openCreate}>
+          <Plus style={{ width: 14, height: 14 }} /> Add Sponsor
         </button>
       </div>
 
@@ -95,61 +90,66 @@ export default function AdminSponsors() {
         if (tierSponsors.length === 0) return null;
         const ts = TIER_STYLES[tier];
         return (
-          <div key={tier} className="mb-6">
-            <div className="flex items-center gap-2 mb-3">
+          <div key={tier} style={{ marginBottom: 24 }}>
+            {/* Tier heading */}
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
               <span
-                className="text-[12px] font-bold uppercase tracking-wider px-3 py-1 rounded-full capitalize"
-                style={{ background: ts.bg, color: ts.color, border: `1px solid ${ts.border}` }}
+                style={{
+                  fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em",
+                  padding: "3px 10px", borderRadius: 20,
+                  background: ts.bg, color: ts.color, border: `1px solid ${ts.borderColor}`,
+                }}
               >
                 {tier}
               </span>
-              <span className="text-[12px]" style={{ color: "#adb5bd" }}>
+              <span style={{ fontSize: 12, color: "var(--text-muted)" }}>
                 {tierSponsors.length} sponsor{tierSponsors.length > 1 ? "s" : ""}
               </span>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 12 }}>
               {tierSponsors.map((s) => (
-                <div
-                  key={s.id}
-                  className="bg-white rounded-xl p-4 flex items-center gap-3"
-                  style={{ border: `1px solid ${ts.border}` }}
-                >
-                  <div
-                    className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 text-[13px] font-bold"
-                    style={{ background: ts.bg, color: ts.color }}
-                  >
-                    {s.name.slice(0, 2).toUpperCase()}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-[14px] font-semibold truncate" style={{ color: "#212529" }}>{s.name}</div>
-                    {s.website && (
-                      <a
-                        href={s.website}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-1 text-[11px] no-underline"
-                        style={{ color: "#0E6E74" }}
+                <div key={s.id} className="card">
+                  <div className="card-body" style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <div
+                      style={{
+                        width: 44, height: 44, borderRadius: 8, flexShrink: 0,
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        fontSize: 13, fontWeight: 700,
+                        background: ts.bg, color: ts.color, border: `1px solid ${ts.borderColor}`,
+                      }}
+                    >
+                      {s.name.slice(0, 2).toUpperCase()}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        {s.name}
+                      </div>
+                      {s.website && (
+                        <a
+                          href={s.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 11, color: "var(--primary)", textDecoration: "none" }}
+                        >
+                          <ExternalLink style={{ width: 11, height: 11 }} />
+                          {s.website.replace(/^https?:\/\//, "").split("/")[0]}
+                        </a>
+                      )}
+                    </div>
+                    <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
+                      <button className="btn btn-outline btn-sm" onClick={() => openEdit(s)} title="Edit">
+                        <Pencil style={{ width: 13, height: 13 }} />
+                      </button>
+                      <button
+                        className="btn btn-sm"
+                        style={{ background: "#f8d7da", color: "#842029", borderColor: "#f1aeb5" }}
+                        onClick={() => setDeleteId(s.id)}
+                        title="Delete"
                       >
-                        <ExternalLink className="w-3 h-3" />
-                        {s.website.replace(/^https?:\/\//, "").split("/")[0]}
-                      </a>
-                    )}
-                  </div>
-                  <div className="flex gap-1.5 flex-shrink-0">
-                    <button
-                      onClick={() => openEdit(s)}
-                      className="p-1.5 rounded transition-colors hover:bg-gray-50"
-                      style={{ border: "1px solid #e9ecef", color: "#495057" }}
-                    >
-                      <Pencil className="w-3.5 h-3.5" />
-                    </button>
-                    <button
-                      onClick={() => setDeleteId(s.id)}
-                      className="p-1.5 rounded transition-colors hover:bg-red-50"
-                      style={{ border: "1px solid #f8d7da", color: "#842029" }}
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
+                        <Trash2 style={{ width: 13, height: 13 }} />
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -159,7 +159,7 @@ export default function AdminSponsors() {
       })}
 
       {(sponsors ?? []).length === 0 && (
-        <div className="text-center py-12 text-[14px]" style={{ color: "#adb5bd" }}>
+        <div style={{ textAlign: "center", padding: "48px 0", fontSize: 14, color: "var(--text-muted)" }}>
           No sponsors yet. Add the first one.
         </div>
       )}
@@ -171,18 +171,12 @@ export default function AdminSponsors() {
           size="md"
           footer={
             <>
+              <button className="btn btn-outline" onClick={() => setShowModal(false)}>Cancel</button>
               <button
-                onClick={() => setShowModal(false)}
-                className="px-4 py-2.5 rounded-lg text-[13px] font-medium transition-colors hover:bg-gray-50"
-                style={{ border: "1px solid #e9ecef", color: "#6c757d" }}
-              >
-                Cancel
-              </button>
-              <button
+                className="btn btn-primary"
                 onClick={save}
                 disabled={createMutation.isPending || updateMutation.isPending}
-                className="px-5 py-2.5 rounded-lg text-[13px] font-semibold text-white disabled:opacity-60"
-                style={{ background: "#C89B3C" }}
+                style={{ opacity: (createMutation.isPending || updateMutation.isPending) ? 0.6 : 1 }}
               >
                 {editId ? "Save Changes" : "Add Sponsor"}
               </button>

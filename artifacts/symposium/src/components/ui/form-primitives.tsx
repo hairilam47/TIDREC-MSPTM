@@ -12,7 +12,7 @@ export const TEXTAREA_BASE =
   "w-full px-3.5 py-3 rounded-lg text-[14px] outline-none transition-colors focus:ring-2 focus:ring-[rgba(14,110,116,0.2)] focus:border-[#0E6E74] resize-none";
 
 export const inputBorder = (error?: string): React.CSSProperties => ({
-  border: `1px solid ${error ? "#dc3545" : "#dee2e6"}`,
+  border: `1px solid ${error ? "#dc3545" : "var(--border-color)"}`,
 });
 
 interface FormFieldProps {
@@ -26,13 +26,13 @@ interface FormFieldProps {
 export function FormField({ label, required, error, hint, children }: FormFieldProps) {
   return (
     <div>
-      <label className="block text-[13px] font-semibold mb-1.5" style={{ color: "#495057" }}>
+      <label style={{ display: "block", fontSize: 12, fontWeight: 600, marginBottom: 6, color: "var(--text-secondary)" }}>
         {label}
         {required && <span style={{ color: "#dc3545" }}> *</span>}
       </label>
       {children}
-      {error && <p className="text-[12px] mt-1" style={{ color: "#dc3545" }}>{error}</p>}
-      {hint && !error && <p className="text-[12px] mt-1" style={{ color: "#adb5bd" }}>{hint}</p>}
+      {error && <p style={{ fontSize: 12, marginTop: 4, color: "#dc3545" }}>{error}</p>}
+      {hint && !error && <p style={{ fontSize: 11, marginTop: 4, color: "var(--text-muted)" }}>{hint}</p>}
     </div>
   );
 }
@@ -41,11 +41,11 @@ function useBodyScrollLock() {
   React.useEffect(() => {
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = prev;
-    };
+    return () => { document.body.style.overflow = prev; };
   }, []);
 }
+
+const SIZE_MAX: Record<string, number> = { sm: 384, md: 448, lg: 512, xl: 672 };
 
 interface ModalShellProps {
   title: string;
@@ -58,44 +58,33 @@ interface ModalShellProps {
 export function ModalShell({ title, onClose, footer, children, size = "lg" }: ModalShellProps) {
   useBodyScrollLock();
 
-  const maxW =
-    size === "sm" ? "sm:max-w-sm"
-    : size === "md" ? "sm:max-w-md"
-    : size === "xl" ? "sm:max-w-2xl"
-    : "sm:max-w-lg";
-
   return createPortal(
     <div
-      className="fixed inset-0 flex items-end sm:items-center justify-center"
-      style={{ background: "rgba(0,0,0,0.6)", zIndex: 99999 }}
-      onMouseDown={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
+      style={{ position: "fixed", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", padding: "16px", background: "rgba(0,0,0,0.55)", zIndex: 99999 }}
+      onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <div
-        className={`bg-white w-full rounded-t-2xl sm:rounded-2xl ${maxW} flex flex-col shadow-2xl`}
-        style={{ maxHeight: "90dvh" }}
+        className="card"
+        style={{ width: "100%", maxWidth: SIZE_MAX[size], maxHeight: "90dvh", display: "flex", flexDirection: "column", boxShadow: "0 20px 60px rgba(0,0,0,0.25)", overflow: "hidden" }}
       >
-        <div
-          className="flex items-center justify-between px-6 py-4 flex-shrink-0"
-          style={{ borderBottom: "1px solid #e9ecef" }}
-        >
-          <h3 className="text-[17px] font-serif font-bold" style={{ color: "#0B2744" }}>
-            {title}
-          </h3>
-          <button
-            onClick={onClose}
-            className="p-1.5 rounded-lg hover:bg-gray-50 transition-colors"
-          >
-            <X className="w-5 h-5" style={{ color: "#6c757d" }} />
+        {/* Card header */}
+        <div className="card-header">
+          <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
+            <div className="card-title" style={{ fontSize: 15, fontFamily: "'Playfair Display', serif" }}>{title}</div>
+          </div>
+          <button className="btn btn-ghost btn-sm" onClick={onClose} style={{ padding: "0 6px", flexShrink: 0 }}>
+            <X style={{ width: 16, height: 16 }} />
           </button>
         </div>
-        <div className="overflow-y-auto flex-1 px-6 py-5 space-y-5">{children}</div>
+
+        {/* Card body — scrollable */}
+        <div className="card-body" style={{ overflowY: "auto", flex: 1, display: "flex", flexDirection: "column", gap: 16 }}>
+          {children}
+        </div>
+
+        {/* Card footer */}
         {footer && (
-          <div
-            className="flex justify-end gap-3 px-6 py-4 flex-shrink-0"
-            style={{ borderTop: "1px solid #e9ecef" }}
-          >
+          <div className="card-footer" style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
             {footer}
           </div>
         )}
@@ -128,32 +117,23 @@ export function ConfirmDialog({
 
   return createPortal(
     <div
-      className="fixed inset-0 flex items-center justify-center p-4"
-      style={{ background: "rgba(0,0,0,0.6)", zIndex: 99999 }}
-      onMouseDown={(e) => {
-        if (e.target === e.currentTarget) onCancel();
-      }}
+      style={{ position: "fixed", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", padding: "16px", background: "rgba(0,0,0,0.55)", zIndex: 99999 }}
+      onMouseDown={(e) => { if (e.target === e.currentTarget) onCancel(); }}
     >
-      <div className="bg-white rounded-2xl w-full max-w-sm shadow-2xl p-6">
-        <h3 className="text-[16px] font-semibold mb-2" style={{ color: "#0B2744" }}>
-          {title}
-        </h3>
-        <p className="text-[13px] leading-relaxed mb-5" style={{ color: "#6c757d" }}>
-          {message}
-        </p>
-        <div className="flex justify-end gap-3">
+      <div className="card" style={{ width: "100%", maxWidth: 400, boxShadow: "0 20px 60px rgba(0,0,0,0.25)", overflow: "hidden" }}>
+        <div className="card-header">
+          <div className="card-title" style={{ fontSize: 15 }}>{title}</div>
+        </div>
+        <div className="card-body">
+          <p style={{ fontSize: 13, color: "var(--text-secondary)", lineHeight: 1.6, margin: 0 }}>{message}</p>
+        </div>
+        <div className="card-footer" style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+          <button className="btn btn-outline" onClick={onCancel}>Cancel</button>
           <button
-            onClick={onCancel}
-            className="px-4 py-2.5 rounded-lg text-[13px] font-medium transition-colors hover:bg-gray-50"
-            style={{ border: "1px solid #e9ecef", color: "#6c757d" }}
-          >
-            Cancel
-          </button>
-          <button
+            className="btn"
             onClick={onConfirm}
             disabled={loading}
-            className="px-4 py-2.5 rounded-lg text-[13px] font-semibold text-white disabled:opacity-60"
-            style={{ background: danger ? "#dc3545" : "#0E6E74" }}
+            style={{ background: danger ? "#dc3545" : "var(--primary)", color: "#fff", borderColor: danger ? "#b02a37" : "var(--primary-dk)", opacity: loading ? 0.6 : 1 }}
           >
             {loading ? "…" : confirmLabel}
           </button>

@@ -8,14 +8,14 @@ import { FormField, ModalShell, ConfirmDialog, INPUT_BASE, SELECT_BASE, TEXTAREA
 
 const BLANK: SessionInput = { title: "", day: 1, startTime: "09:00", endTime: "", room: "", sessionType: "keynote", description: "", speakerId: undefined };
 
-const TYPE_COLORS: Record<string, { bg: string; color: string }> = {
-  keynote: { bg: "#FDF6E8", color: "#8a6a24" },
-  panel: { bg: "#e6f4f5", color: "#0E6E74" },
-  workshop: { bg: "rgba(11,39,68,0.06)", color: "#0B2744" },
-  oral: { bg: "#d1e7dd", color: "#0a5c39" },
-  poster: { bg: "#f8d7da", color: "#842029" },
-  opening: { bg: "#e9ecef", color: "#495057" },
-  closing: { bg: "#e9ecef", color: "#495057" },
+const TYPE_BADGE: Record<string, { bg: string; color: string }> = {
+  keynote:  { bg: "#FDF6E8", color: "#8a6a24" },
+  panel:    { bg: "#e6f4f5", color: "#0E6E74" },
+  workshop: { bg: "rgba(11,39,68,0.07)", color: "#0B2744" },
+  oral:     { bg: "#d1e7dd", color: "#0a5c39" },
+  poster:   { bg: "#f8d7da", color: "#842029" },
+  opening:  { bg: "#e9ecef", color: "#495057" },
+  closing:  { bg: "#e9ecef", color: "#495057" },
 };
 
 export default function AdminProgramme() {
@@ -96,100 +96,93 @@ export default function AdminProgramme() {
 
   return (
     <AdminLayout title="Programme">
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
-        <div className="flex gap-2">
+      {/* Toolbar */}
+      <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 20 }}>
+        <div style={{ display: "flex", gap: 6 }}>
           <button
+            className={`btn btn-sm ${dayFilter === "all" ? "btn-primary" : "btn-outline"}`}
             onClick={() => setDayFilter("all")}
-            className="px-3 py-1.5 rounded-lg text-[12px] font-medium"
-            style={{ background: dayFilter === "all" ? "#0E6E74" : "#e9ecef", color: dayFilter === "all" ? "#fff" : "#495057" }}
           >
             All Days
           </button>
           {days.map((d) => (
             <button
               key={d}
+              className={`btn btn-sm ${dayFilter === d ? "btn-primary" : "btn-outline"}`}
               onClick={() => setDayFilter(d)}
-              className="px-3 py-1.5 rounded-lg text-[12px] font-medium"
-              style={{ background: dayFilter === d ? "#0E6E74" : "#e9ecef", color: dayFilter === d ? "#fff" : "#495057" }}
             >
               Day {d}
             </button>
           ))}
         </div>
-        <button
-          onClick={openCreate}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-[13px] font-semibold text-white"
-          style={{ background: "#0E6E74" }}
-        >
-          <Plus className="w-4 h-4" /> Add Session
+        <button className="btn btn-primary" onClick={openCreate}>
+          <Plus style={{ width: 14, height: 14 }} /> Add Session
         </button>
       </div>
 
-      <div className="bg-white rounded-xl overflow-hidden" style={{ border: "1px solid #e9ecef" }}>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead style={{ background: "#f8f9fa" }}>
-              <tr>
-                {["Day", "Time", "Title", "Type", "Room", "Speaker", "Actions"].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-4 py-3 text-[11px] font-semibold uppercase tracking-wide"
-                    style={{ color: "#6c757d", borderBottom: "1px solid #e9ecef" }}
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.length === 0 ? (
+      {/* Sessions table */}
+      <div className="card">
+        <div className="card-body p-0">
+          <div style={{ overflowX: "auto" }}>
+            <table className="table">
+              <thead>
                 <tr>
-                  <td colSpan={7} className="text-center py-10 text-[13px]" style={{ color: "#adb5bd" }}>
-                    No sessions yet
-                  </td>
+                  <th>Day</th>
+                  <th>Time</th>
+                  <th>Title</th>
+                  <th>Type</th>
+                  <th>Room</th>
+                  <th>Speaker</th>
+                  <th></th>
                 </tr>
-              ) : filtered.map((s) => {
-                const tc = TYPE_COLORS[s.sessionType] ?? TYPE_COLORS.opening;
-                return (
-                  <tr key={s.id} style={{ borderBottom: "1px solid #f1f3f5" }}>
-                    <td className="px-4 py-3 text-[13px] font-medium" style={{ color: "#495057" }}>Day {s.day}</td>
-                    <td className="px-4 py-3 text-[12px]" style={{ color: "#6c757d" }}>
-                      {s.startTime}{s.endTime ? `–${s.endTime}` : ""}
-                    </td>
-                    <td className="px-4 py-3 text-[13px] font-medium max-w-xs" style={{ color: "#212529" }}>{s.title}</td>
-                    <td className="px-4 py-3">
-                      <span
-                        className="text-[11px] font-semibold px-2 py-0.5 rounded-full capitalize"
-                        style={{ background: tc.bg, color: tc.color }}
-                      >
-                        {s.sessionType}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-[12px]" style={{ color: "#6c757d" }}>{s.room ?? "—"}</td>
-                    <td className="px-4 py-3 text-[12px]" style={{ color: "#6c757d" }}>{s.speakerName ?? "—"}</td>
-                    <td className="px-4 py-3">
-                      <div className="flex gap-1.5">
-                        <button
-                          onClick={() => openEdit(s)}
-                          className="p-1.5 rounded transition-colors hover:bg-gray-50"
-                          style={{ border: "1px solid #e9ecef", color: "#495057" }}
-                        >
-                          <Pencil className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          onClick={() => setDeleteId(s.id)}
-                          className="p-1.5 rounded transition-colors hover:bg-red-50"
-                          style={{ border: "1px solid #f8d7da", color: "#842029" }}
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
+              </thead>
+              <tbody>
+                {filtered.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} style={{ textAlign: "center", padding: "40px 16px", color: "var(--text-muted)", fontSize: 13 }}>
+                      No sessions yet
                     </td>
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                ) : filtered.map((s) => {
+                  const tc = TYPE_BADGE[s.sessionType] ?? TYPE_BADGE.opening;
+                  return (
+                    <tr key={s.id}>
+                      <td><span className="cell-mono">Day {s.day}</span></td>
+                      <td><span className="cell-mono">{s.startTime}{s.endTime ? `–${s.endTime}` : ""}</span></td>
+                      <td><span className="cell-strong">{s.title}</span></td>
+                      <td>
+                        <span
+                          style={{
+                            fontSize: 11, fontWeight: 600, padding: "2px 8px", borderRadius: 20, textTransform: "capitalize",
+                            background: tc.bg, color: tc.color,
+                          }}
+                        >
+                          {s.sessionType}
+                        </span>
+                      </td>
+                      <td style={{ color: "var(--text-secondary)", fontSize: 12 }}>{s.room ?? "—"}</td>
+                      <td style={{ color: "var(--text-secondary)", fontSize: 12 }}>{s.speakerName ?? "—"}</td>
+                      <td>
+                        <div style={{ display: "flex", gap: 6 }}>
+                          <button className="btn btn-outline btn-sm" onClick={() => openEdit(s)} title="Edit">
+                            <Pencil style={{ width: 13, height: 13 }} />
+                          </button>
+                          <button
+                            className="btn btn-sm"
+                            style={{ background: "#f8d7da", color: "#842029", borderColor: "#f1aeb5" }}
+                            onClick={() => setDeleteId(s.id)}
+                            title="Delete"
+                          >
+                            <Trash2 style={{ width: 13, height: 13 }} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
@@ -199,18 +192,12 @@ export default function AdminProgramme() {
           onClose={() => setShowModal(false)}
           footer={
             <>
+              <button className="btn btn-outline" onClick={() => setShowModal(false)}>Cancel</button>
               <button
-                onClick={() => setShowModal(false)}
-                className="px-4 py-2.5 rounded-lg text-[13px] font-medium transition-colors hover:bg-gray-50"
-                style={{ border: "1px solid #e9ecef", color: "#6c757d" }}
-              >
-                Cancel
-              </button>
-              <button
+                className="btn btn-primary"
                 onClick={save}
                 disabled={createMutation.isPending || updateMutation.isPending}
-                className="px-5 py-2.5 rounded-lg text-[13px] font-semibold text-white disabled:opacity-60"
-                style={{ background: "#C89B3C" }}
+                style={{ opacity: (createMutation.isPending || updateMutation.isPending) ? 0.6 : 1 }}
               >
                 {editId ? "Save Changes" : "Add Session"}
               </button>
@@ -227,7 +214,7 @@ export default function AdminProgramme() {
             />
           </FormField>
 
-          <div className="grid grid-cols-2 gap-5">
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
             <FormField label="Day" required>
               <select
                 value={form.day}
@@ -248,7 +235,7 @@ export default function AdminProgramme() {
                 style={inputBorder()}
               >
                 {["keynote", "panel", "workshop", "oral", "poster", "opening", "closing"].map((t) => (
-                  <option key={t} value={t} className="capitalize">
+                  <option key={t} value={t}>
                     {t.charAt(0).toUpperCase() + t.slice(1)}
                   </option>
                 ))}
@@ -256,7 +243,7 @@ export default function AdminProgramme() {
             </FormField>
           </div>
 
-          <div className="grid grid-cols-2 gap-5">
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
             <FormField label="Start Time" required error={errors.startTime}>
               <input
                 type="time"

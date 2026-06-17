@@ -78,50 +78,44 @@ export default function AdminSpeakers() {
 
   return (
     <AdminLayout title="Speakers">
-      <div className="flex justify-between items-center mb-5">
-        <div className="text-[13px]" style={{ color: "#6c757d" }}>{speakers?.length ?? 0} speakers</div>
-        <button
-          onClick={openCreate}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-[13px] font-semibold text-white"
-          style={{ background: "#0E6E74" }}
-        >
-          <Plus className="w-4 h-4" /> Add Speaker
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+        <span style={{ fontSize: 13, color: "var(--text-muted)" }}>{speakers?.length ?? 0} speakers</span>
+        <button className="btn btn-primary" onClick={openCreate}>
+          <Plus style={{ width: 14, height: 14 }} /> Add Speaker
         </button>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 16 }}>
         {(speakers ?? []).map((s) => (
-          <div key={s.id} className="bg-white rounded-xl overflow-hidden" style={{ border: "1px solid #e9ecef" }}>
-            <div className="flex items-center justify-center h-24" style={{ background: "linear-gradient(135deg, #e6f4f5, #f8f9fa)" }}>
-              <div className="text-3xl font-serif font-bold" style={{ color: "#0E6E74" }}>{s.initials}</div>
+          <div key={s.id} className="card" style={{ overflow: "hidden" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 80, background: "linear-gradient(135deg, var(--primary-lt), var(--bg-surface-secondary))" }}>
+              <span style={{ fontFamily: "'Playfair Display', serif", fontSize: 28, fontWeight: 700, color: "var(--primary)" }}>
+                {s.initials}
+              </span>
             </div>
-            <div className="p-4">
-              <div className="text-[14px] font-semibold mb-0.5" style={{ color: "#212529" }}>{s.name}</div>
-              <div className="text-[12px] mb-0.5" style={{ color: "#0E6E74" }}>{s.topic}</div>
-              <div className="text-[11px] mb-3" style={{ color: "#adb5bd" }}>
+            <div className="card-body" style={{ paddingTop: 12, paddingBottom: 8 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text)", marginBottom: 2 }}>{s.name}</div>
+              <div style={{ fontSize: 12, color: "var(--primary)", marginBottom: 2 }}>{s.topic}</div>
+              <div style={{ fontSize: 11, color: "var(--text-muted)" }}>
                 {s.institution ? `${s.institution}, ` : ""}{s.country}
               </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => openEdit(s)}
-                  className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-[12px] font-medium transition-colors hover:bg-gray-50"
-                  style={{ border: "1px solid #e9ecef", color: "#495057" }}
-                >
-                  <Pencil className="w-3.5 h-3.5" /> Edit
-                </button>
-                <button
-                  onClick={() => setDeleteId(s.id)}
-                  className="flex items-center justify-center py-1.5 px-2.5 rounded-lg transition-colors hover:bg-red-50"
-                  style={{ border: "1px solid #f8d7da", color: "#842029" }}
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </button>
-              </div>
+            </div>
+            <div className="card-footer" style={{ display: "flex", gap: 6 }}>
+              <button className="btn btn-outline btn-sm" style={{ flex: 1 }} onClick={() => openEdit(s)}>
+                <Pencil style={{ width: 13, height: 13 }} /> Edit
+              </button>
+              <button
+                className="btn btn-sm"
+                style={{ background: "#f8d7da", color: "#842029", borderColor: "#f1aeb5" }}
+                onClick={() => setDeleteId(s.id)}
+              >
+                <Trash2 style={{ width: 13, height: 13 }} />
+              </button>
             </div>
           </div>
         ))}
         {(speakers ?? []).length === 0 && (
-          <div className="col-span-4 text-center py-12 text-[14px]" style={{ color: "#adb5bd" }}>
+          <div style={{ gridColumn: "1 / -1", textAlign: "center", padding: "48px 0", fontSize: 14, color: "var(--text-muted)" }}>
             No speakers yet. Add the first one.
           </div>
         )}
@@ -133,18 +127,12 @@ export default function AdminSpeakers() {
           onClose={() => setShowModal(false)}
           footer={
             <>
+              <button className="btn btn-outline" onClick={() => setShowModal(false)}>Cancel</button>
               <button
-                onClick={() => setShowModal(false)}
-                className="px-4 py-2.5 rounded-lg text-[13px] font-medium transition-colors hover:bg-gray-50"
-                style={{ border: "1px solid #e9ecef", color: "#6c757d" }}
-              >
-                Cancel
-              </button>
-              <button
+                className="btn btn-primary"
                 onClick={save}
                 disabled={createMutation.isPending || updateMutation.isPending}
-                className="px-5 py-2.5 rounded-lg text-[13px] font-semibold text-white disabled:opacity-60"
-                style={{ background: "#C89B3C" }}
+                style={{ opacity: (createMutation.isPending || updateMutation.isPending) ? 0.6 : 1 }}
               >
                 {editId ? "Save Changes" : "Add Speaker"}
               </button>
@@ -161,7 +149,7 @@ export default function AdminSpeakers() {
             />
           </FormField>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
             <FormField label="Country" required error={errors.country}>
               <input
                 value={form.country}
