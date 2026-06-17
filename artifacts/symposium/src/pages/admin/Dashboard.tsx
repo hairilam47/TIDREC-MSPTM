@@ -11,8 +11,7 @@ import {
 import { Link } from "wouter";
 import {
   Users, FileText, DollarSign, TrendingUp,
-  CheckCircle, XCircle, Edit3, ArrowRight,
-  ClipboardList, BarChart2, ArrowUp, ArrowDown,
+  ArrowUp, ArrowDown, BarChart2, ClipboardList, Edit3, CheckCircle, XCircle,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -20,16 +19,13 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
 } from "recharts";
 
-/* ── Design tokens ── */
-const CARD = { border: "1px solid #e9ecef", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" };
-
+/* ── Badges / status maps ── */
 const PAYMENT_BADGE: Record<string, { bg: string; color: string }> = {
   paid:    { bg: "#d1e7dd", color: "#0a5c39" },
   pending: { bg: "#fff3cd", color: "#856404" },
   overdue: { bg: "#f8d7da", color: "#842029" },
   waived:  { bg: "#e6f4f5", color: "#0E6E74" },
 };
-
 const ABSTRACT_BADGE: Record<string, { bg: string; color: string; label: string }> = {
   submitted:          { bg: "#e6f4f5", color: "#0E6E74",  label: "Submitted" },
   under_review:       { bg: "#fff3cd", color: "#856404",  label: "Under Review" },
@@ -37,51 +33,25 @@ const ABSTRACT_BADGE: Record<string, { bg: string; color: string; label: string 
   rejected:           { bg: "#f8d7da", color: "#842029",  label: "Rejected" },
   revision_requested: { bg: "#fff3cd", color: "#856404",  label: "Revision Needed" },
 };
-
 const CHART_COLORS = ["#0E6E74", "#C89B3C", "#0B2744", "#0a5c39", "#842029", "#6c757d"];
-
 const CATEGORY_FEES: Record<string, number> = {
-  healthcare_professional: 800,
-  researcher: 800,
-  educator: 600,
-  student: 300,
-  industry: 1000,
+  healthcare_professional: 800, researcher: 800, educator: 600, student: 300, industry: 1000,
 };
-
-/* ── Fallback monthly trend shown when API returns no rows ── */
 const MONTHLY_TREND_FALLBACK = [
-  { month: "Mar '26", count: 0 },
-  { month: "Apr",     count: 2 },
-  { month: "May",     count: 5 },
-  { month: "Jun",     count: 9 },
-  { month: "Jul",     count: 15 },
-  { month: "Aug",     count: 23 },
-  { month: "Sep",     count: 34 },
-  { month: "Oct",     count: 48 },
-  { month: "Nov",     count: 61 },
-  { month: "Dec",     count: 74 },
-  { month: "Jan '27", count: 88 },
-  { month: "Feb",     count: 97 },
+  { month: "Mar '26", count: 0 }, { month: "Apr", count: 2 },
+  { month: "May", count: 5 },     { month: "Jun", count: 9 },
+  { month: "Jul", count: 15 },    { month: "Aug", count: 23 },
+  { month: "Sep", count: 34 },    { month: "Oct", count: 48 },
+  { month: "Nov", count: 61 },    { month: "Dec", count: 74 },
+  { month: "Jan '27", count: 88 },{ month: "Feb", count: 97 },
   { month: "Mar '27", count: 104 },
 ];
 
-/* ── Small shared components ── */
 function Badge({ bg, color, children }: { bg: string; color: string; children: React.ReactNode }) {
   return (
-    <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full capitalize leading-none" style={{ background: bg, color }}>
+    <span style={{ background: bg, color, fontSize: 11, fontWeight: 600, padding: "2px 8px", borderRadius: 20, display: "inline-block" }}>
       {children}
     </span>
-  );
-}
-
-function SectionHeader({ title, href, linkLabel = "View all" }: { title: string; href: string; linkLabel?: string }) {
-  return (
-    <div className="flex items-center justify-between px-5 py-3" style={{ background: "#0B2744" }}>
-      <h2 className="text-[14px] font-semibold text-white">{title}</h2>
-      <Link href={href} className="flex items-center gap-1 text-[12px] font-medium no-underline" style={{ color: "#C89B3C" }}>
-        {linkLabel} <ArrowRight className="w-3.5 h-3.5" />
-      </Link>
-    </div>
   );
 }
 
@@ -91,20 +61,18 @@ const TABS = [
   { id: "abstracts",     label: "Abstracts",     short: "Abs.",  icon: FileText },
   { id: "financial",     label: "Financial",     short: "Fin.",  icon: DollarSign },
 ] as const;
-
 type Tab = typeof TABS[number]["id"];
 
-/* ── Main component ── */
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = React.useState<Tab>("overview");
 
-  const { data: user } = useGetMe();
-  const { data: stats } = useGetStatsSummary();
+  const { data: user }          = useGetMe();
+  const { data: stats }         = useGetStatsSummary();
   const { data: registrations } = useGetRegistrations();
   const { data: abstracts, refetch: refetchAbstracts } = useGetAbstracts();
-  const { data: monthlyData } = useGetRegistrationsByMonth();
-  const updateAbstractMutation = useUpdateAbstract();
-  const { toast } = useToast();
+  const { data: monthlyData }   = useGetRegistrationsByMonth();
+  const updateAbstractMutation  = useUpdateAbstract();
+  const { toast }               = useToast();
   const [reviewNote, setReviewNote] = React.useState<Record<number, string>>({});
 
   const recentRegs = (registrations ?? []).slice(-10).reverse();
@@ -112,7 +80,6 @@ export default function AdminDashboard() {
     .filter((a) => a.status === "submitted" || a.status === "under_review")
     .slice(0, 6);
 
-  /* ── Combined recent activity (registrations + abstracts, newest 5) ── */
   const recentActivity = React.useMemo(() => {
     const regEvents = (registrations ?? []).map((r) => ({
       key: `reg-${r.id}`,
@@ -120,8 +87,7 @@ export default function AdminDashboard() {
       initials: `${r.firstName?.[0] ?? ""}${r.lastName?.[0] ?? ""}`.toUpperCase() || "?",
       action: "registered as delegate",
       detail: r.category?.replace(/_/g, " ") ?? "",
-      ts: r.createdAt,
-      avatarBg: "#0B2744",
+      ts: r.createdAt, avatarBg: "#0B2744",
     }));
     const absEvents = (abstracts ?? []).map((a) => ({
       key: `abs-${a.id}`,
@@ -129,53 +95,38 @@ export default function AdminDashboard() {
       initials: (a.submitterName ?? "?").split(" ").map((w: string) => w[0]).slice(0, 2).join("").toUpperCase() || "?",
       action: "submitted an abstract",
       detail: a.abstractType?.replace(/_/g, " ") ?? "",
-      ts: a.createdAt,
-      avatarBg: "#0E6E74",
+      ts: a.createdAt, avatarBg: "#0E6E74",
     }));
     return [...regEvents, ...absEvents]
       .sort((a, b) => new Date(b.ts).getTime() - new Date(a.ts).getTime())
-      .slice(0, 5);
+      .slice(0, 6);
   }, [registrations, abstracts]);
 
-  /* ── Month-over-month trend pills (computed from real data) ── */
   const monthTrends = React.useMemo(() => {
     const now = new Date();
     const thisYM = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
     const prevDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
     const prevYM = `${prevDate.getFullYear()}-${String(prevDate.getMonth() + 1).padStart(2, "0")}`;
-
     const countByMonth = (items: { createdAt: string }[]) => {
       const map: Record<string, number> = {};
       items.forEach((it) => { const ym = it.createdAt.slice(0, 7); map[ym] = (map[ym] ?? 0) + 1; });
       return map;
     };
-
-    const computeTrend = (byMonth: Record<string, number>): { dir: "up" | "down" | "flat"; label: string } | null => {
-      const curr = byMonth[thisYM] ?? 0;
-      const prev = byMonth[prevYM] ?? 0;
+    const computeTrend = (byMonth: Record<string, number>) => {
+      const curr = byMonth[thisYM] ?? 0, prev = byMonth[prevYM] ?? 0;
       if (prev === 0 && curr === 0) return null;
-      if (prev === 0) return { dir: "up", label: "New this month" };
+      if (prev === 0) return { dir: "up" as const, label: "New this month" };
       const pct = Math.round(((curr - prev) / prev) * 100);
-      if (pct === 0) return { dir: "flat", label: "No change" };
-      return { dir: pct > 0 ? "up" : "down", label: `${pct > 0 ? "+" : ""}${pct}% this month` };
+      if (pct === 0) return { dir: "flat" as const, label: "No change" };
+      return { dir: pct > 0 ? "up" as const : "down" as const, label: `${pct > 0 ? "+" : ""}${pct}% vs last month` };
     };
-
-    const regMap = countByMonth(registrations ?? []);
-    const absMap = countByMonth(abstracts ?? []);
-
-    return {
-      registrations: computeTrend(regMap),
-      abstracts: computeTrend(absMap),
-    };
+    return { registrations: computeTrend(countByMonth(registrations ?? [])), abstracts: computeTrend(countByMonth(abstracts ?? [])) };
   }, [registrations, abstracts]);
 
-  /* ── Derived chart data ── */
   const paymentStatusData = React.useMemo(() => {
     const counts: Record<string, number> = { paid: 0, pending: 0, overdue: 0, waived: 0 };
     (registrations ?? []).forEach((r) => { counts[r.paymentStatus] = (counts[r.paymentStatus] ?? 0) + 1; });
-    return Object.entries(counts)
-      .filter(([, v]) => v > 0)
-      .map(([name, value]) => ({ name: name.charAt(0).toUpperCase() + name.slice(1), value }));
+    return Object.entries(counts).filter(([, v]) => v > 0).map(([name, value]) => ({ name: name.charAt(0).toUpperCase() + name.slice(1), value }));
   }, [registrations]);
 
   const categoryRevenueData = React.useMemo(() => {
@@ -188,17 +139,13 @@ export default function AdminDashboard() {
     });
     return Object.entries(catMap).map(([name, d]) => ({
       name: name.split(" ").map((w) => w[0].toUpperCase() + w.slice(1)).join(" "),
-      revenue: d.revenue,
-      delegates: d.count,
+      revenue: d.revenue, delegates: d.count,
     }));
   }, [registrations]);
 
   const abstractTypeData = React.useMemo(() => {
     const map: Record<string, number> = {};
-    (abstracts ?? []).forEach((a) => {
-      const k = a.abstractType?.replace(/_/g, " ") ?? "unknown";
-      map[k] = (map[k] ?? 0) + 1;
-    });
+    (abstracts ?? []).forEach((a) => { const k = a.abstractType?.replace(/_/g, " ") ?? "unknown"; map[k] = (map[k] ?? 0) + 1; });
     return Object.entries(map).map(([name, value]) => ({ name: name.charAt(0).toUpperCase() + name.slice(1), value }));
   }, [abstracts]);
 
@@ -210,192 +157,162 @@ export default function AdminDashboard() {
     { name: "Needs Revision", value: (abstracts ?? []).filter((a) => a.status === "revision_requested").length },
   ].filter((d) => d.value > 0), [abstracts]);
 
-  /* ── Build trend data from real API response; fall back to mock when empty ── */
   const { trendData, trendSubtitle } = React.useMemo(() => {
-    if (!monthlyData || monthlyData.length === 0) {
-      return { trendData: MONTHLY_TREND_FALLBACK, trendSubtitle: "Mar 2026 – Mar 2027" };
-    }
+    if (!monthlyData || monthlyData.length === 0) return { trendData: MONTHLY_TREND_FALLBACK, trendSubtitle: "Mar 2026 – Mar 2027" };
     const fmt = (ym: string) => {
       const [year, mon] = ym.split("-");
       const d = new Date(Number(year), Number(mon) - 1, 1);
-      const shortMonth = d.toLocaleString("en-US", { month: "short" });
-      const shortYear = `'${year.slice(2)}`;
-      return `${shortMonth} ${shortYear}`;
+      return `${d.toLocaleString("en-US", { month: "short" })} '${year.slice(2)}`;
     };
     const data = monthlyData.map((r) => ({ month: fmt(r.month), count: r.count }));
-    const first = monthlyData[0].month;
-    const last = monthlyData[monthlyData.length - 1].month;
     const fmtFull = (ym: string) => {
       const [year, mon] = ym.split("-");
-      const d = new Date(Number(year), Number(mon) - 1, 1);
-      return d.toLocaleString("en-US", { month: "short", year: "numeric" });
+      return new Date(Number(year), Number(mon) - 1, 1).toLocaleString("en-US", { month: "short", year: "numeric" });
     };
-    const subtitle = first === last ? fmtFull(first) : `${fmtFull(first)} – ${fmtFull(last)}`;
+    const subtitle = monthlyData[0].month === monthlyData[monthlyData.length - 1].month
+      ? fmtFull(monthlyData[0].month)
+      : `${fmtFull(monthlyData[0].month)} – ${fmtFull(monthlyData[monthlyData.length - 1].month)}`;
     return { trendData: data, trendSubtitle: subtitle };
   }, [monthlyData]);
 
   const acceptanceRate = stats?.totalAbstracts
-    ? Math.round(((stats.acceptedAbstracts ?? 0) / stats.totalAbstracts) * 100)
-    : 0;
+    ? Math.round(((stats.acceptedAbstracts ?? 0) / stats.totalAbstracts) * 100) : 0;
 
   const handleReview = (id: number, status: "accepted" | "rejected" | "revision_requested" | "under_review") => {
     updateAbstractMutation.mutate(
       { id, data: { status, reviewNotes: reviewNote[id] || undefined } },
       {
-        onSuccess: () => {
-          refetchAbstracts();
-          setReviewNote((prev) => { const n = { ...prev }; delete n[id]; return n; });
-          toast({ title: "Abstract updated" });
-        },
+        onSuccess: () => { refetchAbstracts(); setReviewNote((prev) => { const n = { ...prev }; delete n[id]; return n; }); toast({ title: "Abstract updated" }); },
         onError: () => toast({ title: "Update failed", variant: "destructive" }),
       }
     );
   };
 
   const todayStr = new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  const daysToGo = Math.max(0, Math.ceil((new Date("2027-03-22").getTime() - Date.now()) / 86400000));
+
+  /* ── KPI tile data ── */
+  const KPI_TILES = [
+    {
+      label: "Registrations", icon: Users, iconClass: "teal",
+      value: stats?.totalRegistrations ?? 0,
+      sub: `${stats?.pendingPayments ?? 0} pending payment`,
+      trend: monthTrends.registrations,
+    },
+    {
+      label: "Abstracts", icon: FileText, iconClass: "gold",
+      value: stats?.totalAbstracts ?? 0,
+      sub: `${stats?.pendingAbstracts ?? 0} awaiting review`,
+      trend: monthTrends.abstracts,
+    },
+    {
+      label: "Revenue (MYR)", icon: DollarSign, iconClass: "green",
+      value: `MYR ${(stats?.totalRevenue ?? 0).toLocaleString("en-MY")}`,
+      sub: `${stats?.pendingPayments ?? 0} payments pending`,
+      trend: monthTrends.registrations,
+    },
+    {
+      label: "Acceptance Rate", icon: TrendingUp, iconClass: "primary",
+      value: stats?.totalAbstracts ? `${acceptanceRate}%` : "—",
+      sub: `${stats?.acceptedAbstracts ?? 0} accepted · ${stats?.rejectedAbstracts ?? 0} rejected`,
+      trend: monthTrends.abstracts,
+    },
+  ];
 
   return (
     <AdminLayout title="Dashboard">
-      {/* ── Welcome banner ── */}
-      <div className="flex items-start justify-between mb-6">
+
+      {/* ── Welcome row ── */}
+      <div className="flex items-start justify-between gap-4 mb-5">
         <div>
-          <h1 className="text-[22px] font-serif font-bold mb-0.5" style={{ color: "#0B2744" }}>
+          <h2 className="text-xl font-bold mb-0.5" style={{ color: "var(--text)", fontFamily: "'Playfair Display', serif" }}>
             Welcome back, {user?.firstName ?? "Admin"}!
-          </h1>
-          <p className="text-[13px]" style={{ color: "#6c757d" }}>{todayStr}</p>
+          </h2>
+          <p className="text-sm" style={{ color: "var(--text-muted)" }}>{todayStr}</p>
         </div>
-        <div
-          className="hidden sm:flex items-center gap-3 px-4 py-2 rounded-full flex-shrink-0"
-          style={{ border: "1.5px solid #C89B3C" }}
-        >
-          <span className="text-[22px] font-bold leading-none" style={{ color: "#C89B3C" }}>
-            {Math.max(0, Math.ceil((new Date("2027-03-22").getTime() - Date.now()) / 86400000))}
-          </span>
-          <div>
-            <div className="text-[11px] font-semibold uppercase tracking-wide leading-none" style={{ color: "#C89B3C" }}>days to go</div>
-            <div className="text-[10px] mt-0.5" style={{ color: "#adb5bd" }}>22 Mar 2027</div>
-          </div>
+        <div className="hidden sm:flex flex-col items-center justify-center rounded-lg px-5 py-3 flex-shrink-0"
+          style={{ border: "1.5px solid var(--primary)", background: "var(--primary-lt)" }}>
+          <span className="text-3xl font-bold leading-none" style={{ color: "var(--primary)" }}>{daysToGo}</span>
+          <span className="text-[10px] font-semibold uppercase tracking-wider mt-0.5" style={{ color: "var(--text-muted)" }}>days to go</span>
+          <span className="text-[10px] mt-0.5" style={{ color: "var(--text-disabled)" }}>22 Mar 2027</span>
         </div>
       </div>
 
       {/* ── Tab bar ── */}
-      <div
-        className="flex items-center bg-white rounded-xl mb-5"
-        style={{ border: "1px solid #e9ecef", paddingLeft: 8, paddingRight: 8, borderBottom: "2px solid #e9ecef" }}
-      >
-        {TABS.map((tab) => {
-          const Icon = tab.icon;
-          const active = activeTab === tab.id;
-          return (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className="flex items-center gap-1.5 px-4 py-3.5 text-[13px] transition-all"
-              style={
-                active
-                  ? { color: "#0B2744", fontWeight: 600, borderBottom: "2px solid #C89B3C", marginBottom: -2 }
-                  : { color: "#6c757d", fontWeight: 500, borderBottom: "2px solid transparent", marginBottom: -2 }
-              }
-            >
-              <Icon className="w-3.5 h-3.5 flex-shrink-0" />
-              <span className="hidden sm:inline">{tab.label}</span>
-              <span className="sm:hidden">{tab.short}</span>
-            </button>
-          );
-        })}
+      <div className="card mb-5" style={{ padding: "0 8px", borderRadius: "var(--radius-lg)", overflow: "hidden" }}>
+        <div style={{ display: "flex", borderBottom: "2px solid var(--border-color-light)" }}>
+          {TABS.map((tab) => {
+            const Icon = tab.icon;
+            const active = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                style={{
+                  display: "flex", alignItems: "center", gap: 6,
+                  padding: "12px 16px", fontSize: 13, cursor: "pointer",
+                  background: "transparent", border: 0,
+                  color: active ? "var(--text)" : "var(--text-muted)",
+                  fontWeight: active ? 600 : 400,
+                  borderBottom: `2px solid ${active ? "var(--primary)" : "transparent"}`,
+                  marginBottom: -2, transition: "all 120ms", fontFamily: "var(--font)",
+                }}
+              >
+                <Icon style={{ width: 14, height: 14 }} />
+                <span className="hidden sm:inline">{tab.label}</span>
+                <span className="sm:hidden">{tab.short}</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
-      {/* ════════════════════════════════════
+      {/* ══════════════════════════════════════
           OVERVIEW TAB
-      ════════════════════════════════════ */}
+      ══════════════════════════════════════ */}
       {activeTab === "overview" && (
         <>
-          {/* KPI cards */}
-          <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-5">
-            {[
-              {
-                label: "Registrations",
-                value: stats?.totalRegistrations ?? 0,
-                sub: `${stats?.pendingPayments ?? 0} pending payment`,
-                icon: Users, iconBg: "#e6f4f5", iconColor: "#0E6E74", accent: "#0E6E74",
-                trend: monthTrends.registrations,
-              },
-              {
-                label: "Abstracts",
-                value: stats?.totalAbstracts ?? 0,
-                sub: `${stats?.pendingAbstracts ?? 0} awaiting review`,
-                icon: FileText, iconBg: "#FDF6E8", iconColor: "#C89B3C", accent: "#C89B3C",
-                trend: monthTrends.abstracts,
-              },
-              {
-                label: "Revenue (MYR)",
-                value: (stats?.totalRevenue ?? 0).toLocaleString("en-MY", { minimumFractionDigits: 0 }),
-                sub: `${stats?.pendingPayments ?? 0} pending`,
-                icon: DollarSign, iconBg: "#d1e7dd", iconColor: "#0a5c39", accent: "#0a5c39",
-                trend: monthTrends.registrations, // revenue mirrors registration trend
-              },
-              {
-                label: "Acceptance Rate",
-                value: stats?.totalAbstracts ? `${acceptanceRate}%` : "—",
-                sub: `${stats?.acceptedAbstracts ?? 0} accepted · ${stats?.rejectedAbstracts ?? 0} rejected`,
-                icon: TrendingUp, iconBg: "#FDF6E8", iconColor: "#C89B3C", accent: "#C89B3C",
-                trend: monthTrends.abstracts,
-              },
-            ].map((k) => {
+          {/* KPI stat cards — use Gentelella .card + .stat classes */}
+          <div className="row col-4 mb-0" style={{ marginBottom: 16 }}>
+            {KPI_TILES.map((k) => {
               const Icon = k.icon;
               const t = k.trend;
               return (
-                <div key={k.label} className="bg-white rounded-xl overflow-hidden" style={CARD}>
-                  <div className="flex">
-                    {/* Left colored icon block */}
-                    <div
-                      className="flex items-center justify-center flex-shrink-0"
-                      style={{ background: k.iconBg, width: 80, minHeight: 96 }}
-                    >
-                      <Icon className="w-9 h-9" style={{ color: k.iconColor }} />
+                <div className="card" key={k.label}>
+                  <div className="stat">
+                    <div className={`stat-icon ${k.iconClass}`}>
+                      <Icon style={{ width: 20, height: 20 }} />
                     </div>
-                    {/* Right metric */}
-                    <div className="flex-1 px-4 py-3 min-w-0">
-                      <div className="text-[28px] font-bold leading-none" style={{ color: "#212529" }}>{k.value}</div>
-                      <div className="text-[10px] font-bold uppercase tracking-wider mt-1.5 mb-0.5" style={{ color: "#6c757d" }}>{k.label}</div>
-                      <div className="text-[11px] mb-1.5" style={{ color: "#adb5bd" }}>{k.sub}</div>
-                      {t ? (
-                        <div
-                          className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-bold"
-                          style={
-                            t.dir === "up"
-                              ? { background: "#d1e7dd", color: "#0a5c39" }
-                              : t.dir === "down"
-                              ? { background: "#f8d7da", color: "#842029" }
-                              : { background: "#e9ecef", color: "#6c757d" }
-                          }
-                        >
-                          {t.dir === "up" ? <ArrowUp className="w-2.5 h-2.5" /> : t.dir === "down" ? <ArrowDown className="w-2.5 h-2.5" /> : null}
-                          {t.label}
-                        </div>
-                      ) : (
-                        <div className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-semibold" style={{ background: "#e9ecef", color: "#adb5bd" }}>
-                          — no data
-                        </div>
-                      )}
+                    <div className="stat-content">
+                      <div className="stat-label">{k.label}</div>
+                      <div className="stat-value-row">
+                        <span className="stat-value" style={{ fontSize: 22 }}>{k.value}</span>
+                        {t && t.dir !== "flat" && (
+                          <span className={`stat-change ${t.dir}`}>
+                            {t.dir === "up" ? <ArrowUp style={{ width: 12, height: 12 }} /> : <ArrowDown style={{ width: 12, height: 12 }} />}
+                            {t.label}
+                          </span>
+                        )}
+                      </div>
+                      <div className="stat-subtext">{k.sub}</div>
                     </div>
                   </div>
-                  {/* Bottom accent strip */}
-                  <div style={{ height: 3, background: k.accent }} />
                 </div>
               );
             })}
           </div>
 
-          {/* Charts + Activity */}
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-5 mb-5">
-            {/* Registrations area chart */}
-            <div className="xl:col-span-2 bg-white rounded-xl overflow-hidden" style={CARD}>
-              <div className="px-5 py-3" style={{ background: "#0B2744" }}>
-                <div className="text-[14px] font-semibold text-white">Registration Trend</div>
-                <div className="text-[11px] mt-0.5" style={{ color: "rgba(255,255,255,0.5)" }}>{trendSubtitle}</div>
+          {/* Registration trend + Activity */}
+          <div className="row col-8-4" style={{ marginBottom: 16 }}>
+            {/* Area chart */}
+            <div className="card">
+              <div className="card-header">
+                <div>
+                  <div className="card-title">Registration Trend</div>
+                  <div className="card-subtitle">{trendSubtitle}</div>
+                </div>
               </div>
-              <div className="p-5" style={{ minHeight: 220 }}>
+              <div className="card-body">
                 <ResponsiveContainer width="100%" height={200}>
                   <AreaChart data={trendData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
                     <defs>
@@ -404,12 +321,12 @@ export default function AdminDashboard() {
                         <stop offset="95%" stopColor="#0E6E74" stopOpacity={0} />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f1f3f5" />
-                    <XAxis dataKey="month" tick={{ fontSize: 10, fill: "#adb5bd" }} />
-                    <YAxis tick={{ fontSize: 10, fill: "#adb5bd" }} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color-light)" />
+                    <XAxis dataKey="month" tick={{ fontSize: 10, fill: "var(--text-muted)" }} />
+                    <YAxis tick={{ fontSize: 10, fill: "var(--text-muted)" }} />
                     <Tooltip
-                      contentStyle={{ border: "1px solid #e9ecef", borderRadius: 8, fontSize: 12, boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}
-                      labelStyle={{ fontWeight: 600, color: "#212529" }}
+                      contentStyle={{ border: "1px solid var(--border-color)", borderRadius: 6, fontSize: 12, background: "var(--bg-surface)" }}
+                      labelStyle={{ fontWeight: 600, color: "var(--text)" }}
                     />
                     <Area type="monotone" dataKey="count" name="Registrations" stroke="#0E6E74" strokeWidth={2} fill="url(#tealGrad)" dot={false} />
                   </AreaChart>
@@ -417,370 +334,344 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            {/* Recent activity feed */}
-            <div className="bg-white rounded-xl overflow-hidden" style={CARD}>
-              <SectionHeader title="Recent Activity" href="/admin/registrations" />
-              <div className="px-4 py-2">
-                {recentActivity.length === 0 ? (
-                  <div className="py-8 text-center text-[13px]" style={{ color: "#adb5bd" }}>No activity yet</div>
-                ) : recentActivity.map((ev) => {
-                  const ts = new Date(ev.ts);
-                  const timeStr = ts.toLocaleDateString("en-GB", { day: "2-digit", month: "short" }) +
-                    " · " + ts.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
-                  return (
-                    <div key={ev.key} className="flex items-start gap-3 py-2.5" style={{ borderBottom: "1px solid #f8f9fa" }}>
-                      <div
-                        className="w-8 h-8 rounded-full flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0 mt-0.5"
-                        style={{ background: ev.avatarBg }}
-                      >
-                        {ev.initials}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="text-[13px] font-medium truncate" style={{ color: "#212529" }}>{ev.name}</div>
-                        <div className="text-[11px] capitalize" style={{ color: "#6c757d" }}>
-                          {ev.action}{ev.detail ? ` · ${ev.detail}` : ""}
-                        </div>
-                        <div className="text-[10px] mt-0.5" style={{ color: "#adb5bd" }}>{timeStr}</div>
-                      </div>
-                    </div>
-                  );
-                })}
+            {/* Recent activity */}
+            <div className="card">
+              <div className="card-header">
+                <div className="card-title">Recent Activity</div>
+                <Link href="/admin/registrations" style={{ fontSize: 12, color: "var(--primary)", textDecoration: "none" }}>
+                  View all
+                </Link>
+              </div>
+              <div className="card-body p-0">
+                <ul className="activity-list" style={{ padding: "0 4px" }}>
+                  {recentActivity.length === 0
+                    ? <li style={{ padding: "24px 12px", textAlign: "center", color: "var(--text-muted)", fontSize: 13 }}>No activity yet</li>
+                    : recentActivity.map((ev) => {
+                        const ts = new Date(ev.ts);
+                        const timeStr = ts.toLocaleDateString("en-GB", { day: "2-digit", month: "short" }) +
+                          " · " + ts.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+                        return (
+                          <li key={ev.key} className="activity-item" style={{ padding: "8px 12px" }}>
+                            <div className="activity-avatar" style={{ background: ev.avatarBg }}>{ev.initials}</div>
+                            <div className="activity-body">
+                              <strong>{ev.name}</strong>
+                              {" "}{ev.action}{ev.detail ? ` · ${ev.detail}` : ""}
+                              <div className="activity-time">{timeStr}</div>
+                            </div>
+                          </li>
+                        );
+                      })
+                  }
+                </ul>
               </div>
             </div>
           </div>
 
           {/* Registration target progress */}
-          <div className="bg-white rounded-xl p-5" style={CARD}>
-            <div className="flex items-center justify-between mb-3">
-              <div>
-                <div className="text-[14px] font-semibold mb-0.5" style={{ color: "#212529" }}>Registration Target</div>
-                <div className="text-[12px]" style={{ color: "#6c757d" }}>
-                  {stats?.totalRegistrations ?? 0} of 300 target delegates
+          <div className="card">
+            <div className="card-body">
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+                <div>
+                  <div className="card-title">Registration Target</div>
+                  <div className="card-subtitle">{stats?.totalRegistrations ?? 0} of 300 target delegates</div>
                 </div>
-              </div>
-              <div className="text-right">
-                <div className="text-[24px] font-bold leading-none" style={{ color: "#C89B3C" }}>
+                <span className="stat-value" style={{ color: "var(--primary)", fontSize: 24 }}>
                   {stats?.totalRegistrations ? Math.min(Math.round((stats.totalRegistrations / 300) * 100), 100) : 0}%
-                </div>
-                <div className="text-[11px]" style={{ color: "#adb5bd" }}>of target</div>
+                </span>
               </div>
-            </div>
-            <div className="rounded-full overflow-hidden" style={{ height: 8, background: "#e9ecef" }}>
-              <div
-                className="h-full rounded-full transition-all duration-700"
-                style={{
-                  width: `${stats?.totalRegistrations ? Math.min((stats.totalRegistrations / 300) * 100, 100) : 0}%`,
-                  background: "linear-gradient(90deg, #0E6E74 0%, #0B2744 100%)",
-                }}
-              />
+              <div className="progress-thin">
+                <div
+                  className="bar"
+                  style={{
+                    width: `${stats?.totalRegistrations ? Math.min((stats.totalRegistrations / 300) * 100, 100) : 0}%`,
+                    background: "linear-gradient(90deg, #0E6E74 0%, #0B2744 100%)",
+                  }}
+                />
+              </div>
             </div>
           </div>
         </>
       )}
 
-      {/* ════════════════════════════════════
+      {/* ══════════════════════════════════════
           REGISTRATIONS TAB
-      ════════════════════════════════════ */}
+      ══════════════════════════════════════ */}
       {activeTab === "registrations" && (
         <>
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-5 mb-5">
-            {/* Payment status bar chart */}
-            <div className="bg-white rounded-xl overflow-hidden" style={CARD}>
-              <div className="px-5 py-3" style={{ background: "#0B2744" }}>
-                <div className="text-[14px] font-semibold text-white">Payment Status</div>
+          <div className="row col-8-4" style={{ marginBottom: 16 }}>
+            {/* Registrations table */}
+            <div className="card">
+              <div className="card-header">
+                <div className="card-title">Recent Registrations</div>
+                <Link href="/admin/registrations" style={{ fontSize: 12, color: "var(--primary)", textDecoration: "none" }}>
+                  View all
+                </Link>
               </div>
-              <div className="p-5" style={{ minHeight: 220 }}>
+              <div className="card-body p-0">
+                <div className="table-responsive">
+                  <table className="table">
+                    <thead>
+                      <tr>
+                        <th>Code</th>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Payment</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {recentRegs.length === 0
+                        ? <tr><td colSpan={4} style={{ textAlign: "center", color: "var(--text-muted)", padding: "24px 16px" }}>No registrations yet</td></tr>
+                        : recentRegs.map((r) => {
+                            const b = PAYMENT_BADGE[r.paymentStatus] ?? PAYMENT_BADGE.pending;
+                            const name = `${r.firstName ?? ""} ${r.lastName ?? ""}`.trim() || r.email;
+                            return (
+                              <tr key={r.id}>
+                                <td><span className="cell-mono">{r.registrationCode ?? "—"}</span></td>
+                                <td><span className="cell-strong">{name}</span></td>
+                                <td style={{ color: "var(--text-secondary)", textTransform: "capitalize" }}>
+                                  {r.category?.replace(/_/g, " ") ?? "—"}
+                                </td>
+                                <td><Badge bg={b.bg} color={b.color}>{r.paymentStatus}</Badge></td>
+                              </tr>
+                            );
+                          })
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            {/* Payment status chart */}
+            <div className="card">
+              <div className="card-header">
+                <div className="card-title">Payment Status</div>
+              </div>
+              <div className="card-body">
                 <ResponsiveContainer width="100%" height={180}>
                   <BarChart data={paymentStatusData} layout="vertical" margin={{ left: 0, right: 12, top: 4, bottom: 4 }}>
-                    <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f3f5" />
-                    <XAxis type="number" tick={{ fontSize: 10, fill: "#adb5bd" }} />
-                    <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: "#adb5bd" }} width={60} />
-                    <Tooltip contentStyle={{ border: "1px solid #e9ecef", borderRadius: 8, fontSize: 12 }} />
-                    <Bar dataKey="value" name="Delegates" radius={[0, 4, 4, 0]}>
-                      {paymentStatusData.map((_, i) => (
-                        <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
-                      ))}
+                    <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="var(--border-color-light)" />
+                    <XAxis type="number" tick={{ fontSize: 10, fill: "var(--text-muted)" }} />
+                    <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: "var(--text-muted)" }} width={60} />
+                    <Tooltip contentStyle={{ border: "1px solid var(--border-color)", borderRadius: 6, fontSize: 12 }} />
+                    <Bar dataKey="value" name="Registrations" radius={[0, 3, 3, 0]}>
+                      {paymentStatusData.map((_, i) => <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />)}
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
               </div>
             </div>
-
-            {/* Summary KPIs */}
-            <div className="xl:col-span-2 grid grid-cols-3 gap-4">
-              {[
-                { label: "Total", value: stats?.totalRegistrations ?? 0, accent: "#0E6E74", bg: "#e6f4f5" },
-                { label: "Paid", value: (registrations ?? []).filter((r) => r.paymentStatus === "paid").length, accent: "#0a5c39", bg: "#d1e7dd" },
-                { label: "Pending", value: stats?.pendingPayments ?? 0, accent: "#856404", bg: "#fff3cd" },
-              ].map((k) => (
-                <div key={k.label} className="bg-white rounded-xl p-4 overflow-hidden" style={CARD}>
-                  <div style={{ height: 3, background: k.accent, marginBottom: 12 }} className="-mx-4 -mt-4 rounded-t-xl" />
-                  <div className="text-[24px] font-bold" style={{ color: "#212529" }}>{k.value}</div>
-                  <div className="text-[11px] font-semibold uppercase tracking-wider mt-0.5" style={{ color: "#6c757d" }}>{k.label}</div>
-                </div>
-              ))}
-            </div>
           </div>
 
-          {/* Registrations table */}
-          <div className="bg-white rounded-xl overflow-hidden" style={CARD}>
-            <SectionHeader title="All Registrations" href="/admin/registrations" />
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr style={{ background: "#f8f9fa" }}>
-                    {["Delegate", "Category", "Institution", "Country", "Payment", "Date"].map((h) => (
-                      <th key={h} className="text-left px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider" style={{ color: "#6c757d", borderBottom: "1px solid #e9ecef" }}>{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {recentRegs.length === 0 ? (
-                    <tr><td colSpan={6} className="text-center py-10 text-[13px]" style={{ color: "#adb5bd" }}>No registrations yet</td></tr>
-                  ) : recentRegs.map((r) => {
-                    const ps = PAYMENT_BADGE[r.paymentStatus] ?? PAYMENT_BADGE.pending;
-                    return (
-                      <tr key={r.id} className="hover:bg-gray-50 transition-colors" style={{ borderBottom: "1px solid #f1f3f5" }}>
-                        <td className="px-4 py-3">
-                          <div className="text-[13px] font-medium" style={{ color: "#212529" }}>{r.firstName} {r.lastName}</div>
-                          <div className="text-[11px]" style={{ color: "#adb5bd" }}>{r.email}</div>
-                        </td>
-                        <td className="px-4 py-3 text-[13px] capitalize" style={{ color: "#495057" }}>{r.category?.replace(/_/g, " ")}</td>
-                        <td className="px-4 py-3 text-[13px]" style={{ color: "#495057" }}>{r.institution ?? "—"}</td>
-                        <td className="px-4 py-3 text-[13px]" style={{ color: "#495057" }}>{r.country ?? "—"}</td>
-                        <td className="px-4 py-3"><Badge bg={ps.bg} color={ps.color}>{r.paymentStatus}</Badge></td>
-                        <td className="px-4 py-3 text-[12px]" style={{ color: "#adb5bd" }}>
-                          {new Date(r.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short" })}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+          {/* Category revenue chart */}
+          <div className="card">
+            <div className="card-header">
+              <div className="card-title">Revenue by Category (MYR)</div>
+            </div>
+            <div className="card-body">
+              <ResponsiveContainer width="100%" height={200}>
+                <BarChart data={categoryRevenueData} margin={{ top: 4, right: 12, left: 0, bottom: 4 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color-light)" />
+                  <XAxis dataKey="name" tick={{ fontSize: 10, fill: "var(--text-muted)" }} />
+                  <YAxis tick={{ fontSize: 10, fill: "var(--text-muted)" }} />
+                  <Tooltip contentStyle={{ border: "1px solid var(--border-color)", borderRadius: 6, fontSize: 12 }} />
+                  <Legend wrapperStyle={{ fontSize: 11 }} />
+                  <Bar dataKey="revenue" name="Revenue (MYR)" fill="#0E6E74" radius={[3, 3, 0, 0]} />
+                  <Bar dataKey="delegates" name="Delegates" fill="#C89B3C" radius={[3, 3, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
           </div>
         </>
       )}
 
-      {/* ════════════════════════════════════
+      {/* ══════════════════════════════════════
           ABSTRACTS TAB
-      ════════════════════════════════════ */}
+      ══════════════════════════════════════ */}
       {activeTab === "abstracts" && (
         <>
-          {/* Charts row */}
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 mb-5">
-            <div className="bg-white rounded-xl overflow-hidden" style={CARD}>
-              <div className="px-5 py-3" style={{ background: "#0B2744" }}>
-                <div className="text-[14px] font-semibold text-white">Abstracts by Type</div>
+          {/* Abstract stats row */}
+          <div className="row col-4" style={{ marginBottom: 16 }}>
+            {[
+              { label: "Total", value: stats?.totalAbstracts ?? 0, iconClass: "teal" },
+              { label: "Pending Review", value: stats?.pendingAbstracts ?? 0, iconClass: "gold" },
+              { label: "Accepted", value: stats?.acceptedAbstracts ?? 0, iconClass: "green" },
+              { label: "Rejected", value: stats?.rejectedAbstracts ?? 0, iconClass: "red" },
+            ].map((s) => (
+              <div className="card" key={s.label}>
+                <div className="stat">
+                  <div className={`stat-icon ${s.iconClass}`}>
+                    <FileText style={{ width: 20, height: 20 }} />
+                  </div>
+                  <div className="stat-content">
+                    <div className="stat-label">{s.label}</div>
+                    <div className="stat-value">{s.value}</div>
+                  </div>
+                </div>
               </div>
-              <div className="p-5" style={{ minHeight: 220 }}>
+            ))}
+          </div>
+
+          <div className="row col-8-4" style={{ marginBottom: 16 }}>
+            {/* Pending abstract review table */}
+            <div className="card">
+              <div className="card-header">
+                <div className="card-title">Pending Review</div>
+                <Link href="/admin/abstracts" style={{ fontSize: 12, color: "var(--primary)", textDecoration: "none" }}>
+                  All abstracts
+                </Link>
+              </div>
+              <div className="card-body p-0">
+                <div className="table-responsive">
+                  <table className="table">
+                    <thead>
+                      <tr>
+                        <th>Code</th>
+                        <th>Title</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {pendingAbstracts.length === 0
+                        ? <tr><td colSpan={5} style={{ textAlign: "center", color: "var(--text-muted)", padding: "24px 16px" }}>No abstracts pending review</td></tr>
+                        : pendingAbstracts.map((a) => {
+                            const sc = ABSTRACT_BADGE[a.status] ?? ABSTRACT_BADGE.submitted;
+                            return (
+                              <tr key={a.id}>
+                                <td><span className="cell-mono">{a.abstractCode ?? "—"}</span></td>
+                                <td>
+                                  <Link href={`/admin/abstracts/${a.id}`} style={{ color: "var(--primary)", textDecoration: "none", fontSize: 13, fontWeight: 500 }}>
+                                    {a.title.length > 40 ? `${a.title.slice(0, 40)}…` : a.title}
+                                  </Link>
+                                </td>
+                                <td style={{ color: "var(--text-secondary)", textTransform: "capitalize", fontSize: 12 }}>
+                                  {a.abstractType?.replace(/_/g, " ")}
+                                </td>
+                                <td><Badge bg={sc.bg} color={sc.color}>{sc.label}</Badge></td>
+                                <td>
+                                  <div style={{ display: "flex", gap: 4 }}>
+                                    <button
+                                      className="btn btn-sm"
+                                      style={{ background: "#d1e7dd", color: "#0a5c39", border: "none", height: 26 }}
+                                      title="Accept"
+                                      onClick={() => handleReview(a.id, "accepted")}
+                                    >
+                                      <CheckCircle style={{ width: 13, height: 13 }} />
+                                    </button>
+                                    <button
+                                      className="btn btn-sm"
+                                      style={{ background: "#f8d7da", color: "#842029", border: "none", height: 26 }}
+                                      title="Reject"
+                                      onClick={() => handleReview(a.id, "rejected")}
+                                    >
+                                      <XCircle style={{ width: 13, height: 13 }} />
+                                    </button>
+                                    <Link href={`/admin/abstracts/${a.id}`}>
+                                      <button className="btn btn-outline btn-sm" title="Review">
+                                        <Edit3 style={{ width: 13, height: 13 }} />
+                                      </button>
+                                    </Link>
+                                  </div>
+                                </td>
+                              </tr>
+                            );
+                          })
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            {/* Abstract type donut */}
+            <div className="card">
+              <div className="card-header">
+                <div className="card-title">By Type</div>
+              </div>
+              <div className="card-body">
                 <ResponsiveContainer width="100%" height={180}>
-                  <BarChart data={abstractTypeData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f1f3f5" />
-                    <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#adb5bd" }} />
-                    <YAxis tick={{ fontSize: 10, fill: "#adb5bd" }} />
-                    <Tooltip contentStyle={{ border: "1px solid #e9ecef", borderRadius: 8, fontSize: 12 }} />
-                    <Bar dataKey="value" name="Abstracts" radius={[4, 4, 0, 0]}>
-                      {abstractTypeData.map((_, i) => (
-                        <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
-                      ))}
-                    </Bar>
-                  </BarChart>
+                  <PieChart>
+                    <Pie data={abstractTypeData} cx="50%" cy="50%" innerRadius={45} outerRadius={70} paddingAngle={2} dataKey="value">
+                      {abstractTypeData.map((_, i) => <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />)}
+                    </Pie>
+                    <Tooltip contentStyle={{ border: "1px solid var(--border-color)", borderRadius: 6, fontSize: 12 }} />
+                    <Legend wrapperStyle={{ fontSize: 11 }} />
+                  </PieChart>
                 </ResponsiveContainer>
               </div>
             </div>
-
-            <div className="bg-white rounded-xl overflow-hidden" style={CARD}>
-              <div className="px-5 py-3" style={{ background: "#0B2744" }}>
-                <div className="text-[14px] font-semibold text-white">Abstract Status Distribution</div>
-              </div>
-              <div className="p-5 flex items-center justify-center" style={{ minHeight: 220 }}>
-                {abstractStatusData.length > 0 ? (
-                  <ResponsiveContainer width="100%" height={180}>
-                    <PieChart>
-                      <Pie data={abstractStatusData} cx="50%" cy="50%" outerRadius={60} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`} labelLine={false} fontSize={10}>
-                        {abstractStatusData.map((_, i) => (
-                          <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
-                        ))}
-                      </Pie>
-                      <Tooltip contentStyle={{ border: "1px solid #e9ecef", borderRadius: 8, fontSize: 12 }} />
-                    </PieChart>
-                  </ResponsiveContainer>
-                ) : (
-                  <div className="py-8 text-[13px]" style={{ color: "#adb5bd" }}>No abstracts yet</div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Abstract review queue */}
-          <div className="bg-white rounded-xl overflow-hidden" style={CARD}>
-            <SectionHeader title="Abstract Review Queue" href="/admin/abstracts" />
-            {pendingAbstracts.length === 0 ? (
-              <div className="text-center py-10 text-[13px]" style={{ color: "#adb5bd" }}>
-                <CheckCircle className="w-8 h-8 mx-auto mb-2" style={{ color: "#dee2e6" }} />
-                All abstracts reviewed
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-0">
-                {pendingAbstracts.map((a, idx) => {
-                  const sc = ABSTRACT_BADGE[a.status] ?? ABSTRACT_BADGE.submitted;
-                  return (
-                    <div key={a.id} className="px-5 py-4" style={{ borderBottom: "1px solid #f1f3f5", borderRight: idx % 2 === 0 ? "1px solid #f1f3f5" : "none" }}>
-                      <div className="flex items-start justify-between gap-2 mb-1.5">
-                        <div className="text-[13px] font-medium leading-snug line-clamp-2" style={{ color: "#212529" }}>{a.title}</div>
-                        <Badge bg={sc.bg} color={sc.color}>{sc.label}</Badge>
-                      </div>
-                      <div className="text-[11px] mb-3" style={{ color: "#adb5bd" }}>
-                        {a.submitterName} · {a.abstractType} · {a.abstractCode}
-                      </div>
-                      <input
-                        type="text"
-                        placeholder="Review note (optional)"
-                        value={reviewNote[a.id] ?? ""}
-                        onChange={(e) => setReviewNote((p) => ({ ...p, [a.id]: e.target.value }))}
-                        className="w-full px-2.5 py-1.5 rounded-lg text-[12px] mb-2 outline-none focus:ring-1"
-                        style={{ border: "1px solid #e9ecef", background: "#f8f9fa" }}
-                      />
-                      <div className="flex gap-1.5">
-                        <button onClick={() => handleReview(a.id, "accepted")} className="flex-1 flex items-center justify-center gap-1 py-1.5 rounded-lg text-[11px] font-semibold transition-opacity hover:opacity-80" style={{ background: "#d1e7dd", color: "#0a5c39" }}>
-                          <CheckCircle className="w-3.5 h-3.5" /> Accept
-                        </button>
-                        <button onClick={() => handleReview(a.id, "revision_requested")} className="flex-1 flex items-center justify-center gap-1 py-1.5 rounded-lg text-[11px] font-semibold transition-opacity hover:opacity-80" style={{ background: "#fff3cd", color: "#856404" }}>
-                          <Edit3 className="w-3.5 h-3.5" /> Revise
-                        </button>
-                        <button onClick={() => handleReview(a.id, "rejected")} className="flex-1 flex items-center justify-center gap-1 py-1.5 rounded-lg text-[11px] font-semibold transition-opacity hover:opacity-80" style={{ background: "#f8d7da", color: "#842029" }}>
-                          <XCircle className="w-3.5 h-3.5" /> Reject
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
           </div>
         </>
       )}
 
-      {/* ════════════════════════════════════
+      {/* ══════════════════════════════════════
           FINANCIAL TAB
-      ════════════════════════════════════ */}
+      ══════════════════════════════════════ */}
       {activeTab === "financial" && (
         <>
-          {/* Revenue KPI */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
+          {/* Revenue KPIs */}
+          <div className="row col-3" style={{ marginBottom: 16 }}>
             {[
               {
-                label: "Total Revenue",
-                value: `MYR ${(stats?.totalRevenue ?? 0).toLocaleString("en-MY", { minimumFractionDigits: 2 })}`,
-                sub: "collected to date",
-                accent: "#C89B3C",
-                iconBg: "#FDF6E8",
-                icon: DollarSign,
-                iconColor: "#C89B3C",
+                label: "Total Revenue (MYR)",
+                value: `MYR ${(stats?.totalRevenue ?? 0).toLocaleString("en-MY")}`,
+                sub: "All confirmed payments",
+                iconClass: "green",
               },
               {
-                label: "Avg. per Delegate",
+                label: "Pending Payments",
+                value: stats?.pendingPayments ?? 0,
+                sub: "Awaiting collection",
+                iconClass: "gold",
+              },
+              {
+                label: "Average Fee (MYR)",
                 value: stats?.totalRegistrations
-                  ? `MYR ${Math.round((stats.totalRevenue ?? 0) / stats.totalRegistrations).toLocaleString()}`
-                  : "MYR —",
-                sub: "mean registration fee",
-                accent: "#0E6E74",
-                iconBg: "#e6f4f5",
-                icon: TrendingUp,
-                iconColor: "#0E6E74",
+                  ? `MYR ${Math.round((stats.totalRevenue ?? 0) / stats.totalRegistrations).toLocaleString("en-MY")}`
+                  : "—",
+                sub: "Per delegate",
+                iconClass: "teal",
               },
-              {
-                label: "Pending",
-                value: `${stats?.pendingPayments ?? 0}`,
-                sub: "awaiting payment",
-                accent: "#856404",
-                iconBg: "#fff3cd",
-                icon: Users,
-                iconColor: "#856404",
-              },
-            ].map((k) => {
-              const Icon = k.icon;
-              return (
-                <div key={k.label} className="bg-white rounded-xl overflow-hidden" style={CARD}>
-                  <div className="flex">
-                    <div
-                      className="flex items-center justify-center flex-shrink-0"
-                      style={{ background: k.iconBg, width: 76, minHeight: 88 }}
-                    >
-                      <Icon className="w-8 h-8" style={{ color: k.iconColor }} />
-                    </div>
-                    <div className="flex-1 px-4 py-3 min-w-0">
-                      <div className="text-[22px] font-bold leading-none" style={{ color: "#212529" }}>{k.value}</div>
-                      <div className="text-[10px] font-bold uppercase tracking-wider mt-1.5 mb-0.5" style={{ color: "#6c757d" }}>{k.label}</div>
-                      <div className="text-[11px]" style={{ color: "#adb5bd" }}>{k.sub}</div>
-                    </div>
+            ].map((k) => (
+              <div className="card" key={k.label}>
+                <div className="stat">
+                  <div className={`stat-icon ${k.iconClass}`}>
+                    <DollarSign style={{ width: 20, height: 20 }} />
                   </div>
-                  <div style={{ height: 3, background: k.accent }} />
+                  <div className="stat-content">
+                    <div className="stat-label">{k.label}</div>
+                    <div className="stat-value" style={{ fontSize: 18 }}>{k.value}</div>
+                    <div className="stat-subtext">{k.sub}</div>
+                  </div>
                 </div>
-              );
-            })}
+              </div>
+            ))}
           </div>
 
-          {/* Charts row */}
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
-            <div className="bg-white rounded-xl overflow-hidden" style={CARD}>
-              <div className="px-5 py-3" style={{ background: "#0B2744" }}>
-                <div className="text-[14px] font-semibold text-white">Revenue by Category</div>
-              </div>
-              <div className="p-5" style={{ minHeight: 220 }}>
-                <ResponsiveContainer width="100%" height={200}>
-                  <BarChart data={categoryRevenueData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f1f3f5" />
-                    <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#adb5bd" }} />
-                    <YAxis tick={{ fontSize: 10, fill: "#adb5bd" }} />
-                    <Tooltip
-                      contentStyle={{ border: "1px solid #e9ecef", borderRadius: 8, fontSize: 12 }}
-                      formatter={(v: number) => [`MYR ${v.toLocaleString()}`, "Revenue"]}
-                    />
-                    <Bar dataKey="revenue" name="Revenue" radius={[4, 4, 0, 0]}>
-                      {categoryRevenueData.map((_, i) => (
-                        <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
-                      ))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
+          {/* Revenue breakdown chart */}
+          <div className="card">
+            <div className="card-header">
+              <div className="card-title">Revenue Breakdown by Category</div>
             </div>
-
-            <div className="bg-white rounded-xl overflow-hidden" style={CARD}>
-              <div className="px-5 py-3" style={{ background: "#0B2744" }}>
-                <div className="text-[14px] font-semibold text-white">Payment Status Breakdown</div>
-              </div>
-              <div className="p-5" style={{ minHeight: 220 }}>
-                {paymentStatusData.length > 0 ? (
-                  <ResponsiveContainer width="100%" height={200}>
-                    <PieChart>
-                      <Pie
-                        data={paymentStatusData}
-                        cx="40%"
-                        cy="50%"
-                        outerRadius={75}
-                        dataKey="value"
-                      >
-                        {paymentStatusData.map((_, i) => (
-                          <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
-                        ))}
-                      </Pie>
-                      <Tooltip contentStyle={{ border: "1px solid #e9ecef", borderRadius: 8, fontSize: 12 }} />
-                      <Legend layout="vertical" align="right" verticalAlign="middle" iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 12 }} />
-                    </PieChart>
-                  </ResponsiveContainer>
-                ) : (
-                  <div className="py-8 text-center text-[13px]" style={{ color: "#adb5bd" }}>
-                    No payment data yet
-                  </div>
-                )}
-              </div>
+            <div className="card-body">
+              <ResponsiveContainer width="100%" height={240}>
+                <BarChart data={categoryRevenueData} margin={{ top: 4, right: 12, left: 0, bottom: 4 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color-light)" />
+                  <XAxis dataKey="name" tick={{ fontSize: 10, fill: "var(--text-muted)" }} />
+                  <YAxis tick={{ fontSize: 10, fill: "var(--text-muted)" }} />
+                  <Tooltip contentStyle={{ border: "1px solid var(--border-color)", borderRadius: 6, fontSize: 12 }} />
+                  <Legend wrapperStyle={{ fontSize: 11 }} />
+                  <Bar dataKey="revenue" name="Revenue (MYR)" fill="#0E6E74" radius={[3, 3, 0, 0]} />
+                  <Bar dataKey="delegates" name="Delegates" fill="#C89B3C" radius={[3, 3, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
           </div>
         </>
       )}
+
     </AdminLayout>
   );
 }
