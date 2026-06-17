@@ -24,6 +24,7 @@ import type {
   AbstractHistoryItem,
   AbstractInput,
   AbstractUpdate,
+  AdminRegistrationInput,
   Announcement,
   AnnouncementInput,
   AuthResponse,
@@ -2190,6 +2191,77 @@ export const useUpdateRegistration = <TError = ErrorType<unknown>,
         TContext
       > => {
       return useMutation(getUpdateRegistrationMutationOptions(options));
+    }
+
+export const getAdminCreateRegistrationUrl = () => {
+
+
+
+
+  return `/api/admin/registrations`
+}
+
+/**
+ * @summary Manually register a delegate (admin)
+ */
+export const adminCreateRegistration = async (adminRegistrationInput: AdminRegistrationInput, options?: RequestInit): Promise<Registration> => {
+
+  return customFetch<Registration>(getAdminCreateRegistrationUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      adminRegistrationInput,)
+  }
+);}
+
+
+
+
+export const getAdminCreateRegistrationMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof adminCreateRegistration>>, TError,{data: BodyType<AdminRegistrationInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof adminCreateRegistration>>, TError,{data: BodyType<AdminRegistrationInput>}, TContext> => {
+
+const mutationKey = ['adminCreateRegistration'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof adminCreateRegistration>>, {data: BodyType<AdminRegistrationInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  adminCreateRegistration(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AdminCreateRegistrationMutationResult = NonNullable<Awaited<ReturnType<typeof adminCreateRegistration>>>
+    export type AdminCreateRegistrationMutationBody = BodyType<AdminRegistrationInput>
+    export type AdminCreateRegistrationMutationError = ErrorType<void>
+
+    /**
+ * @summary Manually register a delegate (admin)
+ */
+export const useAdminCreateRegistration = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof adminCreateRegistration>>, TError,{data: BodyType<AdminRegistrationInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof adminCreateRegistration>>,
+        TError,
+        {data: BodyType<AdminRegistrationInput>},
+        TContext
+      > => {
+      return useMutation(getAdminCreateRegistrationMutationOptions(options));
     }
 
 export const getSendPaymentReminderUrl = (id: number,) => {

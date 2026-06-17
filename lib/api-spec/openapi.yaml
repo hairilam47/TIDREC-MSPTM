@@ -530,6 +530,29 @@ paths:
               schema:
                 $ref: "#/components/schemas/Registration"
 
+  /admin/registrations:
+    post:
+      operationId: adminCreateRegistration
+      tags: [registrations]
+      summary: Manually register a delegate (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminRegistrationInput"
+      responses:
+        "201":
+          description: Registration created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Registration"
+        "400":
+          description: Missing required fields
+        "409":
+          description: Email already has a registration
+
   /registrations/{id}/remind:
     post:
       operationId: sendPaymentReminder
@@ -1073,6 +1096,32 @@ components:
       properties:
         category:
           type: string
+        dietaryRequirements:
+          type: string
+        specialNeeds:
+          type: string
+
+    AdminRegistrationInput:
+      type: object
+      required: [firstName, lastName, email, category]
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        institution:
+          type: string
+        country:
+          type: string
+        category:
+          type: string
+        paymentStatus:
+          type: string
+          enum: [pending, paid, overdue, waived]
+        paymentAmount:
+          type: number
         dietaryRequirements:
           type: string
         specialNeeds:

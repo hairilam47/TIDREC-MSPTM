@@ -471,6 +471,23 @@ export const UpdateRegistrationResponse = zod.object({
 
 
 /**
+ * @summary Manually register a delegate (admin)
+ */
+export const AdminCreateRegistrationBody = zod.object({
+  "firstName": zod.string(),
+  "lastName": zod.string(),
+  "email": zod.string(),
+  "institution": zod.string().optional(),
+  "country": zod.string().optional(),
+  "category": zod.string(),
+  "paymentStatus": zod.enum(['pending', 'paid', 'overdue', 'waived']).optional(),
+  "paymentAmount": zod.number().optional(),
+  "dietaryRequirements": zod.string().optional(),
+  "specialNeeds": zod.string().optional()
+})
+
+
+/**
  * @summary Log a payment reminder sent to a delegate (admin)
  */
 export const SendPaymentReminderParams = zod.object({

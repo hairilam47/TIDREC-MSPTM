@@ -219,6 +219,29 @@ export interface RegistrationInput {
   specialNeeds?: string;
 }
 
+export type AdminRegistrationInputPaymentStatus = typeof AdminRegistrationInputPaymentStatus[keyof typeof AdminRegistrationInputPaymentStatus];
+
+
+export const AdminRegistrationInputPaymentStatus = {
+  pending: 'pending',
+  paid: 'paid',
+  overdue: 'overdue',
+  waived: 'waived',
+} as const;
+
+export interface AdminRegistrationInput {
+  firstName: string;
+  lastName: string;
+  email: string;
+  institution?: string;
+  country?: string;
+  category: string;
+  paymentStatus?: AdminRegistrationInputPaymentStatus;
+  paymentAmount?: number;
+  dietaryRequirements?: string;
+  specialNeeds?: string;
+}
+
 export type RegistrationUpdatePaymentStatus = typeof RegistrationUpdatePaymentStatus[keyof typeof RegistrationUpdatePaymentStatus];
 
 

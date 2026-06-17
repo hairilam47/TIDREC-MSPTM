@@ -14,6 +14,8 @@ export * from './abstractInputAbstractType';
 export * from './abstractStatus';
 export * from './abstractUpdate';
 export * from './abstractUpdateStatus';
+export * from './adminRegistrationInput';
+export * from './adminRegistrationInputPaymentStatus';
 export * from './announcement';
 export * from './announcementInput';
 export * from './authResponse';

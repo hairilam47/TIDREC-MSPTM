@@ -28,6 +28,61 @@ async function formatRegistration(r: typeof registrationsTable.$inferSelect) {
   };
 }
 
+router.post("/admin/registrations", requireAdmin, async (req: AuthRequest, res) => {
+  try {
+    const {
+      firstName, lastName, email, institution, country, category,
+      paymentStatus, paymentAmount, dietaryRequirements, specialNeeds,
+    } = req.body;
+
+    if (!firstName || !lastName || !email || !category) {
+      res.status(400).json({ error: "firstName, lastName, email and category are required" });
+      return;
+    }
+
+    // Find or create user by email
+    let [user] = await db.select().from(usersTable).where(eq(usersTable.email, email.toLowerCase())).limit(1);
+
+    if (user) {
+      // Check not already registered
+      const [existing] = await db.select().from(registrationsTable).where(eq(registrationsTable.userId, user.id)).limit(1);
+      if (existing) {
+        res.status(409).json({ error: "A registration already exists for this email" });
+        return;
+      }
+    } else {
+      // Create a user account with a temporary random password
+      const tempPassword = crypto.randomBytes(16).toString("hex");
+      const passwordHash = await import("bcryptjs").then((m) => m.default.hash(tempPassword, 10));
+      [user] = await db.insert(usersTable).values({
+        email: email.toLowerCase(),
+        passwordHash,
+        firstName,
+        lastName,
+        institution: institution || null,
+        country: country || null,
+        category: category || null,
+        role: "attendee",
+      }).returning();
+    }
+
+    const [registration] = await db.insert(registrationsTable).values({
+      userId: user.id,
+      category,
+      paymentStatus: (paymentStatus as "pending" | "paid" | "overdue" | "waived") || "pending",
+      paymentAmount: paymentAmount != null ? String(paymentAmount) : null,
+      registrationCode: generateRegistrationCode(),
+      dietaryRequirements: dietaryRequirements || null,
+      specialNeeds: specialNeeds || null,
+    }).returning();
+
+    res.status(201).json(await formatRegistration(registration));
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 router.post("/registrations", requireAuth, async (req: AuthRequest, res) => {
   try {
     const { category, dietaryRequirements, specialNeeds } = req.body;
