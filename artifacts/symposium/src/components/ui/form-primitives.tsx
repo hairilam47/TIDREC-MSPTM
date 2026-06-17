@@ -37,6 +37,16 @@ export function FormField({ label, required, error, hint, children }: FormFieldP
   );
 }
 
+function useBodyScrollLock() {
+  React.useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, []);
+}
+
 interface ModalShellProps {
   title: string;
   onClose: () => void;
@@ -46,19 +56,22 @@ interface ModalShellProps {
 }
 
 export function ModalShell({ title, onClose, footer, children, size = "lg" }: ModalShellProps) {
+  useBodyScrollLock();
+
   const maxW =
     size === "sm" ? "sm:max-w-sm" : size === "md" ? "sm:max-w-md" : "sm:max-w-lg";
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center"
-      style={{ background: "rgba(0,0,0,0.55)" }}
+      className="fixed inset-0 flex items-end sm:items-center justify-center"
+      style={{ background: "rgba(0,0,0,0.6)", zIndex: 99999 }}
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
       <div
-        className={`bg-white w-full rounded-t-2xl sm:rounded-2xl ${maxW} max-h-[90vh] flex flex-col shadow-2xl`}
+        className={`bg-white w-full rounded-t-2xl sm:rounded-2xl ${maxW} flex flex-col shadow-2xl`}
+        style={{ maxHeight: "90dvh" }}
       >
         <div
           className="flex items-center justify-between px-6 py-4 flex-shrink-0"
@@ -108,10 +121,12 @@ export function ConfirmDialog({
   loading = false,
   danger = true,
 }: ConfirmDialogProps) {
+  useBodyScrollLock();
+
   return createPortal(
     <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
-      style={{ background: "rgba(0,0,0,0.55)" }}
+      className="fixed inset-0 flex items-center justify-center p-4"
+      style={{ background: "rgba(0,0,0,0.6)", zIndex: 99999 }}
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) onCancel();
       }}
