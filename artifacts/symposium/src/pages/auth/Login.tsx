@@ -1,92 +1,145 @@
 import React from "react";
-import { Link, useLocation } from "wouter";
+import { Link } from "wouter";
 import { useLogin } from "@workspace/api-client-react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-
-const schema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
-});
+import { Loader2 } from "lucide-react";
+import { INPUT_BASE, inputBorder } from "@/components/ui/form-primitives";
 
 export default function Login() {
-  const [, setLocation] = useLocation();
   const loginMutation = useLogin();
-  
-  const form = useForm<z.infer<typeof schema>>({
-    resolver: zodResolver(schema),
-    defaultValues: { email: "", password: "" },
-  });
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [errors, setErrors] = React.useState<{ email?: string; password?: string; general?: string }>({});
 
-  const onSubmit = (data: z.infer<typeof schema>) => {
-    loginMutation.mutate({ data }, {
-      onSuccess: (res) => {
-        localStorage.setItem("satbds_token", res.token);
-        window.location.href = res.user.role === "admin" ? "/admin/" : "/portal/";
+  const validate = () => {
+    const e: typeof errors = {};
+    if (!email.trim()) e.email = "Email is required";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) e.email = "Invalid email address";
+    if (!password) e.password = "Password is required";
+    else if (password.length < 6) e.password = "Password must be at least 6 characters";
+    setErrors(e);
+    return Object.keys(e).length === 0;
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validate()) return;
+    loginMutation.mutate(
+      { data: { email, password } },
+      {
+        onSuccess: (res) => {
+          localStorage.setItem("satbds_token", res.token);
+          window.location.href = res.user.role === "admin" ? "/admin/" : "/portal/";
+        },
+        onError: () => {
+          setErrors({ general: "Invalid email or password. Please try again." });
+        },
       }
-    });
+    );
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col justify-center items-center py-12 px-4 sm:px-6 lg:px-8">
-      <motion.div
-        initial={{ opacity: 0, y: 18 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.35, ease: "easeOut" }}
-        className="sm:mx-auto sm:w-full sm:max-w-md bg-card p-8 rounded-xl shadow-lg border border-border"
-      >
-        <h2 className="text-center text-3xl font-serif font-bold text-foreground mb-8">
-          Sign in to your account
-        </h2>
-        
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email address</FormLabel>
-                  <FormControl>
-                    <Input placeholder="you@example.com" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input type="password" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <Button type="submit" className="w-full" disabled={loginMutation.isPending}>
-              {loginMutation.isPending ? "Signing in..." : "Sign in"}
-            </Button>
-          </form>
-        </Form>
-        
-        <p className="mt-4 text-center text-sm text-muted-foreground">
-          Don't have an account?{" "}
-          <Link href="/register" className="font-medium text-primary hover:text-primary/80">
-            Register now
+    <div
+      className="min-h-screen flex items-center justify-center px-4 py-12"
+      style={{ background: "linear-gradient(135deg, #0B2744 0%, rgba(11,39,68,0.95) 60%, rgba(14,110,116,0.2) 100%)" }}
+    >
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <Link href="/">
+            <h1 className="font-serif text-3xl font-bold cursor-pointer" style={{ color: "#C89B3C" }}>
+              SATBDS 2027
+            </h1>
           </Link>
-        </p>
-      </motion.div>
+          <p className="mt-1 text-sm" style={{ color: "rgba(255,255,255,0.6)" }}>
+            22–23 March 2027 · Sunway Putra Hotel, Kuala Lumpur
+          </p>
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, ease: "easeOut" }}
+          className="bg-white rounded-2xl shadow-2xl p-8"
+        >
+          <h2 className="font-serif text-2xl font-bold mb-1" style={{ color: "#0B2744" }}>
+            Sign In to Your Account
+          </h2>
+          <p className="text-[13px] mb-6" style={{ color: "#6c757d" }}>
+            Access your SATBDS 2027 delegate portal
+          </p>
+
+          {errors.general && (
+            <div
+              className="mb-4 px-4 py-3 rounded-lg text-[13px]"
+              style={{ background: "#f8d7da", color: "#842029" }}
+            >
+              {errors.general}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-[13px] font-semibold mb-1.5" style={{ color: "#495057" }}>
+                Email Address <span style={{ color: "#dc3545" }}>*</span>
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setErrors((p) => ({ ...p, email: undefined, general: undefined }));
+                }}
+                placeholder="you@example.com"
+                className={INPUT_BASE}
+                style={inputBorder(errors.email)}
+                autoFocus
+                autoComplete="email"
+              />
+              {errors.email && (
+                <p className="text-[12px] mt-1" style={{ color: "#dc3545" }}>{errors.email}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-[13px] font-semibold mb-1.5" style={{ color: "#495057" }}>
+                Password <span style={{ color: "#dc3545" }}>*</span>
+              </label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  setErrors((p) => ({ ...p, password: undefined, general: undefined }));
+                }}
+                placeholder="Enter your password"
+                className={INPUT_BASE}
+                style={inputBorder(errors.password)}
+                autoComplete="current-password"
+              />
+              {errors.password && (
+                <p className="text-[12px] mt-1" style={{ color: "#dc3545" }}>{errors.password}</p>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              disabled={loginMutation.isPending}
+              className="w-full py-3 rounded-xl font-semibold text-white flex items-center justify-center gap-2 disabled:opacity-60 transition-opacity mt-2"
+              style={{ background: "#C89B3C" }}
+            >
+              {loginMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
+              {loginMutation.isPending ? "Signing in…" : "Sign In"}
+            </button>
+          </form>
+
+          <p className="mt-5 text-center text-[13px]" style={{ color: "#6c757d" }}>
+            Don't have an account?{" "}
+            <Link href="/register" className="font-semibold" style={{ color: "#0E6E74" }}>
+              Register now
+            </Link>
+          </p>
+        </motion.div>
+      </div>
     </div>
   );
 }

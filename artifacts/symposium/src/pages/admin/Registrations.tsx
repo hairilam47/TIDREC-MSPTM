@@ -145,7 +145,7 @@ function AddRegistrationModal({ onClose, onSuccess }: { onClose: () => void; onS
             form="add-registration-form"
             disabled={createMutation.isPending}
             className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-[13px] font-semibold text-white disabled:opacity-60 transition-colors"
-            style={{ background: "#0E6E74" }}
+            style={{ background: "#C89B3C" }}
           >
             {createMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
             Register Delegate

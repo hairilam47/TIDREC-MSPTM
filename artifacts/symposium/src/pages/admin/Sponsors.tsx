@@ -182,7 +182,7 @@ export default function AdminSponsors() {
                 onClick={save}
                 disabled={createMutation.isPending || updateMutation.isPending}
                 className="px-5 py-2.5 rounded-lg text-[13px] font-semibold text-white disabled:opacity-60"
-                style={{ background: "#0E6E74" }}
+                style={{ background: "#C89B3C" }}
               >
                 {editId ? "Save Changes" : "Add Sponsor"}
               </button>

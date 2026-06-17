@@ -52,14 +52,17 @@ interface ModalShellProps {
   onClose: () => void;
   footer: React.ReactNode;
   children: React.ReactNode;
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl";
 }
 
 export function ModalShell({ title, onClose, footer, children, size = "lg" }: ModalShellProps) {
   useBodyScrollLock();
 
   const maxW =
-    size === "sm" ? "sm:max-w-sm" : size === "md" ? "sm:max-w-md" : "sm:max-w-lg";
+    size === "sm" ? "sm:max-w-sm"
+    : size === "md" ? "sm:max-w-md"
+    : size === "xl" ? "sm:max-w-2xl"
+    : "sm:max-w-lg";
 
   return createPortal(
     <div
@@ -77,7 +80,7 @@ export function ModalShell({ title, onClose, footer, children, size = "lg" }: Mo
           className="flex items-center justify-between px-6 py-4 flex-shrink-0"
           style={{ borderBottom: "1px solid #e9ecef" }}
         >
-          <h3 className="text-[16px] font-semibold" style={{ color: "#0B2744" }}>
+          <h3 className="text-[17px] font-serif font-bold" style={{ color: "#0B2744" }}>
             {title}
           </h3>
           <button
