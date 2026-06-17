@@ -80,7 +80,11 @@ export default function AdminSpeakers() {
     <AdminLayout title="Speakers">
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
         <span style={{ fontSize: 13, color: "var(--text-muted)" }}>{speakers?.length ?? 0} speakers</span>
-        <button className="btn btn-primary" onClick={openCreate}>
+        <button
+          className="btn btn-sm"
+          style={{ background: "var(--primary)", color: "#fff", borderColor: "var(--primary-dk)", transition: "none" }}
+          onClick={openCreate}
+        >
           <Plus style={{ width: 14, height: 14 }} /> Add Speaker
         </button>
       </div>
