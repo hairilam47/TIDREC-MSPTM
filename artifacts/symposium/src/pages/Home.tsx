@@ -47,7 +47,6 @@ export default function Home() {
           </div>
         </div>
       </header>
-
       <main className="flex-1">
         {/* 2. Hero section */}
         <section style={{ background: "#0B2744" }} className="relative">
@@ -197,7 +196,7 @@ export default function Home() {
         </section>
 
         {/* 8. Sponsors section */}
-        <section id="sponsors" className="py-24 bg-background">
+        <section id="sponsors" className="py-24 bg-[color:var(--color-amber-200)]">
           <div className="max-w-7xl mx-auto px-4 text-center">
             <h2 className="text-3xl md:text-5xl font-serif font-bold text-secondary mb-12">Our Sponsors</h2>
             
@@ -248,7 +247,6 @@ export default function Home() {
           </div>
         </section>
       </main>
-
       {/* 10. Footer */}
       <footer className="bg-secondary text-secondary-foreground py-16 border-t border-sidebar-border">
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-12">
