@@ -8,6 +8,7 @@ import {
   useGetMe,
   useGetRegistrationsByMonth,
   useGetSpeakers,
+  useGetRegistrationCategories,
 } from "@workspace/api-client-react";
 import { Link } from "wouter";
 import {
@@ -35,9 +36,6 @@ const ABSTRACT_BADGE: Record<string, { bg: string; color: string; label: string 
   revision_requested: { bg: "#fff3cd", color: "#856404",  label: "Revision Needed" },
 };
 const CHART_COLORS = ["#0E6E74", "#C89B3C", "#0B2744", "#0a5c39", "#842029", "#6c757d"];
-const CATEGORY_FEES: Record<string, number> = {
-  healthcare_professional: 800, researcher: 800, educator: 600, student: 300, industry: 1000,
-};
 const MONTHLY_TREND_FALLBACK = [
   { month: "Mar '26", count: 0 }, { month: "Apr", count: 2 },
   { month: "May", count: 5 },     { month: "Jun", count: 9 },
@@ -84,6 +82,7 @@ export default function AdminDashboard() {
   const { data: abstracts, refetch: refetchAbstracts } = useGetAbstracts();
   const { data: monthlyData }   = useGetRegistrationsByMonth();
   const { data: speakers }      = useGetSpeakers();
+  const { data: categories = [] } = useGetRegistrationCategories();
   const updateAbstractMutation  = useUpdateAbstract();
   const { toast }               = useToast();
   const [reviewNote, setReviewNote] = React.useState<Record<number, string>>({});
@@ -121,18 +120,19 @@ export default function AdminDashboard() {
   }, [registrations]);
 
   const categoryRevenueData = React.useMemo(() => {
-    const catMap: Record<string, { count: number; revenue: number }> = {};
+    const catMap: Record<string, { slug: string; count: number; revenue: number }> = {};
     (registrations ?? []).forEach((r) => {
-      const k = r.category.replace(/_/g, " ");
-      if (!catMap[k]) catMap[k] = { count: 0, revenue: 0 };
+      const k = r.category ?? "unknown";
+      if (!catMap[k]) catMap[k] = { slug: k, count: 0, revenue: 0 };
       catMap[k].count += 1;
-      catMap[k].revenue += r.paymentAmount ?? CATEGORY_FEES[r.category] ?? 0;
+      const catPrice = categories.find(c => c.slug === r.category)?.priceMyr ?? 0;
+      catMap[k].revenue += r.paymentAmount ?? catPrice;
     });
-    return Object.entries(catMap).map(([name, d]) => ({
-      name: name.split(" ").map((w) => w[0].toUpperCase() + w.slice(1)).join(" "),
-      revenue: d.revenue, delegates: d.count,
-    }));
-  }, [registrations]);
+    return Object.entries(catMap).map(([slug, d]) => {
+      const label = categories.find(c => c.slug === slug)?.label ?? slug.replace(/_/g, " ");
+      return { name: label, revenue: d.revenue, delegates: d.count };
+    });
+  }, [registrations, categories]);
 
   /* ── Abstract status donut data ── */
   const abstractStatusData = React.useMemo(() => [

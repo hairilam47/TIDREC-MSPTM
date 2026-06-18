@@ -20,6 +20,8 @@ tags:
     description: Sponsor operations
   - name: registrations
     description: Registration operations
+  - name: registration-categories
+    description: Registration category and pricing management
   - name: announcements
     description: Announcement operations
   - name: stats
@@ -888,7 +890,7 @@ components:
           type: string
         category:
           type: string
-          enum: [healthcare_professional, researcher, educator, student, industry]
+          description: Slug of the registration category (from /registration-categories)
 
     LoginInput:
       type: object
@@ -1390,3 +1392,43 @@ components:
           description: Year-month in YYYY-MM format
         count:
           type: integer
+
+    RegistrationCategory:
+      type: object
+      required: [id, slug, label, priceMyr, sortOrder, isActive]
+      properties:
+        id:
+          type: integer
+        slug:
+          type: string
+          description: Unique identifier slug (e.g. msptm_member)
+        label:
+          type: string
+          description: Human-readable label shown to delegates
+        priceMyr:
+          type: number
+          description: Registration fee in MYR
+        description:
+          type: string
+          nullable: true
+        sortOrder:
+          type: integer
+        isActive:
+          type: boolean
+
+    RegistrationCategoryInput:
+      type: object
+      required: [slug, label, priceMyr]
+      properties:
+        slug:
+          type: string
+        label:
+          type: string
+        priceMyr:
+          type: number
+        description:
+          type: string
+        sortOrder:
+          type: integer
+        isActive:
+          type: boolean

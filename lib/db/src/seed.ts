@@ -8,6 +8,7 @@ import {
   sessionsTable,
   sponsorsTable,
   announcementsTable,
+  registrationCategoriesTable,
 } from "./schema";
 
 const { Pool } = pg;
@@ -246,6 +247,41 @@ async function seed() {
       title: "Workshop Registration Now Available",
       body: "Limited seats are available for the two hands-on workshops: Tick Identification & Field Collection and PCR Diagnostics. Workshop registration is separate from the main symposium fee.",
       important: false,
+    },
+  ]).onConflictDoNothing();
+
+  await db.insert(registrationCategoriesTable).values([
+    {
+      slug: "msptm_member",
+      label: "MSPTM Member / ASIAN Alliance",
+      priceMyr: "800",
+      description: "For members of MSPTM or ASIAN Alliance",
+      sortOrder: 1,
+      isActive: true,
+    },
+    {
+      slug: "non_msptm_member",
+      label: "Non MSPTM Member",
+      priceMyr: "1000",
+      description: "For non-members of MSPTM",
+      sortOrder: 2,
+      isActive: true,
+    },
+    {
+      slug: "student_senior",
+      label: "Student / Senior Researcher",
+      priceMyr: "400",
+      description: "For students and senior researchers",
+      sortOrder: 3,
+      isActive: true,
+    },
+    {
+      slug: "international",
+      label: "International",
+      priceMyr: "1200",
+      description: "For international participants",
+      sortOrder: 4,
+      isActive: true,
     },
   ]).onConflictDoNothing();
 

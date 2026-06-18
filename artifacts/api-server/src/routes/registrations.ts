@@ -164,11 +164,20 @@ router.get("/registrations/me/invoice", requireAuth, async (req: AuthRequest, re
     }
     const [user] = await db.select().from(usersTable).where(eq(usersTable.id, userId)).limit(1);
     const invoiceNumber = "INV-" + reg.registrationCode.replace("REG-", "");
+    let invoiceAmount = reg.paymentAmount ? parseFloat(reg.paymentAmount) : 0;
+    if (!reg.paymentAmount && reg.category) {
+      const [catRow] = await db
+        .select()
+        .from(registrationCategoriesTable)
+        .where(eq(registrationCategoriesTable.slug, reg.category))
+        .limit(1);
+      if (catRow) invoiceAmount = parseFloat(catRow.priceMyr);
+    }
     res.json({
       invoiceNumber,
       registrationCode: reg.registrationCode,
       category: reg.category,
-      amount: reg.paymentAmount ? parseFloat(reg.paymentAmount) : 0,
+      amount: invoiceAmount,
       currency: "MYR",
       status: reg.paymentStatus,
       issuedAt: reg.createdAt.toISOString(),
