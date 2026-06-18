@@ -1,6 +1,6 @@
 import React from "react";
 import AdminLayout from "@/components/AdminLayout";
-import { useGetRegistrations, useUpdateRegistration, useSendPaymentReminder } from "@workspace/api-client-react";
+import { useGetRegistrations, useUpdateRegistration, useSendPaymentReminder, useGetRegistrationCategories } from "@workspace/api-client-react";
 import { Search, ChevronDown, Bell } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -11,16 +11,9 @@ const PAYMENT_STYLES: Record<string, { bg: string; color: string }> = {
   waived: { bg: "#e6f4f5", color: "#0E6E74" },
 };
 
-const CATEGORY_FEES: Record<string, number> = {
-  healthcare_professional: 800,
-  researcher: 600,
-  educator: 500,
-  student: 300,
-  industry: 1000,
-};
-
 export default function AdminPayments() {
   const { data: registrations, refetch } = useGetRegistrations();
+  const { data: categories = [] } = useGetRegistrationCategories();
   const updateMutation = useUpdateRegistration();
   const reminderMutation = useSendPaymentReminder();
   const { toast } = useToast();
@@ -43,7 +36,8 @@ export default function AdminPayments() {
   };
 
   const updateStatus = (id: number, paymentStatus: "pending" | "paid" | "overdue" | "waived", category: string) => {
-    const paymentAmount = paymentStatus === "paid" ? (CATEGORY_FEES[category] ?? 500) : undefined;
+    const cat = categories.find(c => c.slug === category);
+    const paymentAmount = paymentStatus === "paid" ? (cat?.priceMyr ?? undefined) : undefined;
     updateMutation.mutate(
       { id, data: { paymentStatus, paymentAmount } },
       {
@@ -132,7 +126,9 @@ export default function AdminPayments() {
                     <td className="px-4 py-3 text-[12px] capitalize" style={{ color: "#495057" }}>{r.category?.replace(/_/g, " ")}</td>
                     <td className="px-4 py-3">
                       <span className="text-[13px] font-medium" style={{ color: r.paymentAmount ? "#212529" : "#adb5bd" }}>
-                        {r.paymentAmount != null ? Number(r.paymentAmount).toLocaleString("en-MY", { minimumFractionDigits: 2 }) : `${CATEGORY_FEES[r.category] ?? "—"}`}
+                        {r.paymentAmount != null
+                          ? Number(r.paymentAmount).toLocaleString("en-MY", { minimumFractionDigits: 2 })
+                          : (categories.find(c => c.slug === r.category)?.priceMyr?.toLocaleString("en-MY", { minimumFractionDigits: 2 }) ?? "—")}
                       </span>
                       {r.paymentAmount == null && <span className="text-[11px] ml-1" style={{ color: "#adb5bd" }}>(suggested)</span>}
                     </td>

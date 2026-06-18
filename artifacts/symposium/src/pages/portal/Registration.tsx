@@ -1,24 +1,8 @@
 import React from "react";
 import PortalLayout from "@/components/PortalLayout";
-import { useGetMyRegistration, useGetMe, useCreateRegistration } from "@workspace/api-client-react";
+import { useGetMyRegistration, useGetMe, useCreateRegistration, useGetRegistrationCategories } from "@workspace/api-client-react";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, CheckCircle, AlertCircle, Clock, ClipboardList } from "lucide-react";
-
-const CATEGORY_LABELS: Record<string, string> = {
-  healthcare_professional: "Healthcare Professional",
-  researcher: "Researcher / Scientist",
-  educator: "Educator",
-  student: "Student",
-  industry: "Industry Professional",
-};
-
-const CATEGORY_FEES: Record<string, { early: number; regular: number }> = {
-  healthcare_professional: { early: 800, regular: 1000 },
-  researcher: { early: 800, regular: 1000 },
-  educator: { early: 600, regular: 800 },
-  student: { early: 400, regular: 500 },
-  industry: { early: 1200, regular: 1500 },
-};
 
 const PAYMENT_STATUS_CONFIG: Record<string, { bg: string; color: string; label: string; icon: React.ReactNode }> = {
   paid: { bg: "#d1e7dd", color: "#0a5c39", label: "Paid", icon: <CheckCircle className="w-4 h-4" /> },
@@ -30,6 +14,7 @@ const PAYMENT_STATUS_CONFIG: Record<string, { bg: string; color: string; label: 
 export default function Registration() {
   const { data: registration, isLoading: loadingReg, refetch } = useGetMyRegistration();
   const { data: user } = useGetMe();
+  const { data: categories = [] } = useGetRegistrationCategories();
   const { toast } = useToast();
   const createMutation = useCreateRegistration();
 
@@ -83,12 +68,15 @@ export default function Registration() {
             </p>
 
             <div className="space-y-2 mb-6">
-              {Object.entries(CATEGORY_LABELS).map(([key, label]) => {
-                const fees = CATEGORY_FEES[key];
-                const selected = selectedCategory === key;
+              {categories.length === 0 ? (
+                <div className="text-[13px] text-center py-4" style={{ color: "#adb5bd" }}>
+                  Loading categories…
+                </div>
+              ) : categories.map((cat) => {
+                const selected = selectedCategory === cat.slug;
                 return (
                   <label
-                    key={key}
+                    key={cat.slug}
                     className="flex items-center gap-3 p-4 rounded-xl cursor-pointer transition-all"
                     style={{
                       border: selected ? "2px solid #0E6E74" : "1px solid #e9ecef",
@@ -98,9 +86,9 @@ export default function Registration() {
                     <input
                       type="radio"
                       name="category"
-                      value={key}
+                      value={cat.slug}
                       checked={selected}
-                      onChange={() => setSelectedCategory(key)}
+                      onChange={() => setSelectedCategory(cat.slug)}
                       className="w-4 h-4 flex-shrink-0"
                       style={{ accentColor: "#0E6E74" }}
                     />
@@ -109,13 +97,12 @@ export default function Registration() {
                         className="text-[14px] font-semibold"
                         style={{ color: selected ? "#0E6E74" : "#212529" }}
                       >
-                        {label}
+                        {cat.label}
                       </div>
-                      {fees && (
-                        <div className="text-[12px] mt-0.5" style={{ color: "#6c757d" }}>
-                          Early bird: MYR {fees.early} · Regular: MYR {fees.regular}
-                        </div>
-                      )}
+                      <div className="text-[12px] mt-0.5" style={{ color: "#6c757d" }}>
+                        MYR {cat.priceMyr.toLocaleString("en-MY", { minimumFractionDigits: 2 })}
+                        {cat.description && ` · ${cat.description}`}
+                      </div>
                     </div>
                   </label>
                 );
@@ -187,8 +174,8 @@ export default function Registration() {
               )}
               <div>
                 <div className="text-[12px] font-medium mb-0.5" style={{ color: "#adb5bd" }}>Category</div>
-                <div className="text-[14px] capitalize" style={{ color: "#495057" }}>
-                  {CATEGORY_LABELS[registration.category] || registration.category}
+                <div className="text-[14px]" style={{ color: "#495057" }}>
+                  {categories.find(c => c.slug === registration.category)?.label || registration.category?.replace(/_/g, " ")}
                 </div>
               </div>
             </div>

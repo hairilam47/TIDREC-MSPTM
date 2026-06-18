@@ -49,7 +49,9 @@ import type {
   UploadUrlRequest,
   UploadUrlResponse,
   User,
-  UserRoleUpdate
+  UserRoleUpdate,
+  RegistrationCategory,
+  RegistrationCategoryInput
 } from './api.schemas';
 
 import { customFetch } from '../custom-fetch';
@@ -3515,8 +3517,123 @@ export function useGetRegistrationsByMonth<TData = Awaited<ReturnType<typeof get
 }
 
 
+// ==================== Registration Categories ====================
 
+export const getRegistrationCategoriesUrl = () => `/api/registration-categories`;
+export const getAdminRegistrationCategoriesUrl = () => `/api/admin/registration-categories`;
 
+export const getRegistrationCategories = async (options?: RequestInit): Promise<RegistrationCategory[]> => {
+  return customFetch<RegistrationCategory[]>(getRegistrationCategoriesUrl(), { ...options, method: 'GET' });
+};
+
+export const getRegistrationCategoriesQueryKey = () => [`/api/registration-categories`] as const;
+
+export const getRegistrationCategoriesQueryOptions = <TData = Awaited<ReturnType<typeof getRegistrationCategories>>, TError = ErrorType<unknown>>(
+  options?: { query?: UseQueryOptions<Awaited<ReturnType<typeof getRegistrationCategories>>, TError, TData>, request?: SecondParameter<typeof customFetch> }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+  const queryKey = queryOptions?.queryKey ?? getRegistrationCategoriesQueryKey();
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getRegistrationCategories>>> = ({ signal }) => getRegistrationCategories({ signal, ...requestOptions });
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<Awaited<ReturnType<typeof getRegistrationCategories>>, TError, TData> & { queryKey: QueryKey };
+};
+
+export function useGetRegistrationCategories<TData = Awaited<ReturnType<typeof getRegistrationCategories>>, TError = ErrorType<unknown>>(
+  options?: { query?: UseQueryOptions<Awaited<ReturnType<typeof getRegistrationCategories>>, TError, TData>, request?: SecondParameter<typeof customFetch> }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getRegistrationCategoriesQueryOptions(options);
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+export const getAllRegistrationCategories = async (options?: RequestInit): Promise<RegistrationCategory[]> => {
+  return customFetch<RegistrationCategory[]>(getAdminRegistrationCategoriesUrl(), { ...options, method: 'GET' });
+};
+
+export const getAllRegistrationCategoriesQueryKey = () => [`/api/admin/registration-categories`] as const;
+
+export const getAllRegistrationCategoriesQueryOptions = <TData = Awaited<ReturnType<typeof getAllRegistrationCategories>>, TError = ErrorType<unknown>>(
+  options?: { query?: UseQueryOptions<Awaited<ReturnType<typeof getAllRegistrationCategories>>, TError, TData>, request?: SecondParameter<typeof customFetch> }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+  const queryKey = queryOptions?.queryKey ?? getAllRegistrationCategoriesQueryKey();
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getAllRegistrationCategories>>> = ({ signal }) => getAllRegistrationCategories({ signal, ...requestOptions });
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<Awaited<ReturnType<typeof getAllRegistrationCategories>>, TError, TData> & { queryKey: QueryKey };
+};
+
+export function useGetAllRegistrationCategories<TData = Awaited<ReturnType<typeof getAllRegistrationCategories>>, TError = ErrorType<unknown>>(
+  options?: { query?: UseQueryOptions<Awaited<ReturnType<typeof getAllRegistrationCategories>>, TError, TData>, request?: SecondParameter<typeof customFetch> }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getAllRegistrationCategoriesQueryOptions(options);
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+export const createRegistrationCategory = async (data: RegistrationCategoryInput, options?: RequestInit): Promise<RegistrationCategory> => {
+  return customFetch<RegistrationCategory>(`/api/registration-categories`, {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(data),
+  });
+};
+
+export const getCreateRegistrationCategoryMutationOptions = <TError = ErrorType<unknown>, TContext = unknown>(
+  options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof createRegistrationCategory>>, TError, { data: RegistrationCategoryInput }, TContext>, request?: SecondParameter<typeof customFetch> }
+): UseMutationOptions<Awaited<ReturnType<typeof createRegistrationCategory>>, TError, { data: RegistrationCategoryInput }, TContext> => {
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof createRegistrationCategory>>, { data: RegistrationCategoryInput }> = ({ data }) => createRegistrationCategory(data, requestOptions);
+  return { mutationFn, ...mutationOptions };
+};
+
+export function useCreateRegistrationCategory<TError = ErrorType<unknown>, TContext = unknown>(
+  options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof createRegistrationCategory>>, TError, { data: RegistrationCategoryInput }, TContext>, request?: SecondParameter<typeof customFetch> }
+): UseMutationResult<Awaited<ReturnType<typeof createRegistrationCategory>>, TError, { data: RegistrationCategoryInput }, TContext> {
+  const mutationOptions = getCreateRegistrationCategoryMutationOptions(options);
+  return useMutation(mutationOptions);
+}
+
+export const updateRegistrationCategory = async (id: number, data: RegistrationCategoryInput, options?: RequestInit): Promise<RegistrationCategory> => {
+  return customFetch<RegistrationCategory>(`/api/registration-categories/${id}`, {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(data),
+  });
+};
+
+export const getUpdateRegistrationCategoryMutationOptions = <TError = ErrorType<unknown>, TContext = unknown>(
+  options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof updateRegistrationCategory>>, TError, { id: number; data: RegistrationCategoryInput }, TContext>, request?: SecondParameter<typeof customFetch> }
+): UseMutationOptions<Awaited<ReturnType<typeof updateRegistrationCategory>>, TError, { id: number; data: RegistrationCategoryInput }, TContext> => {
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateRegistrationCategory>>, { id: number; data: RegistrationCategoryInput }> = ({ id, data }) => updateRegistrationCategory(id, data, requestOptions);
+  return { mutationFn, ...mutationOptions };
+};
+
+export function useUpdateRegistrationCategory<TError = ErrorType<unknown>, TContext = unknown>(
+  options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof updateRegistrationCategory>>, TError, { id: number; data: RegistrationCategoryInput }, TContext>, request?: SecondParameter<typeof customFetch> }
+): UseMutationResult<Awaited<ReturnType<typeof updateRegistrationCategory>>, TError, { id: number; data: RegistrationCategoryInput }, TContext> {
+  const mutationOptions = getUpdateRegistrationCategoryMutationOptions(options);
+  return useMutation(mutationOptions);
+}
+
+export const deleteRegistrationCategory = async (id: number, options?: RequestInit): Promise<void> => {
+  return customFetch<void>(`/api/registration-categories/${id}`, { ...options, method: 'DELETE' });
+};
+
+export const getDeleteRegistrationCategoryMutationOptions = <TError = ErrorType<unknown>, TContext = unknown>(
+  options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof deleteRegistrationCategory>>, TError, { id: number }, TContext>, request?: SecondParameter<typeof customFetch> }
+): UseMutationOptions<Awaited<ReturnType<typeof deleteRegistrationCategory>>, TError, { id: number }, TContext> => {
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteRegistrationCategory>>, { id: number }> = ({ id }) => deleteRegistrationCategory(id, requestOptions);
+  return { mutationFn, ...mutationOptions };
+};
+
+export function useDeleteRegistrationCategory<TError = ErrorType<unknown>, TContext = unknown>(
+  options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof deleteRegistrationCategory>>, TError, { id: number }, TContext>, request?: SecondParameter<typeof customFetch> }
+): UseMutationResult<Awaited<ReturnType<typeof deleteRegistrationCategory>>, TError, { id: number }, TContext> {
+  const mutationOptions = getDeleteRegistrationCategoryMutationOptions(options);
+  return useMutation(mutationOptions);
+}
 
 
 

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { db, registrationsTable, usersTable, paymentRemindersTable } from "@workspace/db";
+import { db, registrationsTable, usersTable, paymentRemindersTable, registrationCategoriesTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
 import { requireAuth, requireAdmin, type AuthRequest } from "../lib/auth";
 import crypto from "node:crypto";
@@ -66,11 +66,20 @@ router.post("/admin/registrations", requireAdmin, async (req: AuthRequest, res) 
       }).returning();
     }
 
+    let finalPaymentAmount: string | null = paymentAmount != null ? String(paymentAmount) : null;
+    if (finalPaymentAmount === null) {
+      const [catRow] = await db
+        .select()
+        .from(registrationCategoriesTable)
+        .where(eq(registrationCategoriesTable.slug, category))
+        .limit(1);
+      if (catRow) finalPaymentAmount = catRow.priceMyr;
+    }
     const [registration] = await db.insert(registrationsTable).values({
       userId: user.id,
       category,
       paymentStatus: (paymentStatus as "pending" | "paid" | "overdue" | "waived") || "pending",
-      paymentAmount: paymentAmount != null ? String(paymentAmount) : null,
+      paymentAmount: finalPaymentAmount,
       registrationCode: generateRegistrationCode(),
       dietaryRequirements: dietaryRequirements || null,
       specialNeeds: specialNeeds || null,
@@ -93,10 +102,21 @@ router.post("/registrations", requireAuth, async (req: AuthRequest, res) => {
       return;
     }
     const [user] = await db.select().from(usersTable).where(eq(usersTable.id, userId)).limit(1);
+    const finalCategory = category || user?.category || "";
+    let autoPaymentAmount: string | null = null;
+    if (finalCategory) {
+      const [catRow] = await db
+        .select()
+        .from(registrationCategoriesTable)
+        .where(eq(registrationCategoriesTable.slug, finalCategory))
+        .limit(1);
+      if (catRow) autoPaymentAmount = catRow.priceMyr;
+    }
     const [registration] = await db.insert(registrationsTable).values({
       userId,
-      category: category || user?.category || "attendee",
+      category: finalCategory,
       paymentStatus: "pending",
+      paymentAmount: autoPaymentAmount,
       registrationCode: generateRegistrationCode(),
       dietaryRequirements: dietaryRequirements || null,
       specialNeeds: specialNeeds || null,

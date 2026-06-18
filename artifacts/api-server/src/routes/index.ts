@@ -12,6 +12,7 @@ import statsRouter from "./stats";
 import storageRouter from "./storage";
 import usersRouter from "./users";
 import settingsRouter from "./settings";
+import registrationCategoriesRouter from "./registrationCategories";
 
 const router: IRouter = Router();
 
@@ -22,6 +23,7 @@ router.use(savedSessionsRouter);
 router.use(sessionsRouter);
 router.use(sponsorsRouter);
 router.use(registrationsRouter);
+router.use(registrationCategoriesRouter);
 router.use(abstractsRouter);
 router.use(announcementsRouter);
 router.use(statsRouter);

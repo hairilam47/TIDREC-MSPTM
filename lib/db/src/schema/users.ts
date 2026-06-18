@@ -3,13 +3,6 @@ import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
 export const userRoleEnum = pgEnum("user_role", ["attendee", "admin"]);
-export const delegateCategoryEnum = pgEnum("delegate_category", [
-  "healthcare_professional",
-  "researcher",
-  "educator",
-  "student",
-  "industry",
-]);
 
 export const usersTable = pgTable("users", {
   id: serial("id").primaryKey(),
@@ -19,7 +12,7 @@ export const usersTable = pgTable("users", {
   lastName: text("last_name").notNull(),
   institution: text("institution"),
   country: text("country"),
-  category: delegateCategoryEnum("category"),
+  category: text("category"),
   role: userRoleEnum("role").notNull().default("attendee"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),

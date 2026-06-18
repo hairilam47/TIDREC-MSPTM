@@ -1,6 +1,6 @@
 import React from "react";
 import AdminLayout from "@/components/AdminLayout";
-import { useGetRegistrations, useUpdateRegistration, useAdminCreateRegistration } from "@workspace/api-client-react";
+import { useGetRegistrations, useUpdateRegistration, useAdminCreateRegistration, useGetRegistrationCategories } from "@workspace/api-client-react";
 import { Search, Download, ChevronDown, Pencil, UserPlus, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ModalShell, FormField, INPUT_BASE, SELECT_BASE, TEXTAREA_BASE, inputBorder } from "@/components/ui/form-primitives";
@@ -10,22 +10,6 @@ const PAYMENT_STYLES: Record<string, { bg: string; color: string }> = {
   pending: { bg: "#fff3cd", color: "#856404" },
   overdue: { bg: "#f8d7da", color: "#842029" },
   waived: { bg: "#e6f4f5", color: "#0E6E74" },
-};
-
-const CATEGORY_LABELS: Record<string, string> = {
-  healthcare_professional: "Healthcare Professional",
-  researcher: "Researcher / Scientist",
-  educator: "Educator",
-  student: "Student",
-  industry: "Industry Professional",
-};
-
-const CATEGORY_FEES: Record<string, { early: number; regular: number }> = {
-  healthcare_professional: { early: 800, regular: 1000 },
-  researcher: { early: 800, regular: 1000 },
-  educator: { early: 600, regular: 800 },
-  student: { early: 400, regular: 500 },
-  industry: { early: 1200, regular: 1500 },
 };
 
 interface AddRegistrationForm {
@@ -58,15 +42,16 @@ function AddRegistrationModal({ onClose, onSuccess }: { onClose: () => void; onS
   const [form, setForm] = React.useState<AddRegistrationForm>(EMPTY_FORM);
   const [errors, setErrors] = React.useState<Partial<AddRegistrationForm>>({});
   const createMutation = useAdminCreateRegistration();
+  const { data: categories = [] } = useGetRegistrationCategories();
 
   const set = (field: keyof AddRegistrationForm) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const value = e.target.value;
     setForm((prev) => {
       const next = { ...prev, [field]: value };
-      // Auto-fill payment amount when category changes
-      if (field === "category" && value && CATEGORY_FEES[value]) {
-        if (!prev.paymentAmount) {
-          next.paymentAmount = String(CATEGORY_FEES[value].early);
+      if (field === "category" && value) {
+        const cat = categories.find(c => c.slug === value);
+        if (!prev.paymentAmount && cat) {
+          next.paymentAmount = String(cat.priceMyr);
         }
       }
       return next;
@@ -74,11 +59,12 @@ function AddRegistrationModal({ onClose, onSuccess }: { onClose: () => void; onS
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: undefined }));
   };
 
-  const setCategory = (cat: string) => {
+  const setCategory = (slug: string) => {
+    const cat = categories.find(c => c.slug === slug);
     setForm((prev) => ({
       ...prev,
-      category: cat,
-      paymentAmount: prev.paymentAmount || (CATEGORY_FEES[cat] ? String(CATEGORY_FEES[cat].early) : ""),
+      category: slug,
+      paymentAmount: prev.paymentAmount || (cat ? String(cat.priceMyr) : ""),
     }));
     if (errors.category) setErrors((prev) => ({ ...prev, category: undefined }));
   };
@@ -230,12 +216,13 @@ function AddRegistrationModal({ onClose, onSuccess }: { onClose: () => void; onS
             <p className="text-[12px] mb-2" style={{ color: "#dc3545" }}>{errors.category}</p>
           )}
           <div className="space-y-2">
-            {Object.entries(CATEGORY_LABELS).map(([key, label]) => {
-              const fees = CATEGORY_FEES[key];
-              const selected = form.category === key;
+            {categories.length === 0 ? (
+              <div className="text-[13px] text-center py-3" style={{ color: "#adb5bd" }}>Loading categories…</div>
+            ) : categories.map((cat) => {
+              const selected = form.category === cat.slug;
               return (
                 <label
-                  key={key}
+                  key={cat.slug}
                   className="flex items-center gap-3 p-3.5 rounded-xl cursor-pointer transition-all"
                   style={{
                     border: selected ? "2px solid #0E6E74" : errors.category ? "1px solid #dc3545" : "1px solid #e9ecef",
@@ -245,21 +232,20 @@ function AddRegistrationModal({ onClose, onSuccess }: { onClose: () => void; onS
                   <input
                     type="radio"
                     name="modal-category"
-                    value={key}
+                    value={cat.slug}
                     checked={selected}
-                    onChange={() => setCategory(key)}
+                    onChange={() => setCategory(cat.slug)}
                     className="w-4 h-4 flex-shrink-0"
                     style={{ accentColor: "#0E6E74" }}
                   />
                   <div className="flex-1 min-w-0">
                     <div className="text-[13px] font-semibold" style={{ color: selected ? "#0E6E74" : "#212529" }}>
-                      {label}
+                      {cat.label}
                     </div>
-                    {fees && (
-                      <div className="text-[11px] mt-0.5" style={{ color: "#6c757d" }}>
-                        Early bird: MYR {fees.early.toLocaleString()} · Regular: MYR {fees.regular.toLocaleString()}
-                      </div>
-                    )}
+                    <div className="text-[11px] mt-0.5" style={{ color: "#6c757d" }}>
+                      MYR {cat.priceMyr.toLocaleString("en-MY", { minimumFractionDigits: 2 })}
+                      {cat.description && ` · ${cat.description}`}
+                    </div>
                   </div>
                 </label>
               );

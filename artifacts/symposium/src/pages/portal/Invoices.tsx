@@ -1,15 +1,7 @@
 import React from "react";
 import PortalLayout from "@/components/PortalLayout";
-import { useGetMyInvoice } from "@workspace/api-client-react";
+import { useGetMyInvoice, useGetRegistrationCategories } from "@workspace/api-client-react";
 import { Loader2, Receipt, Download, CheckCircle, Clock, AlertCircle } from "lucide-react";
-
-const CATEGORY_LABELS: Record<string, string> = {
-  healthcare_professional: "Healthcare Professional",
-  researcher: "Researcher / Scientist",
-  educator: "Educator",
-  student: "Student",
-  industry: "Industry Professional",
-};
 
 const STATUS_CONFIG: Record<string, { bg: string; color: string; label: string; icon: React.ReactNode }> = {
   paid: { bg: "#d1e7dd", color: "#0a5c39", label: "Paid", icon: <CheckCircle className="w-4 h-4" /> },
@@ -20,6 +12,7 @@ const STATUS_CONFIG: Record<string, { bg: string; color: string; label: string; 
 
 export default function Invoices() {
   const { data: invoice, isLoading, isError } = useGetMyInvoice();
+  const { data: categories = [] } = useGetRegistrationCategories();
 
   return (
     <PortalLayout title="Invoices">
@@ -133,7 +126,7 @@ export default function Invoices() {
                   <div className="grid grid-cols-3 px-4 py-3.5">
                     <div className="col-span-2">
                       <div className="text-[14px] font-medium" style={{ color: "#212529" }}>
-                        Symposium Registration — {CATEGORY_LABELS[invoice.category] || invoice.category}
+                        Symposium Registration — {categories.find(c => c.slug === invoice.category)?.label || invoice.category?.replace(/_/g, " ") || invoice.category}
                       </div>
                       <div className="text-[12px] mt-0.5" style={{ color: "#6c757d" }}>
                         3rd SATBDS 2027 · 22–23 March 2027 · Sunway Putra Hotel, KL

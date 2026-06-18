@@ -33,9 +33,10 @@ const NAV: { section: string; items: NavItem[] }[] = [
         label: "Registrations",
         icon: <IcoUsers />,
         children: [
-          { key: "registrations", href: "/admin/registrations", label: "All Registrations" },
-          { key: "payments",      href: "/admin/payments",      label: "Payments" },
-          { key: "invoices",      href: "/admin/invoices",      label: "Invoices" },
+          { key: "registrations",  href: "/admin/registrations",           label: "All Registrations" },
+          { key: "reg-categories", href: "/admin/registration-categories", label: "Categories & Pricing" },
+          { key: "payments",       href: "/admin/payments",                label: "Payments" },
+          { key: "invoices",       href: "/admin/invoices",                label: "Invoices" },
         ],
       },
       { key: "abstracts", href: "/admin/abstracts", label: "Abstracts", icon: <IcoDoc /> },

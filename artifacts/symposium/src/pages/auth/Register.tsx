@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { motion } from "framer-motion";
-import { useRegister, useCreateRegistration } from "@workspace/api-client-react";
+import { useRegister, useCreateRegistration, useGetRegistrationCategories } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -27,14 +27,6 @@ interface FormData {
   dietaryRequirements: string;
   specialNeeds: string;
 }
-
-const REGISTRATION_TYPES = [
-  { value: "healthcare_professional", label: "Healthcare Professional", fee: "MYR 800" },
-  { value: "researcher", label: "Researcher / Scientist", fee: "MYR 800" },
-  { value: "educator", label: "Educator", fee: "MYR 600" },
-  { value: "student", label: "Student", fee: "MYR 300" },
-  { value: "industry", label: "Industry Professional", fee: "MYR 1,000" },
-];
 
 const PAYMENT_TYPES = [
   { value: "bank_transfer", label: "Bank Transfer" },
@@ -62,6 +54,7 @@ export default function Register() {
   const { toast } = useToast();
   const registerMutation = useRegister();
   const registrationMutation = useCreateRegistration();
+  const { data: categories = [] } = useGetRegistrationCategories();
 
   const update = (field: keyof FormData, value: string) =>
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -116,12 +109,7 @@ export default function Register() {
         lastName: formData.lastName,
         institution: formData.institution,
         country: formData.country,
-        category: formData.registrationType as
-          | "healthcare_professional"
-          | "researcher"
-          | "educator"
-          | "student"
-          | "industry",
+        category: formData.registrationType,
       },
     }, {
       onSuccess: (data) => {
@@ -160,7 +148,7 @@ export default function Register() {
   };
 
   const isPending = registerMutation.isPending || registrationMutation.isPending;
-  const selectedType = REGISTRATION_TYPES.find(r => r.value === formData.registrationType);
+  const selectedType = categories.find(c => c.slug === formData.registrationType);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-secondary via-secondary/95 to-primary/20 flex items-center justify-center px-4 py-12">
@@ -331,11 +319,13 @@ export default function Register() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div data-testid="select-registration-type" className="space-y-3">
-                  {REGISTRATION_TYPES.map(type => (
+                  {categories.length === 0 ? (
+                    <div className="text-sm text-muted-foreground py-4 text-center">Loading categories…</div>
+                  ) : categories.map(cat => (
                     <label
-                      key={type.value}
+                      key={cat.slug}
                       className={`flex items-center justify-between p-4 rounded-lg border-2 cursor-pointer transition-all ${
-                        formData.registrationType === type.value
+                        formData.registrationType === cat.slug
                           ? "border-primary bg-primary/5"
                           : "border-border hover:border-primary/40"
                       }`}
@@ -344,13 +334,20 @@ export default function Register() {
                         <input
                           type="radio"
                           name="registrationType"
-                          value={type.value}
-                          checked={formData.registrationType === type.value}
+                          value={cat.slug}
+                          checked={formData.registrationType === cat.slug}
                           onChange={e => update("registrationType", e.target.value)}
                         />
-                        <span className="font-medium text-sm">{type.label}</span>
+                        <div>
+                          <div className="font-medium text-sm">{cat.label}</div>
+                          {cat.description && (
+                            <div className="text-xs text-muted-foreground">{cat.description}</div>
+                          )}
+                        </div>
                       </div>
-                      <span className="text-sm font-bold text-primary">{type.fee}</span>
+                      <span className="text-sm font-bold text-primary whitespace-nowrap ml-3">
+                        MYR {cat.priceMyr.toLocaleString()}
+                      </span>
                     </label>
                   ))}
                 </div>
@@ -413,7 +410,9 @@ export default function Register() {
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="font-semibold">Registration Fee</span>
-                    <span className="font-bold text-primary text-base">{selectedType?.fee}</span>
+                    <span className="font-bold text-primary text-base">
+                      {selectedType ? `MYR ${selectedType.priceMyr.toLocaleString()}` : "—"}
+                    </span>
                   </div>
                 </div>
 

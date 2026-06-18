@@ -27,7 +27,7 @@ export interface RegisterInput {
   lastName: string;
   institution: string;
   country: string;
-  category: RegisterInputCategory;
+  category: string;
 }
 
 export interface LoginInput {
@@ -465,5 +465,25 @@ export interface MonthlyRegistrationCount {
   /** Year-month in YYYY-MM format */
   month: string;
   count: number;
+}
+
+export interface RegistrationCategory {
+  id: number;
+  slug: string;
+  label: string;
+  priceMyr: number;
+  /** @nullable */
+  description?: string | null;
+  sortOrder: number;
+  isActive: boolean;
+}
+
+export interface RegistrationCategoryInput {
+  slug: string;
+  label: string;
+  priceMyr: number;
+  description?: string;
+  sortOrder?: number;
+  isActive?: boolean;
 }
 
