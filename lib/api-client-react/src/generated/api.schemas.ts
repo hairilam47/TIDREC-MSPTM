@@ -70,6 +70,14 @@ export interface ProfileUpdate {
   country?: string;
 }
 
+export type SpeakerTier = typeof SpeakerTier[keyof typeof SpeakerTier];
+
+export const SpeakerTier = {
+  keynote: 'keynote',
+  plenary: 'plenary',
+  invited: 'invited',
+} as const;
+
 export interface Speaker {
   id: number;
   name: string;
@@ -82,6 +90,8 @@ export interface Speaker {
   /** @nullable */
   photoUrl?: string | null;
   initials?: string;
+  /** @nullable */
+  speakerTier?: SpeakerTier | null;
 }
 
 export interface SpeakerInput {
@@ -91,6 +101,7 @@ export interface SpeakerInput {
   topic: string;
   bio?: string;
   photoUrl?: string;
+  speakerTier?: SpeakerTier | null;
 }
 
 export type SessionSessionType = typeof SessionSessionType[keyof typeof SessionSessionType];

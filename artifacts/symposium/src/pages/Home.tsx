@@ -164,14 +164,14 @@ export default function Home() {
         <section id="speakers" className="py-24 bg-background">
           <div className="max-w-7xl mx-auto px-4">
             <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-5xl font-serif font-bold text-secondary mb-4">Featured Speakers</h2>
+              <h2 className="text-3xl md:text-5xl font-serif font-bold text-secondary mb-4">Keynote Speakers</h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">Hear from world-renowned experts in the field of tropical medicine and infectious diseases.</p>
             </div>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
               {featuredSpeakers.map(speaker => (
                 <div key={speaker.id} className="group cursor-pointer">
-                  <div className="relative mb-6 mx-auto w-48 h-48 rounded-full overflow-hidden border-4 border-muted group-hover:border-primary transition-colors">
+                  <div className="relative mb-6 mx-auto w-48 h-48 rounded-full overflow-hidden border-4 border-muted group-hover:border-accent transition-colors">
                     <Avatar className="w-full h-full">
                       <AvatarImage src={speaker.photoUrl || ''} alt={speaker.name} className="object-cover" />
                       <AvatarFallback className="text-3xl bg-secondary text-white font-serif">
@@ -190,7 +190,7 @@ export default function Home() {
             
             <div className="mt-12 text-center">
               <Button asChild variant="outline" className="border-secondary text-secondary hover:bg-secondary hover:text-white">
-                <Link href="/portal/speakers">See All Speakers</Link>
+                <Link href="/speakers">See All Speakers</Link>
               </Button>
             </div>
           </div>
@@ -264,7 +264,7 @@ export default function Home() {
               <li><Link href="/" className="hover:text-accent transition-colors">Home</Link></li>
               <li><a href="#about" className="hover:text-accent transition-colors">About</a></li>
               <li><Link href="/portal/programme" className="hover:text-accent transition-colors">Programme</Link></li>
-              <li><Link href="/portal/speakers" className="hover:text-accent transition-colors">Speakers</Link></li>
+              <li><Link href="/speakers" className="hover:text-accent transition-colors">Speakers</Link></li>
             </ul>
           </div>
           <div>

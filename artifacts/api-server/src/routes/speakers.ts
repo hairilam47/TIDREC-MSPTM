@@ -24,6 +24,7 @@ function formatSpeaker(s: typeof speakersTable.$inferSelect) {
     bio: s.bio,
     photoUrl: s.photoUrl,
     initials: s.initials,
+    speakerTier: s.speakerTier,
   };
 }
 
@@ -39,7 +40,7 @@ router.get("/speakers", async (_req, res) => {
 
 router.post("/speakers", requireAdmin, async (req, res) => {
   try {
-    const { name, country, institution, topic, bio, photoUrl } = req.body;
+    const { name, country, institution, topic, bio, photoUrl, speakerTier } = req.body;
     if (!name || !country || !topic) {
       res.status(400).json({ error: "Missing required fields" });
       return;
@@ -52,6 +53,7 @@ router.post("/speakers", requireAdmin, async (req, res) => {
       bio: bio || null,
       photoUrl: photoUrl || null,
       initials: getInitials(name),
+      speakerTier: speakerTier || null,
     }).returning();
     res.status(201).json(formatSpeaker(speaker));
   } catch (err) {
@@ -78,7 +80,7 @@ router.get("/speakers/:id", async (req, res) => {
 router.put("/speakers/:id", requireAdmin, async (req, res) => {
   try {
     const id = parseInt(String(req.params.id));
-    const { name, country, institution, topic, bio, photoUrl } = req.body;
+    const { name, country, institution, topic, bio, photoUrl, speakerTier } = req.body;
     const [speaker] = await db.update(speakersTable)
       .set({
         name,
@@ -88,6 +90,7 @@ router.put("/speakers/:id", requireAdmin, async (req, res) => {
         bio: bio || null,
         photoUrl: photoUrl || null,
         initials: name ? getInitials(name) : undefined,
+        speakerTier: speakerTier || null,
         updatedAt: new Date(),
       })
       .where(eq(speakersTable.id, id))

@@ -11,6 +11,7 @@ export const speakersTable = pgTable("speakers", {
   bio: text("bio"),
   photoUrl: text("photo_url"),
   initials: text("initials").notNull(),
+  speakerTier: text("speaker_tier"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
