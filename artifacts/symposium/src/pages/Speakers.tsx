@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { CountdownBadge } from "@/components/ui/CountdownBadge";
-import { useGetSpeakers } from "@workspace/api-client-react";
+import { useGetSpeakers, useGetSettings } from "@workspace/api-client-react";
 import type { Speaker } from "@workspace/api-client-react";
 import { Loader2 } from "lucide-react";
 
@@ -88,6 +88,7 @@ function SpeakerCard({ speaker }: { speaker: Speaker }) {
 
 export default function SpeakersPage() {
   const { data: speakers, isLoading } = useGetSpeakers();
+  const { data: cms } = useGetSettings();
 
   const grouped = React.useMemo(() => {
     if (!speakers) return {};
@@ -113,6 +114,9 @@ export default function SpeakersPage() {
             <a href="/#programme" style={{ color: "#fff", textDecoration: "none", fontSize: 14, fontWeight: 500 }}>Programme</a>
             <Link href="/speakers" style={{ color: "#C89B3C", textDecoration: "none", fontSize: 14, fontWeight: 600 }}>Speakers</Link>
             <a href="/#sponsors" style={{ color: "#fff", textDecoration: "none", fontSize: 14, fontWeight: 500 }}>Sponsors</a>
+            {cms?.sponsor_prospectus_url && (
+              <a href="/api/sponsor-prospectus" download style={{ color: "#fff", textDecoration: "none", fontSize: 14, fontWeight: 500 }}>Sponsor Prospectus</a>
+            )}
           </nav>
           <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
             <CountdownBadge variant="dark" />

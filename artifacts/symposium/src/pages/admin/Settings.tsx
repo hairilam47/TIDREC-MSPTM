@@ -1,6 +1,6 @@
 import React from "react";
 import AdminLayout from "@/components/AdminLayout";
-import { Save, Info } from "lucide-react";
+import { Save, Info, FileText, Upload, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const BASE_URL = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
@@ -49,6 +49,42 @@ export default function AdminSettings() {
   const [values, setValues] = React.useState<Record<string, string>>({});
   const [loading, setLoading] = React.useState(true);
   const [saving, setSaving] = React.useState(false);
+  const [uploadingProspectus, setUploadingProspectus] = React.useState(false);
+  const [prospectusError, setProspectusError] = React.useState<string | null>(null);
+
+  const handleProspectusUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.type !== "application/pdf") {
+      setProspectusError("Only PDF files are allowed.");
+      return;
+    }
+    setUploadingProspectus(true);
+    setProspectusError(null);
+    try {
+      const token = localStorage.getItem("satbds_token");
+      const urlRes = await fetch(`${API}/storage/uploads/request-url`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ name: file.name, size: file.size, contentType: "application/pdf" }),
+      });
+      if (!urlRes.ok) throw new Error("Failed to get upload URL");
+      const { uploadURL, objectPath } = await urlRes.json();
+      const putRes = await fetch(uploadURL, {
+        method: "PUT",
+        body: file,
+        headers: { "Content-Type": "application/pdf" },
+      });
+      if (!putRes.ok) throw new Error("Upload to storage failed");
+      set("sponsor_prospectus_url", objectPath);
+      toast({ title: "PDF uploaded — click Save Changes to publish." });
+    } catch (err) {
+      setProspectusError(err instanceof Error ? err.message : "Upload failed");
+    } finally {
+      setUploadingProspectus(false);
+      e.target.value = "";
+    }
+  };
 
   React.useEffect(() => {
     const token = localStorage.getItem("satbds_token");
@@ -138,6 +174,58 @@ export default function AdminSettings() {
             </div>
           </div>
         ))}
+
+        {/* Sponsor Prospectus */}
+        <div className="bg-white rounded-xl p-6" style={{ border: "1px solid #e9ecef" }}>
+          <h3 className="text-[14px] font-semibold mb-1" style={{ color: "#0B2744" }}>Sponsor Prospectus</h3>
+          <p className="text-[13px] mb-5" style={{ color: "#6c757d" }}>
+            Upload a PDF to enable the "Sponsor Prospectus" menu item on the marketing site. Visitors can click it to download the file directly.
+          </p>
+
+          {values.sponsor_prospectus_url ? (
+            <div className="flex items-center gap-3 p-3 rounded-lg mb-4" style={{ background: "#f0fafa", border: "1px solid #b2dfdb" }}>
+              <FileText className="w-4 h-4 flex-shrink-0" style={{ color: "#0E6E74" }} />
+              <span className="text-[13px] flex-1" style={{ color: "#0B2744", fontWeight: 500 }}>
+                Prospectus PDF is configured
+              </span>
+              <button
+                onClick={() => { set("sponsor_prospectus_url", ""); setProspectusError(null); }}
+                className="flex items-center gap-1 text-[12px] px-2.5 py-1 rounded-md"
+                style={{ color: "#842029", background: "#f8d7da", border: "none", cursor: "pointer" }}
+              >
+                <X className="w-3 h-3" /> Remove
+              </button>
+            </div>
+          ) : (
+            <p className="text-[13px] mb-4 italic" style={{ color: "#adb5bd" }}>
+              No prospectus uploaded yet. The menu item will be hidden until a PDF is added.
+            </p>
+          )}
+
+          <label
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-[13px] font-semibold cursor-pointer"
+            style={{
+              background: uploadingProspectus ? "#e9ecef" : "#0E6E74",
+              color: uploadingProspectus ? "#6c757d" : "#fff",
+              opacity: uploadingProspectus ? 0.7 : 1,
+              pointerEvents: uploadingProspectus ? "none" : "auto",
+            }}
+          >
+            <Upload className="w-4 h-4" />
+            {uploadingProspectus ? "Uploading…" : values.sponsor_prospectus_url ? "Replace PDF" : "Upload PDF"}
+            <input
+              type="file"
+              accept="application/pdf"
+              className="hidden"
+              disabled={uploadingProspectus}
+              onChange={handleProspectusUpload}
+            />
+          </label>
+
+          {prospectusError && (
+            <p className="text-[12px] mt-2" style={{ color: "#842029" }}>{prospectusError}</p>
+          )}
+        </div>
       </div>
 
       {/* Sticky bottom save bar */}

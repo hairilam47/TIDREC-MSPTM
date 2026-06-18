@@ -37,6 +37,9 @@ export default function Home() {
             <a href="#programme" className="hover:text-accent transition-colors font-medium cursor-pointer">Programme</a>
             <a href="#speakers" className="hover:text-accent transition-colors font-medium cursor-pointer">Speakers</a>
             <a href="#sponsors" className="hover:text-accent transition-colors font-medium cursor-pointer">Sponsors</a>
+            {cms?.sponsor_prospectus_url && (
+              <a href="/api/sponsor-prospectus" download className="hover:text-accent transition-colors font-medium cursor-pointer">Sponsor Prospectus</a>
+            )}
           </nav>
           <div className="flex items-center gap-4">
             <CountdownBadge variant="dark" />
@@ -263,6 +266,9 @@ export default function Home() {
               <li><a href="#about" className="hover:text-accent transition-colors">About</a></li>
               <li><Link href="/portal/programme" className="hover:text-accent transition-colors">Programme</Link></li>
               <li><Link href="/speakers" className="hover:text-accent transition-colors">Speakers</Link></li>
+              {cms?.sponsor_prospectus_url && (
+                <li><a href="/api/sponsor-prospectus" download className="hover:text-accent transition-colors">Sponsor Prospectus</a></li>
+              )}
             </ul>
           </div>
           <div>

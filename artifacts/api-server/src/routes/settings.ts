@@ -1,7 +1,9 @@
 import { Router } from "express";
+import { Readable } from "stream";
 import { db, settingsTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
 import { requireAdmin } from "../lib/auth";
+import { ObjectStorageService, ObjectNotFoundError } from "../lib/objectStorage";
 
 const router = Router();
 
@@ -18,7 +20,45 @@ const DEFAULT_SETTINGS: Record<string, string> = {
   organiser_secondary: "TIDREC@UM",
   abstract_deadline: "15 January 2027",
   early_bird_deadline: "01 March 2027",
+  sponsor_prospectus_url: "",
 };
+
+const objectStorageService = new ObjectStorageService();
+
+router.get("/sponsor-prospectus", async (_req, res) => {
+  try {
+    const rows = await db.select().from(settingsTable);
+    const settings: Record<string, string> = { ...DEFAULT_SETTINGS };
+    for (const row of rows) settings[row.key] = row.value;
+    const url = settings.sponsor_prospectus_url;
+    if (!url) {
+      res.status(404).json({ error: "Sponsor prospectus not available" });
+      return;
+    }
+    if (url.startsWith("http://") || url.startsWith("https://")) {
+      res.redirect(url);
+      return;
+    }
+    const objectFile = await objectStorageService.getObjectEntityFile(url);
+    const response = await objectStorageService.downloadObject(objectFile);
+    res.setHeader("Content-Disposition", 'attachment; filename="SATBDS2027-Sponsor-Prospectus.pdf"');
+    res.status(response.status);
+    response.headers.forEach((value, key) => res.setHeader(key, value));
+    if (response.body) {
+      const nodeStream = Readable.fromWeb(response.body as ReadableStream<Uint8Array>);
+      nodeStream.pipe(res);
+    } else {
+      res.end();
+    }
+  } catch (err) {
+    if (err instanceof ObjectNotFoundError) {
+      res.status(404).json({ error: "Sponsor prospectus file not found" });
+      return;
+    }
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 router.get("/settings", async (_req, res) => {
   try {
