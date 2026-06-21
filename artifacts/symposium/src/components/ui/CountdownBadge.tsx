@@ -48,17 +48,19 @@ export function CountdownBadge({ variant = "light" }: CountdownBadgeProps) {
       minWidth: 220,
     }}>
       {/* Title row */}
-      <div style={{
-        background: "#0B2744",
-        color: "#ffffff",
-        fontSize: 9,
-        fontWeight: 700,
-        letterSpacing: "0.12em",
-        textTransform: "uppercase",
-        textAlign: "center",
-        padding: "4px 8px",
-        whiteSpace: "nowrap",
-      }}>
+      <div
+        style={{
+          background: "#0B2744",
+          color: "#ffffff",
+          fontSize: 9,
+          fontWeight: 700,
+          letterSpacing: "0.12em",
+          textTransform: "uppercase",
+          textAlign: "center",
+          padding: "4px 8px",
+          whiteSpace: "nowrap",
+        }}
+        className="text-[color:var(--color-black)] bg-[color:var(--color-gray-50)] font-extrabold text-[11px]">
         Countdown to SEAT‑MSPTM 2027
       </div>
       {/* Segments row */}
