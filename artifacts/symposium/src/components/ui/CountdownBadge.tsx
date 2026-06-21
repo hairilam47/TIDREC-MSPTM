@@ -38,74 +38,32 @@ export function CountdownBadge({ variant = "light" }: CountdownBadgeProps) {
   ];
 
   return (
-    <div style={{
-      display: "inline-flex",
-      flexDirection: "column",
-      border: "1px solid #0B2744",
-      borderRadius: 6,
-      overflow: "hidden",
-      fontFamily: "Inter, sans-serif",
-      minWidth: 220,
-    }}>
+    <div className="inline-flex flex-col min-w-[220px] rounded-md border border-[#0B2744] overflow-hidden font-sans">
+
       {/* Title row */}
-      <div
-        style={{
-          background: "#0B2744",
-          color: "#ffffff",
-          fontSize: 9,
-          fontWeight: 700,
-          letterSpacing: "0.12em",
-          textTransform: "uppercase",
-          textAlign: "center",
-          padding: "4px 8px",
-          whiteSpace: "nowrap",
-        }}
-        className="text-[color:var(--color-black)] bg-[color:var(--color-gray-50)] font-extrabold text-[11px]">
+      <div className="bg-[#0B2744] text-white text-[9px] font-bold tracking-[0.12em] uppercase text-center px-2 py-1 whitespace-nowrap">
         Countdown to SEAT‑MSPTM 2027
       </div>
+
       {/* Segments row */}
-      <div style={{
-        display: "flex",
-        background: "#ffffff",
-      }}>
+      <div className="flex bg-white">
         {segments.map(({ value, label }, i) => (
           <React.Fragment key={label}>
             {i > 0 && (
-              <div style={{ width: 1, background: "#0B2744", alignSelf: "stretch", opacity: 0.25 }} />
+              <div className="w-px self-stretch bg-[#0B2744] opacity-25" />
             )}
-            <div style={{
-              flex: 1,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              padding: "6px 8px 5px",
-              gap: 1,
-            }}>
-              <span
-                style={{
-                  fontSize: 26,
-                  fontWeight: 800,
-                  lineHeight: 1,
-                  color: "#0B2744",
-                  fontVariantNumeric: "tabular-nums",
-                  letterSpacing: "-0.02em",
-                }}
-                className="text-[#c8993c]">
+            <div className="flex-1 flex flex-col items-center px-2 pt-1.5 pb-1 gap-px">
+              <span className="text-[26px] font-extrabold leading-none text-[#0B2744] tabular-nums tracking-[-0.02em]">
                 {value}
               </span>
-              <span style={{
-                fontSize: 8,
-                fontWeight: 700,
-                letterSpacing: "0.14em",
-                color: "#0E6E74",
-                textTransform: "uppercase",
-              }}>
+              <span className="text-[8px] font-bold tracking-[0.14em] text-[#0E6E74] uppercase">
                 {label}
               </span>
             </div>
           </React.Fragment>
         ))}
       </div>
+
     </div>
   );
 }
