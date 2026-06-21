@@ -60,24 +60,6 @@ export default function Home() {
               alt="3rd Southeast Asia Ticks and Tick-borne Diseases Symposium — 22–23 March 2027, Sunway Putra Hotel, Kuala Lumpur"
               className="w-full h-auto block"
             />
-            {/* Gradient scrim so overlaid buttons stay legible */}
-            <div
-              className="absolute bottom-0 left-0 right-0 pointer-events-none"
-              style={{ height: "35%", background: "linear-gradient(to top, rgba(11,39,68,0.85) 0%, rgba(11,39,68,0.3) 60%, transparent 100%)" }}
-            />
-            {/* CTA buttons overlaid at the bottom-left */}
-            <div className="absolute bottom-0 left-0 right-0 px-6 pb-8 z-10">
-              <div className="max-w-7xl mx-auto">
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 h-12 px-8 text-base w-full sm:w-auto">
-                    <Link href="/register">Register Now</Link>
-                  </Button>
-                  <Button asChild variant="outline" size="lg" className="bg-transparent border-white text-white hover:bg-white/10 h-12 px-8 text-base w-full sm:w-auto">
-                    <Link href="/portal/programme">View Programme</Link>
-                  </Button>
-                </div>
-              </div>
-            </div>
           </div>
         </section>
 
