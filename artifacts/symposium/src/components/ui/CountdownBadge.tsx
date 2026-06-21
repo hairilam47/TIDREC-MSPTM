@@ -61,7 +61,6 @@ export function CountdownBadge({ variant = "light" }: CountdownBadgeProps) {
       }}>
         Countdown to SEAT‑MSPTM 2027
       </div>
-
       {/* Segments row */}
       <div style={{
         display: "flex",
@@ -80,14 +79,16 @@ export function CountdownBadge({ variant = "light" }: CountdownBadgeProps) {
               padding: "6px 8px 5px",
               gap: 1,
             }}>
-              <span style={{
-                fontSize: 26,
-                fontWeight: 800,
-                lineHeight: 1,
-                color: "#0B2744",
-                fontVariantNumeric: "tabular-nums",
-                letterSpacing: "-0.02em",
-              }}>
+              <span
+                style={{
+                  fontSize: 26,
+                  fontWeight: 800,
+                  lineHeight: 1,
+                  color: "#0B2744",
+                  fontVariantNumeric: "tabular-nums",
+                  letterSpacing: "-0.02em",
+                }}
+                className="text-[#c8993ce6]">
                 {value}
               </span>
               <span style={{
