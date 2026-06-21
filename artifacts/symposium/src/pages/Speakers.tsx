@@ -50,8 +50,8 @@ function SpeakerCard({ speaker }: { speaker: Speaker }) {
           />
         ) : (
           <span
+            className="font-serif"
             style={{
-              fontFamily: "'Playfair Display', serif",
               fontSize: 36,
               fontWeight: 700,
               color: "#0B2744",
@@ -63,11 +63,11 @@ function SpeakerCard({ speaker }: { speaker: Speaker }) {
       </div>
 
       <div
+        className="font-serif"
         style={{
           fontSize: 15,
           fontWeight: 600,
           color: "#0B2744",
-          fontFamily: "'Playfair Display', serif",
           marginBottom: 4,
           lineHeight: 1.3,
         }}
@@ -104,7 +104,7 @@ export default function SpeakersPage() {
   const hasOther = (grouped["other"] ?? []).length > 0;
 
   return (
-    <div style={{ minHeight: "100vh", background: "#fff", fontFamily: "Inter, sans-serif" }}>
+    <div className="font-sans" style={{ minHeight: "100vh", background: "#fff" }}>
       {/* Nav */}
       <header style={{ background: "#0B2744", borderBottom: "1px solid rgba(255,255,255,0.1)", position: "sticky", top: 0, zIndex: 50 }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px", height: 72, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -133,7 +133,7 @@ export default function SpeakersPage() {
 
       {/* Hero banner */}
       <div style={{ background: "linear-gradient(135deg, #0B2744 0%, #0E6E74 100%)", padding: "56px 24px 48px", textAlign: "center" }}>
-        <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: 40, fontWeight: 700, color: "#fff", margin: 0, marginBottom: 12 }}>
+        <h1 style={{ fontSize: 40, fontWeight: 700, color: "#fff", margin: 0, marginBottom: 12 }}>
           Our Speakers
         </h1>
         <p style={{ color: "rgba(255,255,255,0.75)", fontSize: 17, margin: 0 }}>
@@ -156,7 +156,6 @@ export default function SpeakersPage() {
                 <section key={key} style={{ marginBottom: 64 }}>
                   <h2
                     style={{
-                      fontFamily: "'Playfair Display', serif",
                       fontSize: 28,
                       fontWeight: 700,
                       color: "#0B2744",
@@ -185,7 +184,6 @@ export default function SpeakersPage() {
               <section style={{ marginBottom: 64 }}>
                 <h2
                   style={{
-                    fontFamily: "'Playfair Display', serif",
                     fontSize: 28,
                     fontWeight: 700,
                     color: "#0B2744",

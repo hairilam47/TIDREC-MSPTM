@@ -230,7 +230,7 @@ export default function AdminDashboard() {
       {/* ── Welcome row ── */}
       <div className="flex items-start justify-between gap-4 mb-5">
         <div>
-          <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 20, fontWeight: 700, color: "var(--text)", marginBottom: 2 }}>
+          <h2 style={{ fontSize: 20, fontWeight: 700, color: "var(--text)", marginBottom: 2 }}>
             Welcome back, {user?.firstName ?? "Admin"}!
           </h2>
           <p style={{ fontSize: 13, color: "var(--text-muted)" }}>{todayStr}</p>
@@ -260,7 +260,7 @@ export default function AdminDashboard() {
                   color: active ? "var(--text)" : "var(--text-muted)",
                   fontWeight: active ? 600 : 400,
                   borderBottom: `2px solid ${active ? "var(--primary)" : "transparent"}`,
-                  marginBottom: -2, transition: "all 120ms", fontFamily: "var(--font)",
+                  marginBottom: -2, transition: "all 120ms",
                 }}
               >
                 <Icon style={{ width: 14, height: 14 }} />

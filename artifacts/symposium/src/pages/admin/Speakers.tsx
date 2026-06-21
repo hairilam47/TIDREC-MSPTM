@@ -110,7 +110,7 @@ export default function AdminSpeakers() {
           return (
             <div key={s.id} className="card" style={{ overflow: "hidden" }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 80, background: "linear-gradient(135deg, var(--primary-lt), var(--bg-surface-secondary))" }}>
-                <span style={{ fontFamily: "'Playfair Display', serif", fontSize: 28, fontWeight: 700, color: "var(--primary)" }}>
+                <span className="font-serif" style={{ fontSize: 28, fontWeight: 700, color: "var(--primary)" }}>
                   {s.initials}
                 </span>
               </div>
