@@ -21,14 +21,14 @@ export default function Home() {
     <div className="min-h-screen flex flex-col bg-background font-sans">
       {/* ── Navigation ── */}
       <header className="border-b border-sidebar-border sticky top-0 z-50 bg-white">
-        <div className="max-w-7xl mx-auto h-28 flex text-left justify-start items-center gap-[200px] pl-[0px] pr-[30px]">
-          {/* Logo */}
+        <div className="w-full h-32 flex items-center pr-6">
+          {/* Logo — flush to the left edge, no left padding */}
           <Link href="/" className="flex-shrink-0">
-            <img src={logoImg} alt="SATBDS 2027" className="h-28 w-auto object-contain" />
+            <img src={logoImg} alt="SATBDS 2027" className="h-32 w-auto object-contain" />
           </Link>
 
-          {/* Nav links + Login + Registration */}
-          <nav className="hidden md:flex items-center gap-5">
+          {/* Nav links + Login + Registration — centred in remaining space */}
+          <nav className="hidden md:flex flex-1 items-center justify-center gap-5">
             <Link href="/" className="hover:text-accent transition-colors text-[#0B2744] font-semibold text-sm">Home</Link>
             <a href="#about" className="hover:text-accent transition-colors cursor-pointer text-[#0B2744] font-semibold text-sm">About</a>
             <Link href="/portal/programme" className="hover:text-accent transition-colors text-[#0B2744] font-semibold text-sm">Programme</Link>
