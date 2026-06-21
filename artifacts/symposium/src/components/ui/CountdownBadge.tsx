@@ -30,37 +30,79 @@ export function CountdownBadge({ variant = "light" }: CountdownBadgeProps) {
 
   const pad = (n: number) => String(n).padStart(2, "0");
 
-  if (variant === "dark") {
-    return (
-      <div
-        style={{
-          display: "inline-flex", alignItems: "center", gap: 6,
-          background: "rgba(200,155,60,0.15)", border: "1px solid rgba(200,155,60,0.35)",
-          borderRadius: 20, padding: "4px 12px",
-        }}
-        className="justify-start items-center gap-[0px]">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#C89B3C" strokeWidth="2" aria-hidden="true">
-          <circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" />
-        </svg>
-        <span style={{ fontSize: 11.5, fontWeight: 600, letterSpacing: "0.02em", color: "#C89B3C", fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap" }}>
-          {t.d}d {pad(t.h)}h {pad(t.m)}m {pad(t.s)}s
-        </span>
-      </div>
-    );
-  }
+  const segments = [
+    { value: String(t.d).padStart(3, "0"), label: "DAYS" },
+    { value: pad(t.h),                     label: "HRS"  },
+    { value: pad(t.m),                     label: "MINS" },
+    { value: pad(t.s),                     label: "SECS" },
+  ];
 
   return (
     <div style={{
-      display: "inline-flex", alignItems: "center", gap: 5,
-      background: "var(--primary-lt)", border: "1px solid rgba(200,155,60,0.3)",
-      borderRadius: 20, padding: "3px 10px",
+      display: "inline-flex",
+      flexDirection: "column",
+      border: "1px solid #0B2744",
+      borderRadius: 6,
+      overflow: "hidden",
+      fontFamily: "Inter, sans-serif",
+      minWidth: 220,
     }}>
-      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" strokeWidth="2" aria-hidden="true">
-        <circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" />
-      </svg>
-      <span style={{ fontSize: 11, fontWeight: 600, color: "var(--primary)", fontVariantNumeric: "tabular-nums", whiteSpace: "nowrap" }}>
-        {t.d}d {pad(t.h)}h {pad(t.m)}m {pad(t.s)}s
-      </span>
+      {/* Title row */}
+      <div style={{
+        background: "#0B2744",
+        color: "#ffffff",
+        fontSize: 9,
+        fontWeight: 700,
+        letterSpacing: "0.12em",
+        textTransform: "uppercase",
+        textAlign: "center",
+        padding: "4px 8px",
+        whiteSpace: "nowrap",
+      }}>
+        Countdown to SEAT‑MSPTM 2027
+      </div>
+
+      {/* Segments row */}
+      <div style={{
+        display: "flex",
+        background: "#ffffff",
+      }}>
+        {segments.map(({ value, label }, i) => (
+          <React.Fragment key={label}>
+            {i > 0 && (
+              <div style={{ width: 1, background: "#0B2744", alignSelf: "stretch", opacity: 0.25 }} />
+            )}
+            <div style={{
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              padding: "6px 8px 5px",
+              gap: 1,
+            }}>
+              <span style={{
+                fontSize: 26,
+                fontWeight: 800,
+                lineHeight: 1,
+                color: "#0B2744",
+                fontVariantNumeric: "tabular-nums",
+                letterSpacing: "-0.02em",
+              }}>
+                {value}
+              </span>
+              <span style={{
+                fontSize: 8,
+                fontWeight: 700,
+                letterSpacing: "0.14em",
+                color: "#0E6E74",
+                textTransform: "uppercase",
+              }}>
+                {label}
+              </span>
+            </div>
+          </React.Fragment>
+        ))}
+      </div>
     </div>
   );
 }
