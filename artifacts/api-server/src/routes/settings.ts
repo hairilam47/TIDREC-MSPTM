@@ -21,6 +21,11 @@ const DEFAULT_SETTINGS: Record<string, string> = {
   abstract_deadline: "15 January 2027",
   early_bird_deadline: "01 March 2027",
   sponsor_prospectus_url: "",
+  date_registration_opens: "10 Aug 2026",
+  date_early_bird_closes: "05 Oct 2026",
+  date_abstract_submission_closes: "31 Jan 2027",
+  date_regular_submission_closes: "10 Feb 2027",
+  date_conference: "22–23 Mar 2027",
 };
 
 const objectStorageService = new ObjectStorageService();

@@ -25,6 +25,16 @@ const FIELD_GROUPS = [
     ],
   },
   {
+    label: "Important Dates",
+    fields: [
+      { key: "date_registration_opens", label: "Registration Opens", type: "text", placeholder: "10 Aug 2026" },
+      { key: "date_early_bird_closes", label: "Early Bird Registration Closes", type: "text", placeholder: "05 Oct 2026" },
+      { key: "date_abstract_submission_closes", label: "Abstract Submission Closes", type: "text", placeholder: "31 Jan 2027" },
+      { key: "date_regular_submission_closes", label: "Regular Submission Closes", type: "text", placeholder: "10 Feb 2027" },
+      { key: "date_conference", label: "Conference Dates", type: "text", placeholder: "22–23 Mar 2027" },
+    ],
+  },
+  {
     label: "Registration Settings",
     fields: [
       { key: "registration_target", label: "Registration Target (delegates)", type: "text" },

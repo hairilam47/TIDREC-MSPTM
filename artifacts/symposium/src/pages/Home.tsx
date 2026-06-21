@@ -9,13 +9,6 @@ import { useGetSpeakers, useGetSponsors, useGetSettings } from "@workspace/api-c
 import bannerImg from "@assets/[WEBSITE_BANNER]_SEAT-MSPTM_1782081152975.png";
 import logoImg from "@assets/[WEBSITE_LOGO]_SEAT-MSPTM_1782081214245.png";
 
-const IMPORTANT_DATES = [
-  { date: "10 Aug 2026", label: "Registration Opens" },
-  { date: "05 Oct 2026", label: "Early Bird Registration Closes" },
-  { date: "31 Jan 2027", label: "Abstract Submission Closes" },
-  { date: "10 Feb 2027", label: "Regular Submission Closes" },
-  { date: "22–23 Mar 2027", label: "Conference Dates" },
-];
 
 export default function Home() {
   const { data: speakers } = useGetSpeakers();
@@ -140,15 +133,25 @@ export default function Home() {
                   Important Dates
                 </div>
                 <div className="divide-y divide-border">
-                  {IMPORTANT_DATES.map(({ date, label }) => (
-                    <div key={label} className="flex items-start gap-3 px-5 py-3">
-                      <CalendarDays className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
-                      <div className="flex-1 min-w-0">
-                        <span className="font-semibold text-secondary text-sm">{date}</span>
-                        <span className="text-muted-foreground text-sm"> — {label}</span>
+                  {[
+                    { key: "date_registration_opens", label: "Registration Opens" },
+                    { key: "date_early_bird_closes", label: "Early Bird Registration Closes" },
+                    { key: "date_abstract_submission_closes", label: "Abstract Submission Closes" },
+                    { key: "date_regular_submission_closes", label: "Regular Submission Closes" },
+                    { key: "date_conference", label: "Conference Dates" },
+                  ].map(({ key, label }) => {
+                    const date = cms?.[key as keyof typeof cms] as string | undefined;
+                    if (!date) return null;
+                    return (
+                      <div key={key} className="flex items-start gap-3 px-5 py-3">
+                        <CalendarDays className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <span className="font-semibold text-secondary text-sm">{date}</span>
+                          <span className="text-muted-foreground text-sm"> — {label}</span>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             </div>
