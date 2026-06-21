@@ -88,7 +88,7 @@ export function CountdownBadge({ variant = "light" }: CountdownBadgeProps) {
                   fontVariantNumeric: "tabular-nums",
                   letterSpacing: "-0.02em",
                 }}
-                className="text-[#c8993ce6]">
+                className="text-[#c8993c]">
                 {value}
               </span>
               <span style={{
