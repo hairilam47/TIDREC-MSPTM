@@ -21,11 +21,11 @@ export default function Home() {
     <div className="min-h-screen flex flex-col bg-background font-sans">
       {/* ── Navigation ── */}
       <header className="text-secondary-foreground border-b border-sidebar-border sticky top-0 z-50 bg-[#ffffff]">
-        <div className="max-w-7xl mx-auto px-4 h-28 flex items-center justify-between gap-4 bg-[color:var(--tw-ring-offset-color)] font-semibold">
+        <div className="max-w-7xl mx-auto px-4 h-28 flex gap-4 bg-[color:var(--tw-ring-offset-color)] font-semibold ml-[0px] mr-[0px] pl-[0px] pr-[0px] pt-[0px] pb-[0px] justify-between items-center">
           {/* Logo + Nav grouped on the left */}
-          <div className="flex items-center gap-6 min-w-0">
+          <div className="flex items-center min-w-0 gap-[200px]">
             <Link href="/" className="flex-shrink-0">
-              <img src={logoImg} alt="SATBDS 2027" className="h-28 w-auto object-contain" />
+              <img src={logoImg} alt="SATBDS 2027" className="h-28 w-auto object-contain ml-[5px] mr-[5px]" />
             </Link>
             <nav className="hidden md:flex gap-5 text-sm justify-between items-center">
               <Link href="/" className="hover:text-accent transition-colors text-[#092748] font-bold">Home</Link>
