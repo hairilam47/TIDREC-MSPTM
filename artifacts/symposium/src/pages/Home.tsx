@@ -21,10 +21,10 @@ export default function Home() {
     <div className="min-h-screen flex flex-col bg-background font-sans">
       {/* ── Navigation ── */}
       <header className="border-b border-sidebar-border sticky top-0 z-50 bg-white">
-        <div className="max-w-7xl mx-auto px-6 h-24 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto pl-0 pr-6 h-28 flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex-shrink-0">
-            <img src={logoImg} alt="SATBDS 2027" className="h-20 w-auto object-contain" />
+            <img src={logoImg} alt="SATBDS 2027" className="h-28 w-auto object-contain" />
           </Link>
 
           {/* Nav links + Login + Registration */}
