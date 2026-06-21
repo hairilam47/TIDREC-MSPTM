@@ -126,42 +126,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* 5. Programme highlights */}
-        <section id="programme" className="py-24 bg-muted/30">
-          <div className="max-w-7xl mx-auto px-4">
-            <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
-              <div>
-                <h2 className="text-3xl md:text-5xl font-sans font-bold text-secondary mb-4">Programme Highlights</h2>
-                <p className="text-lg text-muted-foreground max-w-2xl">Discover keynotes and major sessions from our comprehensive two-day agenda.</p>
-              </div>
-              <Button asChild variant="outline" className="border-secondary text-secondary hover:bg-secondary hover:text-white shrink-0">
-                <Link href="/portal/programme">View Full Programme <ChevronRight className="w-4 h-4 ml-2" /></Link>
-              </Button>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {featuredSessions.map(session => (
-                <Card key={session.id} className="border-l-4 border-l-primary hover:shadow-md transition-shadow">
-                  <CardContent className="p-6 flex flex-col sm:flex-row gap-6">
-                    <div className="sm:w-32 shrink-0 border-b sm:border-b-0 sm:border-r border-border pb-4 sm:pb-0 pr-4">
-                      <div className="font-bold text-secondary flex items-center gap-2 mb-1">
-                        <Clock className="w-4 h-4 text-primary" /> {session.startTime}
-                      </div>
-                      <div className="text-sm text-muted-foreground">Day {session.day}</div>
-                      {session.room && <div className="text-xs text-muted-foreground mt-2"><MapPin className="w-3 h-3 inline mr-1"/>{session.room}</div>}
-                    </div>
-                    <div className="flex-1">
-                      <Badge variant="secondary" className="mb-2 uppercase text-xs tracking-wider">{session.sessionType}</Badge>
-                      <h3 className="font-sans font-bold text-xl text-secondary mb-2 leading-tight">{session.title}</h3>
-                      {session.speakerName && <p className="text-sm font-medium text-primary">Speaker: {session.speakerName}</p>}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </section>
-
         {/* 6. Speakers section */}
         <section id="speakers" className="py-24 bg-background">
           <div className="max-w-7xl mx-auto px-4">
