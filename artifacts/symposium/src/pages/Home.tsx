@@ -30,23 +30,23 @@ export default function Home() {
       {/* ── Navigation ── */}
       <header className="bg-secondary text-secondary-foreground border-b border-sidebar-border sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between gap-4">
-          {/* Logo */}
-          <Link href="/" className="flex-shrink-0">
-            <img src={logoImg} alt="SATBDS 2027" className="h-14 w-auto object-contain" />
-          </Link>
-
-          {/* Nav links */}
-          <nav className="hidden md:flex items-center gap-5 text-sm">
-            <Link href="/" className="hover:text-accent transition-colors font-medium">Home</Link>
-            <a href="#about" className="hover:text-accent transition-colors font-medium cursor-pointer">About</a>
-            <a href="#speakers" className="hover:text-accent transition-colors font-medium cursor-pointer">Speakers</a>
-            <a href="#sponsors" className="hover:text-accent transition-colors font-medium cursor-pointer">Sponsors</a>
-            <Link href="/portal/abstracts/new" className="hover:text-accent transition-colors font-medium">Abstract</Link>
-            <a href="#contact" className="hover:text-accent transition-colors font-medium cursor-pointer">Contact</a>
-            {cms?.sponsor_prospectus_url && (
-              <a href="/api/sponsor-prospectus" download className="hover:text-accent transition-colors font-medium cursor-pointer">Prospectus</a>
-            )}
-          </nav>
+          {/* Logo + Nav grouped on the left */}
+          <div className="flex items-center gap-6 min-w-0">
+            <Link href="/" className="flex-shrink-0">
+              <img src={logoImg} alt="SATBDS 2027" className="h-14 w-auto object-contain" />
+            </Link>
+            <nav className="hidden md:flex items-center gap-5 text-sm">
+              <Link href="/" className="hover:text-accent transition-colors font-medium">Home</Link>
+              <a href="#about" className="hover:text-accent transition-colors font-medium cursor-pointer">About</a>
+              <a href="#speakers" className="hover:text-accent transition-colors font-medium cursor-pointer">Speakers</a>
+              <a href="#sponsors" className="hover:text-accent transition-colors font-medium cursor-pointer">Sponsors</a>
+              <Link href="/portal/abstracts/new" className="hover:text-accent transition-colors font-medium">Abstract</Link>
+              <a href="#contact" className="hover:text-accent transition-colors font-medium cursor-pointer">Contact</a>
+              {cms?.sponsor_prospectus_url && (
+                <a href="/api/sponsor-prospectus" download className="hover:text-accent transition-colors font-medium cursor-pointer">Prospectus</a>
+              )}
+            </nav>
+          </div>
 
           {/* Right actions */}
           <div className="flex items-center gap-3 flex-shrink-0">
