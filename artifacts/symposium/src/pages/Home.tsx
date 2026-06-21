@@ -21,7 +21,7 @@ export default function Home() {
     <div className="min-h-screen flex flex-col bg-background font-sans">
       {/* ── Navigation ── */}
       <header className="bg-secondary text-secondary-foreground border-b border-sidebar-border sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between gap-4 bg-[color:var(--tw-ring-offset-color)]">
+        <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between gap-4 bg-[color:var(--tw-ring-offset-color)] font-semibold">
           {/* Logo + Nav grouped on the left */}
           <div className="flex items-center gap-6 min-w-0">
             <Link href="/" className="flex-shrink-0">
