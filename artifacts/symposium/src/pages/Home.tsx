@@ -41,7 +41,7 @@ export default function Home() {
           </div>
 
           {/* Right actions */}
-          <div className="flex flex-shrink-0 justify-center items-center gap-[20px] ml-[-150px] mr-[-150px]">
+          <div className="flex flex-shrink-0 justify-center items-center gap-[20px] ml-[-300px] mr-[-300px]">
             <CountdownBadge variant="dark" />
             <Link href="/login" className="hidden sm:block hover:text-accent transition-colors font-medium text-sm">Login</Link>
             <Button asChild className="bg-accent text-accent-foreground hover:bg-accent/90 text-sm">
