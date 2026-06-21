@@ -133,7 +133,7 @@ export default function SpeakersPage() {
 
       {/* Hero banner */}
       <div style={{ background: "linear-gradient(135deg, #0B2744 0%, #0E6E74 100%)", padding: "56px 24px 48px", textAlign: "center" }}>
-        <h1 style={{ fontSize: 40, fontWeight: 700, color: "#fff", margin: 0, marginBottom: 12 }}>
+        <h1 className="font-serif" style={{ fontSize: 40, fontWeight: 700, color: "#fff", margin: 0, marginBottom: 12 }}>
           Our Speakers
         </h1>
         <p style={{ color: "rgba(255,255,255,0.75)", fontSize: 17, margin: 0 }}>
@@ -155,6 +155,7 @@ export default function SpeakersPage() {
               return (
                 <section key={key} style={{ marginBottom: 64 }}>
                   <h2
+                    className="font-serif"
                     style={{
                       fontSize: 28,
                       fontWeight: 700,
@@ -183,6 +184,7 @@ export default function SpeakersPage() {
             {hasOther && (
               <section style={{ marginBottom: 64 }}>
                 <h2
+                  className="font-serif"
                   style={{
                     fontSize: 28,
                     fontWeight: 700,
