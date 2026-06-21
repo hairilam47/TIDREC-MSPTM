@@ -26,7 +26,7 @@ export default function Home() {
           {/* Logo + Nav grouped on the left */}
           <div className="flex items-center gap-6 min-w-0">
             <Link href="/" className="flex-shrink-0">
-              <img src={logoImg} alt="SATBDS 2027" className="h-14 w-auto object-contain" />
+              <img src={logoImg} alt="SATBDS 2027" className="h-20 w-auto object-contain" />
             </Link>
             <nav className="hidden md:flex items-center gap-5 text-sm">
               <Link href="/" className="hover:text-accent transition-colors font-medium">Home</Link>
