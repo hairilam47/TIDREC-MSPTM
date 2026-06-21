@@ -37,7 +37,7 @@ export default function Speakers() {
                   <img src={speaker.photoUrl} alt={speaker.name} className="w-full h-full object-cover" />
                 ) : (
                   <div
-                    className="w-20 h-20 rounded-full flex items-center justify-center font-serif text-3xl font-bold"
+                    className="w-20 h-20 rounded-full flex items-center justify-center font-sans text-3xl font-bold"
                     style={{ background: "#0E6E74", color: "#fff" }}
                   >
                     {speaker.initials || speaker.name.slice(0, 2)}
@@ -47,7 +47,7 @@ export default function Speakers() {
 
               {/* Info */}
               <div className="p-4">
-                <h3 className="text-[15px] font-serif font-bold mb-0.5" style={{ color: "#212529" }}>
+                <h3 className="text-[15px] font-sans font-bold mb-0.5" style={{ color: "#212529" }}>
                   {speaker.name}
                 </h3>
                 <div className="text-[12px] mb-3" style={{ color: "#6c757d" }}>

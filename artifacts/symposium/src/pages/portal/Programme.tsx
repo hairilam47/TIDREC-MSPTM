@@ -75,7 +75,7 @@ export default function Programme() {
               <div key={day}>
                 <div className="flex items-center gap-3 mb-4">
                   <div
-                    className="px-4 py-2 rounded-lg font-serif font-bold text-white text-[15px]"
+                    className="px-4 py-2 rounded-lg font-sans font-bold text-white text-[15px]"
                     style={{ background: "#0B2744" }}
                   >
                     Day {day}
@@ -125,7 +125,7 @@ export default function Programme() {
                                   {session.sessionType}
                                 </span>
                               </div>
-                              <h3 className="text-[15px] font-serif font-bold mb-1 leading-snug" style={{ color: "#212529" }}>
+                              <h3 className="text-[15px] font-sans font-bold mb-1 leading-snug" style={{ color: "#212529" }}>
                                 {session.title}
                               </h3>
                               {session.speakerName && (

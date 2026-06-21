@@ -64,7 +64,7 @@ export default function AbstractDetails() {
               {sc.label}
             </span>
           </div>
-          <h1 className="text-2xl font-serif font-bold mb-3 leading-snug" style={{ color: "#0B2744" }}>
+          <h1 className="text-2xl font-sans font-bold mb-3 leading-snug" style={{ color: "#0B2744" }}>
             {abstract.title}
           </h1>
           <div className="flex items-center gap-4 flex-wrap">

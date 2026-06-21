@@ -127,7 +127,7 @@ export default function Dashboard() {
       {/* ── Welcome row ── */}
       <div className="flex items-start justify-between gap-4 mb-5">
         <div>
-          <h2 className="font-serif" style={{ fontSize: 20, fontWeight: 700, color: "var(--text)", marginBottom: 4 }}>
+          <h2 className="font-sans" style={{ fontSize: 20, fontWeight: 700, color: "var(--text)", marginBottom: 4 }}>
             Welcome back, {user?.firstName ?? "Delegate"}!
           </h2>
           <p style={{ fontSize: 13, color: "var(--text-muted)" }}>{todayStr}</p>

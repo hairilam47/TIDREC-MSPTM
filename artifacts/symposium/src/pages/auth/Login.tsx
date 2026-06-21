@@ -46,7 +46,7 @@ export default function Login() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link href="/">
-            <h1 className="font-serif text-3xl font-bold cursor-pointer" style={{ color: "#C89B3C" }}>
+            <h1 className="font-sans text-3xl font-bold cursor-pointer" style={{ color: "#C89B3C" }}>
               SATBDS 2027
             </h1>
           </Link>
@@ -61,7 +61,7 @@ export default function Login() {
           transition={{ duration: 0.35, ease: "easeOut" }}
           className="bg-white rounded-2xl shadow-2xl p-8"
         >
-          <h2 className="font-serif text-2xl font-bold mb-1" style={{ color: "#0B2744" }}>
+          <h2 className="font-sans text-2xl font-bold mb-1" style={{ color: "#0B2744" }}>
             Sign In to Your Account
           </h2>
           <p className="text-[13px] mb-6" style={{ color: "#6c757d" }}>

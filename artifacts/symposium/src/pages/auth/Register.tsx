@@ -156,7 +156,7 @@ export default function Register() {
         {/* Branding */}
         <div className="text-center mb-8">
           <Link href="/">
-            <h1 className="font-serif text-3xl font-bold text-accent cursor-pointer">SATBDS 2027</h1>
+            <h1 className="font-sans text-3xl font-bold text-accent cursor-pointer">SATBDS 2027</h1>
           </Link>
           <p className="text-white/60 mt-1 text-sm">22–23 March 2027 · Sunway Putra Hotel, Kuala Lumpur</p>
         </div>
@@ -202,7 +202,7 @@ export default function Register() {
           {step === 1 && (
             <>
               <CardHeader>
-                <CardTitle className="font-serif text-secondary text-2xl">Create Your Account</CardTitle>
+                <CardTitle className="font-sans text-secondary text-2xl">Create Your Account</CardTitle>
                 <CardDescription>Enter your login credentials and full name</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -280,7 +280,7 @@ export default function Register() {
           {step === 2 && (
             <>
               <CardHeader>
-                <CardTitle className="font-serif text-secondary text-2xl">Professional Details</CardTitle>
+                <CardTitle className="font-sans text-secondary text-2xl">Professional Details</CardTitle>
                 <CardDescription>Tell us about your institutional affiliation</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -314,7 +314,7 @@ export default function Register() {
           {step === 3 && (
             <>
               <CardHeader>
-                <CardTitle className="font-serif text-secondary text-2xl">Registration Category</CardTitle>
+                <CardTitle className="font-sans text-secondary text-2xl">Registration Category</CardTitle>
                 <CardDescription>Select the category that best describes your professional role</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -383,7 +383,7 @@ export default function Register() {
           {step === 4 && (
             <>
               <CardHeader>
-                <CardTitle className="font-serif text-secondary text-2xl">Payment & Review</CardTitle>
+                <CardTitle className="font-sans text-secondary text-2xl">Payment & Review</CardTitle>
                 <CardDescription>Confirm your details and select a payment method</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">

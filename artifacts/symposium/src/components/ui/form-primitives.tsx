@@ -70,7 +70,7 @@ export function ModalShell({ title, onClose, footer, children, size = "lg" }: Mo
         {/* Card header */}
         <div className="card-header">
           <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
-            <div className="card-title font-serif" style={{ fontSize: 15 }}>{title}</div>
+            <div className="card-title font-sans" style={{ fontSize: 15 }}>{title}</div>
           </div>
           <button className="btn btn-ghost btn-sm" onClick={onClose} style={{ padding: "0 6px", flexShrink: 0 }}>
             <X style={{ width: 16, height: 16 }} />

@@ -73,13 +73,13 @@ export default function Profile() {
           {/* Avatar area */}
           <div className="bg-white rounded-xl p-6 mb-5 flex items-center gap-5" style={{ border: "1px solid #e9ecef" }}>
             <div
-              className="w-16 h-16 rounded-full flex items-center justify-center text-white text-xl font-bold font-serif flex-shrink-0"
+              className="w-16 h-16 rounded-full flex items-center justify-center text-white text-xl font-bold font-sans flex-shrink-0"
               style={{ background: "#0E6E74" }}
             >
               {initials}
             </div>
             <div>
-              <h2 className="text-xl font-serif font-bold" style={{ color: "#0B2744" }}>
+              <h2 className="text-xl font-sans font-bold" style={{ color: "#0B2744" }}>
                 {user?.firstName} {user?.lastName}
               </h2>
               <p className="text-[13px]" style={{ color: "#6c757d" }}>{user?.email}</p>

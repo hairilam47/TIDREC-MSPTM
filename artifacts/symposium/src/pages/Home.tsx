@@ -85,7 +85,7 @@ export default function Home() {
         <section id="about" className="py-24 bg-background">
           <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
             <div>
-              <h2 className="text-3xl md:text-5xl font-serif font-bold text-secondary mb-6">About The Symposium</h2>
+              <h2 className="text-3xl md:text-5xl font-sans font-bold text-secondary mb-6">About The Symposium</h2>
               <p className="text-lg text-muted-foreground mb-6 leading-relaxed">
                 The 3rd Southeast Asia Ticks and Tick-borne Diseases Symposium (SEA TTBD 2027), held in conjunction with the 63rd Annual Scientific Conference of the Malaysian Society of Parasitology and Tropical Medicine (MSPTM), brings together researchers, veterinarians, healthcare professionals, and students to discuss the latest advances in tick and tick-borne disease research.
               </p>
@@ -131,7 +131,7 @@ export default function Home() {
           <div className="max-w-7xl mx-auto px-4">
             <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
               <div>
-                <h2 className="text-3xl md:text-5xl font-serif font-bold text-secondary mb-4">Programme Highlights</h2>
+                <h2 className="text-3xl md:text-5xl font-sans font-bold text-secondary mb-4">Programme Highlights</h2>
                 <p className="text-lg text-muted-foreground max-w-2xl">Discover keynotes and major sessions from our comprehensive two-day agenda.</p>
               </div>
               <Button asChild variant="outline" className="border-secondary text-secondary hover:bg-secondary hover:text-white shrink-0">
@@ -152,7 +152,7 @@ export default function Home() {
                     </div>
                     <div className="flex-1">
                       <Badge variant="secondary" className="mb-2 uppercase text-xs tracking-wider">{session.sessionType}</Badge>
-                      <h3 className="font-serif font-bold text-xl text-secondary mb-2 leading-tight">{session.title}</h3>
+                      <h3 className="font-sans font-bold text-xl text-secondary mb-2 leading-tight">{session.title}</h3>
                       {session.speakerName && <p className="text-sm font-medium text-primary">Speaker: {session.speakerName}</p>}
                     </div>
                   </CardContent>
@@ -166,7 +166,7 @@ export default function Home() {
         <section id="speakers" className="py-24 bg-background">
           <div className="max-w-7xl mx-auto px-4">
             <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-5xl font-serif font-bold text-secondary mb-4">Keynote Speakers</h2>
+              <h2 className="text-3xl md:text-5xl font-sans font-bold text-secondary mb-4">Keynote Speakers</h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">Hear from world-renowned experts in the field of tropical medicine and infectious diseases.</p>
             </div>
             
@@ -176,13 +176,13 @@ export default function Home() {
                   <div className="relative mb-6 mx-auto w-48 h-48 rounded-full overflow-hidden border-4 border-muted group-hover:border-accent transition-colors">
                     <Avatar className="w-full h-full">
                       <AvatarImage src={speaker.photoUrl || ''} alt={speaker.name} className="object-cover" />
-                      <AvatarFallback className="text-3xl bg-secondary text-white font-serif">
+                      <AvatarFallback className="text-3xl bg-secondary text-white font-sans">
                         {speaker.initials || speaker.name.substring(0, 2)}
                       </AvatarFallback>
                     </Avatar>
                   </div>
                   <div className="text-center">
-                    <h3 className="font-serif font-bold text-xl text-secondary mb-1">{speaker.name}</h3>
+                    <h3 className="font-sans font-bold text-xl text-secondary mb-1">{speaker.name}</h3>
                     <div className="text-sm font-medium text-primary mb-2">{speaker.country}</div>
                     <p className="text-sm text-muted-foreground line-clamp-2">{speaker.topic}</p>
                   </div>
@@ -201,7 +201,7 @@ export default function Home() {
         {/* 8. Sponsors section */}
         <section id="sponsors" className="py-24 bg-[color:var(--color-amber-200)]">
           <div className="max-w-7xl mx-auto px-4 text-center">
-            <h2 className="text-3xl md:text-5xl font-serif font-bold text-secondary mb-12">Our Sponsors</h2>
+            <h2 className="text-3xl md:text-5xl font-sans font-bold text-secondary mb-12">Our Sponsors</h2>
             
             {['platinum', 'gold', 'silver', 'bronze'].map(tier => {
               const tierSponsors = sponsors?.filter(s => s.tier === tier) || [];
@@ -218,7 +218,7 @@ export default function Home() {
                         {sponsor.logoUrl ? (
                           <img src={sponsor.logoUrl} alt={sponsor.name} className="w-full h-auto object-contain" />
                         ) : (
-                          <div className="font-serif font-bold text-xl text-secondary">{sponsor.name}</div>
+                          <div className="font-sans font-bold text-xl text-secondary">{sponsor.name}</div>
                         )}
                       </div>
                     ))}
@@ -235,7 +235,7 @@ export default function Home() {
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-secondary/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
           
           <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
-            <h2 className="text-3xl md:text-5xl font-serif font-bold mb-6">Don't miss SATBDS 2027</h2>
+            <h2 className="text-3xl md:text-5xl font-sans font-bold mb-6">Don't miss SATBDS 2027</h2>
             <p className="text-xl text-primary-foreground/80 mb-10">
               Join us in Kuala Lumpur to share knowledge, foster collaborations, and advance research.
             </p>
@@ -254,7 +254,7 @@ export default function Home() {
       <footer className="bg-secondary text-secondary-foreground py-16 border-t border-sidebar-border">
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-12">
           <div className="col-span-1 md:col-span-1">
-            <h3 className="font-serif text-accent text-2xl font-bold mb-4">SATBDS 2027</h3>
+            <h3 className="font-sans text-accent text-2xl font-bold mb-4">SATBDS 2027</h3>
             <p className="text-sm text-muted/70 mb-6 leading-relaxed">
               Uniting the World Against Tropical Diseases in a Changing Climate. 22–23 March 2027.
             </p>

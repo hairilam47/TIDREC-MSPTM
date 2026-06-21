@@ -31,7 +31,7 @@ export default function Invoices() {
           >
             <Receipt className="w-8 h-8" style={{ color: "#dee2e6" }} />
           </div>
-          <h3 className="text-xl font-serif font-bold mb-2" style={{ color: "#212529" }}>
+          <h3 className="text-xl font-sans font-bold mb-2" style={{ color: "#212529" }}>
             No Invoice Yet
           </h3>
           <p className="text-sm" style={{ color: "#6c757d" }}>
@@ -48,7 +48,7 @@ export default function Invoices() {
               style={{ background: "linear-gradient(135deg, #0B2744, #0E6E74)" }}
             >
               <div>
-                <div className="text-white font-serif text-xl font-bold mb-1">INVOICE</div>
+                <div className="text-white font-sans text-xl font-bold mb-1">INVOICE</div>
                 <div className="text-[13px]" style={{ color: "rgba(255,255,255,0.7)" }}>
                   3rd SATBDS 2027 — Symposium Registration
                 </div>

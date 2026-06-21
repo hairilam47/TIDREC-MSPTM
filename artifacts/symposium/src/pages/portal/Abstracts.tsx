@@ -115,7 +115,7 @@ export default function Abstracts() {
           >
             <FileText className="w-8 h-8" style={{ color: "#0E6E74" }} />
           </div>
-          <h3 className="text-xl font-serif font-bold mb-2" style={{ color: "#212529" }}>
+          <h3 className="text-xl font-sans font-bold mb-2" style={{ color: "#212529" }}>
             No Abstracts Yet
           </h3>
           <p className="text-sm mb-6 max-w-sm mx-auto" style={{ color: "#6c757d" }}>

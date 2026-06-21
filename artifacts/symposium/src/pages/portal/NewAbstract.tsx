@@ -145,7 +145,7 @@ export default function NewAbstract() {
           <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: "#d1e7dd" }}>
             <CheckCircle className="w-8 h-8" style={{ color: "#198754" }} />
           </div>
-          <h2 className="text-2xl font-serif font-bold mb-2" style={{ color: "#0B2744" }}>Abstract Submitted!</h2>
+          <h2 className="text-2xl font-sans font-bold mb-2" style={{ color: "#0B2744" }}>Abstract Submitted!</h2>
           <p className="text-sm mb-3" style={{ color: "#6c757d" }}>
             Your abstract has been received and is now under review. You will be notified of the outcome.
           </p>
@@ -219,7 +219,7 @@ export default function NewAbstract() {
         {/* Step 0: Details & Content */}
         {step === 0 && (
           <div className="bg-white rounded-xl p-6" style={{ border: "1px solid #e9ecef" }}>
-            <h2 className="text-[17px] font-serif font-bold mb-5" style={{ color: "#0B2744" }}>
+            <h2 className="text-[17px] font-sans font-bold mb-5" style={{ color: "#0B2744" }}>
               Abstract Details & Content
             </h2>
             <div className="space-y-5">
@@ -341,7 +341,7 @@ export default function NewAbstract() {
         {/* Step 1: File Upload */}
         {step === 1 && (
           <div className="bg-white rounded-xl p-6" style={{ border: "1px solid #e9ecef" }}>
-            <h2 className="text-[17px] font-serif font-bold mb-2" style={{ color: "#0B2744" }}>
+            <h2 className="text-[17px] font-sans font-bold mb-2" style={{ color: "#0B2744" }}>
               Upload Abstract Document
             </h2>
             <p className="text-[13px] mb-6" style={{ color: "#6c757d" }}>
@@ -450,7 +450,7 @@ export default function NewAbstract() {
         {/* Step 2: Preview */}
         {step === 2 && (
           <div className="bg-white rounded-xl p-6" style={{ border: "1px solid #e9ecef" }}>
-            <h2 className="text-[17px] font-serif font-bold mb-5" style={{ color: "#0B2744" }}>Review Your Abstract</h2>
+            <h2 className="text-[17px] font-sans font-bold mb-5" style={{ color: "#0B2744" }}>Review Your Abstract</h2>
             <div className="space-y-4">
               {[
                 { label: "Title", value: form.title },
@@ -511,10 +511,10 @@ export default function NewAbstract() {
         {/* Step 3: Submit */}
         {step === 3 && (
           <div className="bg-white rounded-xl p-6" style={{ border: "1px solid #e9ecef" }}>
-            <h2 className="text-[17px] font-serif font-bold mb-3" style={{ color: "#0B2744" }}>Confirm Submission</h2>
+            <h2 className="text-[17px] font-sans font-bold mb-3" style={{ color: "#0B2744" }}>Confirm Submission</h2>
             <div className="rounded-xl p-5 mb-5" style={{ background: "#e6f4f5", border: "1px solid #a3d4d6" }}>
               <div className="text-[13px] mb-1 font-semibold" style={{ color: "#0E6E74" }}>You are about to submit:</div>
-              <div className="text-[15px] font-serif font-bold" style={{ color: "#0B2744" }}>{form.title}</div>
+              <div className="text-[15px] font-sans font-bold" style={{ color: "#0B2744" }}>{form.title}</div>
               <div className="text-[13px] mt-1" style={{ color: "#495057" }}>
                 {form.abstractType === "oral" ? "Oral Presentation" : "Poster Presentation"} · {form.keywords}
               </div>

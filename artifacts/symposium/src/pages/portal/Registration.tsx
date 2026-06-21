@@ -60,7 +60,7 @@ export default function Registration() {
             >
               <ClipboardList className="w-6 h-6" style={{ color: "#0E6E74" }} />
             </div>
-            <h2 className="text-xl font-serif font-bold mb-2" style={{ color: "#0B2744" }}>
+            <h2 className="text-xl font-sans font-bold mb-2" style={{ color: "#0B2744" }}>
               Complete Registration
             </h2>
             <p className="text-[13px] mb-6" style={{ color: "#6c757d" }}>
