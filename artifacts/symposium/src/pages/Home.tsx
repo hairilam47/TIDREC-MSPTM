@@ -6,7 +6,7 @@ import { MapPin, ChevronRight, CalendarDays, ExternalLink } from "lucide-react";
 import { CountdownBadge } from "@/components/ui/CountdownBadge";
 import { useGetSpeakers, useGetSponsors, useGetSettings } from "@workspace/api-client-react";
 
-import bannerImg from "@assets/[WEBSITE_BANNER]_SEAT-MSPTM_1782081152975.png";
+import bannerImg from "@assets/[WEBSITE BANNER] SEAT-MSPTM.png";
 import logoImg from "@assets/[WEBSITE_LOGO]_SEAT-MSPTM_1782081214245.png";
 
 
