@@ -23,17 +23,17 @@ export default function Home() {
       <header className="text-secondary-foreground border-b border-sidebar-border sticky top-0 z-50 bg-[#ffffff]">
         <div className="max-w-7xl mx-auto px-4 h-28 flex gap-4 bg-[color:var(--tw-ring-offset-color)] font-semibold ml-[0px] mr-[0px] pl-[0px] pr-[0px] pt-[0px] pb-[0px] justify-between items-center">
           {/* Logo + Nav grouped on the left */}
-          <div className="flex items-center min-w-0 gap-[200px]">
+          <div className="flex items-center min-w-0 gap-[100px]">
             <Link href="/" className="flex-shrink-0">
               <img src={logoImg} alt="SATBDS 2027" className="h-28 w-auto object-contain ml-[5px] mr-[5px]" />
             </Link>
-            <nav className="hidden md:flex gap-5 text-sm justify-between items-center">
-              <Link href="/" className="hover:text-accent transition-colors text-[#092748] font-bold">Home</Link>
-              <a href="#about" className="hover:text-accent transition-colors cursor-pointer text-[#092748] font-bold">About</a>
-              <a href="#speakers" className="hover:text-accent transition-colors cursor-pointer text-[#092748] font-bold">Speakers</a>
-              <a href="#sponsors" className="hover:text-accent transition-colors cursor-pointer text-[#092748] font-bold">Sponsors</a>
-              <Link href="/portal/abstracts/new" className="hover:text-accent transition-colors text-[#092748] font-bold">Abstract</Link>
-              <a href="#contact" className="hover:text-accent transition-colors cursor-pointer text-[#092748] font-bold">Contact</a>
+            <nav className="hidden md:flex gap-5 text-sm justify-between items-center ml-[0px] mr-[0px] mt-[2px] mb-[2px] text-left">
+              <Link href="/" className="hover:text-accent transition-colors text-[#092748] font-bold text-[20px]">Home</Link>
+              <a href="#about" className="hover:text-accent transition-colors cursor-pointer text-[#092748] font-bold text-[20px]">About</a>
+              <a href="#speakers" className="hover:text-accent transition-colors cursor-pointer text-[#092748] font-bold text-[20px]">Speakers</a>
+              <a href="#sponsors" className="hover:text-accent transition-colors cursor-pointer text-[#092748] font-bold text-[20px]">Sponsors</a>
+              <Link href="/portal/abstracts/new" className="hover:text-accent transition-colors text-[#092748] font-bold text-[20px]">Abstract</Link>
+              <a href="#contact" className="hover:text-accent transition-colors cursor-pointer text-[#092748] font-bold text-[20px]">Contact</a>
               {cms?.sponsor_prospectus_url && (
                 <a href="/api/sponsor-prospectus" download className="hover:text-accent transition-colors font-medium cursor-pointer">Prospectus</a>
               )}
@@ -41,7 +41,7 @@ export default function Home() {
           </div>
 
           {/* Right actions */}
-          <div className="flex items-center gap-3 flex-shrink-0">
+          <div className="flex flex-shrink-0 justify-center items-center gap-[20px] ml-[-150px] mr-[-150px]">
             <CountdownBadge variant="dark" />
             <Link href="/login" className="hidden sm:block hover:text-accent transition-colors font-medium text-sm">Login</Link>
             <Button asChild className="bg-accent text-accent-foreground hover:bg-accent/90 text-sm">

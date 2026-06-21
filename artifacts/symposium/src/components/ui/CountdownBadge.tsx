@@ -32,11 +32,13 @@ export function CountdownBadge({ variant = "light" }: CountdownBadgeProps) {
 
   if (variant === "dark") {
     return (
-      <div style={{
-        display: "inline-flex", alignItems: "center", gap: 6,
-        background: "rgba(200,155,60,0.15)", border: "1px solid rgba(200,155,60,0.35)",
-        borderRadius: 20, padding: "4px 12px",
-      }}>
+      <div
+        style={{
+          display: "inline-flex", alignItems: "center", gap: 6,
+          background: "rgba(200,155,60,0.15)", border: "1px solid rgba(200,155,60,0.35)",
+          borderRadius: 20, padding: "4px 12px",
+        }}
+        className="justify-start items-center gap-[0px]">
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#C89B3C" strokeWidth="2" aria-hidden="true">
           <circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" />
         </svg>
