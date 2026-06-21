@@ -39,12 +39,10 @@ export function CountdownBadge({ variant = "light" }: CountdownBadgeProps) {
 
   return (
     <div className="inline-flex flex-col min-w-[220px] rounded-md border border-[#0B2744] overflow-hidden font-sans">
-
       {/* Title row */}
-      <div className="bg-[#0B2744] text-white text-[9px] font-bold tracking-[0.12em] uppercase text-center px-2 py-1 whitespace-nowrap">
+      <div className="tracking-[0.12em] uppercase text-center px-2 py-1 whitespace-nowrap text-[#0b2744] bg-[color:var(--color-gray-50)] text-[11px] font-extrabold">
         Countdown to SEAT‑MSPTM 2027
       </div>
-
       {/* Segments row */}
       <div className="flex bg-white">
         {segments.map(({ value, label }, i) => (
@@ -53,17 +51,16 @@ export function CountdownBadge({ variant = "light" }: CountdownBadgeProps) {
               <div className="w-px self-stretch bg-[#0B2744] opacity-25" />
             )}
             <div className="flex-1 flex flex-col items-center px-2 pt-1.5 pb-1 gap-px">
-              <span className="text-[26px] font-extrabold leading-none text-[#0B2744] tabular-nums tracking-[-0.02em]">
+              <span className="text-[26px] font-extrabold leading-none tabular-nums tracking-[-0.02em] text-[#c8993ce6]">
                 {value}
               </span>
-              <span className="text-[8px] font-bold tracking-[0.14em] text-[#0E6E74] uppercase">
+              <span className="text-[8px] font-bold tracking-[0.14em] uppercase text-[#0b2744]">
                 {label}
               </span>
             </div>
           </React.Fragment>
         ))}
       </div>
-
     </div>
   );
 }
