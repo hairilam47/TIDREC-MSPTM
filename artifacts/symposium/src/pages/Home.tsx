@@ -28,12 +28,12 @@ export default function Home() {
               <img src={logoImg} alt="SATBDS 2027" className="h-20 w-auto object-contain" />
             </Link>
             <nav className="hidden md:flex gap-5 text-sm justify-between items-center">
-              <Link href="/" className="hover:text-accent transition-colors font-medium text-[#092748]">Home</Link>
-              <a href="#about" className="hover:text-accent transition-colors font-medium cursor-pointer text-[#092748]">About</a>
-              <a href="#speakers" className="hover:text-accent transition-colors font-medium cursor-pointer text-[#092748]">Speakers</a>
-              <a href="#sponsors" className="hover:text-accent transition-colors font-medium cursor-pointer text-[#092748]">Sponsors</a>
-              <Link href="/portal/abstracts/new" className="hover:text-accent transition-colors font-medium text-[#092748]">Abstract</Link>
-              <a href="#contact" className="hover:text-accent transition-colors font-medium cursor-pointer text-[#092748]">Contact</a>
+              <Link href="/" className="hover:text-accent transition-colors text-[#092748] font-bold">Home</Link>
+              <a href="#about" className="hover:text-accent transition-colors cursor-pointer text-[#092748] font-bold">About</a>
+              <a href="#speakers" className="hover:text-accent transition-colors cursor-pointer text-[#092748] font-bold">Speakers</a>
+              <a href="#sponsors" className="hover:text-accent transition-colors cursor-pointer text-[#092748] font-bold">Sponsors</a>
+              <Link href="/portal/abstracts/new" className="hover:text-accent transition-colors text-[#092748] font-bold">Abstract</Link>
+              <a href="#contact" className="hover:text-accent transition-colors cursor-pointer text-[#092748] font-bold">Contact</a>
               {cms?.sponsor_prospectus_url && (
                 <a href="/api/sponsor-prospectus" download className="hover:text-accent transition-colors font-medium cursor-pointer">Prospectus</a>
               )}
