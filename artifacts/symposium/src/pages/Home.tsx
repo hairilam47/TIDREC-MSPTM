@@ -19,7 +19,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background font-sans">
-
       {/* ── Navigation ── */}
       <header className="bg-secondary text-secondary-foreground border-b border-sidebar-border sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between gap-4">
@@ -28,7 +27,7 @@ export default function Home() {
             <Link href="/" className="flex-shrink-0">
               <img src={logoImg} alt="SATBDS 2027" className="h-20 w-auto object-contain" />
             </Link>
-            <nav className="hidden md:flex items-center gap-5 text-sm">
+            <nav className="hidden md:flex gap-5 text-sm justify-between items-center">
               <Link href="/" className="hover:text-accent transition-colors font-medium">Home</Link>
               <a href="#about" className="hover:text-accent transition-colors font-medium cursor-pointer">About</a>
               <a href="#speakers" className="hover:text-accent transition-colors font-medium cursor-pointer">Speakers</a>
@@ -51,7 +50,6 @@ export default function Home() {
           </div>
         </div>
       </header>
-
       <main className="flex-1">
 
         {/* ── Hero banner ── */}
@@ -303,7 +301,6 @@ export default function Home() {
           </div>
         </section>
       </main>
-
       {/* ── Footer ── */}
       <footer className="bg-secondary text-secondary-foreground py-16 border-t border-sidebar-border">
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-12">
