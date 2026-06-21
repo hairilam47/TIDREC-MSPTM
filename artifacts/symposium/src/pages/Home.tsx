@@ -45,7 +45,7 @@ export default function Home() {
           </nav>
 
           {/* Countdown card */}
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0 border-t-[color:var(--tw-ring-offset-color)] border-r-[color:var(--tw-ring-offset-color)] border-b-[color:var(--tw-ring-offset-color)] border-l-[color:var(--tw-ring-offset-color)]">
             <CountdownBadge />
           </div>
         </div>
