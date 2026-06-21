@@ -20,35 +20,33 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col bg-background font-sans">
       {/* ── Navigation ── */}
-      <header className="text-secondary-foreground border-b border-sidebar-border sticky top-0 z-50 bg-[#ffffff]">
-        <div className="max-w-7xl mx-auto px-4 h-50 flex gap-4 bg-[color:var(--tw-ring-offset-color)] font-semibold ml-[0px] mr-[0px] pl-[0px] pr-[0px] pt-[0px] pb-[0px] justify-between items-center">
-          {/* Logo + Nav grouped on the left */}
-          <div className="flex items-center min-w-0 gap-[100px]">
-            <Link href="/" className="flex-shrink-0">
-              <img src={logoImg} alt="SATBDS 2027" className="h-50 w-auto object-contain ml-[0px] mr-[0px]" />
-            </Link>
-            <nav className="hidden md:flex gap-5 text-sm justify-between items-center ml-[0px] mr-[0px] mt-[2px] mb-[2px] text-left">
-              <Link href="/" className="hover:text-accent transition-colors text-[#092748] font-bold text-[20px]">Home</Link>
-              <a href="#about" className="hover:text-accent transition-colors cursor-pointer text-[#092748] font-bold text-[20px]">About</a>
-              <a href="#speakers" className="hover:text-accent transition-colors cursor-pointer text-[#092748] font-bold text-[20px]">Speakers</a>
-              <a href="#sponsors" className="hover:text-accent transition-colors cursor-pointer text-[#092748] font-bold text-[20px]">Sponsors</a>
-              <Link href="/portal/abstracts/new" className="hover:text-accent transition-colors text-[#092748] font-bold text-[20px]">Abstract</Link>
-              <a href="#contact" className="hover:text-accent transition-colors cursor-pointer text-[#092748] font-bold text-[20px]">Contact</a>
-              {cms?.sponsor_prospectus_url && (
-                <a href="/api/sponsor-prospectus" download className="hover:text-accent transition-colors font-medium cursor-pointer">Prospectus</a>
-              )}
-            </nav>
-          </div>
+      <header className="border-b border-sidebar-border sticky top-0 z-50 bg-white">
+        <div className="max-w-7xl mx-auto px-6 h-24 flex items-center justify-between">
+          {/* Logo */}
+          <Link href="/" className="flex-shrink-0">
+            <img src={logoImg} alt="SATBDS 2027" className="h-20 w-auto object-contain" />
+          </Link>
 
-          {/* Right actions */}
-          <div className="flex flex-shrink-0 items-center gap-4">
+          {/* Nav links + Login + Registration */}
+          <nav className="hidden md:flex items-center gap-5">
+            <Link href="/" className="hover:text-accent transition-colors text-[#0B2744] font-semibold text-sm">Home</Link>
+            <a href="#about" className="hover:text-accent transition-colors cursor-pointer text-[#0B2744] font-semibold text-sm">About</a>
+            <Link href="/portal/programme" className="hover:text-accent transition-colors text-[#0B2744] font-semibold text-sm">Programme</Link>
+            <Link href="/portal/abstracts/new" className="hover:text-accent transition-colors text-[#0B2744] font-semibold text-sm">Abstract</Link>
+            <a href="#sponsors" className="hover:text-accent transition-colors cursor-pointer text-[#0B2744] font-semibold text-sm">Sponsors</a>
+            <a href="#contact" className="hover:text-accent transition-colors cursor-pointer text-[#0B2744] font-semibold text-sm">Contact</a>
+            {cms?.sponsor_prospectus_url && (
+              <a href="/api/sponsor-prospectus" download className="hover:text-accent transition-colors text-[#0B2744] font-semibold text-sm cursor-pointer">Prospectus</a>
+            )}
+            <Link href="/login" className="hover:text-accent transition-colors text-[#0B2744] font-semibold text-sm">Login</Link>
+            <Button asChild className="bg-accent text-accent-foreground hover:bg-accent/90 text-sm px-5">
+              <Link href="/register">Registration</Link>
+            </Button>
+          </nav>
+
+          {/* Countdown card */}
+          <div className="flex-shrink-0">
             <CountdownBadge />
-            <div className="flex flex-col items-center gap-2">
-              <Link href="/login" className="hidden sm:block hover:text-accent transition-colors font-medium text-sm text-[#092748]">Login</Link>
-              <Button asChild className="bg-accent text-accent-foreground hover:bg-accent/90 text-sm">
-                <Link href="/register">Registration</Link>
-              </Button>
-            </div>
           </div>
         </div>
       </header>
