@@ -5,12 +5,20 @@ import { requireAdmin } from "../lib/auth";
 
 const router = Router();
 
+function resolveMediaUrl(path: string | null): string | null {
+  if (!path) return null;
+  if (path.startsWith("/objects/")) {
+    return `/api/media/objects/${path.slice("/objects/".length)}`;
+  }
+  return path;
+}
+
 function formatSponsor(s: typeof sponsorsTable.$inferSelect) {
   return {
     id: s.id,
     name: s.name,
     tier: s.tier,
-    logoUrl: s.logoUrl,
+    logoUrl: resolveMediaUrl(s.logoUrl),
     website: s.website,
   };
 }

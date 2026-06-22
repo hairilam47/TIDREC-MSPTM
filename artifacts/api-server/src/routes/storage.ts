@@ -78,6 +78,41 @@ router.get("/storage/public-objects/*filePath", async (req: AuthRequest, res: Re
 });
 
 /**
+ * GET /media/objects/*
+ *
+ * Public (no-auth) proxy for uploaded media that is public by nature —
+ * speaker portrait photos and sponsor logos. Serves any object entity
+ * by path without authentication.
+ */
+router.get("/media/objects/*path", async (req: AuthRequest, res: Response) => {
+  try {
+    const raw = req.params.path;
+    const wildcardPath = Array.isArray(raw) ? raw.join("/") : raw;
+    const objectPath = `/objects/${wildcardPath}`;
+
+    const objectFile = await objectStorageService.getObjectEntityFile(objectPath);
+    const response = await objectStorageService.downloadObject(objectFile);
+
+    res.status(response.status);
+    response.headers.forEach((value, key) => res.setHeader(key, value));
+
+    if (response.body) {
+      const nodeStream = Readable.fromWeb(response.body as ReadableStream<Uint8Array>);
+      nodeStream.pipe(res);
+    } else {
+      res.end();
+    }
+  } catch (error) {
+    if (error instanceof ObjectNotFoundError) {
+      res.status(404).json({ error: "Object not found" });
+      return;
+    }
+    req.log.error({ err: error }, "Error serving media object");
+    res.status(500).json({ error: "Failed to serve media" });
+  }
+});
+
+/**
  * GET /storage/objects/*
  *
  * Serve private object entities from PRIVATE_OBJECT_DIR.

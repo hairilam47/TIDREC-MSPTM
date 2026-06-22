@@ -25,27 +25,32 @@ export function ImageUploadField({ value, onChange, accept = "image/*", hint }: 
       setPreviewSrc(null);
       return;
     }
-    if (value.startsWith("http://") || value.startsWith("https://")) {
+    // External URL or resolved API URL — use directly as src
+    if (value.startsWith("http://") || value.startsWith("https://") || value.startsWith("/api/")) {
       setPreviewSrc(value);
       return;
     }
-    const token = localStorage.getItem("satbds_token");
-    const stripped = value.replace(/^\/objects\//, "");
-    const apiUrl = `${API}/storage/objects/${stripped}`;
-    let objectUrl: string | null = null;
-    fetch(apiUrl, { headers: { Authorization: `Bearer ${token}` } })
-      .then((r) => {
-        if (!r.ok) throw new Error("Not found");
-        return r.blob();
-      })
-      .then((blob) => {
-        objectUrl = URL.createObjectURL(blob);
-        setPreviewSrc(objectUrl);
-      })
-      .catch(() => setPreviewSrc(null));
-    return () => {
-      if (objectUrl) URL.revokeObjectURL(objectUrl);
-    };
+    // Raw objectPath — fetch with auth and create a blob URL
+    if (value.startsWith("/objects/")) {
+      const token = localStorage.getItem("satbds_token");
+      const stripped = value.slice("/objects/".length);
+      const apiUrl = `${API}/storage/objects/${stripped}`;
+      let objectUrl: string | null = null;
+      fetch(apiUrl, { headers: { Authorization: `Bearer ${token}` } })
+        .then((r) => {
+          if (!r.ok) throw new Error("Not found");
+          return r.blob();
+        })
+        .then((blob) => {
+          objectUrl = URL.createObjectURL(blob);
+          setPreviewSrc(objectUrl);
+        })
+        .catch(() => setPreviewSrc(null));
+      return () => {
+        if (objectUrl) URL.revokeObjectURL(objectUrl);
+      };
+    }
+    setPreviewSrc(null);
   }, [value]);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
