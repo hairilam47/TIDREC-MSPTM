@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { AdminLayout } from "@/components/AdminLayout";
-import { Upload, Loader2, ImageIcon, Trash2 } from "lucide-react";
+import { Upload, Loader2, ImageIcon, Trash2, FileText, ExternalLink } from "lucide-react";
 
 interface LogoUploaderProps {
   slug: "tidrec" | "msptm";
@@ -116,6 +116,115 @@ function LogoUploader({ slug, label, currentPath, onSave, onClear, saving }: Log
   );
 }
 
+interface ProspectusUploaderProps {
+  currentPath: string;
+  onSave: (objectPath: string) => Promise<void>;
+  onClear: () => Promise<void>;
+  saving: boolean;
+}
+
+function ProspectusUploader({ currentPath, onSave, onClear, saving }: ProspectusUploaderProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+  const { mutateAsync: requestUploadUrl } = useRequestUploadUrl();
+  const { toast } = useToast();
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.type !== "application/pdf") {
+      toast({ title: "Invalid file type", description: "Please upload a PDF file.", variant: "destructive" });
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const { uploadURL, objectPath } = await requestUploadUrl({
+        data: { name: file.name, size: file.size, contentType: file.type },
+      });
+
+      await fetch(uploadURL, {
+        method: "PUT",
+        headers: { "Content-Type": file.type },
+        body: file,
+      });
+
+      await onSave(objectPath);
+      toast({ title: "Prospectus uploaded", description: "Sponsor prospectus has been updated." });
+    } catch {
+      toast({ title: "Upload failed", description: "Something went wrong. Please try again.", variant: "destructive" });
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
+  const hasFile = Boolean(currentPath);
+  const fileName = hasFile ? currentPath.split("/").pop() ?? "sponsor-prospectus.pdf" : null;
+
+  return (
+    <div className="flex items-start gap-4 py-4">
+      <div className="w-16 h-20 rounded-lg border bg-gray-50 flex items-center justify-center flex-shrink-0">
+        <FileText className={`w-8 h-8 ${hasFile ? "text-amber-500" : "text-gray-300"}`} />
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="font-semibold text-sm text-gray-900">Sponsor Prospectus PDF</p>
+        <p className="text-xs text-gray-500 mt-0.5">
+          {hasFile ? (
+            <span className="truncate block max-w-sm" title={fileName ?? undefined}>{fileName}</span>
+          ) : (
+            "No file uploaded yet"
+          )}
+        </p>
+        <div className="flex gap-2 mt-2 flex-wrap">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="application/pdf"
+            className="hidden"
+            onChange={handleFileChange}
+          />
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading || saving}
+          >
+            {uploading ? (
+              <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> Uploading…</>
+            ) : (
+              <><Upload className="w-3.5 h-3.5 mr-1.5" /> {hasFile ? "Replace" : "Upload PDF"}</>
+            )}
+          </Button>
+          {hasFile && (
+            <>
+              <Button
+                size="sm"
+                variant="outline"
+                asChild
+              >
+                <a href="/api/sponsor-prospectus" target="_blank" rel="noopener noreferrer">
+                  <ExternalLink className="w-3.5 h-3.5 mr-1.5" /> Preview
+                </a>
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="text-destructive hover:text-destructive"
+                onClick={onClear}
+                disabled={uploading || saving}
+              >
+                <Trash2 className="w-3.5 h-3.5 mr-1.5" /> Remove
+              </Button>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function AdminSettings() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -139,6 +248,27 @@ export default function AdminSettings() {
       await putSettings({ data: { [key]: "" } });
       await queryClient.invalidateQueries({ queryKey: getGetSettingsQueryKey() });
       toast({ title: "Logo removed" });
+    } finally {
+      setSavingKey(null);
+    }
+  };
+
+  const handleSaveProspectus = async (objectPath: string) => {
+    setSavingKey("sponsor_prospectus_url");
+    try {
+      await putSettings({ data: { sponsor_prospectus_url: objectPath } });
+      await queryClient.invalidateQueries({ queryKey: getGetSettingsQueryKey() });
+    } finally {
+      setSavingKey(null);
+    }
+  };
+
+  const handleClearProspectus = async () => {
+    setSavingKey("sponsor_prospectus_url");
+    try {
+      await putSettings({ data: { sponsor_prospectus_url: "" } });
+      await queryClient.invalidateQueries({ queryKey: getGetSettingsQueryKey() });
+      toast({ title: "Sponsor prospectus removed" });
     } finally {
       setSavingKey(null);
     }
@@ -180,6 +310,23 @@ export default function AdminSettings() {
                     onSave={(path) => handleSaveLogo("co_organiser_msptm_logo", path)}
                     onClear={() => handleClearLogo("co_organiser_msptm_logo")}
                     saving={savingKey === "co_organiser_msptm_logo"}
+                  />
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base">Sponsor Prospectus</CardTitle>
+                  <p className="text-sm text-gray-500">
+                    Upload the sponsor prospectus PDF. When set, it is available for download on the marketing site and via the <code className="text-xs bg-gray-100 px-1 py-0.5 rounded">/api/sponsor-prospectus</code> endpoint.
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <ProspectusUploader
+                    currentPath={settings?.sponsor_prospectus_url ?? ""}
+                    onSave={handleSaveProspectus}
+                    onClear={handleClearProspectus}
+                    saving={savingKey === "sponsor_prospectus_url"}
                   />
                 </CardContent>
               </Card>
