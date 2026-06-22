@@ -219,7 +219,7 @@ export default function Home() {
                   {/* Photo */}
                   <div className="flex-shrink-0">
                     <Avatar className="w-24 h-24 rounded-xl">
-                      <AvatarImage src={speaker.photoUrl || ''} alt={speaker.name} className="object-cover object-top" />
+                      <AvatarImage src={resolveImageUrl(speaker.photoUrl) || ''} alt={speaker.name} className="object-cover object-top" />
                       <AvatarFallback className="text-2xl bg-secondary text-white rounded-xl font-bold">
                         {speaker.initials || speaker.name.substring(0, 2)}
                       </AvatarFallback>
