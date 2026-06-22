@@ -64,20 +64,21 @@ export function ImageUploadField({ value, onChange, accept = "image/*", hint }: 
 
     try {
       const token = localStorage.getItem("satbds_token");
+      const contentType = file.type || "application/octet-stream";
       const urlRes = await fetch(`${API}/storage/uploads/request-url`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ name: file.name, size: file.size, contentType: file.type }),
+        body: JSON.stringify({ name: file.name, size: file.size, contentType }),
       });
-      if (!urlRes.ok) throw new Error("Failed to get upload URL");
+      if (!urlRes.ok) throw new Error(`Failed to get upload URL (HTTP ${urlRes.status})`);
       const { uploadURL, objectPath } = await urlRes.json();
 
       const putRes = await fetch(uploadURL, {
         method: "PUT",
         body: file,
-        headers: { "Content-Type": file.type },
+        headers: { "Content-Type": contentType },
       });
-      if (!putRes.ok) throw new Error("Upload to storage failed");
+      if (!putRes.ok) throw new Error(`Upload to storage failed (HTTP ${putRes.status})`);
 
       onChange(objectPath);
       toast({ title: "Image uploaded" });

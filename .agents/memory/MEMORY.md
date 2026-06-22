@@ -1,4 +1,1 @@
-- [Three-portal split pattern](three-portal-split.md) — zero-code-duplication approach: new artifacts alias @/ → symposium/src via fs.strict=false, custom local auth.tsx for cross-portal window.location.href redirects, wouter base="" so existing absolute /portal/* and /admin/* hrefs work unchanged.
-- [Portal Design System](portal-design-system.md) — gold accent = admin portal, teal accent = customer portal; shared CARD_STYLE, Badge, status colour tokens
-- [Framer Motion breaks fixed positioning](framer-motion-fixed-positioning.md) — motion.div y-transform clips fixed modals; fix with createPortal to document.body.
-- [Dynamic categories architecture](dynamic-categories.md) — registration categories are DB-driven (registration_categories table); never use hardcoded CATEGORY_LABELS/FEES maps.
+- [Upload error diagnosis](upload-error-diagnosis.md) — "Failed to get upload URL" is usually a transient restart issue; always curl-test the endpoint before chasing code bugs.
