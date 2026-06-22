@@ -7,7 +7,7 @@ import { CountdownBadge } from "@/components/ui/CountdownBadge";
 import { useGetSpeakers, useGetSponsors, useGetSettings } from "@workspace/api-client-react";
 
 import bannerImg from "@assets/Banner for website.png";
-import logoImg from "@assets/[WEBSITE_LOGO]_SEAT-MSPTM_1782081214245.png";
+import logoImg from "@assets/[WEBSITE LOGO] SEAT-MSPTM.png";
 
 
 export default function Home() {
