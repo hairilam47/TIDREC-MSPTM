@@ -138,7 +138,7 @@ export default function SpeakersPage() {
           Our Speakers
         </h1>
         <p style={{ color: "rgba(255,255,255,0.75)", fontSize: 17, margin: 0 }}>
-          Distinguished experts presenting at SATBDS 2027 — 22–23 March, Kuala Lumpur
+          Distinguished experts presenting at SEAT-MSPTM 2027 — 22–23 March, Kuala Lumpur
         </p>
       </div>
 
@@ -216,7 +216,7 @@ export default function SpeakersPage() {
       {/* Footer */}
       <footer style={{ background: "#0B2744", color: "rgba(255,255,255,0.6)", padding: "40px 24px", textAlign: "center", fontSize: 13 }}>
         <p style={{ margin: 0 }}>
-          &copy; 2027 SATBDS. All rights reserved. |{" "}
+          &copy; 2027 SEAT-MSPTM. All rights reserved. |{" "}
           <a href="mailto:events@msptm.network" style={{ color: "#C89B3C", textDecoration: "none" }}>
             events@msptm.network
           </a>

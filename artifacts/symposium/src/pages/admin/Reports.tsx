@@ -38,7 +38,7 @@ export default function AdminReports() {
     const catHtml = (stats?.registrationsByCategory ?? []).sort((a, b) => b.count - a.count).map((c) => `<tr><td class="cap">${c.category.replace(/_/g, " ")}</td><td>${c.count}</td></tr>`).join("");
     const abstractTotal = stats?.totalAbstracts ?? 0;
     const acceptRate = abstractTotal > 0 ? Math.round(((stats?.acceptedAbstracts ?? 0) / abstractTotal) * 100) : 0;
-    const html = `<!DOCTYPE html><html><head><title>SATBDS 2027 Event Report</title>${pageStyles}<style>
+    const html = `<!DOCTYPE html><html><head><title>SEAT-MSPTM 2027 Event Report</title>${pageStyles}<style>
       *{box-sizing:border-box;margin:0;padding:0}
       body{font-family:var(--app-font-sans);font-size:12px;color:#333;padding:20mm}
       h1{font-size:20px;color:#0B2744;margin-bottom:4px}
@@ -57,7 +57,7 @@ export default function AdminReports() {
       .footer{margin-top:30px;text-align:center;font-size:10px;color:#adb5bd;border-top:1px solid #dee2e6;padding-top:10px}
       @media print{@page{margin:15mm}body{padding:0}}
     </style></head><body>
-      <h1>SATBDS 2027 — Event Report</h1>
+      <h1>SEAT-MSPTM 2027 — Event Report</h1>
       <p class="meta">Generated: ${new Date().toLocaleString("en-GB", { day: "2-digit", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })} · 3rd Southeast Asia Ticks and Tick-borne Diseases Symposium · 22–23 March 2027</p>
       <h2>Summary Statistics</h2>
       <div class="kpi-grid">
@@ -89,7 +89,7 @@ export default function AdminReports() {
         <tr><td>Overdue</td><td>${(registrations ?? []).filter((r) => r.paymentStatus === "overdue").length}</td></tr>
         <tr><td>Waived</td><td>${(registrations ?? []).filter((r) => r.paymentStatus === "waived").length}</td></tr>
       </tbody></table>
-      <div class="footer">SATBDS 2027 · Malaysian Society for Parasitology and Tropical Medicine (MSPTM) · TIDREC@UM</div>
+      <div class="footer">SEAT-MSPTM 2027 · Malaysian Society for Parasitology and Tropical Medicine (MSPTM) · TIDREC@UM</div>
     </body></html>`;
     printWindow.document.write(html);
     printWindow.document.close();
@@ -120,7 +120,7 @@ export default function AdminReports() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "satbds2027-report.csv";
+    a.download = "seat-msptm2027-report.csv";
     a.click();
     URL.revokeObjectURL(url);
   };

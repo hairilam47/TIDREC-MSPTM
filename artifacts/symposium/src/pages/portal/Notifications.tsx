@@ -14,7 +14,7 @@ export default function Notifications() {
   return (
     <PortalLayout title="Notifications">
       <p className="text-sm mb-6" style={{ color: "#6c757d" }}>
-        Official announcements and updates from the SATBDS 2027 organising committee.
+        Official announcements and updates from the SEAT-MSPTM 2027 organising committee.
       </p>
 
       {isLoading ? (

@@ -136,7 +136,7 @@ export default function AdminLayout({ children, title }: { children: React.React
       <aside className={mobileOpen ? "sidebar open" : "sidebar"} aria-label="Admin navigation">
         <div className="sidebar-brand">
           <div className="brand-icon">S</div>
-          <div className="brand-name">SATBDS <small>2027</small></div>
+          <div className="brand-name">SEAT-MSPTM <small>2027</small></div>
         </div>
 
         <nav className="sidebar-nav">
@@ -292,7 +292,7 @@ export default function AdminLayout({ children, title }: { children: React.React
           <div className="page-header">
             <div className="page-header-row">
               <div>
-                <p className="page-pretitle">SATBDS 2027 — Admin Portal</p>
+                <p className="page-pretitle">SEAT-MSPTM 2027 — Admin Portal</p>
                 <h1 className="page-title">{activeLabel}</h1>
               </div>
             </div>
@@ -313,7 +313,7 @@ export default function AdminLayout({ children, title }: { children: React.React
 
         <footer className="gen-footer">
           <span>3rd Southeast Asia Ticks &amp; Tick-borne Diseases Symposium · 22–23 March 2027 · Sunway Putra Hotel, KL</span>
-          <span>SATBDS 2027</span>
+          <span>SEAT-MSPTM 2027</span>
         </footer>
       </main>
     </>

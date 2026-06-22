@@ -267,7 +267,7 @@ export default function PortalLayout({ children, title }: { children: React.Reac
           <div className="page-header">
             <div className="page-header-row">
               <div>
-                <p className="page-pretitle">SATBDS 2027 — Delegate Portal</p>
+                <p className="page-pretitle">SEAT-MSPTM 2027 — Delegate Portal</p>
                 <h1 className="page-title">{activeLabel}</h1>
               </div>
             </div>
@@ -288,7 +288,7 @@ export default function PortalLayout({ children, title }: { children: React.Reac
 
         <footer className="gen-footer">
           <span>3rd Southeast Asia Ticks &amp; Tick-borne Diseases Symposium · 22–23 March 2027 · Sunway Putra Hotel, KL</span>
-          <span>SATBDS 2027</span>
+          <span>SEAT-MSPTM 2027</span>
         </footer>
       </main>
     </>

@@ -148,7 +148,7 @@ export default function Dashboard() {
                   Payment pending{paymentAmount ? ` — MYR ${paymentAmount.toLocaleString("en-MY", { minimumFractionDigits: 2 })} due` : ""}
                 </div>
                 <div style={{ fontSize: 12, color: "var(--text-secondary)", marginTop: 2 }}>
-                  Complete payment to confirm your delegate spot at SATBDS 2027.
+                  Complete payment to confirm your delegate spot at SEAT-MSPTM 2027.
                 </div>
               </div>
             </div>
@@ -284,7 +284,7 @@ export default function Dashboard() {
                     <FileText style={{ width: 22, height: 22, color: "var(--text-disabled)" }} />
                   </div>
                   <p style={{ fontSize: 14, fontWeight: 500, color: "var(--text-secondary)", marginBottom: 4 }}>No abstracts submitted yet</p>
-                  <p style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 16 }}>Share your research at SATBDS 2027</p>
+                  <p style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 16 }}>Share your research at SEAT-MSPTM 2027</p>
                   <Link href="/portal/abstracts/new">
                     <button className="btn btn-primary">Submit First Abstract</button>
                   </Link>

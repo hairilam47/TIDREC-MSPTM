@@ -25,7 +25,7 @@ export default function Home() {
         <div className="w-full h-32 flex items-center pr-6">
           {/* Logo — flush to the left edge, no left padding */}
           <Link href="/" className="flex-shrink-0">
-            <img src={logoImg} alt="SATBDS 2027" className="h-32 w-auto object-contain" />
+            <img src={logoImg} alt="SEAT-MSPTM 2027" className="h-32 w-auto object-contain" />
           </Link>
 
           {/* Nav links + Login + Registration — centred in remaining space */}
@@ -287,7 +287,7 @@ export default function Home() {
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-primary/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
           <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
-            <h2 className="text-3xl md:text-5xl font-bold mb-6">Don't miss {cms?.event_short_name ?? "SATBDS 2027"}</h2>
+            <h2 className="text-3xl md:text-5xl font-bold mb-6">Don't miss {cms?.event_short_name ?? "SEAT-MSPTM 2027"}</h2>
             <p className="text-xl text-secondary-foreground/80 mb-10">
               Join us in {cms?.event_city ?? "Kuala Lumpur"} to share knowledge, foster collaborations, and advance research.
             </p>
@@ -306,7 +306,7 @@ export default function Home() {
       <footer className="bg-secondary text-secondary-foreground py-16 border-t border-sidebar-border">
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-12">
           <div className="col-span-1">
-            <h3 className="text-accent text-xl font-bold mb-3">{cms?.event_short_name ?? "SATBDS 2027"}</h3>
+            <h3 className="text-accent text-xl font-bold mb-3">{cms?.event_short_name ?? "SEAT-MSPTM 2027"}</h3>
             <p className="text-sm text-muted/70 mb-4 leading-relaxed">
               Advancing research, collaboration, and innovation in tick and tick-borne disease studies across Southeast Asia.
             </p>
@@ -351,7 +351,7 @@ export default function Home() {
           </div>
         </div>
         <div className="max-w-7xl mx-auto px-4 mt-12 pt-8 border-t border-white/10 text-center text-xs text-muted/50">
-          <p>&copy; 2027 SATBDS. All rights reserved. | <a href="mailto:events@msptm.network" className="hover:text-accent transition-colors">events@msptm.network</a></p>
+          <p>&copy; 2027 SEAT-MSPTM. All rights reserved. | <a href="mailto:events@msptm.network" className="hover:text-accent transition-colors">events@msptm.network</a></p>
         </div>
       </footer>
     </div>

@@ -17,7 +17,7 @@ const FAQS = [
   },
   {
     q: "Is accommodation provided?",
-    a: "Discounted rates have been arranged at Sunway Putra Hotel. Contact the hotel directly with the group code 'SATBDS2027' for the symposium rate.",
+    a: "Discounted rates have been arranged at Sunway Putra Hotel. Contact the hotel directly with the group code 'SEAT-MSPTM2027' for the symposium rate.",
   },
   {
     q: "Will there be virtual attendance options?",
@@ -42,11 +42,11 @@ export default function Support() {
             </div>
             <div className="text-[13px] font-bold uppercase tracking-wider mb-1" style={{ color: "#6c757d" }}>Email</div>
             <a
-              href="mailto:secretariat@satbds2027.org"
+              href="mailto:secretariat@seat-msptm2027.org"
               className="text-[14px] font-medium no-underline"
               style={{ color: "#0E6E74" }}
             >
-              secretariat@satbds2027.org
+              secretariat@seat-msptm2027.org
             </a>
             <div className="text-[12px] mt-1" style={{ color: "#adb5bd" }}>Usually responds within 2 business days</div>
           </div>

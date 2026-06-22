@@ -42,7 +42,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen flex bg-gray-50">
       <aside className="w-56 bg-[#0B2744] text-white flex flex-col flex-shrink-0 min-h-screen">
         <div className="px-5 py-5 border-b border-white/10">
-          <p className="font-bold text-sm tracking-wide text-white">SATBDS 2027</p>
+          <p className="font-bold text-sm tracking-wide text-white">SEAT-MSPTM 2027</p>
           <p className="text-xs text-white/50 mt-0.5">Admin Portal</p>
         </div>
         <nav className="flex-1 py-3 overflow-y-auto">

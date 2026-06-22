@@ -47,7 +47,7 @@ export default function Login() {
         <div className="text-center mb-8">
           <Link href="/">
             <h1 className="font-sans text-3xl font-bold cursor-pointer" style={{ color: "#C89B3C" }}>
-              SATBDS 2027
+              SEAT-MSPTM 2027
             </h1>
           </Link>
           <p className="mt-1 text-sm" style={{ color: "rgba(255,255,255,0.6)" }}>
@@ -65,7 +65,7 @@ export default function Login() {
             Sign In to Your Account
           </h2>
           <p className="text-[13px] mb-6" style={{ color: "#6c757d" }}>
-            Access your SATBDS 2027 delegate portal
+            Access your SEAT-MSPTM 2027 delegate portal
           </p>
 
           {errors.general && (

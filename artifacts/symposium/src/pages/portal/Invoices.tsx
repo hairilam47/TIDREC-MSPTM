@@ -50,7 +50,7 @@ export default function Invoices() {
               <div>
                 <div className="text-white font-sans text-xl font-bold mb-1">INVOICE</div>
                 <div className="text-[13px]" style={{ color: "rgba(255,255,255,0.7)" }}>
-                  3rd SATBDS 2027 — Symposium Registration
+                  3rd SEAT-MSPTM 2027 — Symposium Registration
                 </div>
               </div>
               <div className="text-right">
@@ -129,7 +129,7 @@ export default function Invoices() {
                         Symposium Registration — {categories.find(c => c.slug === invoice.category)?.label || invoice.category?.replace(/_/g, " ") || invoice.category}
                       </div>
                       <div className="text-[12px] mt-0.5" style={{ color: "#6c757d" }}>
-                        3rd SATBDS 2027 · 22–23 March 2027 · Sunway Putra Hotel, KL
+                        3rd SEAT-MSPTM 2027 · 22–23 March 2027 · Sunway Putra Hotel, KL
                       </div>
                       <div className="text-[12px] mt-0.5" style={{ color: "#6c757d" }}>
                         Reg: {invoice.registrationCode}
@@ -168,7 +168,7 @@ export default function Invoices() {
             {/* Footer */}
             <div className="px-8 py-4 flex items-center justify-between" style={{ background: "#f8f9fa", borderTop: "1px solid #e9ecef" }}>
               <div className="text-[12px]" style={{ color: "#adb5bd" }}>
-                Organised by MSPTM & TIDREC@UM · satbds2027.org
+                Organised by MSPTM & TIDREC@UM · seat-msptm2027.org
               </div>
               <button
                 className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[13px] font-medium"

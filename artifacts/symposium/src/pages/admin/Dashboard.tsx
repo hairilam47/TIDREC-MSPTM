@@ -218,7 +218,7 @@ export default function AdminDashboard() {
     {
       label: "Accepted Speakers", icon: Mic, iconClass: "primary",
       value: acceptedSpeakers,
-      sub: "Confirmed for SATBDS 2027",
+      sub: "Confirmed for SEAT-MSPTM 2027",
       trend: null,
       spark: [8, 12, 8, 16, 10, 18, 22],
     },

@@ -25,11 +25,11 @@ async function seed() {
 
   await db.insert(usersTable).values([
     {
-      email: "admin@satbds2027.org",
+      email: "admin@seat-msptm2027.org",
       passwordHash: adminHash,
       firstName: "Admin",
       lastName: "User",
-      institution: "SATBDS 2027",
+      institution: "SEAT-MSPTM 2027",
       country: "Malaysia",
       role: "admin",
     },
@@ -96,7 +96,7 @@ async function seed() {
       endTime: "09:15",
       room: "Grand Ballroom A",
       sessionType: "opening",
-      description: "Official opening of the 3rd SATBDS Symposium. Welcome addresses from MSPTM President and TIDREC@UM Director.",
+      description: "Official opening of the 3rd SEAT-MSPTM Symposium. Welcome addresses from MSPTM President and TIDREC@UM Director.",
     },
     {
       title: "Keynote: Emerging Tick-borne Diseases in Southeast Asia",
@@ -191,7 +191,7 @@ async function seed() {
       endTime: "17:15",
       room: "Grand Ballroom A",
       sessionType: "closing",
-      description: "Best oral and poster presentation awards, closing remarks, and announcement of the 4th SATBDS host country.",
+      description: "Best oral and poster presentation awards, closing remarks, and announcement of the 4th SEAT-MSPTM host country.",
     },
   ]);
 
@@ -235,12 +235,12 @@ async function seed() {
   await db.insert(announcementsTable).values([
     {
       title: "Early Bird Registration Now Open",
-      body: "Early bird registration for SATBDS 2027 is now open until 31 December 2026. Take advantage of discounted rates for healthcare professionals, researchers, and students.",
+      body: "Early bird registration for SEAT-MSPTM 2027 is now open until 31 December 2026. Take advantage of discounted rates for healthcare professionals, researchers, and students.",
       important: true,
     },
     {
       title: "Abstract Submission Deadline: 31 January 2027",
-      body: "Abstracts for oral and poster presentations are due by 31 January 2027. Submissions must be between 250–400 words and follow the standard SATBDS format. Notifications will be sent by 28 February 2027.",
+      body: "Abstracts for oral and poster presentations are due by 31 January 2027. Submissions must be between 250–400 words and follow the standard SEAT-MSPTM format. Notifications will be sent by 28 February 2027.",
       important: true,
     },
     {

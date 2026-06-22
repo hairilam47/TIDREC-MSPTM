@@ -64,7 +64,7 @@ export default function Registration() {
               Complete Registration
             </h2>
             <p className="text-[13px] mb-6" style={{ color: "#6c757d" }}>
-              Select your delegate category to register for SATBDS 2027.
+              Select your delegate category to register for SEAT-MSPTM 2027.
             </p>
 
             <div className="space-y-2 mb-6">
@@ -230,7 +230,7 @@ export default function Registration() {
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[
-              { label: "Event", value: "3rd SATBDS 2027" },
+              { label: "Event", value: "3rd SEAT-MSPTM 2027" },
               { label: "Date", value: "22–23 March 2027" },
               { label: "Venue", value: "Sunway Putra Hotel, Kuala Lumpur" },
             ].map(({ label, value }) => (

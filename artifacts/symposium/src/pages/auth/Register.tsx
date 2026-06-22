@@ -124,7 +124,7 @@ export default function Register() {
           onSuccess: () => {
             toast({
               title: "Registration complete!",
-              description: "Welcome to SATBDS 2027. Your delegate portal is ready.",
+              description: "Welcome to SEAT-MSPTM 2027. Your delegate portal is ready.",
             });
             window.location.href = "/portal/";
           },
@@ -156,7 +156,7 @@ export default function Register() {
         {/* Branding */}
         <div className="text-center mb-8">
           <Link href="/">
-            <h1 className="font-sans text-3xl font-bold text-accent cursor-pointer">SATBDS 2027</h1>
+            <h1 className="font-sans text-3xl font-bold text-accent cursor-pointer">SEAT-MSPTM 2027</h1>
           </Link>
           <p className="text-white/60 mt-1 text-sm">22–23 March 2027 · Sunway Putra Hotel, Kuala Lumpur</p>
         </div>

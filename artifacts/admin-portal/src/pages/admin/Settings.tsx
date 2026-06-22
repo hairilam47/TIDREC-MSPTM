@@ -238,7 +238,7 @@ const DATE_FIELDS = [
 
 const EVENT_DETAIL_FIELDS = [
   { key: "event_name", label: "Event Name", placeholder: "e.g. 3rd Southeast Asia Ticks and Tick-borne Diseases Symposium", multiline: false },
-  { key: "event_short_name", label: "Short Name / Acronym", placeholder: "e.g. SATBDS 2027", multiline: false },
+  { key: "event_short_name", label: "Short Name / Acronym", placeholder: "e.g. SEAT-MSPTM 2027", multiline: false },
   { key: "event_dates", label: "Event Dates (display)", placeholder: "e.g. 22–23 March 2027", multiline: false },
   { key: "event_venue", label: "Venue", placeholder: "e.g. Sunway Putra Hotel", multiline: false },
   { key: "event_city", label: "City / Country", placeholder: "e.g. Kuala Lumpur, Malaysia", multiline: false },

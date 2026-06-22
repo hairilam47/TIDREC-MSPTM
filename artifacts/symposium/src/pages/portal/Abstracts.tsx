@@ -19,7 +19,7 @@ export default function Abstracts() {
     <PortalLayout title="My Abstracts">
       <div className="flex items-center justify-between mb-6">
         <p className="text-sm" style={{ color: "#6c757d" }}>
-          Submit and track your abstract submissions for SATBDS 2027.
+          Submit and track your abstract submissions for SEAT-MSPTM 2027.
         </p>
         <Link href="/portal/abstracts/new">
           <button

@@ -88,7 +88,7 @@ router.get("/sponsor-prospectus", async (_req, res) => {
     }
     const objectFile = await objectStorageService.getObjectEntityFile(url);
     const response = await objectStorageService.downloadObject(objectFile);
-    res.setHeader("Content-Disposition", 'attachment; filename="SATBDS2027-Sponsor-Prospectus.pdf"');
+    res.setHeader("Content-Disposition", 'attachment; filename="SEAT-MSPTM2027-Sponsor-Prospectus.pdf"');
     res.status(response.status);
     response.headers.forEach((value, key) => res.setHeader(key, value));
     if (response.body) {

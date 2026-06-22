@@ -9,7 +9,7 @@ export default function Speakers() {
   return (
     <PortalLayout title="Invited Speakers">
       <p className="text-sm mb-6" style={{ color: "#6c757d" }}>
-        Distinguished experts presenting at SATBDS 2027.
+        Distinguished experts presenting at SEAT-MSPTM 2027.
       </p>
 
       {isLoading ? (
