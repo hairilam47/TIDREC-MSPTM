@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import {
   useGetSettings,
   usePutSettings,
@@ -8,9 +8,11 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { AdminLayout } from "@/components/AdminLayout";
-import { Upload, Loader2, ImageIcon, Trash2, FileText, ExternalLink } from "lucide-react";
+import { Upload, Loader2, ImageIcon, Trash2, FileText, ExternalLink, CalendarDays, Save } from "lucide-react";
 
 interface LogoUploaderProps {
   slug: "tidrec" | "msptm";
@@ -225,12 +227,45 @@ function ProspectusUploader({ currentPath, onSave, onClear, saving }: Prospectus
   );
 }
 
+const DATE_FIELDS = [
+  { key: "date_registration_opens", label: "Registration Opens" },
+  { key: "date_early_bird_closes", label: "Early Bird Registration Closes" },
+  { key: "date_abstract_submission_closes", label: "Abstract Submission Closes" },
+  { key: "date_regular_submission_closes", label: "Regular Submission Closes" },
+  { key: "date_conference", label: "Conference Dates" },
+] as const;
+
 export default function AdminSettings() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const { data: settings, isLoading } = useGetSettings();
   const { mutateAsync: putSettings } = usePutSettings();
   const [savingKey, setSavingKey] = useState<string | null>(null);
+  const [dateValues, setDateValues] = useState<Record<string, string>>({});
+  const [savingDates, setSavingDates] = useState(false);
+
+  useEffect(() => {
+    if (settings) {
+      const vals: Record<string, string> = {};
+      for (const { key } of DATE_FIELDS) {
+        vals[key] = (settings as Record<string, string>)[key] ?? "";
+      }
+      setDateValues(vals);
+    }
+  }, [settings]);
+
+  const handleSaveDates = async () => {
+    setSavingDates(true);
+    try {
+      await putSettings({ data: dateValues });
+      await queryClient.invalidateQueries({ queryKey: getGetSettingsQueryKey() });
+      toast({ title: "Important dates saved", description: "The marketing site will now show the updated dates." });
+    } catch {
+      toast({ title: "Save failed", description: "Something went wrong. Please try again.", variant: "destructive" });
+    } finally {
+      setSavingDates(false);
+    }
+  };
 
   const handleSaveLogo = async (key: string, objectPath: string) => {
     setSavingKey(key);
@@ -287,6 +322,45 @@ export default function AdminSettings() {
             </div>
           ) : (
             <div className="space-y-6">
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <CalendarDays className="w-4 h-4 text-amber-500" />
+                    Important Dates
+                  </CardTitle>
+                  <p className="text-sm text-gray-500">
+                    Set the key dates shown on the marketing site. Use any readable format, e.g. <code className="text-xs bg-gray-100 px-1 py-0.5 rounded">15 Jan 2027</code> or <code className="text-xs bg-gray-100 px-1 py-0.5 rounded">22–23 Mar 2027</code>.
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {DATE_FIELDS.map(({ key, label }) => (
+                      <div key={key} className="grid grid-cols-[1fr_auto] gap-3 items-end">
+                        <div className="space-y-1.5">
+                          <Label htmlFor={key} className="text-sm font-medium text-gray-700">{label}</Label>
+                          <Input
+                            id={key}
+                            value={dateValues[key] ?? ""}
+                            onChange={(e) => setDateValues(prev => ({ ...prev, [key]: e.target.value }))}
+                            placeholder={`e.g. 10 Aug 2026`}
+                            disabled={savingDates}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                    <div className="pt-2 flex justify-end">
+                      <Button onClick={handleSaveDates} disabled={savingDates}>
+                        {savingDates ? (
+                          <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Saving…</>
+                        ) : (
+                          <><Save className="w-4 h-4 mr-2" /> Save Dates</>
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
               <Card>
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base">Co-organiser Logos</CardTitle>
