@@ -14,14 +14,6 @@ function getInitials(name: string): string {
     .slice(0, 2);
 }
 
-function resolveMediaUrl(path: string | null): string | null {
-  if (!path) return null;
-  if (path.startsWith("/objects/")) {
-    return `/api/media/objects/${path.slice("/objects/".length)}`;
-  }
-  return path;
-}
-
 function formatSpeaker(s: typeof speakersTable.$inferSelect) {
   return {
     id: s.id,
@@ -30,7 +22,7 @@ function formatSpeaker(s: typeof speakersTable.$inferSelect) {
     institution: s.institution,
     topic: s.topic,
     bio: s.bio,
-    photoUrl: resolveMediaUrl(s.photoUrl),
+    photoUrl: s.photoUrl,
     initials: s.initials,
     speakerTier: s.speakerTier,
   };

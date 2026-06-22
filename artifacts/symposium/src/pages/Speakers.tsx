@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { CountdownBadge } from "@/components/ui/CountdownBadge";
 import { useGetSpeakers, useGetSettings } from "@workspace/api-client-react";
+import { resolveImageUrl } from "@/lib/resolveImageUrl";
 import type { Speaker } from "@workspace/api-client-react";
 import { Loader2 } from "lucide-react";
 
@@ -44,7 +45,7 @@ function SpeakerCard({ speaker }: { speaker: Speaker }) {
       >
         {speaker.photoUrl ? (
           <img
-            src={speaker.photoUrl}
+            src={resolveImageUrl(speaker.photoUrl) ?? ""}
             alt={speaker.name}
             style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }}
           />

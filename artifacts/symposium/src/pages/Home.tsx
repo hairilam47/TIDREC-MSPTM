@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Link } from "wouter";
 import { MapPin, ChevronRight, CalendarDays, ExternalLink } from "lucide-react";
+import { resolveImageUrl } from "@/lib/resolveImageUrl";
 import { CountdownBadge } from "@/components/ui/CountdownBadge";
 import { useGetSpeakers, useGetSponsors, useGetSettings } from "@workspace/api-client-react";
 
@@ -268,7 +269,7 @@ export default function Home() {
                     {tierSponsors.map(sponsor => (
                       <div key={sponsor.id} className={`grayscale hover:grayscale-0 transition-all opacity-70 hover:opacity-100 ${tier === 'platinum' ? 'w-48' : tier === 'gold' ? 'w-40' : 'w-32'}`}>
                         {sponsor.logoUrl ? (
-                          <img src={sponsor.logoUrl} alt={sponsor.name} className="w-full h-auto object-contain" />
+                          <img src={resolveImageUrl(sponsor.logoUrl) ?? ""} alt={sponsor.name} className="w-full h-auto object-contain" />
                         ) : (
                           <div className="font-bold text-xl text-secondary">{sponsor.name}</div>
                         )}

@@ -6,8 +6,8 @@ import {
 } from "@workspace/api-zod";
 import { ObjectStorageService, ObjectNotFoundError } from "../lib/objectStorage";
 import { requireAuth, type AuthRequest } from "../lib/auth";
-import { db, abstractsTable } from "@workspace/db";
-import { eq } from "drizzle-orm";
+import { db, abstractsTable, speakersTable, sponsorsTable } from "@workspace/db";
+import { eq, or } from "drizzle-orm";
 
 const router: IRouter = Router();
 const objectStorageService = new ObjectStorageService();
@@ -89,6 +89,25 @@ router.get("/media/objects/*path", async (req: AuthRequest, res: Response) => {
     const raw = req.params.path;
     const wildcardPath = Array.isArray(raw) ? raw.join("/") : raw;
     const objectPath = `/objects/${wildcardPath}`;
+
+    // ACL: only serve paths explicitly referenced as speaker photos or sponsor logos.
+    // This prevents exposing private uploads (e.g. abstract PDFs) via this public route.
+    const [speakerRow] = await db
+      .select({ id: speakersTable.id })
+      .from(speakersTable)
+      .where(eq(speakersTable.photoUrl, objectPath))
+      .limit(1);
+
+    const [sponsorRow] = await db
+      .select({ id: sponsorsTable.id })
+      .from(sponsorsTable)
+      .where(eq(sponsorsTable.logoUrl, objectPath))
+      .limit(1);
+
+    if (!speakerRow && !sponsorRow) {
+      res.status(403).json({ error: "Forbidden" });
+      return;
+    }
 
     const objectFile = await objectStorageService.getObjectEntityFile(objectPath);
     const response = await objectStorageService.downloadObject(objectFile);
