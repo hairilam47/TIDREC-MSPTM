@@ -5,6 +5,7 @@ import { Plus, Pencil, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { SpeakerInput } from "@workspace/api-client-react";
 import { FormField, ModalShell, ConfirmDialog, INPUT_BASE, TEXTAREA_BASE, inputBorder } from "@/components/ui/form-primitives";
+import { ImageUploadField } from "@/components/ui/ImageUploadField";
 
 const BLANK: SpeakerInput = { name: "", country: "", institution: "", topic: "", bio: "", photoUrl: "", speakerTier: null };
 
@@ -231,13 +232,11 @@ export default function AdminSpeakers() {
             />
           </FormField>
 
-          <FormField label="Photo URL" hint="Optional — direct link to a portrait image">
-            <input
+          <FormField label="Speaker Photo" hint="Optional — PNG, JPG, or WebP portrait image">
+            <ImageUploadField
               value={form.photoUrl ?? ""}
-              onChange={(e) => set("photoUrl", e.target.value)}
-              placeholder="https://example.com/photo.jpg"
-              className={INPUT_BASE}
-              style={inputBorder()}
+              onChange={(path) => set("photoUrl", path)}
+              accept="image/png,image/jpeg,image/webp"
             />
           </FormField>
         </ModalShell>

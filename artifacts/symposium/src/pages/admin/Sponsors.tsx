@@ -5,6 +5,7 @@ import { Plus, Pencil, Trash2, ExternalLink } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { SponsorInput, SponsorInputTier } from "@workspace/api-client-react";
 import { FormField, ModalShell, ConfirmDialog, INPUT_BASE, SELECT_BASE, inputBorder } from "@/components/ui/form-primitives";
+import { ImageUploadField } from "@/components/ui/ImageUploadField";
 
 const TIER_STYLES: Record<string, { bg: string; color: string; borderColor: string }> = {
   platinum: { bg: "#f1f3f5", color: "#495057", borderColor: "#dee2e6" },
@@ -208,13 +209,11 @@ export default function AdminSponsors() {
             </select>
           </FormField>
 
-          <FormField label="Logo URL" hint="Optional — direct link to a PNG or SVG logo">
-            <input
+          <FormField label="Sponsor Logo" hint="Optional — PNG, SVG, JPG, or WebP">
+            <ImageUploadField
               value={form.logoUrl ?? ""}
-              onChange={(e) => set("logoUrl", e.target.value)}
-              placeholder="https://example.com/logo.png"
-              className={INPUT_BASE}
-              style={inputBorder()}
+              onChange={(path) => set("logoUrl", path)}
+              accept="image/png,image/svg+xml,image/jpeg,image/webp"
             />
           </FormField>
 
