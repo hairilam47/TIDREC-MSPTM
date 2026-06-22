@@ -144,7 +144,15 @@ export default function Home() {
             <div className="flex flex-wrap items-stretch justify-center divide-y md:divide-y-0 md:divide-x divide-border">
               {/* TIDREC@UM */}
               <div className="flex flex-col items-center justify-center gap-1 px-10 py-4 text-center">
-                <span className="text-lg font-bold text-secondary tracking-tight">TIDREC@UM</span>
+                {cms?.co_organiser_tidrec_logo ? (
+                  <img
+                    src="/api/co-organiser-logo/tidrec"
+                    alt="TIDREC@UM"
+                    className="h-14 max-w-[140px] object-contain mb-1"
+                  />
+                ) : (
+                  <span className="text-lg font-bold text-secondary tracking-tight">TIDREC@UM</span>
+                )}
                 <span className="text-xs text-muted-foreground">Tick-borne Diseases Research &amp; Education Centre</span>
                 <span className="text-xs font-medium text-primary mt-1">Co-Organiser</span>
                 <a href="https://tidrec.um.edu.my" target="_blank" rel="noopener noreferrer" className="text-xs text-accent hover:underline flex items-center gap-1 mt-1">
@@ -153,7 +161,15 @@ export default function Home() {
               </div>
               {/* MSPTM */}
               <div className="flex flex-col items-center justify-center gap-1 px-10 py-4 text-center">
-                <span className="text-lg font-bold text-secondary tracking-tight">MSPTM</span>
+                {cms?.co_organiser_msptm_logo ? (
+                  <img
+                    src="/api/co-organiser-logo/msptm"
+                    alt="MSPTM"
+                    className="h-14 max-w-[140px] object-contain mb-1"
+                  />
+                ) : (
+                  <span className="text-lg font-bold text-secondary tracking-tight">MSPTM</span>
+                )}
                 <span className="text-xs text-muted-foreground">Malaysian Society of Parasitology &amp; Tropical Medicine</span>
                 <span className="text-xs font-medium text-primary mt-1">Co-Organiser</span>
                 <a href="https://msptm.org" target="_blank" rel="noopener noreferrer" className="text-xs text-accent hover:underline flex items-center gap-1 mt-1">
