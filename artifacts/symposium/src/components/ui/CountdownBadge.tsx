@@ -38,7 +38,7 @@ export function CountdownBadge({ variant = "light" }: CountdownBadgeProps) {
   ];
 
   return (
-    <div className="inline-flex flex-col min-w-[220px] rounded-md border border-[#0B2744] overflow-hidden font-sans">
+    <div className="inline-flex flex-col min-w-[220px] rounded-md border border-[#0B2744] overflow-hidden font-sans border-t-[color:var(--color-gray-50)] border-r-[color:var(--color-gray-50)] border-b-[color:var(--color-gray-50)] border-l-[color:var(--color-gray-50)]">
       {/* Title row */}
       <div className="tracking-[0.12em] uppercase text-center px-2 py-1 whitespace-nowrap text-[#0b2744] bg-[color:var(--color-gray-50)] text-[11px] font-extrabold">
         Countdown to SEAT‑MSPTM 2027
@@ -54,7 +54,7 @@ export function CountdownBadge({ variant = "light" }: CountdownBadgeProps) {
               <span className="text-[26px] font-extrabold leading-none tabular-nums tracking-[-0.02em] text-[#c8993ce6]">
                 {value}
               </span>
-              <span className="text-[8px] font-bold tracking-[0.14em] uppercase text-[#0b2744]">
+              <span className="tracking-[0.14em] uppercase text-[#0b2744] text-[9px] font-extrabold">
                 {label}
               </span>
             </div>
