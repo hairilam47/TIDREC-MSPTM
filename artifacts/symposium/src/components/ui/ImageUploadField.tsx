@@ -2,8 +2,7 @@ import React from "react";
 import { Upload, X, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-const BASE_URL = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
-const API = `${BASE_URL}/api`;
+const API = "/api";
 
 interface ImageUploadFieldProps {
   value: string;
