@@ -57,7 +57,7 @@ export default function Home() {
           <div className="relative w-full">
             <img
               src={bannerImg}
-              alt="3rd Southeast Asia Ticks and Tick-borne Diseases Symposium — 22–23 March 2027, Sunway Putra Hotel, Kuala Lumpur"
+              alt={`${cms?.event_name ?? "3rd Southeast Asia Ticks and Tick-borne Diseases Symposium"} — ${cms?.event_dates ?? "22–23 March 2027"}, ${cms?.event_venue ?? "Sunway Putra Hotel"}, ${cms?.event_city ?? "Kuala Lumpur, Malaysia"}`}
               className="w-full h-auto block"
             />
           </div>
@@ -69,13 +69,15 @@ export default function Home() {
 
             {/* Left — text */}
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-secondary mb-6">About SEAT-MSPTM 2027</h2>
+              <h2 className="text-3xl md:text-4xl font-bold text-secondary mb-6">About {cms?.event_short_name ?? "SATBDS 2027"}</h2>
               <p className="text-base text-muted-foreground mb-5 leading-relaxed">
-                The 3rd Southeast Asia Ticks and Tick-borne Diseases Symposium (SEA TTBD 2027), held in conjunction with the 63rd Annual Scientific Conference of the Malaysian Society of Parasitology and Tropical Medicine (MSPTM), brings together researchers, veterinarians, healthcare professionals, and students to discuss the latest advances in tick and tick-borne disease research.
+                {cms?.about_text ?? "The SATBDS symposium brings together researchers, clinicians, veterinarians, and public health professionals from across Southeast Asia to share the latest advances in tick biology and tick-borne disease research."}
               </p>
-              <p className="text-base text-muted-foreground mb-8 leading-relaxed">
-                The symposium provides a platform for sharing knowledge on tick biology, ecology, pathogen discovery, diagnostics, epidemiology, surveillance, and control strategies, while fostering regional collaboration and advancing research on tick-borne diseases in Southeast Asia.
-              </p>
+              {cms?.hero_subtitle && (
+                <p className="text-base text-muted-foreground mb-8 leading-relaxed">
+                  {cms.hero_subtitle}
+                </p>
+              )}
               <Button asChild variant="outline" className="border-secondary text-secondary hover:bg-secondary hover:text-white">
                 <Link href="/register">Read More</Link>
               </Button>
@@ -176,10 +178,10 @@ export default function Home() {
                   Visit Website <ExternalLink className="w-3 h-3" />
                 </a>
               </div>
-              {/* Sunway Putra Hotel */}
+              {/* Venue */}
               <div className="flex flex-col items-center justify-center gap-1 px-10 py-4 text-center">
-                <span className="text-lg font-bold text-secondary tracking-tight">Sunway Putra Hotel</span>
-                <span className="text-xs text-muted-foreground">Kuala Lumpur, Malaysia</span>
+                <span className="text-lg font-bold text-secondary tracking-tight">{cms?.event_venue ?? "Sunway Putra Hotel"}</span>
+                <span className="text-xs text-muted-foreground">{cms?.event_city ?? "Kuala Lumpur, Malaysia"}</span>
                 <span className="text-xs font-medium text-primary mt-1">Venue</span>
                 <a href="https://www.sunwayhotels.com/sunway-putra" target="_blank" rel="noopener noreferrer" className="text-xs text-accent hover:underline flex items-center gap-1 mt-1">
                   Visit Website <ExternalLink className="w-3 h-3" />
@@ -189,9 +191,9 @@ export default function Home() {
               <div className="flex flex-col items-center justify-center gap-1 px-10 py-4 text-center">
                 <MapPin className="w-7 h-7 text-accent mb-1" />
                 <span className="text-sm font-semibold text-secondary">Venue Location</span>
-                <span className="text-xs text-muted-foreground">Sunway Putra Hotel<br />Kuala Lumpur</span>
+                <span className="text-xs text-muted-foreground">{cms?.event_venue ?? "Sunway Putra Hotel"}<br />{cms?.event_city ?? "Kuala Lumpur"}</span>
                 <a
-                  href="https://maps.google.com/?q=Sunway+Putra+Hotel+Kuala+Lumpur"
+                  href={`https://maps.google.com/?q=${encodeURIComponent(`${cms?.event_venue ?? "Sunway Putra Hotel"} ${cms?.event_city ?? "Kuala Lumpur"}`)}`}
                   target="_blank" rel="noopener noreferrer"
                   className="text-xs text-accent hover:underline flex items-center gap-1 mt-1"
                 >
@@ -284,9 +286,9 @@ export default function Home() {
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-primary/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
           <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
-            <h2 className="text-3xl md:text-5xl font-bold mb-6">Don't miss SATBDS 2027</h2>
+            <h2 className="text-3xl md:text-5xl font-bold mb-6">Don't miss {cms?.event_short_name ?? "SATBDS 2027"}</h2>
             <p className="text-xl text-secondary-foreground/80 mb-10">
-              Join us in Kuala Lumpur to share knowledge, foster collaborations, and advance research.
+              Join us in {cms?.event_city ?? "Kuala Lumpur"} to share knowledge, foster collaborations, and advance research.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 h-14 px-8 text-lg">
@@ -303,11 +305,11 @@ export default function Home() {
       <footer className="bg-secondary text-secondary-foreground py-16 border-t border-sidebar-border">
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-12">
           <div className="col-span-1">
-            <h3 className="text-accent text-xl font-bold mb-3">SEAT-MSPTM 2027</h3>
+            <h3 className="text-accent text-xl font-bold mb-3">{cms?.event_short_name ?? "SATBDS 2027"}</h3>
             <p className="text-sm text-muted/70 mb-4 leading-relaxed">
               Advancing research, collaboration, and innovation in tick and tick-borne disease studies across Southeast Asia.
             </p>
-            <p className="text-xs text-muted/50">22–23 March 2027 · Kuala Lumpur</p>
+            <p className="text-xs text-muted/50">{cms?.event_dates ?? "22–23 March 2027"} · {cms?.event_city ?? "Kuala Lumpur"}</p>
           </div>
           <div>
             <h4 className="font-bold text-white mb-5 uppercase text-xs tracking-wider">Navigation</h4>

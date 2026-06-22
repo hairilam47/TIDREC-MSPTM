@@ -10,9 +10,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { AdminLayout } from "@/components/AdminLayout";
-import { Upload, Loader2, ImageIcon, Trash2, FileText, ExternalLink, CalendarDays, Save } from "lucide-react";
+import { Upload, Loader2, ImageIcon, Trash2, FileText, ExternalLink, CalendarDays, Save, Info } from "lucide-react";
 
 interface LogoUploaderProps {
   slug: "tidrec" | "msptm";
@@ -235,6 +236,17 @@ const DATE_FIELDS = [
   { key: "date_conference", label: "Conference Dates" },
 ] as const;
 
+const EVENT_DETAIL_FIELDS = [
+  { key: "event_name", label: "Event Name", placeholder: "e.g. 3rd Southeast Asia Ticks and Tick-borne Diseases Symposium", multiline: false },
+  { key: "event_short_name", label: "Short Name / Acronym", placeholder: "e.g. SATBDS 2027", multiline: false },
+  { key: "event_dates", label: "Event Dates (display)", placeholder: "e.g. 22–23 March 2027", multiline: false },
+  { key: "event_venue", label: "Venue", placeholder: "e.g. Sunway Putra Hotel", multiline: false },
+  { key: "event_city", label: "City / Country", placeholder: "e.g. Kuala Lumpur, Malaysia", multiline: false },
+  { key: "hero_subtitle", label: "Hero Subtitle", placeholder: "One-sentence tagline shown on the home page hero", multiline: true },
+  { key: "about_text", label: "About Text", placeholder: "Paragraph shown in the About section on the home page", multiline: true },
+  { key: "registration_target", label: "Registration Target", placeholder: "e.g. 300", multiline: false },
+] as const;
+
 export default function AdminSettings() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -243,6 +255,8 @@ export default function AdminSettings() {
   const [savingKey, setSavingKey] = useState<string | null>(null);
   const [dateValues, setDateValues] = useState<Record<string, string>>({});
   const [savingDates, setSavingDates] = useState(false);
+  const [eventDetailValues, setEventDetailValues] = useState<Record<string, string>>({});
+  const [savingEventDetails, setSavingEventDetails] = useState(false);
 
   useEffect(() => {
     if (settings) {
@@ -251,8 +265,27 @@ export default function AdminSettings() {
         vals[key] = (settings as Record<string, string>)[key] ?? "";
       }
       setDateValues(vals);
+
+      const edVals: Record<string, string> = {};
+      for (const { key } of EVENT_DETAIL_FIELDS) {
+        edVals[key] = (settings as Record<string, string>)[key] ?? "";
+      }
+      setEventDetailValues(edVals);
     }
   }, [settings]);
+
+  const handleSaveEventDetails = async () => {
+    setSavingEventDetails(true);
+    try {
+      await putSettings({ data: eventDetailValues });
+      await queryClient.invalidateQueries({ queryKey: getGetSettingsQueryKey() });
+      toast({ title: "Event details saved", description: "The marketing site will now show the updated content." });
+    } catch {
+      toast({ title: "Save failed", description: "Something went wrong. Please try again.", variant: "destructive" });
+    } finally {
+      setSavingEventDetails(false);
+    }
+  };
 
   const handleSaveDates = async () => {
     setSavingDates(true);
@@ -322,6 +355,55 @@ export default function AdminSettings() {
             </div>
           ) : (
             <div className="space-y-6">
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Info className="w-4 h-4 text-amber-500" />
+                    Event Details
+                  </CardTitle>
+                  <p className="text-sm text-gray-500">
+                    Core content shown on the marketing site — name, venue, tagline, and about text.
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {EVENT_DETAIL_FIELDS.map(({ key, label, placeholder, multiline }) => (
+                      <div key={key} className="space-y-1.5">
+                        <Label htmlFor={key} className="text-sm font-medium text-gray-700">{label}</Label>
+                        {multiline ? (
+                          <Textarea
+                            id={key}
+                            value={eventDetailValues[key] ?? ""}
+                            onChange={(e) => setEventDetailValues(prev => ({ ...prev, [key]: e.target.value }))}
+                            placeholder={placeholder}
+                            disabled={savingEventDetails}
+                            rows={key === "about_text" ? 4 : 2}
+                            className="resize-y"
+                          />
+                        ) : (
+                          <Input
+                            id={key}
+                            value={eventDetailValues[key] ?? ""}
+                            onChange={(e) => setEventDetailValues(prev => ({ ...prev, [key]: e.target.value }))}
+                            placeholder={placeholder}
+                            disabled={savingEventDetails}
+                          />
+                        )}
+                      </div>
+                    ))}
+                    <div className="pt-2 flex justify-end">
+                      <Button onClick={handleSaveEventDetails} disabled={savingEventDetails}>
+                        {savingEventDetails ? (
+                          <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Saving…</>
+                        ) : (
+                          <><Save className="w-4 h-4 mr-2" /> Save Event Details</>
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
               <Card>
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base flex items-center gap-2">
