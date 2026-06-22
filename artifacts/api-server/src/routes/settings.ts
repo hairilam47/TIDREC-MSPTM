@@ -9,12 +9,12 @@ const router = Router();
 
 const DEFAULT_SETTINGS: Record<string, string> = {
   event_name: "3rd Southeast Asia Ticks and Tick-borne Diseases Symposium",
-  event_short_name: "SATBDS 2027",
+  event_short_name: "SEAT-MSPTM 2027",
   event_dates: "22–23 March 2027",
   event_venue: "Sunway Putra Hotel",
   event_city: "Kuala Lumpur, Malaysia",
-  hero_subtitle: "Advancing knowledge on tick biology, tick-borne pathogens, and integrated management strategies across Southeast Asia.",
-  about_text: "The SATBDS symposium brings together researchers, clinicians, veterinarians, and public health professionals from across Southeast Asia to share the latest advances in tick biology and tick-borne disease research.",
+  hero_subtitle: "The symposium provides a platform for sharing knowledge on tick biology, ecology, pathogen discovery, diagnostics, epidemiology, surveillance, and control strategies, while fostering regional collaboration and promoting a One Health approach to addressing tick-borne diseases in Southeast Asia.",
+  about_text: "The 3rd Southeast Asia Ticks and Tick-borne Diseases Symposium (SEA TTBD 2027), held in conjunction with the 63rd Annual Scientific Conference of the Malaysian Society of Parasitology and Tropical Medicine (MSPTM), brings together researchers, veterinarians, healthcare professionals, and students to discuss the latest advances in tick and tick-borne disease research.",
   registration_target: "300",
   organiser_primary: "MSPTM",
   organiser_secondary: "TIDREC@UM",
