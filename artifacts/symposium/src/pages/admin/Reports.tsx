@@ -7,10 +7,10 @@ function Bar({ value, max, color }: { value: number; max: number; color: string 
   const pct = max > 0 ? Math.round((value / max) * 100) : 0;
   return (
     <div className="flex items-center gap-3">
-      <div className="flex-1 rounded-full overflow-hidden" style={{ height: 8, background: "#e9ecef" }}>
+      <div className="flex-1 rounded-full overflow-hidden" style={{ height: 8, background: "var(--border-color)" }}>
         <div className="h-full rounded-full" style={{ width: `${pct}%`, background: color, transition: "width 0.4s ease" }} />
       </div>
-      <span className="text-[12px] font-semibold w-10 text-right" style={{ color: "#212529" }}>{value}</span>
+      <span className="text-[12px] font-semibold w-10 text-right" style={{ color: "var(--text)" }}>{value}</span>
     </div>
   );
 }
@@ -27,8 +27,6 @@ export default function AdminReports() {
   const exportPdf = () => {
     const printWindow = window.open("", "_blank");
     if (!printWindow) return;
-    // Inject compiled page styles so shared font tokens (--app-font-sans etc.) are available.
-    // Copies inline <style> elements (dev) and resolves <link> hrefs to absolute URLs (prod).
     const inlineStyles = Array.from(document.querySelectorAll("style")).map((el) => el.outerHTML).join("");
     const linkedStyles = Array.from(document.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]'))
       .map((el) => `<link rel="stylesheet" href="${el.href}">`)
@@ -135,10 +133,10 @@ export default function AdminReports() {
   return (
     <AdminLayout title="Reports">
       <div className="flex justify-end gap-2 mb-5">
-        <button onClick={exportCSV} className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-[13px] font-medium" style={{ background: "#e6f4f5", color: "#0E6E74", border: "1px solid #b2d8db" }}>
+        <button onClick={exportCSV} className="btn btn-outline flex items-center gap-2">
           <Download className="w-4 h-4" /> Export CSV
         </button>
-        <button onClick={exportPdf} className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-[13px] font-medium text-white" style={{ background: "#0B2744" }}>
+        <button onClick={exportPdf} className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-[13px] font-medium text-white" style={{ background: "var(--text)" }}>
           <Download className="w-4 h-4" /> Export PDF
         </button>
       </div>
@@ -149,99 +147,109 @@ export default function AdminReports() {
           { label: "Total Registrations", value: stats?.totalRegistrations ?? 0, sub: "delegates registered", color: "#0E6E74" },
           { label: "Total Revenue", value: `MYR ${(stats?.totalRevenue ?? 0).toLocaleString("en-MY", { minimumFractionDigits: 2 })}`, sub: "from paid registrations", color: "#0a5c39" },
           { label: "Abstracts Submitted", value: stats?.totalAbstracts ?? 0, sub: `${stats?.acceptedAbstracts ?? 0} accepted`, color: "#C89B3C" },
-          { label: "Acceptance Rate", value: abstractTotal > 0 ? `${Math.round(((stats?.acceptedAbstracts ?? 0) / abstractTotal) * 100)}%` : "—", sub: `${stats?.rejectedAbstracts ?? 0} rejected`, color: "#0B2744" },
+          { label: "Acceptance Rate", value: abstractTotal > 0 ? `${Math.round(((stats?.acceptedAbstracts ?? 0) / abstractTotal) * 100)}%` : "—", sub: `${stats?.rejectedAbstracts ?? 0} rejected`, color: "var(--text)" },
         ].map((k) => (
-          <div key={k.label} className="bg-white rounded-xl p-5" style={{ border: "1px solid #e9ecef" }}>
-            <div className="text-[11px] font-semibold uppercase tracking-wide mb-2" style={{ color: "#6c757d" }}>{k.label}</div>
-            <div className="text-[24px] font-bold mb-1" style={{ color: k.color }}>{k.value}</div>
-            <div className="text-[12px]" style={{ color: "#adb5bd" }}>{k.sub}</div>
+          <div key={k.label} className="card">
+            <div className="card-body">
+              <div className="text-[11px] font-semibold uppercase tracking-wide mb-2" style={{ color: "var(--text-muted)" }}>{k.label}</div>
+              <div className="text-[24px] font-bold mb-1" style={{ color: k.color }}>{k.value}</div>
+              <div className="text-[12px]" style={{ color: "var(--text-disabled)" }}>{k.sub}</div>
+            </div>
           </div>
         ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         {/* Payment breakdown */}
-        <div className="bg-white rounded-xl p-5" style={{ border: "1px solid #e9ecef" }}>
-          <h3 className="text-[14px] font-semibold mb-4" style={{ color: "#212529" }}>Payment Status Breakdown</h3>
-          <div className="space-y-3">
-            {[
-              { label: "Paid", count: paid, color: "#198754" },
-              { label: "Pending", count: pending, color: "#ffc107" },
-              { label: "Overdue", count: overdue, color: "#dc3545" },
-              { label: "Waived", count: waived, color: "#0E6E74" },
-            ].map((s) => (
-              <div key={s.label}>
-                <div className="flex justify-between text-[12px] mb-1">
-                  <span style={{ color: "#495057" }}>{s.label}</span>
-                  <span style={{ color: "#6c757d" }}>{total > 0 ? Math.round((s.count / total) * 100) : 0}%</span>
+        <div className="card">
+          <div className="card-body">
+            <h3 className="text-[14px] font-semibold mb-4" style={{ color: "var(--text)" }}>Payment Status Breakdown</h3>
+            <div className="space-y-3">
+              {[
+                { label: "Paid", count: paid, color: "#198754" },
+                { label: "Pending", count: pending, color: "#ffc107" },
+                { label: "Overdue", count: overdue, color: "#dc3545" },
+                { label: "Waived", count: waived, color: "#0E6E74" },
+              ].map((s) => (
+                <div key={s.label}>
+                  <div className="flex justify-between text-[12px] mb-1">
+                    <span style={{ color: "var(--text-secondary)" }}>{s.label}</span>
+                    <span style={{ color: "var(--text-muted)" }}>{total > 0 ? Math.round((s.count / total) * 100) : 0}%</span>
+                  </div>
+                  <Bar value={s.count} max={total} color={s.color} />
                 </div>
-                <Bar value={s.count} max={total} color={s.color} />
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
 
         {/* Abstract status breakdown */}
-        <div className="bg-white rounded-xl p-5" style={{ border: "1px solid #e9ecef" }}>
-          <h3 className="text-[14px] font-semibold mb-4" style={{ color: "#212529" }}>Abstract Status Breakdown</h3>
-          <div className="space-y-3">
-            {[
-              { label: "Pending Review", count: stats?.pendingAbstracts ?? 0, color: "#ffc107" },
-              { label: "Accepted", count: stats?.acceptedAbstracts ?? 0, color: "#198754" },
-              { label: "Rejected", count: stats?.rejectedAbstracts ?? 0, color: "#dc3545" },
-              { label: "Under Review", count: abstractTotal - (stats?.pendingAbstracts ?? 0) - (stats?.acceptedAbstracts ?? 0) - (stats?.rejectedAbstracts ?? 0), color: "#0E6E74" },
-            ].map((s) => (
-              <div key={s.label}>
-                <div className="flex justify-between text-[12px] mb-1">
-                  <span style={{ color: "#495057" }}>{s.label}</span>
-                  <span style={{ color: "#6c757d" }}>{abstractTotal > 0 ? Math.round((s.count / abstractTotal) * 100) : 0}%</span>
+        <div className="card">
+          <div className="card-body">
+            <h3 className="text-[14px] font-semibold mb-4" style={{ color: "var(--text)" }}>Abstract Status Breakdown</h3>
+            <div className="space-y-3">
+              {[
+                { label: "Pending Review", count: stats?.pendingAbstracts ?? 0, color: "#ffc107" },
+                { label: "Accepted", count: stats?.acceptedAbstracts ?? 0, color: "#198754" },
+                { label: "Rejected", count: stats?.rejectedAbstracts ?? 0, color: "#dc3545" },
+                { label: "Under Review", count: abstractTotal - (stats?.pendingAbstracts ?? 0) - (stats?.acceptedAbstracts ?? 0) - (stats?.rejectedAbstracts ?? 0), color: "#0E6E74" },
+              ].map((s) => (
+                <div key={s.label}>
+                  <div className="flex justify-between text-[12px] mb-1">
+                    <span style={{ color: "var(--text-secondary)" }}>{s.label}</span>
+                    <span style={{ color: "var(--text-muted)" }}>{abstractTotal > 0 ? Math.round((s.count / abstractTotal) * 100) : 0}%</span>
+                  </div>
+                  <Bar value={Math.max(s.count, 0)} max={abstractTotal} color={s.color} />
                 </div>
-                <Bar value={Math.max(s.count, 0)} max={abstractTotal} color={s.color} />
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* By Category */}
-        <div className="bg-white rounded-xl p-5" style={{ border: "1px solid #e9ecef" }}>
-          <h3 className="text-[14px] font-semibold mb-4" style={{ color: "#212529" }}>Registrations by Category</h3>
-          {(stats?.registrationsByCategory ?? []).length === 0 ? (
-            <div className="text-center py-6 text-[13px]" style={{ color: "#adb5bd" }}>No data</div>
-          ) : (
-            <div className="space-y-3">
-              {(stats?.registrationsByCategory ?? []).sort((a, b) => b.count - a.count).map((c) => (
-                <div key={c.category}>
-                  <div className="flex justify-between text-[12px] mb-1">
-                    <span className="capitalize" style={{ color: "#495057" }}>{c.category.replace(/_/g, " ")}</span>
-                    <span style={{ color: "#6c757d" }}>{c.count}</span>
+        <div className="card">
+          <div className="card-body">
+            <h3 className="text-[14px] font-semibold mb-4" style={{ color: "var(--text)" }}>Registrations by Category</h3>
+            {(stats?.registrationsByCategory ?? []).length === 0 ? (
+              <div className="text-center py-6 text-[13px]" style={{ color: "var(--text-disabled)" }}>No data</div>
+            ) : (
+              <div className="space-y-3">
+                {(stats?.registrationsByCategory ?? []).sort((a, b) => b.count - a.count).map((c) => (
+                  <div key={c.category}>
+                    <div className="flex justify-between text-[12px] mb-1">
+                      <span className="capitalize" style={{ color: "var(--text-secondary)" }}>{c.category.replace(/_/g, " ")}</span>
+                      <span style={{ color: "var(--text-muted)" }}>{c.count}</span>
+                    </div>
+                    <Bar value={c.count} max={catMax} color="#0E6E74" />
                   </div>
-                  <Bar value={c.count} max={catMax} color="#0E6E74" />
-                </div>
-              ))}
-            </div>
-          )}
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* By Country */}
-        <div className="bg-white rounded-xl p-5" style={{ border: "1px solid #e9ecef" }}>
-          <h3 className="text-[14px] font-semibold mb-4" style={{ color: "#212529" }}>Top Countries</h3>
-          {topCountries.length === 0 ? (
-            <div className="text-center py-6 text-[13px]" style={{ color: "#adb5bd" }}>No data</div>
-          ) : (
-            <div className="space-y-3">
-              {topCountries.map((c) => (
-                <div key={c.country}>
-                  <div className="flex justify-between text-[12px] mb-1">
-                    <span style={{ color: "#495057" }}>{c.country}</span>
-                    <span style={{ color: "#6c757d" }}>{c.count}</span>
+        <div className="card">
+          <div className="card-body">
+            <h3 className="text-[14px] font-semibold mb-4" style={{ color: "var(--text)" }}>Top Countries</h3>
+            {topCountries.length === 0 ? (
+              <div className="text-center py-6 text-[13px]" style={{ color: "var(--text-disabled)" }}>No data</div>
+            ) : (
+              <div className="space-y-3">
+                {topCountries.map((c) => (
+                  <div key={c.country}>
+                    <div className="flex justify-between text-[12px] mb-1">
+                      <span style={{ color: "var(--text-secondary)" }}>{c.country}</span>
+                      <span style={{ color: "var(--text-muted)" }}>{c.count}</span>
+                    </div>
+                    <Bar value={c.count} max={ctryMax} color="#C89B3C" />
                   </div>
-                  <Bar value={c.count} max={ctryMax} color="#C89B3C" />
-                </div>
-              ))}
-            </div>
-          )}
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </AdminLayout>

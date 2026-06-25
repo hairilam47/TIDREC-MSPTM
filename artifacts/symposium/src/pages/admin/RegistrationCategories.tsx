@@ -140,8 +140,7 @@ function CategoryModal({
           <button
             type="button"
             onClick={onClose}
-            className="px-5 py-2.5 rounded-lg text-[13px] font-medium"
-            style={{ border: "1px solid #e9ecef", color: "#6c757d" }}
+            className="btn btn-outline"
           >
             Cancel
           </button>
@@ -149,8 +148,7 @@ function CategoryModal({
             type="submit"
             form="cat-form"
             disabled={isPending}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-[13px] font-semibold text-white disabled:opacity-60"
-            style={{ background: "#C89B3C" }}
+            className="btn btn-primary flex items-center gap-2 disabled:opacity-60"
           >
             {isPending && <Loader2 className="w-4 h-4 animate-spin" />}
             {initial ? "Save Changes" : "Create Category"}
@@ -216,9 +214,9 @@ function CategoryModal({
                 checked={form.isActive}
                 onChange={(e) => setForm((prev) => ({ ...prev, isActive: e.target.checked }))}
                 className="w-4 h-4"
-                style={{ accentColor: "#0E6E74" }}
+                style={{ accentColor: "var(--primary)" }}
               />
-              <span className="text-[13px]" style={{ color: "#495057" }}>
+              <span className="text-[13px]" style={{ color: "var(--text-secondary)" }}>
                 {form.isActive ? "Active — visible to delegates" : "Inactive — hidden from registration"}
               </span>
             </label>
@@ -278,7 +276,7 @@ export default function AdminRegistrationCategories() {
   return (
     <AdminLayout title="Registration Categories">
       <div className="flex items-start justify-between mb-5 gap-4">
-        <p className="text-[13px] max-w-lg" style={{ color: "#6c757d" }}>
+        <p className="text-[13px] max-w-lg" style={{ color: "var(--text-muted)" }}>
           Manage delegate registration categories and their pricing. Active categories appear in the
           public registration form.
         </p>
@@ -287,8 +285,7 @@ export default function AdminRegistrationCategories() {
             setEditing(undefined);
             setShowModal(true);
           }}
-          className="flex-shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-lg text-[13px] font-medium text-white"
-          style={{ background: "#C89B3C" }}
+          className="btn btn-primary flex-shrink-0 flex items-center gap-2"
         >
           <Plus className="w-4 h-4" />
           Add Category
@@ -297,139 +294,108 @@ export default function AdminRegistrationCategories() {
 
       {isLoading ? (
         <div className="flex justify-center py-16">
-          <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#C89B3C" }} />
+          <Loader2 className="w-8 h-8 animate-spin" style={{ color: "var(--primary)" }} />
         </div>
       ) : (
-        <div className="bg-white rounded-xl overflow-hidden" style={{ border: "1px solid #e9ecef" }}>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead style={{ background: "#f8f9fa" }}>
-                <tr>
-                  {["#", "Label", "Slug", "Price (MYR)", "Status", "Actions"].map((h) => (
-                    <th
-                      key={h}
-                      className="text-left px-4 py-3 text-[11px] font-semibold uppercase tracking-wide"
-                      style={{ color: "#6c757d", borderBottom: "1px solid #e9ecef" }}
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {categories.length === 0 ? (
+        <div className="card">
+          <div className="card-body p-0">
+            <div className="overflow-x-auto">
+              <table className="table">
+                <thead>
                   <tr>
-                    <td
-                      colSpan={6}
-                      className="text-center py-10 text-[13px]"
-                      style={{ color: "#adb5bd" }}
-                    >
-                      No categories yet. Click "Add Category" to create one.
-                    </td>
+                    {["#", "Label", "Slug", "Price (MYR)", "Status", "Actions"].map((h) => (
+                      <th key={h}>{h}</th>
+                    ))}
                   </tr>
-                ) : (
-                  categories.map((cat) => (
-                    <tr
-                      key={cat.id}
-                      style={{
-                        borderBottom: "1px solid #f1f3f5",
-                        opacity: cat.isActive ? 1 : 0.55,
-                      }}
-                    >
+                </thead>
+                <tbody>
+                  {categories.length === 0 ? (
+                    <tr>
                       <td
-                        className="px-4 py-3 text-[12px] w-10"
-                        style={{ color: "#adb5bd" }}
+                        colSpan={6}
+                        className="text-center py-10 text-[13px]"
+                        style={{ color: "var(--text-disabled)" }}
                       >
-                        {cat.sortOrder}
-                      </td>
-                      <td className="px-4 py-3">
-                        <div
-                          className="text-[14px] font-semibold"
-                          style={{ color: "#212529" }}
-                        >
-                          {cat.label}
-                        </div>
-                        {cat.description && (
-                          <div
-                            className="text-[11px] mt-0.5"
-                            style={{ color: "#adb5bd" }}
-                          >
-                            {cat.description}
-                          </div>
-                        )}
-                      </td>
-                      <td className="px-4 py-3">
-                        <code
-                          className="text-[11px] bg-gray-100 px-2 py-0.5 rounded"
-                          style={{ color: "#495057" }}
-                        >
-                          {cat.slug}
-                        </code>
-                      </td>
-                      <td className="px-4 py-3">
-                        <span
-                          className="text-[14px] font-semibold"
-                          style={{ color: "#0B2744" }}
-                        >
-                          {cat.priceMyr.toLocaleString("en-MY", {
-                            minimumFractionDigits: 2,
-                          })}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        <span
-                          className="text-[11px] font-semibold px-2.5 py-1 rounded-full"
-                          style={
-                            cat.isActive
-                              ? { background: "#d1e7dd", color: "#0a5c39" }
-                              : { background: "#e9ecef", color: "#6c757d" }
-                          }
-                        >
-                          {cat.isActive ? "Active" : "Inactive"}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex gap-1.5">
-                          <button
-                            onClick={() => {
-                              setEditing(cat);
-                              setShowModal(true);
-                            }}
-                            className="flex items-center gap-1 px-2.5 py-1.5 rounded text-[11px] font-medium"
-                            style={{ background: "#e9ecef", color: "#495057" }}
-                          >
-                            <Pencil className="w-3 h-3" />
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => toggleActive(cat)}
-                            disabled={updateMutation.isPending}
-                            className="flex items-center gap-1 px-2.5 py-1.5 rounded text-[11px] font-medium disabled:opacity-60"
-                            style={
-                              cat.isActive
-                                ? { background: "#fff3cd", color: "#856404" }
-                                : { background: "#d1e7dd", color: "#0a5c39" }
-                            }
-                          >
-                            {cat.isActive ? (
-                              <>
-                                <ToggleLeft className="w-3.5 h-3.5" />
-                                Deactivate
-                              </>
-                            ) : (
-                              <>
-                                <ToggleRight className="w-3.5 h-3.5" />
-                                Activate
-                              </>
-                            )}
-                          </button>
-                        </div>
+                        No categories yet. Click "Add Category" to create one.
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                  ) : (
+                    categories.map((cat) => (
+                      <tr
+                        key={cat.id}
+                        style={{ opacity: cat.isActive ? 1 : 0.55 }}
+                      >
+                        <td className="text-[12px] w-10" style={{ color: "var(--text-disabled)" }}>
+                          {cat.sortOrder}
+                        </td>
+                        <td>
+                          <div className="text-[14px] font-semibold" style={{ color: "var(--text)" }}>
+                            {cat.label}
+                          </div>
+                          {cat.description && (
+                            <div className="text-[11px] mt-0.5" style={{ color: "var(--text-disabled)" }}>
+                              {cat.description}
+                            </div>
+                          )}
+                        </td>
+                        <td>
+                          <code className="text-[11px] bg-gray-100 px-2 py-0.5 rounded" style={{ color: "var(--text-secondary)" }}>
+                            {cat.slug}
+                          </code>
+                        </td>
+                        <td>
+                          <span className="text-[14px] font-semibold" style={{ color: "var(--text)" }}>
+                            {cat.priceMyr.toLocaleString("en-MY", { minimumFractionDigits: 2 })}
+                          </span>
+                        </td>
+                        <td>
+                          <span
+                            className="text-[11px] font-semibold px-2.5 py-1 rounded-full"
+                            style={
+                              cat.isActive
+                                ? { background: "#d1e7dd", color: "#0a5c39" }
+                                : { background: "var(--border-color)", color: "var(--text-muted)" }
+                            }
+                          >
+                            {cat.isActive ? "Active" : "Inactive"}
+                          </span>
+                        </td>
+                        <td>
+                          <div className="flex gap-1.5">
+                            <button
+                              onClick={() => {
+                                setEditing(cat);
+                                setShowModal(true);
+                              }}
+                              className="btn btn-outline btn-sm flex items-center gap-1"
+                            >
+                              <Pencil className="w-3 h-3" />
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => toggleActive(cat)}
+                              disabled={updateMutation.isPending}
+                              className="btn btn-sm disabled:opacity-60 flex items-center gap-1"
+                              style={
+                                cat.isActive
+                                  ? { background: "#fff3cd", color: "#856404", borderColor: "#ffe69c" }
+                                  : { background: "#d1e7dd", color: "#0a5c39", borderColor: "#a3cfbb" }
+                              }
+                            >
+                              {cat.isActive ? (
+                                <><ToggleLeft className="w-3.5 h-3.5" />Deactivate</>
+                              ) : (
+                                <><ToggleRight className="w-3.5 h-3.5" />Activate</>
+                              )}
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       )}

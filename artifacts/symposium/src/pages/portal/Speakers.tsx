@@ -8,60 +8,51 @@ export default function Speakers() {
 
   return (
     <PortalLayout title="Invited Speakers">
-      <p className="text-sm mb-6" style={{ color: "#6c757d" }}>
+      <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 24 }}>
         Distinguished experts presenting at SEAT-MSPTM 2027.
       </p>
 
       {isLoading ? (
-        <div className="flex justify-center py-16">
-          <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#0E6E74" }} />
+        <div style={{ display: "flex", justifyContent: "center", padding: "64px 0" }}>
+          <Loader2 className="w-8 h-8 animate-spin" style={{ color: "var(--primary)" }} />
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 20 }}>
           {speakers?.map((speaker) => (
-            <div
-              key={speaker.id}
-              className="bg-white rounded-xl overflow-hidden transition-all hover:shadow-md"
-              style={{ border: "1px solid #e9ecef", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}
-            >
+            <div key={speaker.id} className="card" style={{ overflow: "hidden" }}>
               {/* Photo area */}
               <div
-                className="h-[180px] flex items-center justify-center"
                 style={{
-                  background: speaker.photoUrl
-                    ? undefined
-                    : "linear-gradient(135deg, #e6f4f5, #f8f9fa)",
+                  height: 180, display: "flex", alignItems: "center", justifyContent: "center",
+                  background: speaker.photoUrl ? undefined : "linear-gradient(135deg, var(--primary-lt), var(--bg-surface-secondary))",
                 }}
               >
                 {speaker.photoUrl ? (
-                  <img src={speaker.photoUrl} alt={speaker.name} className="w-full h-full object-cover" />
+                  <img src={speaker.photoUrl} alt={speaker.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                 ) : (
-                  <div
-                    className="w-20 h-20 rounded-full flex items-center justify-center font-sans text-3xl font-bold"
-                    style={{ background: "#0E6E74", color: "#fff" }}
-                  >
+                  <div style={{ width: 72, height: 72, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--primary)", color: "#fff", fontSize: 28, fontWeight: 700 }}>
                     {speaker.initials || speaker.name.slice(0, 2)}
                   </div>
                 )}
               </div>
 
               {/* Info */}
-              <div className="p-4">
-                <h3 className="text-[15px] font-sans font-bold mb-0.5" style={{ color: "#212529" }}>
+              <div className="card-body">
+                <h3 style={{ fontSize: 15, fontWeight: 700, color: "var(--text)", marginBottom: 2 }}>
                   {speaker.name}
                 </h3>
-                <div className="text-[12px] mb-3" style={{ color: "#6c757d" }}>
+                <div style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: 12 }}>
                   {speaker.institution && <span>{speaker.institution} · </span>}
                   {speaker.country}
                 </div>
-                <div className="rounded-lg px-3 py-2" style={{ background: "#e6f4f5" }}>
-                  <div className="text-[10px] font-bold uppercase tracking-wider mb-1" style={{ color: "#0E6E74" }}>
+                <div style={{ borderRadius: 6, padding: "8px 12px", background: "var(--primary-lt)" }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "var(--primary)", marginBottom: 4 }}>
                     Topic
                   </div>
-                  <div className="text-[13px]" style={{ color: "#212529" }}>{speaker.topic}</div>
+                  <div style={{ fontSize: 13, color: "var(--text)" }}>{speaker.topic}</div>
                 </div>
                 {speaker.bio && (
-                  <p className="text-[12px] mt-3 line-clamp-3" style={{ color: "#6c757d" }}>
+                  <p style={{ fontSize: 12, marginTop: 12, color: "var(--text-muted)", overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", margin: "12px 0 0" }}>
                     {speaker.bio}
                   </p>
                 )}

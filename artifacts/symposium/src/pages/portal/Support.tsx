@@ -1,6 +1,6 @@
 import React from "react";
 import PortalLayout from "@/components/PortalLayout";
-import { Mail, Phone, MapPin, ExternalLink, Clock, HelpCircle } from "lucide-react";
+import { Mail, MapPin, ExternalLink, Clock, HelpCircle } from "lucide-react";
 
 const FAQS = [
   {
@@ -25,86 +25,90 @@ const FAQS = [
   },
 ];
 
+const CONTACT_TILES = [
+  {
+    icon: Mail,
+    iconBg: "var(--primary-lt)",
+    iconColor: "var(--primary)",
+    label: "Email",
+    value: <a href="mailto:secretariat@seat-msptm2027.org" style={{ fontSize: 14, fontWeight: 500, color: "var(--primary)", textDecoration: "none" }}>secretariat@seat-msptm2027.org</a>,
+    sub: "Usually responds within 2 business days",
+  },
+  {
+    icon: Clock,
+    iconBg: "rgba(200,155,60,0.12)",
+    iconColor: "#C89B3C",
+    label: "Office Hours",
+    value: <div style={{ fontSize: 14, fontWeight: 500, color: "var(--text)" }}>Mon–Fri, 9am–5pm MYT</div>,
+    sub: "Malaysia Time (UTC+8)",
+  },
+  {
+    icon: MapPin,
+    iconBg: "rgba(11,39,68,0.08)",
+    iconColor: "#0B2744",
+    label: "Venue",
+    value: <div style={{ fontSize: 14, fontWeight: 500, color: "var(--text)" }}>Sunway Putra Hotel</div>,
+    sub: "100, Jalan Putra, Kuala Lumpur",
+  },
+  {
+    icon: ExternalLink,
+    iconBg: "var(--red-lt)",
+    iconColor: "var(--red)",
+    label: "Organisers",
+    value: <div style={{ fontSize: 14, fontWeight: 500, color: "var(--text)" }}>MSPTM &amp; TIDREC@UM</div>,
+    sub: "Malaysian Society for Parasitology & Tropical Medicine",
+  },
+];
+
 export default function Support() {
   const [open, setOpen] = React.useState<number | null>(null);
 
   return (
     <PortalLayout title="Support">
-      <div className="max-w-2xl">
-        <p className="text-sm mb-8" style={{ color: "#6c757d" }}>
+      <div style={{ maxWidth: 640 }}>
+        <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 32 }}>
           Need help? Find answers to common questions or get in touch with the organising committee.
         </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-          <div className="bg-white rounded-xl p-5" style={{ border: "1px solid #e9ecef" }}>
-            <div className="w-9 h-9 rounded-lg flex items-center justify-center mb-3" style={{ background: "#e6f4f5" }}>
-              <Mail className="w-4.5 h-4.5" style={{ color: "#0E6E74", width: 18, height: 18 }} />
+        {/* Contact tiles */}
+        <div className="row col-2" style={{ marginBottom: 24 }}>
+          {CONTACT_TILES.map(({ icon: Icon, iconBg, iconColor, label, value, sub }) => (
+            <div key={label} className="card">
+              <div className="card-body">
+                <div style={{ width: 34, height: 34, borderRadius: 6, display: "flex", alignItems: "center", justifyContent: "center", background: iconBg, marginBottom: 12 }}>
+                  <Icon style={{ width: 18, height: 18, color: iconColor }} />
+                </div>
+                <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "var(--text-muted)", marginBottom: 4 }}>{label}</div>
+                {value}
+                <div style={{ fontSize: 12, marginTop: 4, color: "var(--text-disabled)" }}>{sub}</div>
+              </div>
             </div>
-            <div className="text-[13px] font-bold uppercase tracking-wider mb-1" style={{ color: "#6c757d" }}>Email</div>
-            <a
-              href="mailto:secretariat@seat-msptm2027.org"
-              className="text-[14px] font-medium no-underline"
-              style={{ color: "#0E6E74" }}
-            >
-              secretariat@seat-msptm2027.org
-            </a>
-            <div className="text-[12px] mt-1" style={{ color: "#adb5bd" }}>Usually responds within 2 business days</div>
-          </div>
-
-          <div className="bg-white rounded-xl p-5" style={{ border: "1px solid #e9ecef" }}>
-            <div className="w-9 h-9 rounded-lg flex items-center justify-center mb-3" style={{ background: "rgba(200,155,60,0.12)" }}>
-              <Clock className="w-4.5 h-4.5" style={{ color: "#C89B3C", width: 18, height: 18 }} />
-            </div>
-            <div className="text-[13px] font-bold uppercase tracking-wider mb-1" style={{ color: "#6c757d" }}>Office Hours</div>
-            <div className="text-[14px] font-medium" style={{ color: "#212529" }}>Mon–Fri, 9am–5pm MYT</div>
-            <div className="text-[12px] mt-1" style={{ color: "#adb5bd" }}>Malaysia Time (UTC+8)</div>
-          </div>
-
-          <div className="bg-white rounded-xl p-5" style={{ border: "1px solid #e9ecef" }}>
-            <div className="w-9 h-9 rounded-lg flex items-center justify-center mb-3" style={{ background: "rgba(11,39,68,0.08)" }}>
-              <MapPin className="w-4.5 h-4.5" style={{ color: "#0B2744", width: 18, height: 18 }} />
-            </div>
-            <div className="text-[13px] font-bold uppercase tracking-wider mb-1" style={{ color: "#6c757d" }}>Venue</div>
-            <div className="text-[14px] font-medium" style={{ color: "#212529" }}>Sunway Putra Hotel</div>
-            <div className="text-[12px] mt-1" style={{ color: "#adb5bd" }}>100, Jalan Putra, Kuala Lumpur</div>
-          </div>
-
-          <div className="bg-white rounded-xl p-5" style={{ border: "1px solid #e9ecef" }}>
-            <div className="w-9 h-9 rounded-lg flex items-center justify-center mb-3" style={{ background: "#f8d7da" }}>
-              <ExternalLink className="w-4.5 h-4.5" style={{ color: "#842029", width: 18, height: 18 }} />
-            </div>
-            <div className="text-[13px] font-bold uppercase tracking-wider mb-1" style={{ color: "#6c757d" }}>Organisers</div>
-            <div className="text-[14px] font-medium" style={{ color: "#212529" }}>MSPTM & TIDREC@UM</div>
-            <div className="text-[12px] mt-1" style={{ color: "#adb5bd" }}>Malaysian Society for Parasitology &amp; Tropical Medicine</div>
-          </div>
+          ))}
         </div>
 
         {/* FAQs */}
-        <div className="bg-white rounded-xl overflow-hidden" style={{ border: "1px solid #e9ecef" }}>
-          <div className="px-5 py-4 flex items-center gap-2" style={{ borderBottom: "1px solid #e9ecef" }}>
-            <HelpCircle className="w-4 h-4" style={{ color: "#0E6E74" }} />
-            <span className="text-[15px] font-semibold" style={{ color: "#212529" }}>
-              Frequently Asked Questions
-            </span>
+        <div className="card" style={{ overflow: "hidden" }}>
+          <div className="card-header">
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <HelpCircle style={{ width: 16, height: 16, color: "var(--primary)" }} />
+              <div className="card-title">Frequently Asked Questions</div>
+            </div>
           </div>
           <div>
             {FAQS.map((faq, i) => (
-              <div key={i} style={{ borderBottom: i < FAQS.length - 1 ? "1px solid #f1f3f5" : "none" }}>
+              <div key={i} style={{ borderBottom: i < FAQS.length - 1 ? "1px solid var(--border-color-light)" : "none" }}>
                 <button
-                  className="w-full text-left px-5 py-4 flex items-center justify-between gap-4"
+                  style={{ width: "100%", textAlign: "left", padding: "14px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, background: "none", border: "none", cursor: "pointer", fontFamily: "inherit" }}
                   onClick={() => setOpen(open === i ? null : i)}
-                  style={{ background: "none" }}
                 >
-                  <span className="text-[14px] font-medium" style={{ color: "#212529" }}>
-                    {faq.q}
-                  </span>
-                  <span className="text-lg flex-shrink-0" style={{ color: "#adb5bd" }}>
+                  <span style={{ fontSize: 14, fontWeight: 500, color: "var(--text)" }}>{faq.q}</span>
+                  <span style={{ fontSize: 18, flexShrink: 0, color: "var(--text-disabled)", lineHeight: 1 }}>
                     {open === i ? "−" : "+"}
                   </span>
                 </button>
                 {open === i && (
-                  <div className="px-5 pb-4">
-                    <p className="text-[13px] leading-relaxed" style={{ color: "#6c757d" }}>
+                  <div style={{ padding: "0 16px 14px" }}>
+                    <p style={{ fontSize: 13, lineHeight: 1.5, color: "var(--text-muted)", margin: 0 }}>
                       {faq.a}
                     </p>
                   </div>

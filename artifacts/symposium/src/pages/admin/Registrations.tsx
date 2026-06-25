@@ -9,7 +9,7 @@ const PAYMENT_STYLES: Record<string, { bg: string; color: string }> = {
   paid: { bg: "#d1e7dd", color: "#0a5c39" },
   pending: { bg: "#fff3cd", color: "#856404" },
   overdue: { bg: "#f8d7da", color: "#842029" },
-  waived: { bg: "#e6f4f5", color: "#0E6E74" },
+  waived: { bg: "var(--primary-lt)", color: "var(--primary)" },
 };
 
 interface AddRegistrationForm {
@@ -121,8 +121,7 @@ function AddRegistrationModal({ onClose, onSuccess }: { onClose: () => void; onS
           <button
             type="button"
             onClick={onClose}
-            className="px-5 py-2.5 rounded-lg text-[13px] font-medium transition-colors hover:bg-gray-50"
-            style={{ border: "1px solid #e9ecef", color: "#6c757d" }}
+            className="btn btn-outline"
           >
             Cancel
           </button>
@@ -130,8 +129,7 @@ function AddRegistrationModal({ onClose, onSuccess }: { onClose: () => void; onS
             type="submit"
             form="add-registration-form"
             disabled={createMutation.isPending}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-[13px] font-semibold text-white disabled:opacity-60 transition-colors"
-            style={{ background: "#C89B3C" }}
+            className="btn btn-primary flex items-center gap-2 disabled:opacity-60"
           >
             {createMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
             Register Delegate
@@ -142,7 +140,7 @@ function AddRegistrationModal({ onClose, onSuccess }: { onClose: () => void; onS
       <form id="add-registration-form" onSubmit={handleSubmit} className="space-y-6">
         {/* Section: Delegate Identity */}
         <div>
-          <h3 className="text-[11px] font-bold uppercase tracking-wider mb-3" style={{ color: "#6c757d" }}>
+          <h3 className="text-[11px] font-bold uppercase tracking-wider mb-3" style={{ color: "var(--text-muted)" }}>
             Delegate Identity
           </h3>
           <div className="grid grid-cols-2 gap-4">
@@ -182,7 +180,7 @@ function AddRegistrationModal({ onClose, onSuccess }: { onClose: () => void; onS
 
         {/* Section: Affiliation */}
         <div>
-          <h3 className="text-[11px] font-bold uppercase tracking-wider mb-3" style={{ color: "#6c757d" }}>
+          <h3 className="text-[11px] font-bold uppercase tracking-wider mb-3" style={{ color: "var(--text-muted)" }}>
             Affiliation
           </h3>
           <div className="grid grid-cols-2 gap-4">
@@ -209,7 +207,7 @@ function AddRegistrationModal({ onClose, onSuccess }: { onClose: () => void; onS
 
         {/* Section: Delegate Category */}
         <div>
-          <h3 className="text-[11px] font-bold uppercase tracking-wider mb-3" style={{ color: "#6c757d" }}>
+          <h3 className="text-[11px] font-bold uppercase tracking-wider mb-3" style={{ color: "var(--text-muted)" }}>
             Delegate Category
           </h3>
           {errors.category && (
@@ -217,7 +215,7 @@ function AddRegistrationModal({ onClose, onSuccess }: { onClose: () => void; onS
           )}
           <div className="space-y-2">
             {categories.length === 0 ? (
-              <div className="text-[13px] text-center py-3" style={{ color: "#adb5bd" }}>Loading categories…</div>
+              <div className="text-[13px] text-center py-3" style={{ color: "var(--text-disabled)" }}>Loading categories…</div>
             ) : categories.map((cat) => {
               const selected = form.category === cat.slug;
               return (
@@ -225,8 +223,8 @@ function AddRegistrationModal({ onClose, onSuccess }: { onClose: () => void; onS
                   key={cat.slug}
                   className="flex items-center gap-3 p-3.5 rounded-xl cursor-pointer transition-all"
                   style={{
-                    border: selected ? "2px solid #0E6E74" : errors.category ? "1px solid #dc3545" : "1px solid #e9ecef",
-                    background: selected ? "#e6f4f5" : "#fff",
+                    border: selected ? "2px solid var(--primary)" : errors.category ? "1px solid #dc3545" : "1px solid var(--border-color)",
+                    background: selected ? "var(--primary-lt)" : "var(--bg-surface)",
                   }}
                 >
                   <input
@@ -236,13 +234,13 @@ function AddRegistrationModal({ onClose, onSuccess }: { onClose: () => void; onS
                     checked={selected}
                     onChange={() => setCategory(cat.slug)}
                     className="w-4 h-4 flex-shrink-0"
-                    style={{ accentColor: "#0E6E74" }}
+                    style={{ accentColor: "var(--primary)" }}
                   />
                   <div className="flex-1 min-w-0">
-                    <div className="text-[13px] font-semibold" style={{ color: selected ? "#0E6E74" : "#212529" }}>
+                    <div className="text-[13px] font-semibold" style={{ color: selected ? "var(--primary)" : "var(--text)" }}>
                       {cat.label}
                     </div>
-                    <div className="text-[11px] mt-0.5" style={{ color: "#6c757d" }}>
+                    <div className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>
                       MYR {cat.priceMyr.toLocaleString("en-MY", { minimumFractionDigits: 2 })}
                       {cat.description && ` · ${cat.description}`}
                     </div>
@@ -255,7 +253,7 @@ function AddRegistrationModal({ onClose, onSuccess }: { onClose: () => void; onS
 
         {/* Section: Payment */}
         <div>
-          <h3 className="text-[11px] font-bold uppercase tracking-wider mb-3" style={{ color: "#6c757d" }}>
+          <h3 className="text-[11px] font-bold uppercase tracking-wider mb-3" style={{ color: "var(--text-muted)" }}>
             Payment Details
           </h3>
           <div className="grid grid-cols-2 gap-4">
@@ -274,7 +272,7 @@ function AddRegistrationModal({ onClose, onSuccess }: { onClose: () => void; onS
                 </select>
                 <ChevronDown
                   className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none"
-                  style={{ color: "#6c757d" }}
+                  style={{ color: "var(--text-muted)" }}
                 />
               </div>
             </FormField>
@@ -398,21 +396,21 @@ export default function AdminRegistrations() {
     <AdminLayout title="Registrations">
       <div className="flex flex-col sm:flex-row gap-3 mb-5">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "#adb5bd" }} />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "var(--text-disabled)" }} />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by name, email, country or code…"
-            className="w-full pl-9 pr-3 py-2.5 rounded-lg text-[13px] outline-none focus:ring-2 focus:ring-[rgba(14,110,116,0.2)] focus:border-[#0E6E74] transition-colors"
-            style={{ border: "1px solid #dee2e6" }}
+            className="w-full pl-9 pr-3 py-2.5 rounded-lg text-[13px] outline-none"
+            style={{ border: "1px solid var(--border-color)" }}
           />
         </div>
         <div className="relative">
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="appearance-none pl-3 pr-8 py-2.5 rounded-lg text-[13px] outline-none focus:ring-2 focus:ring-[rgba(14,110,116,0.2)] focus:border-[#0E6E74] transition-colors"
-            style={{ border: "1px solid #dee2e6", background: "#fff" }}
+            className="appearance-none pl-3 pr-8 py-2.5 rounded-lg text-[13px] outline-none"
+            style={{ border: "1px solid var(--border-color)", background: "var(--bg-surface)" }}
           >
             <option value="all">All Statuses</option>
             <option value="pending">Pending</option>
@@ -420,151 +418,142 @@ export default function AdminRegistrations() {
             <option value="overdue">Overdue</option>
             <option value="waived">Waived</option>
           </select>
-          <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style={{ color: "#6c757d" }} />
+          <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style={{ color: "var(--text-muted)" }} />
         </div>
         <button
           onClick={() => setShowAddModal(true)}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-[13px] font-medium transition-colors"
-          style={{ background: "#0B2744", color: "#fff" }}
+          className="btn btn-primary flex items-center gap-2"
         >
           <UserPlus className="w-4 h-4" />
           Register Delegate
         </button>
         <button
           onClick={exportCSV}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-[13px] font-medium"
-          style={{ background: "#0E6E74", color: "#fff" }}
+          className="btn btn-outline flex items-center gap-2"
         >
           <Download className="w-4 h-4" />
           Export CSV
         </button>
       </div>
 
-      <div className="text-[12px] mb-3" style={{ color: "#6c757d" }}>
+      <div className="text-[12px] mb-3" style={{ color: "var(--text-muted)" }}>
         {filtered.length} of {registrations?.length ?? 0} registrations
       </div>
 
-      <div className="bg-white rounded-xl overflow-hidden" style={{ border: "1px solid #e9ecef" }}>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead style={{ background: "#f8f9fa" }}>
-              <tr>
-                {["Code", "Delegate", "Country", "Category", "Payment", "Amount (MYR)", "Date", "Actions"].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-4 py-3 text-[11px] font-semibold uppercase tracking-wide"
-                    style={{ color: "#6c757d", borderBottom: "1px solid #e9ecef" }}
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.length === 0 ? (
+      <div className="card">
+        <div className="card-body p-0">
+          <div className="overflow-x-auto">
+            <table className="table">
+              <thead>
                 <tr>
-                  <td colSpan={8} className="text-center py-10 text-[13px]" style={{ color: "#adb5bd" }}>
-                    No registrations found
-                  </td>
+                  {["Code", "Delegate", "Country", "Category", "Payment", "Amount (MYR)", "Date", "Actions"].map((h) => (
+                    <th key={h}>{h}</th>
+                  ))}
                 </tr>
-              ) : filtered.map((r) => {
-                const ps = PAYMENT_STYLES[r.paymentStatus] ?? PAYMENT_STYLES.pending;
-                const isEditing = editingId === r.id;
-                return (
-                  <tr key={r.id} style={{ borderBottom: "1px solid #f1f3f5" }}>
-                    <td className="px-4 py-3">
-                      <code className="text-[11px] bg-gray-100 px-2 py-0.5 rounded" style={{ color: "#495057" }}>
-                        {r.registrationCode}
-                      </code>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="text-[13px] font-medium" style={{ color: "#212529" }}>{r.firstName} {r.lastName}</div>
-                      <div className="text-[11px]" style={{ color: "#adb5bd" }}>{r.email}</div>
-                    </td>
-                    <td className="px-4 py-3 text-[13px]" style={{ color: "#495057" }}>{r.country ?? "—"}</td>
-                    <td className="px-4 py-3 text-[12px] capitalize" style={{ color: "#495057" }}>
-                      {r.category?.replace(/_/g, " ")}
-                    </td>
-                    <td className="px-4 py-3">
-                      {isEditing ? (
-                        <select
-                          value={editStatus}
-                          onChange={(e) => setEditStatus(e.target.value)}
-                          className="text-[13px] px-2.5 py-2 rounded-lg outline-none focus:ring-2 focus:ring-[rgba(14,110,116,0.2)] focus:border-[#0E6E74] transition-colors"
-                          style={{ border: "1px solid #dee2e6", background: "#fff" }}
-                        >
-                          <option value="pending">Pending</option>
-                          <option value="paid">Paid</option>
-                          <option value="overdue">Overdue</option>
-                          <option value="waived">Waived</option>
-                        </select>
-                      ) : (
-                        <span
-                          className="text-[11px] font-semibold px-2 py-0.5 rounded-full capitalize"
-                          style={{ background: ps.bg, color: ps.color }}
-                        >
-                          {r.paymentStatus}
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-4 py-3">
-                      {isEditing ? (
-                        <input
-                          type="number"
-                          value={editAmount}
-                          onChange={(e) => setEditAmount(e.target.value)}
-                          placeholder="0.00"
-                          className="w-28 text-[13px] px-2.5 py-2 rounded-lg outline-none focus:ring-2 focus:ring-[rgba(14,110,116,0.2)] focus:border-[#0E6E74] transition-colors"
-                          style={{ border: "1px solid #dee2e6" }}
-                        />
-                      ) : (
-                        <span className="text-[13px]" style={{ color: "#495057" }}>
-                          {r.paymentAmount != null
-                            ? Number(r.paymentAmount).toLocaleString("en-MY", { minimumFractionDigits: 2 })
-                            : "—"}
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-4 py-3 text-[12px]" style={{ color: "#adb5bd" }}>
-                      {new Date(r.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
-                    </td>
-                    <td className="px-4 py-3">
-                      {isEditing ? (
-                        <div className="flex gap-1.5">
-                          <button
-                            onClick={() => saveEdit(r.id)}
-                            className="px-3 py-2 rounded-lg text-[12px] font-semibold text-white"
-                            style={{ background: "#0E6E74" }}
-                          >
-                            Save
-                          </button>
-                          <button
-                            onClick={() => setEditingId(null)}
-                            className="px-3 py-2 rounded-lg text-[12px] font-medium"
-                            style={{ border: "1px solid #e9ecef", color: "#6c757d" }}
-                          >
-                            Cancel
-                          </button>
-                        </div>
-                      ) : (
-                        <button
-                          onClick={() => {
-                            setEditingId(r.id);
-                            setEditStatus(r.paymentStatus);
-                            setEditAmount(r.paymentAmount != null ? String(r.paymentAmount) : "");
-                          }}
-                          className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-[12px] font-medium transition-colors hover:bg-gray-50"
-                          style={{ border: "1px solid #e9ecef", color: "#6c757d" }}
-                        >
-                          <Pencil className="w-3.5 h-3.5" /> Edit
-                        </button>
-                      )}
+              </thead>
+              <tbody>
+                {filtered.length === 0 ? (
+                  <tr>
+                    <td colSpan={8} className="text-center py-10 text-[13px]" style={{ color: "var(--text-disabled)" }}>
+                      No registrations found
                     </td>
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                ) : filtered.map((r) => {
+                  const ps = PAYMENT_STYLES[r.paymentStatus] ?? PAYMENT_STYLES.pending;
+                  const isEditing = editingId === r.id;
+                  return (
+                    <tr key={r.id}>
+                      <td>
+                        <code className="text-[11px] bg-gray-100 px-2 py-0.5 rounded" style={{ color: "var(--text-secondary)" }}>
+                          {r.registrationCode}
+                        </code>
+                      </td>
+                      <td>
+                        <div className="text-[13px] font-medium" style={{ color: "var(--text)" }}>{r.firstName} {r.lastName}</div>
+                        <div className="text-[11px]" style={{ color: "var(--text-disabled)" }}>{r.email}</div>
+                      </td>
+                      <td className="text-[13px]" style={{ color: "var(--text-secondary)" }}>{r.country ?? "—"}</td>
+                      <td className="text-[12px] capitalize" style={{ color: "var(--text-secondary)" }}>
+                        {r.category?.replace(/_/g, " ")}
+                      </td>
+                      <td>
+                        {isEditing ? (
+                          <select
+                            value={editStatus}
+                            onChange={(e) => setEditStatus(e.target.value)}
+                            className="text-[13px] px-2.5 py-2 rounded-lg outline-none"
+                            style={{ border: "1px solid var(--border-color)", background: "var(--bg-surface)" }}
+                          >
+                            <option value="pending">Pending</option>
+                            <option value="paid">Paid</option>
+                            <option value="overdue">Overdue</option>
+                            <option value="waived">Waived</option>
+                          </select>
+                        ) : (
+                          <span
+                            className="text-[11px] font-semibold px-2 py-0.5 rounded-full capitalize"
+                            style={{ background: ps.bg, color: ps.color }}
+                          >
+                            {r.paymentStatus}
+                          </span>
+                        )}
+                      </td>
+                      <td>
+                        {isEditing ? (
+                          <input
+                            type="number"
+                            value={editAmount}
+                            onChange={(e) => setEditAmount(e.target.value)}
+                            placeholder="0.00"
+                            className="w-28 text-[13px] px-2.5 py-2 rounded-lg outline-none"
+                            style={{ border: "1px solid var(--border-color)" }}
+                          />
+                        ) : (
+                          <span className="text-[13px]" style={{ color: "var(--text-secondary)" }}>
+                            {r.paymentAmount != null
+                              ? Number(r.paymentAmount).toLocaleString("en-MY", { minimumFractionDigits: 2 })
+                              : "—"}
+                          </span>
+                        )}
+                      </td>
+                      <td className="text-[12px]" style={{ color: "var(--text-disabled)" }}>
+                        {new Date(r.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
+                      </td>
+                      <td>
+                        {isEditing ? (
+                          <div className="flex gap-1.5">
+                            <button
+                              onClick={() => saveEdit(r.id)}
+                              className="btn btn-primary btn-sm px-3 py-2 text-[12px]"
+                            >
+                              Save
+                            </button>
+                            <button
+                              onClick={() => setEditingId(null)}
+                              className="btn btn-outline btn-sm px-3 py-2 text-[12px]"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => {
+                              setEditingId(r.id);
+                              setEditStatus(r.paymentStatus);
+                              setEditAmount(r.paymentAmount != null ? String(r.paymentAmount) : "");
+                            }}
+                            className="btn btn-outline btn-sm flex items-center gap-1.5"
+                          >
+                            <Pencil className="w-3.5 h-3.5" /> Edit
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 

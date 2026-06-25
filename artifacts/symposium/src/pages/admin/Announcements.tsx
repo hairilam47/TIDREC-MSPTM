@@ -61,13 +61,12 @@ export default function AdminAnnouncements() {
   return (
     <AdminLayout title="Announcements">
       <div className="flex justify-between items-center mb-5">
-        <div className="text-[13px]" style={{ color: "#6c757d" }}>
+        <div className="text-[13px]" style={{ color: "var(--text-muted)" }}>
           {announcements?.length ?? 0} announcements
         </div>
         <button
           onClick={openCreate}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-[13px] font-semibold text-white"
-          style={{ background: "#0E6E74" }}
+          className="btn btn-primary flex items-center gap-2"
         >
           <Plus className="w-4 h-4" /> New Announcement
         </button>
@@ -75,52 +74,54 @@ export default function AdminAnnouncements() {
 
       <div className="space-y-3">
         {(announcements ?? []).length === 0 ? (
-          <div className="text-center py-12 text-[14px]" style={{ color: "#adb5bd" }}>
+          <div className="text-center py-12 text-[14px]" style={{ color: "var(--text-disabled)" }}>
             No announcements yet. Create the first one.
           </div>
         ) : (
           [...(announcements ?? [])].reverse().map((a) => (
             <div
               key={a.id}
-              className="bg-white rounded-xl p-5"
+              className="card"
               style={{
-                border: `1px solid ${a.important ? "#f0d9a0" : "#e9ecef"}`,
-                background: a.important ? "#fffef9" : "#fff",
+                border: `1px solid ${a.important ? "#f0d9a0" : "var(--border-color)"}`,
+                background: a.important ? "#fffef9" : "var(--bg-surface)",
               }}
             >
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1 flex-wrap">
-                    {a.important && (
-                      <span
-                        className="flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full"
-                        style={{ background: "#FDF6E8", color: "#8a6a24" }}
-                      >
-                        <AlertCircle className="w-3 h-3" /> Important
+              <div className="card-body">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1 flex-wrap">
+                      {a.important && (
+                        <span
+                          className="flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full"
+                          style={{ background: "#FDF6E8", color: "#8a6a24" }}
+                        >
+                          <AlertCircle className="w-3 h-3" /> Important
+                        </span>
+                      )}
+                      <span className="text-[11px]" style={{ color: "var(--text-disabled)" }}>
+                        {new Date(a.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
                       </span>
-                    )}
-                    <span className="text-[11px]" style={{ color: "#adb5bd" }}>
-                      {new Date(a.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
-                    </span>
+                    </div>
+                    <div className="text-[15px] font-semibold mb-1" style={{ color: "var(--text)" }}>{a.title}</div>
+                    <div className="text-[13px] leading-relaxed whitespace-pre-wrap" style={{ color: "var(--text-secondary)" }}>{a.body}</div>
                   </div>
-                  <div className="text-[15px] font-semibold mb-1" style={{ color: "#0B2744" }}>{a.title}</div>
-                  <div className="text-[13px] leading-relaxed whitespace-pre-wrap" style={{ color: "#495057" }}>{a.body}</div>
-                </div>
-                <div className="flex gap-1.5 flex-shrink-0">
-                  <button
-                    onClick={() => openEdit(a)}
-                    className="p-2 rounded-lg transition-colors hover:bg-gray-50"
-                    style={{ border: "1px solid #e9ecef", color: "#495057" }}
-                  >
-                    <Pencil className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => setDeleteId(a.id)}
-                    className="p-2 rounded-lg transition-colors hover:bg-red-50"
-                    style={{ border: "1px solid #f8d7da", color: "#842029" }}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                  <div className="flex gap-1.5 flex-shrink-0">
+                    <button
+                      onClick={() => openEdit(a)}
+                      className="p-2 rounded-lg transition-colors hover:bg-gray-50"
+                      style={{ border: "1px solid var(--border-color)", color: "var(--text-secondary)" }}
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => setDeleteId(a.id)}
+                      className="p-2 rounded-lg transition-colors hover:bg-red-50"
+                      style={{ border: "1px solid #f8d7da", color: "#842029" }}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -136,16 +137,14 @@ export default function AdminAnnouncements() {
             <>
               <button
                 onClick={() => setShowModal(false)}
-                className="px-4 py-2.5 rounded-lg text-[13px] font-medium transition-colors hover:bg-gray-50"
-                style={{ border: "1px solid #e9ecef", color: "#6c757d" }}
+                className="btn btn-outline"
               >
                 Cancel
               </button>
               <button
                 onClick={save}
                 disabled={createMutation.isPending || updateMutation.isPending}
-                className="px-5 py-2.5 rounded-lg text-[13px] font-semibold text-white disabled:opacity-60"
-                style={{ background: "#C89B3C" }}
+                className="btn btn-primary disabled:opacity-60"
               >
                 {editId ? "Save Changes" : "Publish to All Delegates"}
               </button>
@@ -176,8 +175,8 @@ export default function AdminAnnouncements() {
           <div
             className="flex items-start gap-3 p-4 rounded-xl cursor-pointer select-none transition-colors"
             style={{
-              border: `1px solid ${important ? "#f0d9a0" : "#dee2e6"}`,
-              background: important ? "#fffef9" : "#fff",
+              border: `1px solid ${important ? "#f0d9a0" : "var(--border-color)"}`,
+              background: important ? "#fffef9" : "var(--bg-surface)",
             }}
             onClick={() => setImportant((v) => !v)}
           >
@@ -187,11 +186,11 @@ export default function AdminAnnouncements() {
               onChange={(e) => setImportant(e.target.checked)}
               onClick={(e) => e.stopPropagation()}
               className="mt-0.5 w-4 h-4 rounded flex-shrink-0"
-              style={{ accentColor: "#C89B3C" }}
+              style={{ accentColor: "var(--primary)" }}
             />
             <div>
-              <div className="text-[13px] font-semibold" style={{ color: "#212529" }}>Mark as Important</div>
-              <div className="text-[12px] mt-0.5" style={{ color: "#6c757d" }}>
+              <div className="text-[13px] font-semibold" style={{ color: "var(--text)" }}>Mark as Important</div>
+              <div className="text-[12px] mt-0.5" style={{ color: "var(--text-muted)" }}>
                 Highlighted with a gold banner in the delegate portal
               </div>
             </div>

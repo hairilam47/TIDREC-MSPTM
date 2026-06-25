@@ -52,7 +52,7 @@ const FIELD_GROUPS = [
 ];
 
 const INPUT_CLS =
-  "w-full px-3.5 py-3 rounded-lg text-[14px] outline-none transition-colors focus:ring-2 focus:ring-[rgba(14,110,116,0.2)] focus:border-[#0E6E74]";
+  "w-full px-3.5 py-3 rounded-lg text-[14px] outline-none transition-colors focus:ring-2 focus:ring-[rgba(14,110,116,0.2)] focus:border-[var(--primary)]";
 
 export default function AdminSettings() {
   const { toast } = useToast();
@@ -129,7 +129,7 @@ export default function AdminSettings() {
   if (loading) {
     return (
       <AdminLayout title="Settings">
-        <div className="text-center py-20" style={{ color: "#adb5bd" }}>Loading…</div>
+        <div className="text-center py-20" style={{ color: "var(--text-disabled)" }}>Loading…</div>
       </AdminLayout>
     );
   }
@@ -137,15 +137,14 @@ export default function AdminSettings() {
   return (
     <AdminLayout title="Settings">
       <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-2 text-[13px]" style={{ color: "#6c757d" }}>
+        <div className="flex items-center gap-2 text-[13px]" style={{ color: "var(--text-muted)" }}>
           <Info className="w-4 h-4 flex-shrink-0" />
           Changes reflect on the marketing site and portal after saving.
         </div>
         <button
           onClick={save}
           disabled={saving}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-[13px] font-semibold text-white disabled:opacity-60"
-          style={{ background: "#0E6E74" }}
+          className="btn btn-primary flex items-center gap-2 disabled:opacity-60"
         >
           <Save className="w-4 h-4" /> {saving ? "Saving…" : "Save Changes"}
         </button>
@@ -153,88 +152,92 @@ export default function AdminSettings() {
 
       <div className="space-y-6">
         {FIELD_GROUPS.map((group) => (
-          <div key={group.label} className="bg-white rounded-xl p-6" style={{ border: "1px solid #e9ecef" }}>
-            <h3 className="text-[14px] font-semibold mb-5" style={{ color: "#0B2744" }}>{group.label}</h3>
-            <div className="space-y-4">
-              {group.fields.map((f) => (
-                <div key={f.key}>
-                  <label className="block text-[13px] font-semibold mb-1.5" style={{ color: "#495057" }}>
-                    {f.label}
-                  </label>
-                  {f.type === "textarea" ? (
-                    <textarea
-                      value={values[f.key] ?? ""}
-                      onChange={(e) => set(f.key, e.target.value)}
-                      rows={3}
-                      className={`${INPUT_CLS} resize-none`}
-                      style={{ border: "1px solid #dee2e6", lineHeight: 1.7 }}
-                    />
-                  ) : (
-                    <input
-                      type="text"
-                      value={values[f.key] ?? ""}
-                      onChange={(e) => set(f.key, e.target.value)}
-                      placeholder={(f as { placeholder?: string }).placeholder}
-                      className={INPUT_CLS}
-                      style={{ border: "1px solid #dee2e6" }}
-                    />
-                  )}
-                </div>
-              ))}
+          <div key={group.label} className="card">
+            <div className="card-body">
+              <h3 className="text-[14px] font-semibold mb-5" style={{ color: "var(--text)" }}>{group.label}</h3>
+              <div className="space-y-4">
+                {group.fields.map((f) => (
+                  <div key={f.key}>
+                    <label className="block text-[13px] font-semibold mb-1.5" style={{ color: "var(--text-secondary)" }}>
+                      {f.label}
+                    </label>
+                    {f.type === "textarea" ? (
+                      <textarea
+                        value={values[f.key] ?? ""}
+                        onChange={(e) => set(f.key, e.target.value)}
+                        rows={3}
+                        className={`${INPUT_CLS} resize-none`}
+                        style={{ border: "1px solid var(--border-color)", lineHeight: 1.7 }}
+                      />
+                    ) : (
+                      <input
+                        type="text"
+                        value={values[f.key] ?? ""}
+                        onChange={(e) => set(f.key, e.target.value)}
+                        placeholder={(f as { placeholder?: string }).placeholder}
+                        className={INPUT_CLS}
+                        style={{ border: "1px solid var(--border-color)" }}
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         ))}
 
         {/* Sponsor Prospectus */}
-        <div className="bg-white rounded-xl p-6" style={{ border: "1px solid #e9ecef" }}>
-          <h3 className="text-[14px] font-semibold mb-1" style={{ color: "#0B2744" }}>Sponsor Prospectus</h3>
-          <p className="text-[13px] mb-5" style={{ color: "#6c757d" }}>
-            Upload a PDF to enable the "Sponsor Prospectus" menu item on the marketing site. Visitors can click it to download the file directly.
-          </p>
-
-          {values.sponsor_prospectus_url ? (
-            <div className="flex items-center gap-3 p-3 rounded-lg mb-4" style={{ background: "#f0fafa", border: "1px solid #b2dfdb" }}>
-              <FileText className="w-4 h-4 flex-shrink-0" style={{ color: "#0E6E74" }} />
-              <span className="text-[13px] flex-1" style={{ color: "#0B2744", fontWeight: 500 }}>
-                Prospectus PDF is configured
-              </span>
-              <button
-                onClick={() => { set("sponsor_prospectus_url", ""); setProspectusError(null); }}
-                className="flex items-center gap-1 text-[12px] px-2.5 py-1 rounded-md"
-                style={{ color: "#842029", background: "#f8d7da", border: "none", cursor: "pointer" }}
-              >
-                <X className="w-3 h-3" /> Remove
-              </button>
-            </div>
-          ) : (
-            <p className="text-[13px] mb-4 italic" style={{ color: "#adb5bd" }}>
-              No prospectus uploaded yet. The menu item will be hidden until a PDF is added.
+        <div className="card">
+          <div className="card-body">
+            <h3 className="text-[14px] font-semibold mb-1" style={{ color: "var(--text)" }}>Sponsor Prospectus</h3>
+            <p className="text-[13px] mb-5" style={{ color: "var(--text-muted)" }}>
+              Upload a PDF to enable the "Sponsor Prospectus" menu item on the marketing site. Visitors can click it to download the file directly.
             </p>
-          )}
 
-          <label
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-[13px] font-semibold cursor-pointer"
-            style={{
-              background: uploadingProspectus ? "#e9ecef" : "#0E6E74",
-              color: uploadingProspectus ? "#6c757d" : "#fff",
-              opacity: uploadingProspectus ? 0.7 : 1,
-              pointerEvents: uploadingProspectus ? "none" : "auto",
-            }}
-          >
-            <Upload className="w-4 h-4" />
-            {uploadingProspectus ? "Uploading…" : values.sponsor_prospectus_url ? "Replace PDF" : "Upload PDF"}
-            <input
-              type="file"
-              accept="application/pdf"
-              className="hidden"
-              disabled={uploadingProspectus}
-              onChange={handleProspectusUpload}
-            />
-          </label>
+            {values.sponsor_prospectus_url ? (
+              <div className="flex items-center gap-3 p-3 rounded-lg mb-4" style={{ background: "var(--primary-lt)", border: "1px solid rgba(14,110,116,0.2)" }}>
+                <FileText className="w-4 h-4 flex-shrink-0" style={{ color: "var(--primary)" }} />
+                <span className="text-[13px] flex-1" style={{ color: "var(--text)", fontWeight: 500 }}>
+                  Prospectus PDF is configured
+                </span>
+                <button
+                  onClick={() => { set("sponsor_prospectus_url", ""); setProspectusError(null); }}
+                  className="flex items-center gap-1 text-[12px] px-2.5 py-1 rounded-md"
+                  style={{ color: "#842029", background: "#f8d7da", border: "none", cursor: "pointer" }}
+                >
+                  <X className="w-3 h-3" /> Remove
+                </button>
+              </div>
+            ) : (
+              <p className="text-[13px] mb-4 italic" style={{ color: "var(--text-disabled)" }}>
+                No prospectus uploaded yet. The menu item will be hidden until a PDF is added.
+              </p>
+            )}
 
-          {prospectusError && (
-            <p className="text-[12px] mt-2" style={{ color: "#842029" }}>{prospectusError}</p>
-          )}
+            <label
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-[13px] font-semibold cursor-pointer"
+              style={{
+                background: uploadingProspectus ? "var(--border-color)" : "var(--primary)",
+                color: uploadingProspectus ? "var(--text-muted)" : "#fff",
+                opacity: uploadingProspectus ? 0.7 : 1,
+                pointerEvents: uploadingProspectus ? "none" : "auto",
+              }}
+            >
+              <Upload className="w-4 h-4" />
+              {uploadingProspectus ? "Uploading…" : values.sponsor_prospectus_url ? "Replace PDF" : "Upload PDF"}
+              <input
+                type="file"
+                accept="application/pdf"
+                className="hidden"
+                disabled={uploadingProspectus}
+                onChange={handleProspectusUpload}
+              />
+            </label>
+
+            {prospectusError && (
+              <p className="text-[12px] mt-2" style={{ color: "#842029" }}>{prospectusError}</p>
+            )}
+          </div>
         </div>
       </div>
 
@@ -244,18 +247,17 @@ export default function AdminSettings() {
         style={{
           background: "rgba(255,255,255,0.95)",
           backdropFilter: "blur(8px)",
-          borderTop: "1px solid #e9ecef",
+          borderTop: "1px solid var(--border-color)",
           boxShadow: "0 -2px 12px rgba(0,0,0,0.06)",
         }}
       >
-        <p className="text-[13px] hidden sm:block" style={{ color: "#6c757d" }}>
+        <p className="text-[13px] hidden sm:block" style={{ color: "var(--text-muted)" }}>
           Changes will reflect on the marketing site and portal after saving.
         </p>
         <button
           onClick={save}
           disabled={saving}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-[13px] font-semibold text-white disabled:opacity-60 ml-auto"
-          style={{ background: "#0E6E74" }}
+          className="btn btn-primary flex items-center gap-2 disabled:opacity-60 ml-auto"
         >
           <Save className="w-4 h-4" /> {saving ? "Saving…" : "Save Changes"}
         </button>

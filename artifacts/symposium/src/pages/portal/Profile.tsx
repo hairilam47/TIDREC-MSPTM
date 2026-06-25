@@ -12,8 +12,12 @@ const COUNTRIES = [
   "United States", "Japan", "South Korea", "China", "India", "Other",
 ];
 
-const INPUT_CLS =
-  "w-full px-3.5 py-3 rounded-lg text-[14px] outline-none transition-colors focus:ring-2 focus:ring-[rgba(14,110,116,0.2)] focus:border-[#0E6E74]";
+const inputStyle: React.CSSProperties = {
+  width: "100%", padding: "10px 14px", borderRadius: 6, fontSize: 14,
+  outline: "none", border: "1px solid var(--border-color)",
+  background: "var(--bg-surface)", color: "var(--text)",
+  fontFamily: "inherit", boxSizing: "border-box",
+};
 
 export default function Profile() {
   const queryClient = useQueryClient();
@@ -65,166 +69,163 @@ export default function Profile() {
   return (
     <PortalLayout title="Profile">
       {isLoading ? (
-        <div className="flex justify-center py-16">
-          <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#0E6E74" }} />
+        <div style={{ display: "flex", justifyContent: "center", padding: "64px 0" }}>
+          <Loader2 className="w-8 h-8 animate-spin" style={{ color: "var(--primary)" }} />
         </div>
       ) : (
-        <div className="max-w-2xl">
-          {/* Avatar area */}
-          <div className="bg-white rounded-xl p-6 mb-5 flex items-center gap-5" style={{ border: "1px solid #e9ecef" }}>
-            <div
-              className="w-16 h-16 rounded-full flex items-center justify-center text-white text-xl font-bold font-sans flex-shrink-0"
-              style={{ background: "#0E6E74" }}
-            >
-              {initials}
-            </div>
-            <div>
-              <h2 className="text-xl font-sans font-bold" style={{ color: "#0B2744" }}>
-                {user?.firstName} {user?.lastName}
-              </h2>
-              <p className="text-[13px]" style={{ color: "#6c757d" }}>{user?.email}</p>
-              <div className="flex items-center gap-2 mt-1">
-                <span
-                  className="text-[11px] font-semibold px-2 py-0.5 rounded-full capitalize"
-                  style={{
-                    background: user?.role === "admin" ? "rgba(200,155,60,0.12)" : "#e6f4f5",
-                    color: user?.role === "admin" ? "#C89B3C" : "#0E6E74",
-                  }}
-                >
-                  {user?.role}
-                </span>
-                {user?.category && (
-                  <span className="text-[11px]" style={{ color: "#adb5bd" }}>
-                    · {user.category.replace(/_/g, " ")}
+        <div style={{ maxWidth: 640 }}>
+          {/* Avatar card */}
+          <div className="card mb-4">
+            <div className="card-body" style={{ display: "flex", alignItems: "center", gap: 20 }}>
+              <div style={{ width: 60, height: 60, borderRadius: "50%", background: "linear-gradient(135deg, var(--primary), var(--primary-dk))", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 20, fontWeight: 700, flexShrink: 0 }}>
+                {initials}
+              </div>
+              <div>
+                <h2 style={{ fontSize: 20, fontWeight: 700, color: "var(--text)", margin: "0 0 2px" }}>
+                  {user?.firstName} {user?.lastName}
+                </h2>
+                <p style={{ fontSize: 13, color: "var(--text-muted)", margin: "0 0 6px" }}>{user?.email}</p>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span style={{
+                    fontSize: 11, fontWeight: 600, padding: "2px 8px", borderRadius: 20, textTransform: "capitalize",
+                    background: user?.role === "admin" ? "rgba(200,155,60,0.12)" : "var(--primary-lt)",
+                    color: user?.role === "admin" ? "#C89B3C" : "var(--primary)",
+                  }}>
+                    {user?.role}
                   </span>
-                )}
+                  {user?.category && (
+                    <span style={{ fontSize: 11, color: "var(--text-disabled)" }}>
+                      · {user.category.replace(/_/g, " ")}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
           </div>
 
           {/* Edit form */}
-          <div className="bg-white rounded-xl p-6" style={{ border: "1px solid #e9ecef" }}>
-            <h3 className="text-[15px] font-semibold mb-5" style={{ color: "#212529" }}>
-              Personal Information
-            </h3>
-            <form onSubmit={handleSave} className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-[13px] font-semibold mb-1.5" style={{ color: "#495057" }}>
-                    First Name <span style={{ color: "#dc3545" }}>*</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={form.firstName}
-                    onChange={(e) => setForm((f) => ({ ...f, firstName: e.target.value }))}
-                    required
-                    placeholder="e.g. Ahmad"
-                    className={INPUT_CLS}
-                    style={{ border: "1px solid #dee2e6" }}
-                  />
-                </div>
-                <div>
-                  <label className="block text-[13px] font-semibold mb-1.5" style={{ color: "#495057" }}>
-                    Last Name <span style={{ color: "#dc3545" }}>*</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={form.lastName}
-                    onChange={(e) => setForm((f) => ({ ...f, lastName: e.target.value }))}
-                    required
-                    placeholder="e.g. Rahman"
-                    className={INPUT_CLS}
-                    style={{ border: "1px solid #dee2e6" }}
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-[13px] font-semibold mb-1.5" style={{ color: "#495057" }}>
-                  Email Address
-                </label>
-                <input
-                  type="email"
-                  value={user?.email ?? ""}
-                  disabled
-                  className="w-full px-3.5 py-3 rounded-lg text-[14px]"
-                  style={{ border: "1px solid #dee2e6", background: "#f8f9fa", color: "#adb5bd" }}
-                />
-                <p className="text-[12px] mt-1" style={{ color: "#adb5bd" }}>Email address cannot be changed.</p>
-              </div>
-
-              <div>
-                <label className="block text-[13px] font-semibold mb-1.5" style={{ color: "#495057" }}>
-                  Institution / Organisation
-                </label>
-                <input
-                  type="text"
-                  value={form.institution}
-                  onChange={(e) => setForm((f) => ({ ...f, institution: e.target.value }))}
-                  placeholder="e.g. University of Malaya"
-                  className={INPUT_CLS}
-                  style={{ border: "1px solid #dee2e6" }}
-                />
-              </div>
-
-              <div>
-                <label className="block text-[13px] font-semibold mb-1.5" style={{ color: "#495057" }}>
-                  Country
-                </label>
-                <select
-                  value={form.country}
-                  onChange={(e) => setForm((f) => ({ ...f, country: e.target.value }))}
-                  className={`${INPUT_CLS} bg-white`}
-                  style={{ border: "1px solid #dee2e6" }}
-                >
-                  <option value="">Select country…</option>
-                  {COUNTRIES.map((c) => (
-                    <option key={c} value={c}>{c}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="flex items-center gap-3 pt-2">
-                <button
-                  type="submit"
-                  disabled={updateMutation.isPending}
-                  className="flex items-center gap-2 px-6 py-2.5 rounded-lg text-[14px] font-semibold text-white disabled:opacity-60"
-                  style={{ background: "#0E6E74" }}
-                >
-                  {updateMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
-                  Save Changes
-                </button>
-                {saved && (
-                  <div className="flex items-center gap-1.5 text-[13px] font-medium" style={{ color: "#198754" }}>
-                    <CheckCircle className="w-4 h-4" />
-                    Saved!
+          <div className="card mb-4">
+            <div className="card-header">
+              <div className="card-title">Personal Information</div>
+            </div>
+            <div className="card-body">
+              <form onSubmit={handleSave} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                  <div>
+                    <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "var(--text-secondary)", marginBottom: 6 }}>
+                      First Name <span style={{ color: "var(--red)" }}>*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={form.firstName}
+                      onChange={(e) => setForm((f) => ({ ...f, firstName: e.target.value }))}
+                      required
+                      placeholder="e.g. Ahmad"
+                      style={inputStyle}
+                    />
                   </div>
-                )}
-              </div>
-            </form>
+                  <div>
+                    <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "var(--text-secondary)", marginBottom: 6 }}>
+                      Last Name <span style={{ color: "var(--red)" }}>*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={form.lastName}
+                      onChange={(e) => setForm((f) => ({ ...f, lastName: e.target.value }))}
+                      required
+                      placeholder="e.g. Rahman"
+                      style={inputStyle}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "var(--text-secondary)", marginBottom: 6 }}>
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    value={user?.email ?? ""}
+                    disabled
+                    style={{ ...inputStyle, background: "var(--bg-surface-secondary)", color: "var(--text-disabled)" }}
+                  />
+                  <p style={{ fontSize: 12, marginTop: 4, color: "var(--text-disabled)" }}>Email address cannot be changed.</p>
+                </div>
+
+                <div>
+                  <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "var(--text-secondary)", marginBottom: 6 }}>
+                    Institution / Organisation
+                  </label>
+                  <input
+                    type="text"
+                    value={form.institution}
+                    onChange={(e) => setForm((f) => ({ ...f, institution: e.target.value }))}
+                    placeholder="e.g. University of Malaya"
+                    style={inputStyle}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "var(--text-secondary)", marginBottom: 6 }}>
+                    Country
+                  </label>
+                  <select
+                    value={form.country}
+                    onChange={(e) => setForm((f) => ({ ...f, country: e.target.value }))}
+                    style={{ ...inputStyle, appearance: "auto" }}
+                  >
+                    <option value="">Select country…</option>
+                    {COUNTRIES.map((c) => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div style={{ display: "flex", alignItems: "center", gap: 12, paddingTop: 4 }}>
+                  <button
+                    type="submit"
+                    disabled={updateMutation.isPending}
+                    className="btn btn-primary"
+                  >
+                    {updateMutation.isPending && <Loader2 style={{ width: 14, height: 14 }} className="animate-spin" />}
+                    Save Changes
+                  </button>
+                  {saved && (
+                    <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 500, color: "var(--green)" }}>
+                      <CheckCircle style={{ width: 16, height: 16 }} />
+                      Saved!
+                    </div>
+                  )}
+                </div>
+              </form>
+            </div>
           </div>
 
           {/* Account info */}
-          <div className="bg-white rounded-xl p-6 mt-5" style={{ border: "1px solid #e9ecef" }}>
-            <h3 className="text-[15px] font-semibold mb-4" style={{ color: "#212529" }}>Account Information</h3>
-            <div className="grid grid-cols-2 gap-4">
-              {[
-                { label: "Account Type", value: user?.role === "admin" ? "Administrator" : "Delegate" },
-                {
-                  label: "Member Since",
-                  value: user
-                    ? new Date(user.createdAt).toLocaleDateString("en-GB", { month: "long", year: "numeric" })
-                    : "—",
-                },
-                { label: "Category", value: user?.category ? user.category.replace(/_/g, " ") : "Not set" },
-              ].map(({ label, value }) => (
-                <div key={label}>
-                  <div className="text-[11px] font-bold uppercase tracking-wider mb-0.5" style={{ color: "#adb5bd" }}>
-                    {label}
+          <div className="card">
+            <div className="card-header">
+              <div className="card-title">Account Information</div>
+            </div>
+            <div className="card-body">
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                {[
+                  { label: "Account Type", value: user?.role === "admin" ? "Administrator" : "Delegate" },
+                  {
+                    label: "Member Since",
+                    value: user
+                      ? new Date(user.createdAt).toLocaleDateString("en-GB", { month: "long", year: "numeric" })
+                      : "—",
+                  },
+                  { label: "Category", value: user?.category ? user.category.replace(/_/g, " ") : "Not set" },
+                ].map(({ label, value }) => (
+                  <div key={label}>
+                    <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.4px", color: "var(--text-disabled)", marginBottom: 2 }}>
+                      {label}
+                    </div>
+                    <div style={{ fontSize: 14, textTransform: "capitalize", color: "var(--text)" }}>{value}</div>
                   </div>
-                  <div className="text-[14px] capitalize" style={{ color: "#212529" }}>{value}</div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
         </div>

@@ -7,7 +7,7 @@ const STATUS_STYLES: Record<string, { bg: string; color: string }> = {
   paid: { bg: "#d1e7dd", color: "#0a5c39" },
   pending: { bg: "#fff3cd", color: "#856404" },
   overdue: { bg: "#f8d7da", color: "#842029" },
-  waived: { bg: "#e6f4f5", color: "#0E6E74" },
+  waived: { bg: "var(--primary-lt)", color: "var(--primary)" },
 };
 
 function toInvoiceNumber(code: string) {
@@ -57,13 +57,15 @@ export default function AdminInvoices() {
       {/* Summary */}
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         {[
-          { label: "Total Invoices", value: registrations?.length ?? 0, color: "#0B2744" },
+          { label: "Total Invoices", value: registrations?.length ?? 0, color: "var(--text)" },
           { label: "Revenue Collected", value: `MYR ${totalRevenue.toLocaleString("en-MY", { minimumFractionDigits: 2 })}`, color: "#0a5c39" },
           { label: "Outstanding", value: outstandingCount, color: "#856404" },
         ].map((s) => (
-          <div key={s.label} className="bg-white rounded-xl p-5" style={{ border: "1px solid #e9ecef" }}>
-            <div className="text-[22px] font-bold mb-0.5" style={{ color: s.color }}>{s.value}</div>
-            <div className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: "#6c757d" }}>{s.label}</div>
+          <div key={s.label} className="card">
+            <div className="card-body">
+              <div className="text-[22px] font-bold mb-0.5" style={{ color: s.color }}>{s.value}</div>
+              <div className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: "var(--text-muted)" }}>{s.label}</div>
+            </div>
           </div>
         ))}
       </div>
@@ -71,70 +73,71 @@ export default function AdminInvoices() {
       {/* Filters + export */}
       <div className="flex flex-col sm:flex-row gap-3 mb-5">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "#adb5bd" }} />
-          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search by name, email, invoice or reg code…" className="w-full pl-9 pr-3 py-2.5 rounded-lg text-[13px] outline-none" style={{ border: "1px solid #dee2e6" }} />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "var(--text-disabled)" }} />
+          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search by name, email, invoice or reg code…" className="w-full pl-9 pr-3 py-2.5 rounded-lg text-[13px] outline-none" style={{ border: "1px solid var(--border-color)" }} />
         </div>
         <div className="relative">
-          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="appearance-none pl-3 pr-8 py-2.5 rounded-lg text-[13px] outline-none" style={{ border: "1px solid #dee2e6", background: "#fff" }}>
+          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="appearance-none pl-3 pr-8 py-2.5 rounded-lg text-[13px] outline-none" style={{ border: "1px solid var(--border-color)", background: "var(--bg-surface)" }}>
             <option value="all">All Statuses</option>
             <option value="pending">Pending</option>
             <option value="paid">Paid</option>
             <option value="overdue">Overdue</option>
             <option value="waived">Waived</option>
           </select>
-          <Search className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none hidden" style={{ color: "#6c757d" }} />
         </div>
-        <button onClick={exportCSV} className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-[13px] font-medium text-white" style={{ background: "#0E6E74" }}>
+        <button onClick={exportCSV} className="btn btn-primary flex items-center gap-2">
           <Download className="w-4 h-4" /> Export CSV
         </button>
       </div>
 
-      <div className="text-[12px] mb-3" style={{ color: "#6c757d" }}>{filtered.length} invoices</div>
+      <div className="text-[12px] mb-3" style={{ color: "var(--text-muted)" }}>{filtered.length} invoices</div>
 
-      <div className="bg-white rounded-xl overflow-hidden" style={{ border: "1px solid #e9ecef" }}>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead style={{ background: "#f8f9fa" }}>
-              <tr>
-                {["Invoice", "Delegate", "Category", "Amount (MYR)", "Status", "Date Issued"].map((h) => (
-                  <th key={h} className="text-left px-4 py-3 text-[11px] font-semibold uppercase tracking-wide" style={{ color: "#6c757d", borderBottom: "1px solid #e9ecef" }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.length === 0 ? (
-                <tr><td colSpan={6} className="text-center py-10" style={{ color: "#adb5bd" }}>
-                  <FileText className="w-8 h-8 mx-auto mb-2" style={{ color: "#dee2e6" }} />
-                  <div className="text-[13px]">No invoices found</div>
-                </td></tr>
-              ) : filtered.map((r) => {
-                const ps = STATUS_STYLES[r.paymentStatus] ?? STATUS_STYLES.pending;
-                const invoiceNo = toInvoiceNumber(r.registrationCode ?? "");
-                return (
-                  <tr key={r.id} style={{ borderBottom: "1px solid #f1f3f5" }}>
-                    <td className="px-4 py-3">
-                      <div className="text-[13px] font-mono font-medium" style={{ color: "#0B2744" }}>{invoiceNo}</div>
-                      <div className="text-[11px]" style={{ color: "#adb5bd" }}>{r.registrationCode}</div>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="text-[13px] font-medium" style={{ color: "#212529" }}>{r.firstName} {r.lastName}</div>
-                      <div className="text-[11px]" style={{ color: "#adb5bd" }}>{r.email}</div>
-                    </td>
-                    <td className="px-4 py-3 text-[12px] capitalize" style={{ color: "#495057" }}>{r.category?.replace(/_/g, " ")}</td>
-                    <td className="px-4 py-3">
-                      <span className="text-[13px] font-semibold" style={{ color: r.paymentAmount ? "#212529" : "#adb5bd" }}>
-                        {r.paymentAmount != null ? Number(r.paymentAmount).toLocaleString("en-MY", { minimumFractionDigits: 2 }) : "—"}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full capitalize" style={{ background: ps.bg, color: ps.color }}>{r.paymentStatus}</span>
-                    </td>
-                    <td className="px-4 py-3 text-[12px]" style={{ color: "#6c757d" }}>{new Date(r.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+      <div className="card">
+        <div className="card-body p-0">
+          <div className="overflow-x-auto">
+            <table className="table">
+              <thead>
+                <tr>
+                  {["Invoice", "Delegate", "Category", "Amount (MYR)", "Status", "Date Issued"].map((h) => (
+                    <th key={h}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.length === 0 ? (
+                  <tr><td colSpan={6} className="text-center py-10" style={{ color: "var(--text-disabled)" }}>
+                    <FileText className="w-8 h-8 mx-auto mb-2" style={{ color: "var(--border-color)" }} />
+                    <div className="text-[13px]">No invoices found</div>
+                  </td></tr>
+                ) : filtered.map((r) => {
+                  const ps = STATUS_STYLES[r.paymentStatus] ?? STATUS_STYLES.pending;
+                  const invoiceNo = toInvoiceNumber(r.registrationCode ?? "");
+                  return (
+                    <tr key={r.id}>
+                      <td>
+                        <div className="text-[13px] font-mono font-medium" style={{ color: "var(--text)" }}>{invoiceNo}</div>
+                        <div className="text-[11px]" style={{ color: "var(--text-disabled)" }}>{r.registrationCode}</div>
+                      </td>
+                      <td>
+                        <div className="text-[13px] font-medium" style={{ color: "var(--text)" }}>{r.firstName} {r.lastName}</div>
+                        <div className="text-[11px]" style={{ color: "var(--text-disabled)" }}>{r.email}</div>
+                      </td>
+                      <td className="text-[12px] capitalize" style={{ color: "var(--text-secondary)" }}>{r.category?.replace(/_/g, " ")}</td>
+                      <td>
+                        <span className="text-[13px] font-semibold" style={{ color: r.paymentAmount ? "var(--text)" : "var(--text-disabled)" }}>
+                          {r.paymentAmount != null ? Number(r.paymentAmount).toLocaleString("en-MY", { minimumFractionDigits: 2 }) : "—"}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full capitalize" style={{ background: ps.bg, color: ps.color }}>{r.paymentStatus}</span>
+                      </td>
+                      <td className="text-[12px]" style={{ color: "var(--text-muted)" }}>{new Date(r.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </AdminLayout>

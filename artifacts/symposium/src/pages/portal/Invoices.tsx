@@ -4,10 +4,10 @@ import { useGetMyInvoice, useGetRegistrationCategories } from "@workspace/api-cl
 import { Loader2, Receipt, Download, CheckCircle, Clock, AlertCircle } from "lucide-react";
 
 const STATUS_CONFIG: Record<string, { bg: string; color: string; label: string; icon: React.ReactNode }> = {
-  paid: { bg: "#d1e7dd", color: "#0a5c39", label: "Paid", icon: <CheckCircle className="w-4 h-4" /> },
-  pending: { bg: "#fff3cd", color: "#856404", label: "Awaiting Payment", icon: <Clock className="w-4 h-4" /> },
-  overdue: { bg: "#f8d7da", color: "#842029", label: "Overdue", icon: <AlertCircle className="w-4 h-4" /> },
-  waived: { bg: "#e6f4f5", color: "#0E6E74", label: "Waived", icon: <CheckCircle className="w-4 h-4" /> },
+  paid:    { bg: "var(--green-lt)",        color: "var(--green)",   label: "Paid",             icon: <CheckCircle style={{ width: 16, height: 16 }} /> },
+  pending: { bg: "rgba(245,159,0,0.10)",  color: "#856404",         label: "Awaiting Payment", icon: <Clock style={{ width: 16, height: 16 }} /> },
+  overdue: { bg: "var(--red-lt)",         color: "var(--red)",      label: "Overdue",          icon: <AlertCircle style={{ width: 16, height: 16 }} /> },
+  waived:  { bg: "var(--primary-lt)",     color: "var(--primary)",  label: "Waived",           icon: <CheckCircle style={{ width: 16, height: 16 }} /> },
 };
 
 export default function Invoices() {
@@ -17,47 +17,37 @@ export default function Invoices() {
   return (
     <PortalLayout title="Invoices">
       {isLoading ? (
-        <div className="flex justify-center py-16">
-          <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#0E6E74" }} />
+        <div style={{ display: "flex", justifyContent: "center", padding: "64px 0" }}>
+          <Loader2 className="w-8 h-8 animate-spin" style={{ color: "var(--primary)" }} />
         </div>
       ) : isError || !invoice ? (
-        <div
-          className="bg-white rounded-xl p-16 text-center max-w-sm mx-auto"
-          style={{ border: "1px dashed #dee2e6" }}
-        >
-          <div
-            className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
-            style={{ background: "#f8f9fa" }}
-          >
-            <Receipt className="w-8 h-8" style={{ color: "#dee2e6" }} />
+        <div className="card" style={{ maxWidth: 380, margin: "0 auto" }}>
+          <div className="card-body" style={{ padding: "64px 16px", textAlign: "center" }}>
+            <div style={{ width: 56, height: 56, borderRadius: "50%", background: "var(--bg-surface-secondary)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
+              <Receipt style={{ width: 28, height: 28, color: "var(--text-disabled)" }} />
+            </div>
+            <h3 style={{ fontSize: 18, fontWeight: 700, color: "var(--text)", marginBottom: 8 }}>No Invoice Yet</h3>
+            <p style={{ fontSize: 13, color: "var(--text-muted)", margin: 0 }}>
+              Complete your registration to generate an invoice.
+            </p>
           </div>
-          <h3 className="text-xl font-sans font-bold mb-2" style={{ color: "#212529" }}>
-            No Invoice Yet
-          </h3>
-          <p className="text-sm" style={{ color: "#6c757d" }}>
-            Complete your registration to generate an invoice.
-          </p>
         </div>
       ) : (
-        <div className="max-w-2xl">
-          {/* Invoice document */}
-          <div className="bg-white rounded-xl overflow-hidden" style={{ border: "1px solid #e9ecef", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
-            {/* Invoice header */}
-            <div
-              className="px-8 py-6 flex items-start justify-between"
-              style={{ background: "linear-gradient(135deg, #0B2744, #0E6E74)" }}
-            >
+        <div style={{ maxWidth: 640 }}>
+          <div className="card" style={{ overflow: "hidden" }}>
+            {/* Invoice header — brand gradient, intentionally not using CSS vars */}
+            <div style={{ padding: "24px 32px", display: "flex", alignItems: "flex-start", justifyContent: "space-between", background: "linear-gradient(135deg, #0B2744, #0E6E74)" }}>
               <div>
-                <div className="text-white font-sans text-xl font-bold mb-1">INVOICE</div>
-                <div className="text-[13px]" style={{ color: "rgba(255,255,255,0.7)" }}>
+                <div style={{ color: "#fff", fontSize: 20, fontWeight: 700, marginBottom: 4 }}>INVOICE</div>
+                <div style={{ fontSize: 13, color: "rgba(255,255,255,0.7)" }}>
                   3rd SEAT-MSPTM 2027 — Symposium Registration
                 </div>
               </div>
-              <div className="text-right">
-                <div className="text-[11px] font-bold uppercase tracking-wider mb-1" style={{ color: "#C89B3C" }}>
+              <div style={{ textAlign: "right" }}>
+                <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "#C89B3C", marginBottom: 4 }}>
                   Invoice Number
                 </div>
-                <div className="text-white font-mono text-[16px] font-bold">
+                <div style={{ color: "#fff", fontFamily: "monospace", fontSize: 16, fontWeight: 700 }}>
                   {invoice.invoiceNumber}
                 </div>
               </div>
@@ -67,35 +57,30 @@ export default function Invoices() {
             {(() => {
               const sc = STATUS_CONFIG[invoice.status] ?? STATUS_CONFIG.pending;
               return (
-                <div
-                  className="px-8 py-3 flex items-center gap-2 text-[13px] font-semibold"
-                  style={{ background: sc.bg, color: sc.color }}
-                >
+                <div style={{ padding: "10px 32px", display: "flex", alignItems: "center", gap: 8, fontSize: 13, fontWeight: 600, background: sc.bg, color: sc.color }}>
                   {sc.icon}
                   {sc.label}
                   {invoice.status === "pending" && (
-                    <span className="ml-auto font-normal">
-                      Payment required within 48 hours
-                    </span>
+                    <span style={{ marginLeft: "auto", fontWeight: 400 }}>Payment required within 48 hours</span>
                   )}
                 </div>
               );
             })()}
 
             {/* Invoice body */}
-            <div className="px-8 py-6">
+            <div className="card-body" style={{ padding: "24px 32px" }}>
               {/* Dates */}
-              <div className="grid grid-cols-2 gap-6 mb-6 pb-6" style={{ borderBottom: "1px solid #e9ecef" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginBottom: 24, paddingBottom: 24, borderBottom: "1px solid var(--border-color)" }}>
                 <div>
-                  <div className="text-[11px] font-bold uppercase tracking-wider mb-1" style={{ color: "#adb5bd" }}>Issued</div>
-                  <div className="text-[14px]" style={{ color: "#212529" }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "var(--text-disabled)", marginBottom: 4 }}>Issued</div>
+                  <div style={{ fontSize: 14, color: "var(--text)" }}>
                     {new Date(invoice.issuedAt).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
                   </div>
                 </div>
                 {invoice.paidAt && (
                   <div>
-                    <div className="text-[11px] font-bold uppercase tracking-wider mb-1" style={{ color: "#adb5bd" }}>Paid On</div>
-                    <div className="text-[14px]" style={{ color: "#212529" }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "var(--text-disabled)", marginBottom: 4 }}>Paid On</div>
+                    <div style={{ fontSize: 14, color: "var(--text)" }}>
                       {new Date(invoice.paidAt).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
                     </div>
                   </div>
@@ -103,48 +88,45 @@ export default function Invoices() {
               </div>
 
               {/* Bill to */}
-              <div className="mb-6 pb-6" style={{ borderBottom: "1px solid #e9ecef" }}>
-                <div className="text-[11px] font-bold uppercase tracking-wider mb-3" style={{ color: "#adb5bd" }}>Bill To</div>
-                <div className="text-[15px] font-semibold" style={{ color: "#212529" }}>{invoice.delegate.name}</div>
-                <div className="text-[13px]" style={{ color: "#6c757d" }}>{invoice.delegate.email}</div>
+              <div style={{ marginBottom: 24, paddingBottom: 24, borderBottom: "1px solid var(--border-color)" }}>
+                <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "var(--text-disabled)", marginBottom: 10 }}>Bill To</div>
+                <div style={{ fontSize: 15, fontWeight: 600, color: "var(--text)" }}>{invoice.delegate.name}</div>
+                <div style={{ fontSize: 13, color: "var(--text-muted)" }}>{invoice.delegate.email}</div>
                 {invoice.delegate.institution && (
-                  <div className="text-[13px]" style={{ color: "#6c757d" }}>{invoice.delegate.institution}</div>
+                  <div style={{ fontSize: 13, color: "var(--text-muted)" }}>{invoice.delegate.institution}</div>
                 )}
                 {invoice.delegate.country && (
-                  <div className="text-[13px]" style={{ color: "#6c757d" }}>{invoice.delegate.country}</div>
+                  <div style={{ fontSize: 13, color: "var(--text-muted)" }}>{invoice.delegate.country}</div>
                 )}
               </div>
 
               {/* Line items */}
-              <div className="mb-6 pb-6" style={{ borderBottom: "1px solid #e9ecef" }}>
-                <div className="text-[11px] font-bold uppercase tracking-wider mb-3" style={{ color: "#adb5bd" }}>Items</div>
-                <div className="rounded-lg overflow-hidden" style={{ border: "1px solid #e9ecef" }}>
-                  <div className="grid grid-cols-3 px-4 py-2.5" style={{ background: "#f8f9fa", borderBottom: "1px solid #e9ecef" }}>
-                    <div className="text-[11px] font-semibold uppercase tracking-wider col-span-2" style={{ color: "#6c757d" }}>Description</div>
-                    <div className="text-[11px] font-semibold uppercase tracking-wider text-right" style={{ color: "#6c757d" }}>Amount</div>
+              <div style={{ marginBottom: 24, paddingBottom: 24, borderBottom: "1px solid var(--border-color)" }}>
+                <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "var(--text-disabled)", marginBottom: 10 }}>Items</div>
+                <div style={{ borderRadius: 6, overflow: "hidden", border: "1px solid var(--border-color)" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr auto", padding: "10px 16px", background: "var(--bg-surface-secondary)", borderBottom: "1px solid var(--border-color)" }}>
+                    <div style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px", color: "var(--text-muted)" }}>Description</div>
+                    <div style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px", color: "var(--text-muted)" }}>Amount</div>
                   </div>
-                  <div className="grid grid-cols-3 px-4 py-3.5">
-                    <div className="col-span-2">
-                      <div className="text-[14px] font-medium" style={{ color: "#212529" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr auto", padding: "14px 16px", gap: 16 }}>
+                    <div>
+                      <div style={{ fontSize: 14, fontWeight: 500, color: "var(--text)" }}>
                         Symposium Registration — {categories.find(c => c.slug === invoice.category)?.label || invoice.category?.replace(/_/g, " ") || invoice.category}
                       </div>
-                      <div className="text-[12px] mt-0.5" style={{ color: "#6c757d" }}>
+                      <div style={{ fontSize: 12, marginTop: 2, color: "var(--text-muted)" }}>
                         3rd SEAT-MSPTM 2027 · 22–23 March 2027 · Sunway Putra Hotel, KL
                       </div>
-                      <div className="text-[12px] mt-0.5" style={{ color: "#6c757d" }}>
+                      <div style={{ fontSize: 12, marginTop: 2, color: "var(--text-muted)" }}>
                         Reg: {invoice.registrationCode}
                       </div>
                     </div>
-                    <div className="text-[15px] font-bold text-right" style={{ color: "#212529" }}>
+                    <div style={{ fontSize: 15, fontWeight: 700, color: "var(--text)" }}>
                       {invoice.currency} {invoice.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                     </div>
                   </div>
-                  <div
-                    className="grid grid-cols-3 px-4 py-3 font-bold"
-                    style={{ background: "#f8f9fa", borderTop: "1px solid #e9ecef" }}
-                  >
-                    <div className="col-span-2 text-[13px]" style={{ color: "#495057" }}>Total</div>
-                    <div className="text-[16px] text-right" style={{ color: "#0B2744" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr auto", padding: "12px 16px", background: "var(--bg-surface-secondary)", borderTop: "1px solid var(--border-color)", fontWeight: 700 }}>
+                    <div style={{ fontSize: 13, color: "var(--text-secondary)" }}>Total</div>
+                    <div style={{ fontSize: 16, color: "var(--text)" }}>
                       {invoice.currency} {invoice.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                     </div>
                   </div>
@@ -153,11 +135,11 @@ export default function Invoices() {
 
               {/* Payment instructions */}
               {invoice.status === "pending" && (
-                <div className="rounded-lg p-4" style={{ background: "#e6f4f5", border: "1px solid #a3d4d6" }}>
-                  <div className="text-[12px] font-bold uppercase tracking-wider mb-2" style={{ color: "#0E6E74" }}>
+                <div style={{ borderRadius: 6, padding: "14px 16px", background: "var(--primary-lt)", border: "1px solid rgba(14,110,116,0.2)" }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "var(--primary)", marginBottom: 8 }}>
                     Payment Instructions
                   </div>
-                  <p className="text-[13px]" style={{ color: "#055160" }}>
+                  <p style={{ fontSize: 13, color: "var(--text-secondary)", margin: 0 }}>
                     Please transfer the total amount to the account details provided in your registration confirmation email.
                     Quote your registration code <strong>{invoice.registrationCode}</strong> as the payment reference.
                   </p>
@@ -166,16 +148,16 @@ export default function Invoices() {
             </div>
 
             {/* Footer */}
-            <div className="px-8 py-4 flex items-center justify-between" style={{ background: "#f8f9fa", borderTop: "1px solid #e9ecef" }}>
-              <div className="text-[12px]" style={{ color: "#adb5bd" }}>
-                Organised by MSPTM & TIDREC@UM · seat-msptm2027.org
+            <div className="card-footer" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <div style={{ fontSize: 12, color: "var(--text-disabled)" }}>
+                Organised by MSPTM &amp; TIDREC@UM · seat-msptm2027.org
               </div>
               <button
-                className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[13px] font-medium"
-                style={{ border: "1px solid #dee2e6", color: "#495057", background: "#fff" }}
+                className="btn"
+                style={{ border: "1px solid var(--border-color)", color: "var(--text-secondary)", background: "var(--bg-surface)" }}
                 onClick={() => window.print()}
               >
-                <Download className="w-3.5 h-3.5" />
+                <Download style={{ width: 14, height: 14 }} />
                 Print / Save PDF
               </button>
             </div>

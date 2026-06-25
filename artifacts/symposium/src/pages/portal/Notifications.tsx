@@ -13,62 +13,52 @@ export default function Notifications() {
 
   return (
     <PortalLayout title="Notifications">
-      <p className="text-sm mb-6" style={{ color: "#6c757d" }}>
+      <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 24 }}>
         Official announcements and updates from the SEAT-MSPTM 2027 organising committee.
       </p>
 
       {isLoading ? (
-        <div className="flex justify-center py-16">
-          <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#0E6E74" }} />
+        <div style={{ display: "flex", justifyContent: "center", padding: "64px 0" }}>
+          <Loader2 className="w-8 h-8 animate-spin" style={{ color: "var(--primary)" }} />
         </div>
       ) : sorted.length === 0 ? (
-        <div className="text-center py-16">
-          <Bell className="w-10 h-10 mx-auto mb-3" style={{ color: "#dee2e6" }} />
-          <p className="text-[14px]" style={{ color: "#6c757d" }}>No announcements yet.</p>
+        <div style={{ textAlign: "center", padding: "64px 0" }}>
+          <Bell style={{ width: 40, height: 40, color: "var(--text-disabled)", margin: "0 auto 12px" }} />
+          <p style={{ fontSize: 14, color: "var(--text-muted)" }}>No announcements yet.</p>
         </div>
       ) : (
-        <div className="space-y-3 max-w-2xl">
+        <div style={{ display: "flex", flexDirection: "column", gap: 10, maxWidth: 640 }}>
           {sorted.map((a) => (
             <div
               key={a.id}
-              className="bg-white rounded-xl p-5 flex items-start gap-4"
+              className="card"
               style={{
-                border: a.important ? "1px solid #a3d4d6" : "1px solid #e9ecef",
-                borderLeft: `4px solid ${a.important ? "#0E6E74" : "#dee2e6"}`,
+                display: "flex", alignItems: "flex-start", gap: 16, padding: 20,
+                borderLeft: `4px solid ${a.important ? "var(--primary)" : "var(--border-color)"}`,
               }}
             >
-              <div
-                className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
-                style={{ background: a.important ? "#e6f4f5" : "#f8f9fa" }}
-              >
+              <div style={{ width: 34, height: 34, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 2, background: a.important ? "var(--primary-lt)" : "var(--bg-surface-secondary)" }}>
                 {a.important ? (
-                  <AlertCircle className="w-4.5 h-4.5" style={{ color: "#0E6E74", width: 18, height: 18 }} />
+                  <AlertCircle style={{ width: 18, height: 18, color: "var(--primary)" }} />
                 ) : (
-                  <Info className="w-4.5 h-4.5" style={{ color: "#adb5bd", width: 18, height: 18 }} />
+                  <Info style={{ width: 18, height: 18, color: "var(--text-disabled)" }} />
                 )}
               </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between gap-4 mb-1">
-                  <h3 className="text-[14px] font-semibold" style={{ color: "#212529" }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, marginBottom: 4 }}>
+                  <h3 style={{ fontSize: 14, fontWeight: 600, color: "var(--text)", margin: 0 }}>
                     {a.title}
                     {a.important && (
-                      <span
-                        className="ml-2 text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full"
-                        style={{ background: "#0E6E74", color: "#fff" }}
-                      >
+                      <span style={{ marginLeft: 8, fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.4px", padding: "1px 6px", borderRadius: 20, background: "var(--primary)", color: "#fff" }}>
                         Important
                       </span>
                     )}
                   </h3>
-                  <div className="text-[12px] flex-shrink-0" style={{ color: "#adb5bd" }}>
-                    {new Date(a.createdAt).toLocaleDateString("en-GB", {
-                      day: "numeric",
-                      month: "short",
-                      year: "numeric",
-                    })}
+                  <div style={{ fontSize: 12, flexShrink: 0, color: "var(--text-disabled)" }}>
+                    {new Date(a.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
                   </div>
                 </div>
-                <p className="text-[13px] leading-relaxed" style={{ color: "#495057" }}>
+                <p style={{ fontSize: 13, lineHeight: 1.5, color: "var(--text-secondary)", margin: 0 }}>
                   {a.body}
                 </p>
               </div>
