@@ -228,12 +228,6 @@ export default function Home() {
                   </div>
                   {/* Info */}
                   <div className="flex flex-col justify-center min-w-0">
-                    <span
-                      className="inline-block self-start text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded mb-2"
-                      style={{ background: "rgba(200,155,60,0.15)", color: "var(--gold)" }}
-                    >
-                      Keynote Speaker
-                    </span>
                     <h3 className="font-bold text-secondary text-base leading-snug mb-0.5 truncate">{speaker.name}</h3>
                     {speaker.institution && <p className="text-sm text-muted-foreground truncate">{speaker.institution}</p>}
                     <p className="text-sm text-primary font-medium">{speaker.country}</p>
