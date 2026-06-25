@@ -213,14 +213,14 @@ export default function Home() {
               <p className="text-base text-muted-foreground max-w-xl mx-auto">Hear from world-renowned experts in tropical medicine and infectious diseases.</p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10">
+            <div className="grid gap-6 mb-10 [grid-template-columns:repeat(auto-fill,minmax(320px,1fr))]">
               {featuredSpeakers.map(speaker => (
-                <div key={speaker.id} className="flex gap-5 p-5 rounded-xl border border-border bg-white shadow-sm">
+                <div key={speaker.id} className="flex gap-6 p-6 rounded-xl border border-border bg-white shadow-sm">
                   {/* Photo */}
                   <div className="flex-shrink-0">
-                    <Avatar className="w-24 h-24 rounded-xl">
+                    <Avatar className="w-32 h-32 rounded-xl">
                       <AvatarImage src={resolveImageUrl(speaker.photoUrl) || ''} alt={speaker.name} className="object-cover object-top" />
-                      <AvatarFallback className="text-2xl bg-secondary text-white rounded-xl font-bold">
+                      <AvatarFallback className="text-3xl bg-secondary text-white rounded-xl font-bold">
                         {speaker.initials || speaker.name.substring(0, 2)}
                       </AvatarFallback>
                     </Avatar>
