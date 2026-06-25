@@ -408,8 +408,8 @@ export default function AdminRegistrations() {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="appearance-none pl-3 pr-8 py-2.5 rounded-lg text-[13px] outline-none"
-            style={{ border: "1px solid var(--border-color)", background: "var(--bg-surface)" }}
+            className={`appearance-none ${SELECT_BASE}`}
+            style={inputBorder()}
           >
             <option value="all">All Statuses</option>
             <option value="pending">Pending</option>

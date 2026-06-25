@@ -122,7 +122,7 @@ export default function AdminProgramme() {
       {/* Sessions table */}
       <div className="card">
         <div className="card-body p-0">
-          <div style={{ overflowX: "auto" }}>
+          <div className="table-responsive">
             <table className="table">
               <thead>
                 <tr>

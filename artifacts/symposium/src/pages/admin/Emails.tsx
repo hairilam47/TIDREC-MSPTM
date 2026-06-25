@@ -173,7 +173,7 @@ export default function AdminEmails() {
             key={a.id}
             className="card"
             style={{
-              borderColor: a.important ? "rgba(200,155,60,0.35)" : "var(--border-color)",
+              borderColor: a.important ? "var(--gold-border)" : "var(--border-color)",
               background: a.important ? "var(--gold-lt)" : "var(--bg-surface)",
             }}
           >

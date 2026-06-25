@@ -83,7 +83,7 @@ export default function AdminAnnouncements() {
               key={a.id}
               className="card"
               style={{
-                border: `1px solid ${a.important ? "rgba(200,155,60,0.35)" : "var(--border-color)"}`,
+                border: `1px solid ${a.important ? "var(--gold-border)" : "var(--border-color)"}`,
                 background: a.important ? "var(--gold-lt)" : "var(--bg-surface)",
               }}
             >
@@ -174,7 +174,7 @@ export default function AdminAnnouncements() {
           <div
             className="flex items-start gap-3 p-4 rounded-xl cursor-pointer select-none transition-colors"
             style={{
-              border: `1px solid ${important ? "rgba(200,155,60,0.35)" : "var(--border-color)"}`,
+              border: `1px solid ${important ? "var(--gold-border)" : "var(--border-color)"}`,
               background: important ? "var(--gold-lt)" : "var(--bg-surface)",
             }}
             onClick={() => setImportant((v) => !v)}

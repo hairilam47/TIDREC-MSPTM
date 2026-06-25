@@ -122,7 +122,7 @@ export default function AdminAbstracts() {
           { label: "Accepted",      value: counts.accepted, color: "var(--status-success-text)", bg: "var(--status-success-bg)" },
           { label: "Rejected",      value: counts.rejected, color: "var(--status-danger-text)",  bg: "var(--status-danger-bg)" },
         ].map((c) => (
-          <div key={c.label} className="flex items-center gap-2 px-4 py-2 rounded-xl" style={{ background: c.bg, border: "1px solid rgba(0,0,0,0.06)" }}>
+          <div key={c.label} className="flex items-center gap-2 px-4 py-2 rounded-xl" style={{ background: c.bg, border: "1px solid var(--border-translucent)" }}>
             <span className="text-[20px] font-bold" style={{ color: c.color }}>{c.value}</span>
             <span className="text-[12px] font-medium" style={{ color: c.color }}>{c.label}</span>
           </div>

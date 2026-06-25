@@ -1,7 +1,8 @@
 import React from "react";
 import AdminLayout from "@/components/AdminLayout";
 import { useGetRegistrations } from "@workspace/api-client-react";
-import { Search, Download, FileText } from "lucide-react";
+import { Search, Download, FileText, ChevronDown } from "lucide-react";
+import { INPUT_BASE, SELECT_BASE, inputBorder } from "@/components/ui/form-primitives";
 
 const STATUS_STYLES: Record<string, { bg: string; color: string }> = {
   paid:    { bg: "var(--status-success-bg)", color: "var(--status-success-text)" },
@@ -74,16 +75,17 @@ export default function AdminInvoices() {
       <div className="flex flex-col sm:flex-row gap-3 mb-5">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "var(--text-disabled)" }} />
-          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search by name, email, invoice or reg code…" className="w-full pl-9 pr-3 py-2.5 rounded-lg text-[13px] outline-none" style={{ border: "1px solid var(--border-color)" }} />
+          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search by name, email, invoice or reg code…" className={`${INPUT_BASE} pl-9`} style={inputBorder()} />
         </div>
         <div className="relative">
-          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="appearance-none pl-3 pr-8 py-2.5 rounded-lg text-[13px] outline-none" style={{ border: "1px solid var(--border-color)", background: "var(--bg-surface)" }}>
+          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className={`appearance-none ${SELECT_BASE}`} style={inputBorder()}>
             <option value="all">All Statuses</option>
             <option value="pending">Pending</option>
             <option value="paid">Paid</option>
             <option value="overdue">Overdue</option>
             <option value="waived">Waived</option>
           </select>
+          <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style={{ color: "var(--text-muted)" }} />
         </div>
         <button onClick={exportCSV} className="btn btn-primary flex items-center gap-2">
           <Download className="w-4 h-4" /> Export CSV

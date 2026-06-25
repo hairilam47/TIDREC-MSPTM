@@ -52,7 +52,7 @@ const FIELD_GROUPS = [
 ];
 
 const INPUT_CLS =
-  "w-full px-3.5 py-3 rounded-lg text-[14px] outline-none transition-colors focus:ring-2 focus:ring-[rgba(14,110,116,0.2)] focus:border-[var(--primary)]";
+  "w-full px-3.5 py-3 rounded-lg text-[14px] outline-none transition-colors focus:ring-2 focus:ring-[var(--teal-focus)] focus:border-[var(--primary)]";
 
 export default function AdminSettings() {
   const { toast } = useToast();
@@ -195,7 +195,7 @@ export default function AdminSettings() {
             </p>
 
             {values.sponsor_prospectus_url ? (
-              <div className="flex items-center gap-3 p-3 rounded-lg mb-4" style={{ background: "var(--primary-lt)", border: "1px solid rgba(14,110,116,0.2)" }}>
+              <div className="flex items-center gap-3 p-3 rounded-lg mb-4" style={{ background: "var(--primary-lt)", border: "1px solid var(--teal-focus)" }}>
                 <FileText className="w-4 h-4 flex-shrink-0" style={{ color: "var(--primary)" }} />
                 <span className="text-[13px] flex-1" style={{ color: "var(--text)", fontWeight: 500 }}>
                   Prospectus PDF is configured
@@ -244,10 +244,10 @@ export default function AdminSettings() {
       <div
         className="fixed bottom-0 left-0 right-0 z-30 flex items-center justify-between px-6 py-3"
         style={{
-          background: "rgba(255,255,255,0.95)",
+          background: "var(--bg-frosted)",
           backdropFilter: "blur(8px)",
           borderTop: "1px solid var(--border-color)",
-          boxShadow: "0 -2px 12px rgba(0,0,0,0.06)",
+          boxShadow: `0 -2px 12px var(--shadow-xs)`,
         }}
       >
         <p className="text-[13px] hidden sm:block" style={{ color: "var(--text-muted)" }}>
