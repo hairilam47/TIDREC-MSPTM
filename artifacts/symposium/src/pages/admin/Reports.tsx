@@ -27,32 +27,45 @@ export default function AdminReports() {
   const exportPdf = () => {
     const printWindow = window.open("", "_blank");
     if (!printWindow) return;
-    const inlineStyles = Array.from(document.querySelectorAll("style")).map((el) => el.outerHTML).join("");
-    const linkedStyles = Array.from(document.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]'))
-      .map((el) => `<link rel="stylesheet" href="${el.href}">`)
-      .join("");
-    const pageStyles = inlineStyles + linkedStyles;
+
+    // Resolve design-token values from the live document so the print template
+    // stays in sync with the CSS custom properties (zero hardcoded hex here).
+    const cs = getComputedStyle(document.documentElement);
+    const cv = (name: string) => cs.getPropertyValue(name).trim();
+    const c = {
+      text:        cv("--text"),
+      textMuted:   cv("--text-muted"),
+      textDisabled:cv("--text-disabled"),
+      navy:        cv("--navy"),
+      teal:        cv("--teal"),
+      border:      cv("--border-color"),
+      borderLight: cv("--border-color-light"),
+      bgSurface:   cv("--bg-surface"),
+      bgSecondary: cv("--bg-surface-secondary"),
+      font:        cv("--app-font-sans") || "Inter, system-ui, sans-serif",
+    };
+
     const topCountriesHtml = topCountries.map((c) => `<tr><td>${c.country}</td><td>${c.count}</td></tr>`).join("");
     const catHtml = (stats?.registrationsByCategory ?? []).sort((a, b) => b.count - a.count).map((c) => `<tr><td class="cap">${c.category.replace(/_/g, " ")}</td><td>${c.count}</td></tr>`).join("");
     const abstractTotal = stats?.totalAbstracts ?? 0;
     const acceptRate = abstractTotal > 0 ? Math.round(((stats?.acceptedAbstracts ?? 0) / abstractTotal) * 100) : 0;
-    const html = `<!DOCTYPE html><html><head><title>SEAT-MSPTM 2027 Event Report</title>${pageStyles}<style>
+    const html = `<!DOCTYPE html><html><head><title>SEAT-MSPTM 2027 Event Report</title><style>
       *{box-sizing:border-box;margin:0;padding:0}
-      body{font-family:var(--app-font-sans);font-size:12px;color:#333;padding:20mm}
-      h1{font-size:20px;color:#0B2744;margin-bottom:4px}
-      .meta{color:#6c757d;font-size:11px;margin-bottom:20px}
-      h2{font-size:13px;font-weight:bold;color:#0E6E74;margin:20px 0 8px;border-bottom:2px solid #0E6E74;padding-bottom:4px;text-transform:uppercase;letter-spacing:.05em}
+      body{font-family:${c.font};font-size:12px;color:${c.text};padding:20mm}
+      h1{font-size:20px;color:${c.navy};margin-bottom:4px}
+      .meta{color:${c.textMuted};font-size:11px;margin-bottom:20px}
+      h2{font-size:13px;font-weight:bold;color:${c.teal};margin:20px 0 8px;border-bottom:2px solid ${c.teal};padding-bottom:4px;text-transform:uppercase;letter-spacing:.05em}
       .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
-      .kpi{border:1px solid #dee2e6;padding:10px;border-radius:6px}
-      .kpi-value{font-size:18px;font-weight:bold;color:#0E6E74}
-      .kpi-label{font-size:10px;color:#6c757d;text-transform:uppercase;margin-top:2px}
+      .kpi{border:1px solid ${c.border};padding:10px;border-radius:6px}
+      .kpi-value{font-size:18px;font-weight:bold;color:${c.teal}}
+      .kpi-label{font-size:10px;color:${c.textMuted};text-transform:uppercase;margin-top:2px}
       table{width:100%;border-collapse:collapse;margin-bottom:16px}
-      th{background:#f8f9fa;text-align:left;padding:6px 10px;font-size:11px;text-transform:uppercase;border-bottom:2px solid #dee2e6;color:#6c757d}
-      td{padding:6px 10px;border-bottom:1px solid #f1f3f5;font-size:12px}
+      th{background:${c.bgSecondary};text-align:left;padding:6px 10px;font-size:11px;text-transform:uppercase;border-bottom:2px solid ${c.border};color:${c.textMuted}}
+      td{padding:6px 10px;border-bottom:1px solid ${c.borderLight};font-size:12px}
       tr:last-child td{border-bottom:none}
       .cap{text-transform:capitalize}
       .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-      .footer{margin-top:30px;text-align:center;font-size:10px;color:#adb5bd;border-top:1px solid #dee2e6;padding-top:10px}
+      .footer{margin-top:30px;text-align:center;font-size:10px;color:${c.textDisabled};border-top:1px solid ${c.border};padding-top:10px}
       @media print{@page{margin:15mm}body{padding:0}}
     </style></head><body>
       <h1>SEAT-MSPTM 2027 — Event Report</h1>
