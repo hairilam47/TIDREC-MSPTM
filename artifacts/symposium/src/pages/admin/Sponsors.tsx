@@ -9,9 +9,9 @@ import { ImageUploadField } from "@/components/ui/ImageUploadField";
 
 const TIER_STYLES: Record<string, { bg: string; color: string; borderColor: string }> = {
   platinum: { bg: "var(--bg-surface-secondary)", color: "var(--text-secondary)", borderColor: "var(--border-color)" },
-  gold:     { bg: "var(--gold-lt)",              color: "var(--gold-dk)",         borderColor: "rgba(200,155,60,0.4)" },
+  gold:     { bg: "var(--gold-lt)",              color: "var(--gold-dk)",         borderColor: "var(--gold-border)" },
   silver:   { bg: "var(--bg-surface-secondary)", color: "var(--text-muted)",      borderColor: "var(--border-color)" },
-  bronze:   { bg: "rgba(200,100,50,0.07)",       color: "rgba(138,74,36,1)",      borderColor: "rgba(200,150,100,0.4)" },
+  bronze:   { bg: "var(--bg-surface-secondary)", color: "var(--gold-dk)",         borderColor: "var(--gold-border)" },
 };
 
 const BLANK: SponsorInput = { name: "", tier: "gold", logoUrl: "", website: "" };

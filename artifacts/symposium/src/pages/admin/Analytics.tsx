@@ -106,7 +106,7 @@ export default function AdminAnalytics() {
               <ProgressBar value={absTotal} max={absTotal} color="var(--navy)" label="Total Submitted" count={absTotal} />
               <ProgressBar value={stats?.pendingAbstracts ?? 0} max={absTotal} color="var(--status-warning-text)" label="Awaiting Review" count={stats?.pendingAbstracts ?? 0} />
               <ProgressBar value={underReview} max={absTotal} color="var(--teal)" label="Under Review" count={underReview} />
-              <ProgressBar value={revisionReq} max={absTotal} color="rgba(230,126,34,1)" label="Revision Requested" count={revisionReq} />
+              <ProgressBar value={revisionReq} max={absTotal} color="var(--gold)" label="Revision Requested" count={revisionReq} />
               <ProgressBar value={accepted} max={absTotal} color="var(--status-success-text)" label="Accepted" count={accepted} />
               <ProgressBar value={rejected} max={absTotal} color="var(--status-danger-text)" label="Rejected" count={rejected} />
             </div>
