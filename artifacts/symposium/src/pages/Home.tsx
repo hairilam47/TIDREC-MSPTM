@@ -16,7 +16,7 @@ export default function Home() {
   const { data: sponsors } = useGetSponsors();
   const { data: cms } = useGetSettings();
 
-  const featuredSpeakers = speakers?.slice(0, 2) || [];
+  const featuredSpeakers = speakers?.filter(s => s.speakerTier === "keynote") || [];
 
   return (
     <div className="min-h-screen flex flex-col bg-background font-sans">
