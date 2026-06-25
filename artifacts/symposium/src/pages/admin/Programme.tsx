@@ -100,13 +100,7 @@ export default function AdminProgramme() {
       <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 20 }}>
         <div style={{ display: "flex", gap: 6 }}>
           <button
-            className="btn btn-sm bg-[color:var(--primary-dk)]"
-            style={{
-              background: dayFilter === "all" ? "var(--primary)" : "var(--bg-surface)",
-              color: dayFilter === "all" ? "#fff" : "var(--text-secondary)",
-              borderColor: dayFilter === "all" ? "var(--primary-dk)" : "var(--border-color)",
-              transition: "none",
-            }}
+            className={`btn btn-sm ${dayFilter === "all" ? "btn-primary" : "btn-outline"}`}
             onClick={() => setDayFilter("all")}
           >
             All Days
@@ -114,24 +108,14 @@ export default function AdminProgramme() {
           {days.map((d) => (
             <button
               key={d}
-              className="btn btn-sm"
-              style={{
-                background: dayFilter === d ? "var(--primary)" : "var(--bg-surface)",
-                color: dayFilter === d ? "#fff" : "var(--text-secondary)",
-                borderColor: dayFilter === d ? "var(--primary-dk)" : "var(--border-color)",
-                transition: "none",
-              }}
+              className={`btn btn-sm ${dayFilter === d ? "btn-primary" : "btn-outline"}`}
               onClick={() => setDayFilter(d)}
             >
               Day {d}
             </button>
           ))}
         </div>
-        <button
-          className="btn btn-sm bg-[color:var(--primary-dk)]"
-          style={{ background: "var(--primary)", color: "#fff", borderColor: "var(--primary-dk)", transition: "none" }}
-          onClick={openCreate}
-        >
+        <button className="btn btn-primary" onClick={openCreate}>
           <Plus style={{ width: 14, height: 14 }} /> Add Session
         </button>
       </div>

@@ -299,7 +299,7 @@ export default function AdminRegistrationCategories() {
       ) : (
         <div className="card">
           <div className="card-body p-0">
-            <div className="overflow-x-auto">
+            <div className="table-responsive">
               <table className="table">
                 <thead>
                   <tr>
@@ -339,7 +339,7 @@ export default function AdminRegistrationCategories() {
                           )}
                         </td>
                         <td>
-                          <code className="text-[11px] bg-gray-100 px-2 py-0.5 rounded" style={{ color: "var(--text-secondary)" }}>
+                          <code className="cell-mono" style={{ background: "var(--bg-surface-secondary)", padding: "2px 6px", borderRadius: 4 }}>
                             {cat.slug}
                           </code>
                         </td>

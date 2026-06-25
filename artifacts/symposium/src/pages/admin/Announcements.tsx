@@ -109,15 +109,14 @@ export default function AdminAnnouncements() {
                   <div className="flex gap-1.5 flex-shrink-0">
                     <button
                       onClick={() => openEdit(a)}
-                      className="p-2 rounded-lg transition-colors hover:bg-gray-50"
-                      style={{ border: "1px solid var(--border-color)", color: "var(--text-secondary)" }}
+                      className="btn btn-outline btn-sm"
                     >
                       <Pencil className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => setDeleteId(a.id)}
-                      className="p-2 rounded-lg transition-colors hover:bg-red-50"
-                      style={{ border: "1px solid var(--status-danger-bg)", color: "var(--status-danger-text)" }}
+                      className="btn btn-sm"
+                      style={{ background: "var(--status-danger-bg)", color: "var(--status-danger-text)", borderColor: "var(--status-danger-border)" }}
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>

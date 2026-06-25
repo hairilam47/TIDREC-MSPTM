@@ -202,8 +202,8 @@ export default function AdminSettings() {
                 </span>
                 <button
                   onClick={() => { set("sponsor_prospectus_url", ""); setProspectusError(null); }}
-                  className="flex items-center gap-1 text-[12px] px-2.5 py-1 rounded-md"
-                  style={{ color: "var(--status-danger-text)", background: "var(--status-danger-bg)", border: "none", cursor: "pointer" }}
+                  className="btn btn-sm"
+                  style={{ background: "var(--status-danger-bg)", color: "var(--status-danger-text)", borderColor: "var(--status-danger-border)" }}
                 >
                   <X className="w-3 h-3" /> Remove
                 </button>
@@ -215,12 +215,11 @@ export default function AdminSettings() {
             )}
 
             <label
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-[13px] font-semibold cursor-pointer"
+              className="btn btn-primary"
               style={{
-                background: uploadingProspectus ? "var(--border-color)" : "var(--primary)",
-                color: uploadingProspectus ? "var(--text-muted)" : "#fff",
-                opacity: uploadingProspectus ? 0.7 : 1,
+                opacity: uploadingProspectus ? 0.6 : 1,
                 pointerEvents: uploadingProspectus ? "none" : "auto",
+                cursor: uploadingProspectus ? "default" : "pointer",
               }}
             >
               <Upload className="w-4 h-4" />

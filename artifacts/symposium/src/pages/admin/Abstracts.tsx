@@ -4,6 +4,7 @@ import { useGetAbstracts, useUpdateAbstract, useGetAbstractHistory } from "@work
 import { Search, ChevronDown, CheckCircle, XCircle, Edit3, Eye, Clock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
+import { INPUT_BASE, SELECT_BASE } from "@/components/ui/form-primitives";
 
 const STATUS_LABEL: Record<string, string> = {
   submitted: "Submitted",
@@ -132,10 +133,10 @@ export default function AdminAbstracts() {
       <div className="flex flex-col sm:flex-row gap-3 mb-5">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "var(--text-disabled)" }} />
-          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search by title, submitter, or code…" className="w-full pl-9 pr-3 py-2.5 rounded-lg text-[13px] outline-none" style={{ border: "1px solid var(--border-color)" }} />
+          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search by title, submitter, or code…" className={`${INPUT_BASE} pl-9`} />
         </div>
         <div className="relative">
-          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="appearance-none pl-3 pr-8 py-2.5 rounded-lg text-[13px] outline-none" style={{ border: "1px solid var(--border-color)", background: "var(--bg-surface)" }}>
+          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className={SELECT_BASE}>
             <option value="all">All Statuses</option>
             <option value="submitted">Submitted</option>
             <option value="under_review">Under Review</option>
@@ -146,7 +147,7 @@ export default function AdminAbstracts() {
           <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style={{ color: "var(--text-muted)" }} />
         </div>
         <div className="relative">
-          <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="appearance-none pl-3 pr-8 py-2.5 rounded-lg text-[13px] outline-none" style={{ border: "1px solid var(--border-color)", background: "var(--bg-surface)" }}>
+          <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className={SELECT_BASE}>
             <option value="all">All Types</option>
             <option value="oral">Oral</option>
             <option value="poster">Poster</option>
@@ -163,10 +164,10 @@ export default function AdminAbstracts() {
           const isExpanded = expanded === a.id;
           return (
             <div key={a.id} className="card">
-              <div className="flex items-start justify-between gap-4 p-5">
+              <div className="card-body flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap mb-1">
-                    <code className="text-[11px] font-mono bg-gray-100 px-2 py-0.5 rounded" style={{ color: "var(--text-secondary)" }}>{a.abstractCode}</code>
+                    <code className="cell-mono" style={{ background: "var(--bg-surface-secondary)", padding: "2px 6px", borderRadius: 4 }}>{a.abstractCode}</code>
                     <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full capitalize" style={{ background: sc.bg, color: sc.color }}>{sc.label}</span>
                     <span className="text-[11px] px-2 py-0.5 rounded-full capitalize" style={{ background: "var(--border-color)", color: "var(--text-secondary)" }}>{a.abstractType}</span>
                   </div>
@@ -177,13 +178,12 @@ export default function AdminAbstracts() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
-                  <button onClick={() => setLocation(`/portal/abstracts/${a.id}`)} className="p-2 rounded-lg" style={{ border: "1px solid var(--border-color)", color: "var(--text-muted)" }} title="View full abstract">
+                  <button onClick={() => setLocation(`/portal/abstracts/${a.id}`)} className="btn btn-outline btn-sm" title="View full abstract">
                     <Eye className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => setExpanded(isExpanded ? null : a.id)}
-                    className="px-3 py-1.5 rounded-lg text-[12px] font-medium"
-                    style={{ border: "1px solid var(--border-color)", color: "var(--text-muted)" }}
+                    className="btn btn-outline btn-sm"
                   >
                     {isExpanded ? "Collapse" : "Review"}
                   </button>
@@ -223,12 +223,11 @@ export default function AdminAbstracts() {
                         placeholder={a.reviewedBy ? `Current: ${a.reviewedBy}` : "Enter reviewer name…"}
                         value={reviewerName[a.id] ?? ""}
                         onChange={(e) => setReviewerName((p) => ({ ...p, [a.id]: e.target.value }))}
-                        className="flex-1 px-3 py-2 rounded-lg text-[13px] outline-none"
-                        style={{ border: "1px solid var(--border-color)" }}
+                        className={`${INPUT_BASE} flex-1`}
                       />
                       <button
                         onClick={() => assignReviewer(a.id)}
-                        className="btn btn-primary px-3 py-2 text-[12px]"
+                        className="btn btn-primary btn-sm"
                       >
                         Assign
                       </button>
@@ -241,7 +240,7 @@ export default function AdminAbstracts() {
                   </div>
 
                   {a.reviewNotes && (
-                    <div className="rounded-lg p-3 mb-3 text-[12px]" style={{ background: "var(--status-warning-bg)", color: "var(--yellow-dk)" }}>
+                    <div className="rounded-lg p-3 mb-3 text-[12px]" style={{ background: "var(--status-warning-bg)", color: "var(--status-warning-text)" }}>
                       <span className="font-semibold">Review note:</span> {a.reviewNotes}
                     </div>
                   )}
@@ -252,20 +251,19 @@ export default function AdminAbstracts() {
                       placeholder="Add review note (optional)"
                       value={reviewNote[a.id] ?? ""}
                       onChange={(e) => setReviewNote((p) => ({ ...p, [a.id]: e.target.value }))}
-                      className="flex-1 px-3 py-2 rounded-lg text-[13px] outline-none"
-                      style={{ border: "1px solid var(--border-color)" }}
+                      className={`${INPUT_BASE} flex-1`}
                     />
                     <div className="flex gap-2 flex-wrap">
                       {a.status !== "under_review" && (
-                        <button onClick={() => handleAction(a.id, "under_review")} className="px-3 py-2 rounded-lg text-[12px] font-semibold" style={{ background: "var(--primary-lt)", color: "var(--primary)" }}>Review</button>
+                        <button onClick={() => handleAction(a.id, "under_review")} className="btn btn-sm btn-outline">Review</button>
                       )}
-                      <button onClick={() => handleAction(a.id, "accepted")} className="flex items-center gap-1 px-3 py-2 rounded-lg text-[12px] font-semibold" style={{ background: "var(--status-success-bg)", color: "var(--status-success-text)" }}>
+                      <button onClick={() => handleAction(a.id, "accepted")} className="btn btn-sm" style={{ background: "var(--status-success-bg)", color: "var(--status-success-text)", borderColor: "var(--status-success-text)" }}>
                         <CheckCircle className="w-3.5 h-3.5" /> Accept
                       </button>
-                      <button onClick={() => handleAction(a.id, "revision_requested")} className="flex items-center gap-1 px-3 py-2 rounded-lg text-[12px] font-semibold" style={{ background: "var(--status-warning-bg)", color: "var(--status-warning-text)" }}>
+                      <button onClick={() => handleAction(a.id, "revision_requested")} className="btn btn-sm" style={{ background: "var(--status-warning-bg)", color: "var(--status-warning-text)", borderColor: "var(--status-warning-text)" }}>
                         <Edit3 className="w-3.5 h-3.5" /> Revise
                       </button>
-                      <button onClick={() => handleAction(a.id, "rejected")} className="flex items-center gap-1 px-3 py-2 rounded-lg text-[12px] font-semibold" style={{ background: "var(--status-danger-bg)", color: "var(--status-danger-text)" }}>
+                      <button onClick={() => handleAction(a.id, "rejected")} className="btn btn-sm" style={{ background: "var(--status-danger-bg)", color: "var(--status-danger-text)", borderColor: "var(--status-danger-border)" }}>
                         <XCircle className="w-3.5 h-3.5" /> Reject
                       </button>
                     </div>

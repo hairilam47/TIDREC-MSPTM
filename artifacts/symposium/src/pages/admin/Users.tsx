@@ -3,6 +3,7 @@ import AdminLayout from "@/components/AdminLayout";
 import { useGetUsers, useUpdateUser } from "@workspace/api-client-react";
 import { Search, Shield, User } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { INPUT_BASE } from "@/components/ui/form-primitives";
 
 export default function AdminUsers() {
   const { data: users, refetch } = useGetUsers();
@@ -34,11 +35,20 @@ export default function AdminUsers() {
       <div className="flex flex-col sm:flex-row gap-3 mb-5">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "var(--text-disabled)" }} />
-          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search by name, email, or institution…" className="w-full pl-9 pr-3 py-2.5 rounded-lg text-[13px] outline-none" style={{ border: "1px solid var(--border-color)" }} />
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search by name, email, or institution…"
+            className={`${INPUT_BASE} pl-9`}
+          />
         </div>
         <div className="flex gap-2">
           {["all", "attendee", "admin"].map((r) => (
-            <button key={r} onClick={() => setRoleFilter(r)} className="px-3 py-2.5 rounded-lg text-[12px] font-medium capitalize" style={{ background: roleFilter === r ? "var(--text)" : "var(--border-color)", color: roleFilter === r ? "#fff" : "var(--text-secondary)" }}>
+            <button
+              key={r}
+              onClick={() => setRoleFilter(r)}
+              className={`btn btn-sm capitalize ${roleFilter === r ? "btn-primary" : "btn-outline"}`}
+            >
               {r === "all" ? "All" : r}
             </button>
           ))}
@@ -51,7 +61,7 @@ export default function AdminUsers() {
 
       <div className="card">
         <div className="card-body p-0">
-          <div className="overflow-x-auto">
+          <div className="table-responsive">
             <table className="table">
               <thead>
                 <tr>
@@ -74,14 +84,14 @@ export default function AdminUsers() {
                           {u.firstName[0]}{u.lastName[0]}
                         </div>
                         <div>
-                          <div className="text-[13px] font-medium" style={{ color: "var(--text)" }}>{u.firstName} {u.lastName}</div>
+                          <div className="cell-strong">{u.firstName} {u.lastName}</div>
                           <div className="text-[11px]" style={{ color: "var(--text-disabled)" }}>{u.email}</div>
                         </div>
                       </div>
                     </td>
-                    <td className="text-[13px]" style={{ color: "var(--text-secondary)" }}>{u.institution ?? "—"}</td>
-                    <td className="text-[13px]" style={{ color: "var(--text-secondary)" }}>{u.country ?? "—"}</td>
-                    <td className="text-[12px] capitalize" style={{ color: "var(--text-secondary)" }}>{u.category?.replace(/_/g, " ") ?? "—"}</td>
+                    <td style={{ color: "var(--text-secondary)" }}>{u.institution ?? "—"}</td>
+                    <td style={{ color: "var(--text-secondary)" }}>{u.country ?? "—"}</td>
+                    <td className="capitalize" style={{ color: "var(--text-secondary)", fontSize: 12 }}>{u.category?.replace(/_/g, " ") ?? "—"}</td>
                     <td>
                       <span
                         className="inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-0.5 rounded-full capitalize"
@@ -94,19 +104,26 @@ export default function AdminUsers() {
                         {u.role}
                       </span>
                     </td>
-                    <td className="text-[12px]" style={{ color: "var(--text-disabled)" }}>{new Date(u.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}</td>
+                    <td className="cell-mono">{new Date(u.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}</td>
                     <td>
-                      <button
-                        onClick={() => toggleRole(u.id, u.role)}
-                        disabled={updateMutation.isPending}
-                        className="px-3 py-1.5 rounded-lg text-[11px] font-medium"
-                        style={u.role === "admin"
-                          ? { border: "1px solid var(--status-danger-bg)", color: "var(--status-danger-text)" }
-                          : { border: "1px solid var(--primary-lt)", color: "var(--primary)" }
-                        }
-                      >
-                        {u.role === "admin" ? "Remove Admin" : "Make Admin"}
-                      </button>
+                      {u.role === "admin" ? (
+                        <button
+                          onClick={() => toggleRole(u.id, u.role)}
+                          disabled={updateMutation.isPending}
+                          className="btn btn-sm disabled:opacity-60"
+                          style={{ background: "var(--status-danger-bg)", color: "var(--status-danger-text)", borderColor: "var(--status-danger-border)" }}
+                        >
+                          Remove Admin
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => toggleRole(u.id, u.role)}
+                          disabled={updateMutation.isPending}
+                          className="btn btn-sm btn-outline disabled:opacity-60"
+                        >
+                          Make Admin
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}

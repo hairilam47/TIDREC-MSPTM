@@ -3,12 +3,13 @@ import AdminLayout from "@/components/AdminLayout";
 import { useGetRegistrations, useUpdateRegistration, useSendPaymentReminder, useGetRegistrationCategories } from "@workspace/api-client-react";
 import { Search, Bell } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { INPUT_BASE } from "@/components/ui/form-primitives";
 
-const PAYMENT_STYLES: Record<string, { bg: string; color: string }> = {
-  paid:    { bg: "var(--status-success-bg)", color: "var(--status-success-text)" },
-  pending: { bg: "var(--status-warning-bg)", color: "var(--status-warning-text)" },
-  overdue: { bg: "var(--status-danger-bg)",  color: "var(--status-danger-text)" },
-  waived:  { bg: "var(--primary-lt)",        color: "var(--primary)" },
+const PAYMENT_STYLES: Record<string, { bg: string; color: string; border?: string }> = {
+  paid:    { bg: "var(--status-success-bg)", color: "var(--status-success-text)", border: "var(--status-success-text)" },
+  pending: { bg: "var(--status-warning-bg)", color: "var(--status-warning-text)", border: "var(--status-warning-text)" },
+  overdue: { bg: "var(--status-danger-bg)",  color: "var(--status-danger-text)",  border: "var(--status-danger-border)" },
+  waived:  { bg: "var(--primary-lt)",        color: "var(--primary)",             border: "var(--primary)" },
 };
 
 export default function AdminPayments() {
@@ -85,17 +86,23 @@ export default function AdminPayments() {
       <div className="flex flex-col sm:flex-row gap-3 mb-5">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "var(--text-disabled)" }} />
-          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search by name, email or code…" className="w-full pl-9 pr-3 py-2.5 rounded-lg text-[13px] outline-none" style={{ border: "1px solid var(--border-color)" }} />
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search by name, email or code…"
+            className={`${INPUT_BASE} pl-9`}
+          />
         </div>
-        <div className="flex gap-2">
-          {["all", "pending", "paid", "overdue", "waived"].map((s) => {
-            const ps = PAYMENT_STYLES[s];
-            return (
-              <button key={s} onClick={() => setStatusFilter(s)} className="px-3 py-2.5 rounded-lg text-[12px] font-medium capitalize" style={statusFilter === s ? (ps ? { background: ps.bg, color: ps.color } : { background: "var(--navy)", color: "#fff" }) : { background: "var(--border-color)", color: "var(--text-secondary)" }}>
-                {s === "all" ? "All" : s}
-              </button>
-            );
-          })}
+        <div className="flex gap-2 flex-wrap">
+          {["all", "pending", "paid", "overdue", "waived"].map((s) => (
+            <button
+              key={s}
+              onClick={() => setStatusFilter(s)}
+              className={`btn btn-sm capitalize ${statusFilter === s ? "btn-primary" : "btn-outline"}`}
+            >
+              {s === "all" ? "All" : s}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -103,7 +110,7 @@ export default function AdminPayments() {
 
       <div className="card">
         <div className="card-body p-0">
-          <div className="overflow-x-auto">
+          <div className="table-responsive">
             <table className="table">
               <thead>
                 <tr>
@@ -120,13 +127,15 @@ export default function AdminPayments() {
                   return (
                     <tr key={r.id}>
                       <td>
-                        <div className="text-[13px] font-medium" style={{ color: "var(--text)" }}>{r.firstName} {r.lastName}</div>
+                        <div className="cell-strong">{r.firstName} {r.lastName}</div>
                         <div className="text-[11px]" style={{ color: "var(--text-disabled)" }}>{r.email}</div>
                       </td>
                       <td>
-                        <code className="text-[11px] bg-gray-100 px-2 py-0.5 rounded" style={{ color: "var(--text-secondary)" }}>{r.registrationCode}</code>
+                        <code className="cell-mono" style={{ background: "var(--bg-surface-secondary)", padding: "2px 6px", borderRadius: 4 }}>
+                          {r.registrationCode}
+                        </code>
                       </td>
-                      <td className="text-[12px] capitalize" style={{ color: "var(--text-secondary)" }}>{r.category?.replace(/_/g, " ")}</td>
+                      <td className="capitalize" style={{ color: "var(--text-secondary)", fontSize: 12 }}>{r.category?.replace(/_/g, " ")}</td>
                       <td>
                         <span className="text-[13px] font-medium" style={{ color: r.paymentAmount ? "var(--text)" : "var(--text-disabled)" }}>
                           {r.paymentAmount != null
@@ -141,18 +150,40 @@ export default function AdminPayments() {
                       <td>
                         <div className="flex gap-1.5 flex-wrap">
                           {r.paymentStatus !== "paid" && (
-                            <button onClick={() => updateStatus(r.id, "paid", r.category)} className="px-2.5 py-1.5 rounded text-[11px] font-semibold" style={{ background: "var(--status-success-bg)", color: "var(--status-success-text)" }}>Mark Paid</button>
+                            <button
+                              onClick={() => updateStatus(r.id, "paid", r.category)}
+                              className="btn btn-sm"
+                              style={{ background: "var(--status-success-bg)", color: "var(--status-success-text)", borderColor: "var(--status-success-text)" }}
+                            >
+                              Mark Paid
+                            </button>
                           )}
                           {r.paymentStatus !== "overdue" && r.paymentStatus !== "paid" && r.paymentStatus !== "waived" && (
-                            <button onClick={() => updateStatus(r.id, "overdue", r.category)} className="px-2.5 py-1.5 rounded text-[11px] font-semibold" style={{ background: "var(--status-danger-bg)", color: "var(--status-danger-text)" }}>Overdue</button>
+                            <button
+                              onClick={() => updateStatus(r.id, "overdue", r.category)}
+                              className="btn btn-sm"
+                              style={{ background: "var(--status-danger-bg)", color: "var(--status-danger-text)", borderColor: "var(--status-danger-border)" }}
+                            >
+                              Overdue
+                            </button>
                           )}
                           {(r.paymentStatus === "pending" || r.paymentStatus === "overdue") ? (
-                            <button onClick={() => sendReminder(r)} disabled={reminderMutation.isPending} className="flex items-center gap-1 px-2.5 py-1.5 rounded text-[11px] font-semibold" style={{ background: "var(--status-warning-bg)", color: "var(--status-warning-text)" }}>
+                            <button
+                              onClick={() => sendReminder(r)}
+                              disabled={reminderMutation.isPending}
+                              className="btn btn-sm disabled:opacity-60"
+                              style={{ background: "var(--status-warning-bg)", color: "var(--status-warning-text)", borderColor: "var(--status-warning-text)" }}
+                            >
                               <Bell className="w-3 h-3" /> Remind
                             </button>
                           ) : null}
                           {r.paymentStatus !== "waived" && (
-                            <button onClick={() => updateStatus(r.id, "waived", r.category)} className="px-2.5 py-1.5 rounded text-[11px]" style={{ background: "var(--primary-lt)", color: "var(--primary)" }}>Waive</button>
+                            <button
+                              onClick={() => updateStatus(r.id, "waived", r.category)}
+                              className="btn btn-sm btn-outline"
+                            >
+                              Waive
+                            </button>
                           )}
                         </div>
                       </td>

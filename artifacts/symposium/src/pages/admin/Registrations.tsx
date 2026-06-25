@@ -401,8 +401,7 @@ export default function AdminRegistrations() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by name, email, country or code…"
-            className="w-full pl-9 pr-3 py-2.5 rounded-lg text-[13px] outline-none"
-            style={{ border: "1px solid var(--border-color)" }}
+            className={`${INPUT_BASE} pl-9`}
           />
         </div>
         <div className="relative">
@@ -442,7 +441,7 @@ export default function AdminRegistrations() {
 
       <div className="card">
         <div className="card-body p-0">
-          <div className="overflow-x-auto">
+          <div className="table-responsive">
             <table className="table">
               <thead>
                 <tr>
@@ -464,7 +463,7 @@ export default function AdminRegistrations() {
                   return (
                     <tr key={r.id}>
                       <td>
-                        <code className="text-[11px] bg-gray-100 px-2 py-0.5 rounded" style={{ color: "var(--text-secondary)" }}>
+                        <code className="cell-mono" style={{ background: "var(--bg-surface-secondary)", padding: "2px 6px", borderRadius: 4 }}>
                           {r.registrationCode}
                         </code>
                       </td>

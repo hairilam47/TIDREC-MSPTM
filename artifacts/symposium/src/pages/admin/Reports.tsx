@@ -136,7 +136,7 @@ export default function AdminReports() {
         <button onClick={exportCSV} className="btn btn-outline flex items-center gap-2">
           <Download className="w-4 h-4" /> Export CSV
         </button>
-        <button onClick={exportPdf} className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-[13px] font-medium text-white" style={{ background: "var(--text)" }}>
+        <button onClick={exportPdf} className="btn btn-primary flex items-center gap-2">
           <Download className="w-4 h-4" /> Export PDF
         </button>
       </div>

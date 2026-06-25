@@ -94,7 +94,7 @@ export default function AdminInvoices() {
 
       <div className="card">
         <div className="card-body p-0">
-          <div className="overflow-x-auto">
+          <div className="table-responsive">
             <table className="table">
               <thead>
                 <tr>
