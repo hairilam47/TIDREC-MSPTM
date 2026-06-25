@@ -261,10 +261,10 @@ export default function NewAbstract() {
                         className="sr-only"
                       />
                       <span
-                        className="text-[13px] font-medium capitalize"
+                        className="text-[13px] font-medium"
                         style={{ color: form.abstractType === t ? "#0E6E74" : "#495057" }}
                       >
-                        {t} Presentation
+                        {t === "oral" ? "Oral Presentation" : "Poster Presentation"}
                       </span>
                     </label>
                   ))}
