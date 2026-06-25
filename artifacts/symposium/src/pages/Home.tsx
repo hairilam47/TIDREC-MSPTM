@@ -219,9 +219,9 @@ export default function Home() {
                 <div key={speaker.id} className="flex gap-6 p-6 rounded-xl border border-border bg-white shadow-sm">
                   {/* Photo */}
                   <div className="flex-shrink-0">
-                    <Avatar className="w-32 h-32 rounded-xl">
+                    <Avatar className="w-64 h-64 rounded-xl">
                       <AvatarImage src={resolveImageUrl(speaker.photoUrl) || ''} alt={speaker.name} className="object-cover object-top" />
-                      <AvatarFallback className="text-3xl bg-secondary text-white rounded-xl font-bold">
+                      <AvatarFallback className="text-5xl bg-secondary text-white rounded-xl font-bold">
                         {speaker.initials || speaker.name.substring(0, 2)}
                       </AvatarFallback>
                     </Avatar>
