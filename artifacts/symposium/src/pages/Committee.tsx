@@ -1,12 +1,14 @@
 import React from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { useGetCommitteeMembers } from "@workspace/api-client-react";
+import { resolveImageUrl } from "@/lib/resolveImageUrl";
 
 function Avatar({ initials, photoUrl }: { initials: string; photoUrl?: string | null }) {
-  if (photoUrl) {
+  const src = resolveImageUrl(photoUrl);
+  if (src) {
     return (
       <img
-        src={`/api/images/proxy?url=${encodeURIComponent(photoUrl)}`}
+        src={src}
         alt={initials}
         className="w-20 h-20 rounded-full object-cover border-2 border-white shadow-sm"
       />

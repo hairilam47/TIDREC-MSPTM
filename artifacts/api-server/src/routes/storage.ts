@@ -6,7 +6,7 @@ import {
 } from "@workspace/api-zod";
 import { ObjectStorageService, ObjectNotFoundError } from "../lib/objectStorage";
 import { requireAuth, type AuthRequest } from "../lib/auth";
-import { db, abstractsTable, speakersTable, sponsorsTable } from "@workspace/db";
+import { db, abstractsTable, speakersTable, sponsorsTable, committeeMembersTable } from "@workspace/db";
 import { eq, or } from "drizzle-orm";
 
 const router: IRouter = Router();
@@ -90,8 +90,9 @@ router.get("/media/objects/*path", async (req: AuthRequest, res: Response) => {
     const wildcardPath = Array.isArray(raw) ? raw.join("/") : raw;
     const objectPath = `/objects/${wildcardPath}`;
 
-    // ACL: only serve paths explicitly referenced as speaker photos or sponsor logos.
-    // This prevents exposing private uploads (e.g. abstract PDFs) via this public route.
+    // ACL: only serve paths explicitly referenced as speaker photos, sponsor logos,
+    // or committee member photos. This prevents exposing private uploads (e.g. abstract PDFs)
+    // via this public route.
     const [speakerRow] = await db
       .select({ id: speakersTable.id })
       .from(speakersTable)
@@ -104,7 +105,13 @@ router.get("/media/objects/*path", async (req: AuthRequest, res: Response) => {
       .where(eq(sponsorsTable.logoUrl, objectPath))
       .limit(1);
 
-    if (!speakerRow && !sponsorRow) {
+    const [committeeRow] = await db
+      .select({ id: committeeMembersTable.id })
+      .from(committeeMembersTable)
+      .where(eq(committeeMembersTable.photoUrl, objectPath))
+      .limit(1);
+
+    if (!speakerRow && !sponsorRow && !committeeRow) {
       res.status(403).json({ error: "Forbidden" });
       return;
     }
