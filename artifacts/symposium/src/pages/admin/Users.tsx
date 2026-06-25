@@ -69,7 +69,7 @@ export default function AdminUsers() {
                       <div className="flex items-center gap-2.5">
                         <div
                           className="w-8 h-8 rounded-full flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0"
-                          style={{ background: u.role === "admin" ? "var(--primary)" : "#0E6E74" }}
+                          style={{ background: u.role === "admin" ? "var(--primary)" : "var(--teal)" }}
                         >
                           {u.firstName[0]}{u.lastName[0]}
                         </div>
@@ -101,7 +101,7 @@ export default function AdminUsers() {
                         disabled={updateMutation.isPending}
                         className="px-3 py-1.5 rounded-lg text-[11px] font-medium"
                         style={u.role === "admin"
-                          ? { border: "1px solid #f8d7da", color: "#842029" }
+                          ? { border: "1px solid var(--status-danger-bg)", color: "var(--status-danger-text)" }
                           : { border: "1px solid var(--primary-lt)", color: "var(--primary)" }
                         }
                       >

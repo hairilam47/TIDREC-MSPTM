@@ -17,9 +17,9 @@ const TIER_OPTIONS: { value: SpeakerTier | ""; label: string }[] = [
 ];
 
 const TIER_LABELS: Record<string, { label: string; bg: string; color: string }> = {
-  keynote: { label: "Keynote", bg: "#fff3cd", color: "#856404" },
-  plenary: { label: "Plenary", bg: "#d1ecf1", color: "#0c5460" },
-  invited: { label: "Invited", bg: "#d4edda", color: "#155724" },
+  keynote: { label: "Keynote", bg: "var(--gold-lt)",  color: "var(--gold-dk)" },
+  plenary: { label: "Plenary", bg: "var(--cyan-lt)",  color: "var(--cyan)" },
+  invited: { label: "Invited", bg: "var(--green-lt)", color: "var(--green)" },
 };
 
 export default function AdminSpeakers() {
@@ -105,7 +105,7 @@ export default function AdminSpeakers() {
         </button>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 16 }}>
+      <div className="row col-3">
         {(speakers ?? []).map((s) => {
           const tierMeta = s.speakerTier ? TIER_LABELS[s.speakerTier] : null;
           return (
@@ -133,7 +133,7 @@ export default function AdminSpeakers() {
                 </button>
                 <button
                   className="btn btn-sm"
-                  style={{ background: "#f8d7da", color: "#842029", borderColor: "#f1aeb5" }}
+                  style={{ background: "var(--status-danger-bg)", color: "var(--status-danger-text)", borderColor: "var(--status-danger-border)" }}
                   onClick={() => setDeleteId(s.id)}
                 >
                   <Trash2 style={{ width: 13, height: 13 }} />

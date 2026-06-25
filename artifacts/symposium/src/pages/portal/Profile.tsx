@@ -88,8 +88,8 @@ export default function Profile() {
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <span style={{
                     fontSize: 11, fontWeight: 600, padding: "2px 8px", borderRadius: 20, textTransform: "capitalize",
-                    background: user?.role === "admin" ? "rgba(200,155,60,0.12)" : "var(--primary-lt)",
-                    color: user?.role === "admin" ? "#C89B3C" : "var(--primary)",
+                    background: user?.role === "admin" ? "var(--gold-lt)" : "var(--primary-lt)",
+                    color: user?.role === "admin" ? "var(--gold)" : "var(--primary)",
                   }}>
                     {user?.role}
                   </span>

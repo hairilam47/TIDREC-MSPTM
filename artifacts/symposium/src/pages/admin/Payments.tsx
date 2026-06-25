@@ -5,10 +5,10 @@ import { Search, Bell } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const PAYMENT_STYLES: Record<string, { bg: string; color: string }> = {
-  paid: { bg: "#d1e7dd", color: "#0a5c39" },
-  pending: { bg: "#fff3cd", color: "#856404" },
-  overdue: { bg: "#f8d7da", color: "#842029" },
-  waived: { bg: "var(--primary-lt)", color: "var(--primary)" },
+  paid:    { bg: "var(--status-success-bg)", color: "var(--status-success-text)" },
+  pending: { bg: "var(--status-warning-bg)", color: "var(--status-warning-text)" },
+  overdue: { bg: "var(--status-danger-bg)",  color: "var(--status-danger-text)" },
+  waived:  { bg: "var(--primary-lt)",        color: "var(--primary)" },
 };
 
 export default function AdminPayments() {
@@ -68,9 +68,9 @@ export default function AdminPayments() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {[
           { label: "Total Registrations", value: summary.total, color: "var(--text)", bg: "var(--border-color)" },
-          { label: "Paid", value: summary.paid, color: "#0a5c39", bg: "#d1e7dd" },
-          { label: "Pending", value: summary.pending, color: "#856404", bg: "#fff3cd" },
-          { label: "Revenue Collected", value: `MYR ${summary.revenue.toLocaleString("en-MY", { minimumFractionDigits: 2 })}`, color: "#0a5c39", bg: "#d1e7dd" },
+          { label: "Paid", value: summary.paid, color: "var(--status-success-text)", bg: "var(--status-success-bg)" },
+          { label: "Pending", value: summary.pending, color: "var(--status-warning-text)", bg: "var(--status-warning-bg)" },
+          { label: "Revenue Collected", value: `MYR ${summary.revenue.toLocaleString("en-MY", { minimumFractionDigits: 2 })}`, color: "var(--status-success-text)", bg: "var(--status-success-bg)" },
         ].map((s) => (
           <div key={s.label} className="card">
             <div className="card-body">
@@ -91,7 +91,7 @@ export default function AdminPayments() {
           {["all", "pending", "paid", "overdue", "waived"].map((s) => {
             const ps = PAYMENT_STYLES[s];
             return (
-              <button key={s} onClick={() => setStatusFilter(s)} className="px-3 py-2.5 rounded-lg text-[12px] font-medium capitalize" style={statusFilter === s ? (ps ? { background: ps.bg, color: ps.color } : { background: "var(--text)", color: "#fff" }) : { background: "var(--border-color)", color: "var(--text-secondary)" }}>
+              <button key={s} onClick={() => setStatusFilter(s)} className="px-3 py-2.5 rounded-lg text-[12px] font-medium capitalize" style={statusFilter === s ? (ps ? { background: ps.bg, color: ps.color } : { background: "var(--navy)", color: "#fff" }) : { background: "var(--border-color)", color: "var(--text-secondary)" }}>
                 {s === "all" ? "All" : s}
               </button>
             );
@@ -141,13 +141,13 @@ export default function AdminPayments() {
                       <td>
                         <div className="flex gap-1.5 flex-wrap">
                           {r.paymentStatus !== "paid" && (
-                            <button onClick={() => updateStatus(r.id, "paid", r.category)} className="px-2.5 py-1.5 rounded text-[11px] font-semibold" style={{ background: "#d1e7dd", color: "#0a5c39" }}>Mark Paid</button>
+                            <button onClick={() => updateStatus(r.id, "paid", r.category)} className="px-2.5 py-1.5 rounded text-[11px] font-semibold" style={{ background: "var(--status-success-bg)", color: "var(--status-success-text)" }}>Mark Paid</button>
                           )}
                           {r.paymentStatus !== "overdue" && r.paymentStatus !== "paid" && r.paymentStatus !== "waived" && (
-                            <button onClick={() => updateStatus(r.id, "overdue", r.category)} className="px-2.5 py-1.5 rounded text-[11px] font-semibold" style={{ background: "#f8d7da", color: "#842029" }}>Overdue</button>
+                            <button onClick={() => updateStatus(r.id, "overdue", r.category)} className="px-2.5 py-1.5 rounded text-[11px] font-semibold" style={{ background: "var(--status-danger-bg)", color: "var(--status-danger-text)" }}>Overdue</button>
                           )}
                           {(r.paymentStatus === "pending" || r.paymentStatus === "overdue") ? (
-                            <button onClick={() => sendReminder(r)} disabled={reminderMutation.isPending} className="flex items-center gap-1 px-2.5 py-1.5 rounded text-[11px] font-semibold" style={{ background: "#fff3cd", color: "#856404" }}>
+                            <button onClick={() => sendReminder(r)} disabled={reminderMutation.isPending} className="flex items-center gap-1 px-2.5 py-1.5 rounded text-[11px] font-semibold" style={{ background: "var(--status-warning-bg)", color: "var(--status-warning-text)" }}>
                               <Bell className="w-3 h-3" /> Remind
                             </button>
                           ) : null}

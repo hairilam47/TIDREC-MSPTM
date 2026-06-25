@@ -14,11 +14,11 @@ const STATUS_LABEL: Record<string, string> = {
 };
 
 const STATUS_COLOR: Record<string, string> = {
-  submitted: "var(--primary)",
-  under_review: "#856404",
-  accepted: "#0a5c39",
-  rejected: "#842029",
-  revision_requested: "#856404",
+  submitted:          "var(--primary)",
+  under_review:       "var(--status-warning-text)",
+  accepted:           "var(--status-success-text)",
+  rejected:           "var(--status-danger-text)",
+  revision_requested: "var(--status-warning-text)",
 };
 
 function AbstractHistorySection({ abstractId }: { abstractId: number }) {
@@ -50,11 +50,11 @@ function AbstractHistorySection({ abstractId }: { abstractId: number }) {
 }
 
 const STATUS_STYLES: Record<string, { bg: string; color: string; label: string }> = {
-  submitted: { bg: "var(--primary-lt)", color: "var(--primary)", label: "Submitted" },
-  under_review: { bg: "#fff3cd", color: "#856404", label: "Under Review" },
-  accepted: { bg: "#d1e7dd", color: "#0a5c39", label: "Accepted" },
-  rejected: { bg: "#f8d7da", color: "#842029", label: "Rejected" },
-  revision_requested: { bg: "#fff3cd", color: "#856404", label: "Revision" },
+  submitted:          { bg: "var(--primary-lt)",        color: "var(--primary)",              label: "Submitted" },
+  under_review:       { bg: "var(--status-warning-bg)", color: "var(--status-warning-text)",  label: "Under Review" },
+  accepted:           { bg: "var(--status-success-bg)", color: "var(--status-success-text)",  label: "Accepted" },
+  rejected:           { bg: "var(--status-danger-bg)",  color: "var(--status-danger-text)",   label: "Rejected" },
+  revision_requested: { bg: "var(--status-warning-bg)", color: "var(--status-warning-text)",  label: "Revision" },
 };
 
 export default function AdminAbstracts() {
@@ -117,9 +117,9 @@ export default function AdminAbstracts() {
       <div className="flex gap-3 flex-wrap mb-5">
         {[
           { label: "Total", value: counts.total, color: "var(--text)", bg: "var(--border-color)" },
-          { label: "Pending Review", value: counts.pending, color: "#856404", bg: "#fff3cd" },
-          { label: "Accepted", value: counts.accepted, color: "#0a5c39", bg: "#d1e7dd" },
-          { label: "Rejected", value: counts.rejected, color: "#842029", bg: "#f8d7da" },
+          { label: "Pending Review", value: counts.pending, color: "var(--status-warning-text)", bg: "var(--status-warning-bg)" },
+          { label: "Accepted",      value: counts.accepted, color: "var(--status-success-text)", bg: "var(--status-success-bg)" },
+          { label: "Rejected",      value: counts.rejected, color: "var(--status-danger-text)",  bg: "var(--status-danger-bg)" },
         ].map((c) => (
           <div key={c.label} className="flex items-center gap-2 px-4 py-2 rounded-xl" style={{ background: c.bg, border: "1px solid rgba(0,0,0,0.06)" }}>
             <span className="text-[20px] font-bold" style={{ color: c.color }}>{c.value}</span>
@@ -241,7 +241,7 @@ export default function AdminAbstracts() {
                   </div>
 
                   {a.reviewNotes && (
-                    <div className="rounded-lg p-3 mb-3 text-[12px]" style={{ background: "#fff3cd", color: "#664d03" }}>
+                    <div className="rounded-lg p-3 mb-3 text-[12px]" style={{ background: "var(--status-warning-bg)", color: "var(--yellow-dk)" }}>
                       <span className="font-semibold">Review note:</span> {a.reviewNotes}
                     </div>
                   )}
@@ -259,13 +259,13 @@ export default function AdminAbstracts() {
                       {a.status !== "under_review" && (
                         <button onClick={() => handleAction(a.id, "under_review")} className="px-3 py-2 rounded-lg text-[12px] font-semibold" style={{ background: "var(--primary-lt)", color: "var(--primary)" }}>Review</button>
                       )}
-                      <button onClick={() => handleAction(a.id, "accepted")} className="flex items-center gap-1 px-3 py-2 rounded-lg text-[12px] font-semibold" style={{ background: "#d1e7dd", color: "#0a5c39" }}>
+                      <button onClick={() => handleAction(a.id, "accepted")} className="flex items-center gap-1 px-3 py-2 rounded-lg text-[12px] font-semibold" style={{ background: "var(--status-success-bg)", color: "var(--status-success-text)" }}>
                         <CheckCircle className="w-3.5 h-3.5" /> Accept
                       </button>
-                      <button onClick={() => handleAction(a.id, "revision_requested")} className="flex items-center gap-1 px-3 py-2 rounded-lg text-[12px] font-semibold" style={{ background: "#fff3cd", color: "#856404" }}>
+                      <button onClick={() => handleAction(a.id, "revision_requested")} className="flex items-center gap-1 px-3 py-2 rounded-lg text-[12px] font-semibold" style={{ background: "var(--status-warning-bg)", color: "var(--status-warning-text)" }}>
                         <Edit3 className="w-3.5 h-3.5" /> Revise
                       </button>
-                      <button onClick={() => handleAction(a.id, "rejected")} className="flex items-center gap-1 px-3 py-2 rounded-lg text-[12px] font-semibold" style={{ background: "#f8d7da", color: "#842029" }}>
+                      <button onClick={() => handleAction(a.id, "rejected")} className="flex items-center gap-1 px-3 py-2 rounded-lg text-[12px] font-semibold" style={{ background: "var(--status-danger-bg)", color: "var(--status-danger-text)" }}>
                         <XCircle className="w-3.5 h-3.5" /> Reject
                       </button>
                     </div>

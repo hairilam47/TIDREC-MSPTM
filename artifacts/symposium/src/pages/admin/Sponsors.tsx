@@ -8,10 +8,10 @@ import { FormField, ModalShell, ConfirmDialog, INPUT_BASE, SELECT_BASE, inputBor
 import { ImageUploadField } from "@/components/ui/ImageUploadField";
 
 const TIER_STYLES: Record<string, { bg: string; color: string; borderColor: string }> = {
-  platinum: { bg: "#f1f3f5", color: "#495057", borderColor: "#dee2e6" },
-  gold:     { bg: "#FDF6E8", color: "#8a6a24", borderColor: "#f0d9a0" },
-  silver:   { bg: "#f8f9fa", color: "#6c757d", borderColor: "#dee2e6" },
-  bronze:   { bg: "#fdf2ec", color: "#8a4a24", borderColor: "#f0c9a0" },
+  platinum: { bg: "var(--bg-surface-secondary)", color: "var(--text-secondary)", borderColor: "var(--border-color)" },
+  gold:     { bg: "var(--gold-lt)",              color: "var(--gold-dk)",         borderColor: "rgba(200,155,60,0.4)" },
+  silver:   { bg: "var(--bg-surface-secondary)", color: "var(--text-muted)",      borderColor: "var(--border-color)" },
+  bronze:   { bg: "rgba(200,100,50,0.07)",       color: "rgba(138,74,36,1)",      borderColor: "rgba(200,150,100,0.4)" },
 };
 
 const BLANK: SponsorInput = { name: "", tier: "gold", logoUrl: "", website: "" };
@@ -144,7 +144,7 @@ export default function AdminSponsors() {
                       </button>
                       <button
                         className="btn btn-sm"
-                        style={{ background: "#f8d7da", color: "#842029", borderColor: "#f1aeb5" }}
+                        style={{ background: "var(--status-danger-bg)", color: "var(--status-danger-text)", borderColor: "var(--status-danger-border)" }}
                         onClick={() => setDeleteId(s.id)}
                         title="Delete"
                       >

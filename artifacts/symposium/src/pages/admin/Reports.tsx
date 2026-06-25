@@ -144,9 +144,9 @@ export default function AdminReports() {
       {/* KPI Summary */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {[
-          { label: "Total Registrations", value: stats?.totalRegistrations ?? 0, sub: "delegates registered", color: "#0E6E74" },
-          { label: "Total Revenue", value: `MYR ${(stats?.totalRevenue ?? 0).toLocaleString("en-MY", { minimumFractionDigits: 2 })}`, sub: "from paid registrations", color: "#0a5c39" },
-          { label: "Abstracts Submitted", value: stats?.totalAbstracts ?? 0, sub: `${stats?.acceptedAbstracts ?? 0} accepted`, color: "#C89B3C" },
+          { label: "Total Registrations", value: stats?.totalRegistrations ?? 0, sub: "delegates registered", color: "var(--teal)" },
+          { label: "Total Revenue", value: `MYR ${(stats?.totalRevenue ?? 0).toLocaleString("en-MY", { minimumFractionDigits: 2 })}`, sub: "from paid registrations", color: "var(--status-success-text)" },
+          { label: "Abstracts Submitted", value: stats?.totalAbstracts ?? 0, sub: `${stats?.acceptedAbstracts ?? 0} accepted`, color: "var(--gold)" },
           { label: "Acceptance Rate", value: abstractTotal > 0 ? `${Math.round(((stats?.acceptedAbstracts ?? 0) / abstractTotal) * 100)}%` : "—", sub: `${stats?.rejectedAbstracts ?? 0} rejected`, color: "var(--text)" },
         ].map((k) => (
           <div key={k.label} className="card">
@@ -166,10 +166,10 @@ export default function AdminReports() {
             <h3 className="text-[14px] font-semibold mb-4" style={{ color: "var(--text)" }}>Payment Status Breakdown</h3>
             <div className="space-y-3">
               {[
-                { label: "Paid", count: paid, color: "#198754" },
-                { label: "Pending", count: pending, color: "#ffc107" },
-                { label: "Overdue", count: overdue, color: "#dc3545" },
-                { label: "Waived", count: waived, color: "#0E6E74" },
+                { label: "Paid",    count: paid,    color: "var(--status-success-text)" },
+                { label: "Pending", count: pending, color: "var(--status-warning-text)" },
+                { label: "Overdue", count: overdue, color: "var(--status-danger-text)" },
+                { label: "Waived",  count: waived,  color: "var(--teal)" },
               ].map((s) => (
                 <div key={s.label}>
                   <div className="flex justify-between text-[12px] mb-1">
@@ -189,10 +189,10 @@ export default function AdminReports() {
             <h3 className="text-[14px] font-semibold mb-4" style={{ color: "var(--text)" }}>Abstract Status Breakdown</h3>
             <div className="space-y-3">
               {[
-                { label: "Pending Review", count: stats?.pendingAbstracts ?? 0, color: "#ffc107" },
-                { label: "Accepted", count: stats?.acceptedAbstracts ?? 0, color: "#198754" },
-                { label: "Rejected", count: stats?.rejectedAbstracts ?? 0, color: "#dc3545" },
-                { label: "Under Review", count: abstractTotal - (stats?.pendingAbstracts ?? 0) - (stats?.acceptedAbstracts ?? 0) - (stats?.rejectedAbstracts ?? 0), color: "#0E6E74" },
+                { label: "Pending Review", count: stats?.pendingAbstracts ?? 0,                                                                                            color: "var(--status-warning-text)" },
+                { label: "Accepted",       count: stats?.acceptedAbstracts ?? 0,                                                                                           color: "var(--status-success-text)" },
+                { label: "Rejected",       count: stats?.rejectedAbstracts ?? 0,                                                                                           color: "var(--status-danger-text)" },
+                { label: "Under Review",   count: abstractTotal - (stats?.pendingAbstracts ?? 0) - (stats?.acceptedAbstracts ?? 0) - (stats?.rejectedAbstracts ?? 0),      color: "var(--teal)" },
               ].map((s) => (
                 <div key={s.label}>
                   <div className="flex justify-between text-[12px] mb-1">
@@ -222,7 +222,7 @@ export default function AdminReports() {
                       <span className="capitalize" style={{ color: "var(--text-secondary)" }}>{c.category.replace(/_/g, " ")}</span>
                       <span style={{ color: "var(--text-muted)" }}>{c.count}</span>
                     </div>
-                    <Bar value={c.count} max={catMax} color="#0E6E74" />
+                    <Bar value={c.count} max={catMax} color="var(--teal)" />
                   </div>
                 ))}
               </div>
@@ -244,7 +244,7 @@ export default function AdminReports() {
                       <span style={{ color: "var(--text-secondary)" }}>{c.country}</span>
                       <span style={{ color: "var(--text-muted)" }}>{c.count}</span>
                     </div>
-                    <Bar value={c.count} max={ctryMax} color="#C89B3C" />
+                    <Bar value={c.count} max={ctryMax} color="var(--gold)" />
                   </div>
                 ))}
               </div>

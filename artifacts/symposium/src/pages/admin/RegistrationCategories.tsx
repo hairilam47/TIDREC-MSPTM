@@ -353,7 +353,7 @@ export default function AdminRegistrationCategories() {
                             className="text-[11px] font-semibold px-2.5 py-1 rounded-full"
                             style={
                               cat.isActive
-                                ? { background: "#d1e7dd", color: "#0a5c39" }
+                                ? { background: "var(--status-success-bg)", color: "var(--status-success-text)" }
                                 : { background: "var(--border-color)", color: "var(--text-muted)" }
                             }
                           >
@@ -378,8 +378,8 @@ export default function AdminRegistrationCategories() {
                               className="btn btn-sm disabled:opacity-60 flex items-center gap-1"
                               style={
                                 cat.isActive
-                                  ? { background: "#fff3cd", color: "#856404", borderColor: "#ffe69c" }
-                                  : { background: "#d1e7dd", color: "#0a5c39", borderColor: "#a3cfbb" }
+                                  ? { background: "var(--status-warning-bg)", color: "var(--status-warning-text)", borderColor: "var(--border-color)" }
+                                  : { background: "var(--status-success-bg)", color: "var(--status-success-text)", borderColor: "var(--border-color)" }
                               }
                             >
                               {cat.isActive ? (

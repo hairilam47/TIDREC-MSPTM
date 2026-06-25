@@ -83,8 +83,8 @@ export default function AdminAnnouncements() {
               key={a.id}
               className="card"
               style={{
-                border: `1px solid ${a.important ? "#f0d9a0" : "var(--border-color)"}`,
-                background: a.important ? "#fffef9" : "var(--bg-surface)",
+                border: `1px solid ${a.important ? "rgba(200,155,60,0.35)" : "var(--border-color)"}`,
+                background: a.important ? "var(--gold-lt)" : "var(--bg-surface)",
               }}
             >
               <div className="card-body">
@@ -94,7 +94,7 @@ export default function AdminAnnouncements() {
                       {a.important && (
                         <span
                           className="flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full"
-                          style={{ background: "#FDF6E8", color: "#8a6a24" }}
+                          style={{ background: "var(--gold-lt)", color: "var(--gold-dk)" }}
                         >
                           <AlertCircle className="w-3 h-3" /> Important
                         </span>
@@ -117,7 +117,7 @@ export default function AdminAnnouncements() {
                     <button
                       onClick={() => setDeleteId(a.id)}
                       className="p-2 rounded-lg transition-colors hover:bg-red-50"
-                      style={{ border: "1px solid #f8d7da", color: "#842029" }}
+                      style={{ border: "1px solid var(--status-danger-bg)", color: "var(--status-danger-text)" }}
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -175,8 +175,8 @@ export default function AdminAnnouncements() {
           <div
             className="flex items-start gap-3 p-4 rounded-xl cursor-pointer select-none transition-colors"
             style={{
-              border: `1px solid ${important ? "#f0d9a0" : "var(--border-color)"}`,
-              background: important ? "#fffef9" : "var(--bg-surface)",
+              border: `1px solid ${important ? "rgba(200,155,60,0.35)" : "var(--border-color)"}`,
+              background: important ? "var(--gold-lt)" : "var(--bg-surface)",
             }}
             onClick={() => setImportant((v) => !v)}
           >

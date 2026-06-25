@@ -17,7 +17,7 @@ function SpeakerCard({ speaker }: { speaker: Speaker }) {
   return (
     <div
       style={{
-        background: "#fff",
+        background: "var(--bg-surface)",
         borderRadius: 12,
         boxShadow: "0 2px 12px rgba(0,0,0,0.08)",
         padding: "28px 20px 20px",
@@ -25,7 +25,7 @@ function SpeakerCard({ speaker }: { speaker: Speaker }) {
         flexDirection: "column",
         alignItems: "center",
         textAlign: "center",
-        border: "1px solid #f0f0f0",
+        border: "1px solid var(--border-color)",
       }}
     >
       <div
@@ -33,11 +33,11 @@ function SpeakerCard({ speaker }: { speaker: Speaker }) {
           width: 120,
           height: 120,
           borderRadius: "50%",
-          border: "3px solid #C89B3C",
+          border: "3px solid var(--gold)",
           overflow: "hidden",
           marginBottom: 16,
           flexShrink: 0,
-          background: "#f5f5f5",
+          background: "var(--bg-surface-secondary)",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -55,7 +55,7 @@ function SpeakerCard({ speaker }: { speaker: Speaker }) {
             style={{
               fontSize: 36,
               fontWeight: 700,
-              color: "#0B2744",
+              color: "var(--navy)",
             }}
           >
             {speaker.initials || speaker.name.substring(0, 2)}
@@ -68,18 +68,18 @@ function SpeakerCard({ speaker }: { speaker: Speaker }) {
         style={{
           fontSize: 15,
           fontWeight: 600,
-          color: "#0B2744",
+          color: "var(--navy)",
           marginBottom: 4,
           lineHeight: 1.3,
         }}
       >
         {speaker.name}
       </div>
-      <div style={{ fontSize: 13, color: "#6c757d", marginBottom: speaker.topic ? 8 : 0 }}>
+      <div style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: speaker.topic ? 8 : 0 }}>
         {speaker.country}
       </div>
       {speaker.topic && (
-        <div style={{ fontSize: 12, color: "#0E6E74", marginTop: 4, lineHeight: 1.4 }}>
+        <div style={{ fontSize: 12, color: "var(--teal)", marginTop: 4, lineHeight: 1.4 }}>
           {speaker.topic}
         </div>
       )}
@@ -105,15 +105,15 @@ export default function SpeakersPage() {
   const hasOther = (grouped["other"] ?? []).length > 0;
 
   return (
-    <div className="font-sans" style={{ minHeight: "100vh", background: "#fff" }}>
+    <div className="font-sans" style={{ minHeight: "100vh", background: "var(--bg-surface)" }}>
       {/* Nav */}
-      <header style={{ background: "#0B2744", borderBottom: "1px solid rgba(255,255,255,0.1)", position: "sticky", top: 0, zIndex: 50 }}>
+      <header style={{ background: "var(--navy)", borderBottom: "1px solid rgba(255,255,255,0.1)", position: "sticky", top: 0, zIndex: 50 }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px", height: 72, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <nav style={{ display: "flex", gap: 28, alignItems: "center" }}>
             <Link href="/" style={{ color: "#fff", textDecoration: "none", fontSize: 14, fontWeight: 500 }}>Home</Link>
             <a href="/#about" style={{ color: "#fff", textDecoration: "none", fontSize: 14, fontWeight: 500 }}>About</a>
             <a href="/#programme" style={{ color: "#fff", textDecoration: "none", fontSize: 14, fontWeight: 500 }}>Programme</a>
-            <Link href="/speakers" style={{ color: "#C89B3C", textDecoration: "none", fontSize: 14, fontWeight: 600 }}>Speakers</Link>
+            <Link href="/speakers" style={{ color: "var(--gold)", textDecoration: "none", fontSize: 14, fontWeight: 600 }}>Speakers</Link>
             <a href="/#sponsors" style={{ color: "#fff", textDecoration: "none", fontSize: 14, fontWeight: 500 }}>Sponsors</a>
             {cms?.sponsor_prospectus_url && (
               <a href="/api/sponsor-prospectus" download style={{ color: "#fff", textDecoration: "none", fontSize: 14, fontWeight: 500 }}>Sponsor Prospectus</a>
@@ -124,7 +124,7 @@ export default function SpeakersPage() {
             <Link href="/login" style={{ color: "#fff", textDecoration: "none", fontSize: 14, fontWeight: 500 }}>Login</Link>
             <Link
               href="/register"
-              style={{ background: "#C89B3C", color: "#fff", padding: "8px 20px", borderRadius: 6, textDecoration: "none", fontSize: 14, fontWeight: 600 }}
+              style={{ background: "var(--gold)", color: "#fff", padding: "8px 20px", borderRadius: 6, textDecoration: "none", fontSize: 14, fontWeight: 600 }}
             >
               Register Now
             </Link>
@@ -133,7 +133,7 @@ export default function SpeakersPage() {
       </header>
 
       {/* Hero banner */}
-      <div style={{ background: "linear-gradient(135deg, #0B2744 0%, #0E6E74 100%)", padding: "56px 24px 48px", textAlign: "center" }}>
+      <div style={{ background: "linear-gradient(135deg, var(--navy) 0%, var(--teal) 100%)", padding: "56px 24px 48px", textAlign: "center" }}>
         <h1 className="font-sans" style={{ fontSize: 40, fontWeight: 700, color: "#fff", margin: 0, marginBottom: 12 }}>
           Our Speakers
         </h1>
@@ -146,7 +146,7 @@ export default function SpeakersPage() {
       <main style={{ maxWidth: 1200, margin: "0 auto", padding: "60px 24px" }}>
         {isLoading ? (
           <div style={{ display: "flex", justifyContent: "center", padding: "80px 0" }}>
-            <Loader2 style={{ width: 36, height: 36, color: "#0E6E74", animation: "spin 1s linear infinite" }} />
+            <Loader2 style={{ width: 36, height: 36, color: "var(--teal)", animation: "spin 1s linear infinite" }} />
           </div>
         ) : (
           <>
@@ -160,7 +160,7 @@ export default function SpeakersPage() {
                     style={{
                       fontSize: 28,
                       fontWeight: 700,
-                      color: "#0B2744",
+                      color: "var(--navy)",
                       textAlign: "center",
                       marginBottom: 36,
                     }}
@@ -189,7 +189,7 @@ export default function SpeakersPage() {
                   style={{
                     fontSize: 28,
                     fontWeight: 700,
-                    color: "#0B2744",
+                    color: "var(--navy)",
                     textAlign: "center",
                     marginBottom: 36,
                   }}
@@ -205,7 +205,7 @@ export default function SpeakersPage() {
             )}
 
             {!speakers?.length && (
-              <div style={{ textAlign: "center", padding: "80px 0", color: "#6c757d", fontSize: 15 }}>
+              <div style={{ textAlign: "center", padding: "80px 0", color: "var(--text-muted)", fontSize: 15 }}>
                 Speaker announcements coming soon.
               </div>
             )}
@@ -214,10 +214,10 @@ export default function SpeakersPage() {
       </main>
 
       {/* Footer */}
-      <footer style={{ background: "#0B2744", color: "rgba(255,255,255,0.6)", padding: "40px 24px", textAlign: "center", fontSize: 13 }}>
+      <footer style={{ background: "var(--navy)", color: "rgba(255,255,255,0.6)", padding: "40px 24px", textAlign: "center", fontSize: 13 }}>
         <p style={{ margin: 0 }}>
           &copy; 2027 SEAT-MSPTM. All rights reserved. |{" "}
-          <a href="mailto:events@msptm.network" style={{ color: "#C89B3C", textDecoration: "none" }}>
+          <a href="mailto:events@msptm.network" style={{ color: "var(--gold)", textDecoration: "none" }}>
             events@msptm.network
           </a>
         </p>

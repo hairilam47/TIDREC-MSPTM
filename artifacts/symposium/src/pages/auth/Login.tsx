@@ -41,12 +41,12 @@ export default function Login() {
   return (
     <div
       className="min-h-screen flex items-center justify-center px-4 py-12"
-      style={{ background: "linear-gradient(135deg, #0B2744 0%, rgba(11,39,68,0.95) 60%, rgba(14,110,116,0.2) 100%)" }}
+      style={{ background: "linear-gradient(135deg, var(--navy) 0%, rgba(11,39,68,0.95) 60%, rgba(14,110,116,0.2) 100%)" }}
     >
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link href="/">
-            <h1 className="font-sans text-3xl font-bold cursor-pointer" style={{ color: "#C89B3C" }}>
+            <h1 className="font-sans text-3xl font-bold cursor-pointer" style={{ color: "var(--gold)" }}>
               SEAT-MSPTM 2027
             </h1>
           </Link>
@@ -61,17 +61,17 @@ export default function Login() {
           transition={{ duration: 0.35, ease: "easeOut" }}
           className="bg-white rounded-2xl shadow-2xl p-8"
         >
-          <h2 className="font-sans text-2xl font-bold mb-1" style={{ color: "#0B2744" }}>
+          <h2 className="font-sans text-2xl font-bold mb-1" style={{ color: "var(--navy)" }}>
             Sign In to Your Account
           </h2>
-          <p className="text-[13px] mb-6" style={{ color: "#6c757d" }}>
+          <p className="text-[13px] mb-6" style={{ color: "var(--text-muted)" }}>
             Access your SEAT-MSPTM 2027 delegate portal
           </p>
 
           {errors.general && (
             <div
               className="mb-4 px-4 py-3 rounded-lg text-[13px]"
-              style={{ background: "#f8d7da", color: "#842029" }}
+              style={{ background: "var(--status-danger-bg)", color: "var(--status-danger-text)" }}
             >
               {errors.general}
             </div>
@@ -79,8 +79,8 @@ export default function Login() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-[13px] font-semibold mb-1.5" style={{ color: "#495057" }}>
-                Email Address <span style={{ color: "#dc3545" }}>*</span>
+              <label className="block text-[13px] font-semibold mb-1.5" style={{ color: "var(--text-secondary)" }}>
+                Email Address <span style={{ color: "var(--red)" }}>*</span>
               </label>
               <input
                 type="email"
@@ -96,13 +96,13 @@ export default function Login() {
                 autoComplete="email"
               />
               {errors.email && (
-                <p className="text-[12px] mt-1" style={{ color: "#dc3545" }}>{errors.email}</p>
+                <p className="text-[12px] mt-1" style={{ color: "var(--red)" }}>{errors.email}</p>
               )}
             </div>
 
             <div>
-              <label className="block text-[13px] font-semibold mb-1.5" style={{ color: "#495057" }}>
-                Password <span style={{ color: "#dc3545" }}>*</span>
+              <label className="block text-[13px] font-semibold mb-1.5" style={{ color: "var(--text-secondary)" }}>
+                Password <span style={{ color: "var(--red)" }}>*</span>
               </label>
               <input
                 type="password"
@@ -117,7 +117,7 @@ export default function Login() {
                 autoComplete="current-password"
               />
               {errors.password && (
-                <p className="text-[12px] mt-1" style={{ color: "#dc3545" }}>{errors.password}</p>
+                <p className="text-[12px] mt-1" style={{ color: "var(--red)" }}>{errors.password}</p>
               )}
             </div>
 
@@ -125,16 +125,16 @@ export default function Login() {
               type="submit"
               disabled={loginMutation.isPending}
               className="w-full py-3 rounded-xl font-semibold text-white flex items-center justify-center gap-2 disabled:opacity-60 transition-opacity mt-2"
-              style={{ background: "#C89B3C" }}
+              style={{ background: "var(--gold)" }}
             >
               {loginMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
               {loginMutation.isPending ? "Signing in…" : "Sign In"}
             </button>
           </form>
 
-          <p className="mt-5 text-center text-[13px]" style={{ color: "#6c757d" }}>
+          <p className="mt-5 text-center text-[13px]" style={{ color: "var(--text-muted)" }}>
             Don't have an account?{" "}
-            <Link href="/register" className="font-semibold" style={{ color: "#0E6E74" }}>
+            <Link href="/register" className="font-semibold" style={{ color: "var(--teal)" }}>
               Register now
             </Link>
           </p>

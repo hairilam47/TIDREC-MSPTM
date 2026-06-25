@@ -16,11 +16,11 @@ import {
 
 /* ── Status maps ── */
 const STATUS_BADGE: Record<string, { bg: string; color: string; label: string }> = {
-  submitted:          { bg: "#e6f4f5", color: "#0E6E74",  label: "Submitted" },
-  under_review:       { bg: "#fff3cd", color: "#856404",  label: "Under Review" },
-  accepted:           { bg: "#d1e7dd", color: "#0a5c39",  label: "Accepted" },
-  rejected:           { bg: "#f8d7da", color: "#842029",  label: "Rejected" },
-  revision_requested: { bg: "#fff3cd", color: "#856404",  label: "Revision Needed" },
+  submitted:          { bg: "var(--primary-lt)",        color: "var(--primary)",              label: "Submitted" },
+  under_review:       { bg: "var(--status-warning-bg)", color: "var(--status-warning-text)",  label: "Under Review" },
+  accepted:           { bg: "var(--status-success-bg)", color: "var(--status-success-text)",  label: "Accepted" },
+  rejected:           { bg: "var(--status-danger-bg)",  color: "var(--status-danger-text)",   label: "Rejected" },
+  revision_requested: { bg: "var(--status-warning-bg)", color: "var(--status-warning-text)",  label: "Revision Needed" },
 };
 
 const IMPORTANT_DATES = [
@@ -34,7 +34,7 @@ const IMPORTANT_DATES = [
 function dateDotColor(iso: string): string {
   const now = Date.now(), ts = new Date(iso).getTime();
   if (ts < now) return "var(--text-disabled)";
-  return (ts - now) / 86400000 <= 60 ? "var(--primary)" : "#0E6E74";
+  return (ts - now) / 86400000 <= 60 ? "var(--primary)" : "var(--teal)";
 }
 
 function Badge({ bg, color, children }: { bg: string; color: string; children: React.ReactNode }) {
@@ -324,7 +324,7 @@ export default function Dashboard() {
                 </ul>
               </div>
               <div style={{ display: "flex", gap: 12, marginTop: 12, paddingTop: 12, borderTop: "1px solid var(--border-color-light)" }}>
-                {[{ color: "#0E6E74", label: "Upcoming" }, { color: "var(--primary)", label: "Soon" }, { color: "var(--text-disabled)", label: "Past" }].map((l) => (
+                {[{ color: "var(--teal)", label: "Upcoming" }, { color: "var(--primary)", label: "Soon" }, { color: "var(--text-disabled)", label: "Past" }].map((l) => (
                   <div key={l.label} style={{ display: "flex", alignItems: "center", gap: 5 }}>
                     <div style={{ width: 7, height: 7, borderRadius: "50%", background: l.color, flexShrink: 0 }} />
                     <span style={{ fontSize: 10, color: "var(--text-muted)" }}>{l.label}</span>

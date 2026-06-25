@@ -44,9 +44,9 @@ export default function AdminAnalytics() {
 
   const kpis = [
     { label: "Total Registrations", value: regTotal, icon: Users, color: "var(--primary)", bg: "var(--primary-lt)", trend: `${targetPct}% of 300 target` },
-    { label: "Total Abstracts", value: absTotal, icon: FileText, color: "#C89B3C", bg: "#FDF6E8", trend: `${acceptRate}% acceptance rate` },
-    { label: "Revenue Collected", value: `MYR ${(stats?.totalRevenue ?? 0).toLocaleString("en-MY", { minimumFractionDigits: 2 })}`, icon: DollarSign, color: "#0a5c39", bg: "#d1e7dd", trend: `${payRate}% payment rate` },
-    { label: "Pending Actions", value: (pending + (stats?.pendingAbstracts ?? 0)), icon: TrendingUp, color: "#856404", bg: "#fff3cd", trend: `${pending} payments + ${stats?.pendingAbstracts ?? 0} abstracts` },
+    { label: "Total Abstracts", value: absTotal, icon: FileText, color: "var(--gold)", bg: "var(--gold-lt)", trend: `${acceptRate}% acceptance rate` },
+    { label: "Revenue Collected", value: `MYR ${(stats?.totalRevenue ?? 0).toLocaleString("en-MY", { minimumFractionDigits: 2 })}`, icon: DollarSign, color: "var(--status-success-text)", bg: "var(--status-success-bg)", trend: `${payRate}% payment rate` },
+    { label: "Pending Actions", value: (pending + (stats?.pendingAbstracts ?? 0)), icon: TrendingUp, color: "var(--status-warning-text)", bg: "var(--status-warning-bg)", trend: `${pending} payments + ${stats?.pendingAbstracts ?? 0} abstracts` },
   ];
 
   return (
@@ -81,14 +81,14 @@ export default function AdminAnalytics() {
               <span className="text-[13px] font-bold" style={{ color: "var(--primary)" }}>{regTotal} / 300</span>
             </div>
             <div className="relative rounded-full overflow-hidden mb-3" style={{ height: 16, background: "var(--border-color)" }}>
-              <div className="h-full rounded-full transition-all duration-700" style={{ width: `${targetPct}%`, background: "linear-gradient(90deg, #0E6E74, #0B2744)" }} />
+              <div className="h-full rounded-full transition-all duration-700" style={{ width: `${targetPct}%`, background: "linear-gradient(90deg, var(--teal), var(--navy))" }} />
             </div>
             <div className="text-center text-[12px] mb-5" style={{ color: "var(--text-muted)" }}>{targetPct}% of target reached</div>
             <div className="space-y-0">
-              <ProgressBar value={paid} max={regTotal} color="#198754" label="Paid" count={paid} />
-              <ProgressBar value={pending} max={regTotal} color="#ffc107" label="Pending Payment" count={pending} />
-              <ProgressBar value={overdue} max={regTotal} color="#dc3545" label="Overdue" count={overdue} />
-              <ProgressBar value={waived} max={regTotal} color="#0E6E74" label="Waived" count={waived} />
+              <ProgressBar value={paid} max={regTotal} color="var(--status-success-text)" label="Paid" count={paid} />
+              <ProgressBar value={pending} max={regTotal} color="var(--status-warning-text)" label="Pending Payment" count={pending} />
+              <ProgressBar value={overdue} max={regTotal} color="var(--status-danger-text)" label="Overdue" count={overdue} />
+              <ProgressBar value={waived} max={regTotal} color="var(--teal)" label="Waived" count={waived} />
             </div>
           </div>
         </div>
@@ -98,17 +98,17 @@ export default function AdminAnalytics() {
           <div className="card-body">
             <div className="flex items-center justify-between mb-5">
               <h3 className="text-[14px] font-semibold" style={{ color: "var(--text)" }}>Abstract Review Funnel</h3>
-              <span className="flex items-center gap-1.5 text-[12px] font-semibold px-2.5 py-1 rounded-full" style={{ background: "#d1e7dd", color: "#0a5c39" }}>
+              <span className="flex items-center gap-1.5 text-[12px] font-semibold px-2.5 py-1 rounded-full" style={{ background: "var(--status-success-bg)", color: "var(--status-success-text)" }}>
                 <Award className="w-3.5 h-3.5" /> {acceptRate}% accepted
               </span>
             </div>
             <div className="space-y-0">
-              <ProgressBar value={absTotal} max={absTotal} color="#0B2744" label="Total Submitted" count={absTotal} />
-              <ProgressBar value={stats?.pendingAbstracts ?? 0} max={absTotal} color="#ffc107" label="Awaiting Review" count={stats?.pendingAbstracts ?? 0} />
-              <ProgressBar value={underReview} max={absTotal} color="#0E6E74" label="Under Review" count={underReview} />
-              <ProgressBar value={revisionReq} max={absTotal} color="#e67e22" label="Revision Requested" count={revisionReq} />
-              <ProgressBar value={accepted} max={absTotal} color="#198754" label="Accepted" count={accepted} />
-              <ProgressBar value={rejected} max={absTotal} color="#dc3545" label="Rejected" count={rejected} />
+              <ProgressBar value={absTotal} max={absTotal} color="var(--navy)" label="Total Submitted" count={absTotal} />
+              <ProgressBar value={stats?.pendingAbstracts ?? 0} max={absTotal} color="var(--status-warning-text)" label="Awaiting Review" count={stats?.pendingAbstracts ?? 0} />
+              <ProgressBar value={underReview} max={absTotal} color="var(--teal)" label="Under Review" count={underReview} />
+              <ProgressBar value={revisionReq} max={absTotal} color="rgba(230,126,34,1)" label="Revision Requested" count={revisionReq} />
+              <ProgressBar value={accepted} max={absTotal} color="var(--status-success-text)" label="Accepted" count={accepted} />
+              <ProgressBar value={rejected} max={absTotal} color="var(--status-danger-text)" label="Rejected" count={rejected} />
             </div>
           </div>
         </div>
@@ -122,7 +122,7 @@ export default function AdminAnalytics() {
             {(stats?.registrationsByCategory ?? []).length === 0 ? (
               <div className="text-center py-6 text-[12px]" style={{ color: "var(--text-disabled)" }}>No data yet</div>
             ) : [...(stats?.registrationsByCategory ?? [])].sort((a, b) => b.count - a.count).map((c) => (
-              <ProgressBar key={c.category} value={c.count} max={regTotal} color="#0E6E74" label={c.category.replace(/_/g, " ")} count={c.count} />
+              <ProgressBar key={c.category} value={c.count} max={regTotal} color="var(--teal)" label={c.category.replace(/_/g, " ")} count={c.count} />
             ))}
           </div>
         </div>
@@ -131,8 +131,8 @@ export default function AdminAnalytics() {
         <div className="card">
           <div className="card-body">
             <h3 className="text-[14px] font-semibold mb-4" style={{ color: "var(--text)" }}>Abstract Types</h3>
-            <ProgressBar value={oral} max={absTotal} color="#0B2744" label="Oral presentations" count={oral} />
-            <ProgressBar value={poster} max={absTotal} color="#C89B3C" label="Poster presentations" count={poster} />
+            <ProgressBar value={oral} max={absTotal} color="var(--navy)" label="Oral presentations" count={oral} />
+            <ProgressBar value={poster} max={absTotal} color="var(--gold)" label="Poster presentations" count={poster} />
 
             <div className="mt-5 pt-4" style={{ borderTop: "1px solid var(--border-color-light)" }}>
               <div className="text-[12px] font-semibold mb-3" style={{ color: "var(--text-muted)" }}>PROGRAMME OVERVIEW</div>
@@ -157,7 +157,7 @@ export default function AdminAnalytics() {
               <div className="text-center py-6 text-[12px]" style={{ color: "var(--text-disabled)" }}>No data yet</div>
             ) : [...(stats?.registrationsByCountry ?? [])].sort((a, b) => b.count - a.count).slice(0, 8).map((c) => {
               const max = Math.max(...(stats?.registrationsByCountry ?? []).map((x) => x.count), 1);
-              return <ProgressBar key={c.country} value={c.count} max={max} color="#C89B3C" label={c.country} count={c.count} />;
+              return <ProgressBar key={c.country} value={c.count} max={max} color="var(--gold)" label={c.country} count={c.count} />;
             })}
           </div>
         </div>

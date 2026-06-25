@@ -16,7 +16,7 @@ const ALLOWED_EXT = ".pdf, .doc, .docx";
 const MAX_SIZE_MB = 5;
 
 const INPUT_CLS =
-  "w-full px-3.5 py-3 rounded-lg text-[14px] outline-none transition-colors focus:ring-2 focus:ring-[rgba(14,110,116,0.2)] focus:border-[#0E6E74]";
+  "w-full px-3.5 py-3 rounded-lg text-[14px] outline-none transition-colors focus:ring-2 focus:ring-[rgba(14,110,116,0.2)]";
 
 async function requestUploadUrl(file: File): Promise<{ uploadURL: string; objectPath: string }> {
   const token = localStorage.getItem("satbds_token");
@@ -142,22 +142,21 @@ export default function NewAbstract() {
     return (
       <PortalLayout title="Submit Abstract">
         <div className="max-w-md mx-auto text-center py-12">
-          <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: "#d1e7dd" }}>
-            <CheckCircle className="w-8 h-8" style={{ color: "#198754" }} />
+          <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: "var(--status-success-bg)" }}>
+            <CheckCircle className="w-8 h-8" style={{ color: "var(--green)" }} />
           </div>
-          <h2 className="text-2xl font-sans font-bold mb-2" style={{ color: "#0B2744" }}>Abstract Submitted!</h2>
-          <p className="text-sm mb-3" style={{ color: "#6c757d" }}>
+          <h2 className="text-2xl font-sans font-bold mb-2" style={{ color: "var(--navy)" }}>Abstract Submitted!</h2>
+          <p className="text-sm mb-3" style={{ color: "var(--text-muted)" }}>
             Your abstract has been received and is now under review. You will be notified of the outcome.
           </p>
-          <div className="rounded-xl px-6 py-3 mb-6 inline-block" style={{ background: "#e6f4f5" }}>
-            <div className="text-[11px] font-bold uppercase tracking-wider mb-1" style={{ color: "#0E6E74" }}>Abstract Code</div>
-            <div className="text-[18px] font-mono font-bold" style={{ color: "#0B2744" }}>{submitted.abstractCode}</div>
+          <div className="rounded-xl px-6 py-3 mb-6 inline-block" style={{ background: "var(--primary-lt)" }}>
+            <div className="text-[11px] font-bold uppercase tracking-wider mb-1" style={{ color: "var(--primary)" }}>Abstract Code</div>
+            <div className="text-[18px] font-mono font-bold" style={{ color: "var(--navy)" }}>{submitted.abstractCode}</div>
           </div>
           <div className="flex gap-3 justify-center">
             <button
               onClick={() => setLocation("/portal/abstracts")}
-              className="px-5 py-2.5 rounded-lg text-[13px] font-semibold text-white"
-              style={{ background: "#0E6E74" }}
+              className="btn btn-primary"
             >
               View All Abstracts
             </button>
@@ -169,8 +168,7 @@ export default function NewAbstract() {
                 setSelectedFile(null);
                 setUploadedObjectPath(null);
               }}
-              className="px-5 py-2.5 rounded-lg text-[13px] font-semibold"
-              style={{ border: "1px solid #e9ecef", color: "#6c757d" }}
+              className="btn btn-outline"
             >
               Submit Another
             </button>
@@ -183,7 +181,7 @@ export default function NewAbstract() {
   return (
     <PortalLayout title="Submit Abstract">
       <div className="max-w-2xl">
-        <Link href="/portal/abstracts" className="flex items-center gap-1.5 text-[13px] mb-5 no-underline" style={{ color: "#6c757d" }}>
+        <Link href="/portal/abstracts" className="flex items-center gap-1.5 text-[13px] mb-5 no-underline" style={{ color: "var(--text-muted)" }}>
           <ArrowLeft className="w-4 h-4" /> Back to Abstracts
         </Link>
 
@@ -195,22 +193,22 @@ export default function NewAbstract() {
                 <div
                   className="w-8 h-8 rounded-full flex items-center justify-center text-[13px] font-semibold mb-1"
                   style={{
-                    background: i < step ? "#198754" : i === step ? "#0E6E74" : "#e9ecef",
-                    color: i <= step ? "#fff" : "#adb5bd",
-                    boxShadow: i === step ? "0 0 0 3px rgba(14,110,116,0.2)" : "none",
+                    background: i < step ? "var(--green)" : i === step ? "var(--primary)" : "var(--border-color)",
+                    color: i <= step ? "#fff" : "var(--text-disabled)",
+                    boxShadow: i === step ? "0 0 0 3px var(--primary-lt)" : "none",
                   }}
                 >
                   {i < step ? <CheckCircle className="w-4 h-4" /> : i + 1}
                 </div>
                 <div
                   className="text-[11px] font-medium text-center"
-                  style={{ color: i === step ? "#0E6E74" : i < step ? "#198754" : "#adb5bd" }}
+                  style={{ color: i === step ? "var(--primary)" : i < step ? "var(--green)" : "var(--text-disabled)" }}
                 >
                   {s}
                 </div>
               </div>
               {i < STEPS.length - 1 && (
-                <div className="flex-1 mx-2 mb-5" style={{ height: 2, background: i < step ? "#198754" : "#e9ecef" }} />
+                <div className="flex-1 mx-2 mb-5" style={{ height: 2, background: i < step ? "var(--green)" : "var(--border-color)" }} />
               )}
             </React.Fragment>
           ))}
@@ -218,14 +216,14 @@ export default function NewAbstract() {
 
         {/* Step 0: Details & Content */}
         {step === 0 && (
-          <div className="bg-white rounded-xl p-6" style={{ border: "1px solid #e9ecef" }}>
-            <h2 className="text-[17px] font-sans font-bold mb-5" style={{ color: "#0B2744" }}>
+          <div className="card p-6">
+            <h2 className="text-[17px] font-sans font-bold mb-5" style={{ color: "var(--navy)" }}>
               Abstract Details & Content
             </h2>
             <div className="space-y-5">
               <div>
-                <label className="block text-[13px] font-semibold mb-1.5" style={{ color: "#495057" }}>
-                  Title <span style={{ color: "#dc3545" }}>*</span>
+                <label className="block text-[13px] font-semibold mb-1.5" style={{ color: "var(--text-secondary)" }}>
+                  Title <span style={{ color: "var(--red)" }}>*</span>
                 </label>
                 <input
                   type="text"
@@ -233,14 +231,14 @@ export default function NewAbstract() {
                   onChange={(e) => set("title", e.target.value)}
                   placeholder="Enter the full title of your presentation"
                   className={INPUT_CLS}
-                  style={{ border: `1px solid ${errors.title ? "#dc3545" : "#dee2e6"}` }}
+                  style={{ border: `1px solid ${errors.title ? "var(--red)" : "var(--border-color)"}` }}
                 />
-                {errors.title && <p className="text-[12px] mt-1" style={{ color: "#dc3545" }}>{errors.title}</p>}
+                {errors.title && <p className="text-[12px] mt-1" style={{ color: "var(--red)" }}>{errors.title}</p>}
               </div>
 
               <div>
-                <label className="block text-[13px] font-semibold mb-1.5" style={{ color: "#495057" }}>
-                  Presentation Type <span style={{ color: "#dc3545" }}>*</span>
+                <label className="block text-[13px] font-semibold mb-1.5" style={{ color: "var(--text-secondary)" }}>
+                  Presentation Type <span style={{ color: "var(--red)" }}>*</span>
                 </label>
                 <div className="flex gap-3">
                   {(["oral", "poster"] as const).map((t) => (
@@ -248,8 +246,8 @@ export default function NewAbstract() {
                       key={t}
                       className="flex items-center gap-2 px-4 py-3 rounded-lg cursor-pointer flex-1 justify-center transition-colors"
                       style={{
-                        border: form.abstractType === t ? "2px solid #0E6E74" : "1px solid #dee2e6",
-                        background: form.abstractType === t ? "#e6f4f5" : "#fff",
+                        border: form.abstractType === t ? "2px solid var(--primary)" : "1px solid var(--border-color)",
+                        background: form.abstractType === t ? "var(--primary-lt)" : "var(--bg-surface)",
                       }}
                     >
                       <input
@@ -262,7 +260,7 @@ export default function NewAbstract() {
                       />
                       <span
                         className="text-[13px] font-medium"
-                        style={{ color: form.abstractType === t ? "#0E6E74" : "#495057" }}
+                        style={{ color: form.abstractType === t ? "var(--primary)" : "var(--text-secondary)" }}
                       >
                         {t === "oral" ? "Oral Presentation" : "Poster Presentation"}
                       </span>
@@ -272,8 +270,8 @@ export default function NewAbstract() {
               </div>
 
               <div>
-                <label className="block text-[13px] font-semibold mb-1.5" style={{ color: "#495057" }}>
-                  Keywords <span style={{ color: "#dc3545" }}>*</span>
+                <label className="block text-[13px] font-semibold mb-1.5" style={{ color: "var(--text-secondary)" }}>
+                  Keywords <span style={{ color: "var(--red)" }}>*</span>
                 </label>
                 <input
                   type="text"
@@ -281,17 +279,17 @@ export default function NewAbstract() {
                   onChange={(e) => set("keywords", e.target.value)}
                   placeholder="e.g. tick-borne diseases, vector control, epidemiology"
                   className={INPUT_CLS}
-                  style={{ border: `1px solid ${errors.keywords ? "#dc3545" : "#dee2e6"}` }}
+                  style={{ border: `1px solid ${errors.keywords ? "var(--red)" : "var(--border-color)"}` }}
                 />
                 {errors.keywords && (
-                  <p className="text-[12px] mt-1" style={{ color: "#dc3545" }}>{errors.keywords}</p>
+                  <p className="text-[12px] mt-1" style={{ color: "var(--red)" }}>{errors.keywords}</p>
                 )}
               </div>
 
               <div>
-                <label className="block text-[13px] font-semibold mb-1.5" style={{ color: "#495057" }}>
+                <label className="block text-[13px] font-semibold mb-1.5" style={{ color: "var(--text-secondary)" }}>
                   Co-Authors{" "}
-                  <span className="text-[12px] font-normal" style={{ color: "#adb5bd" }}>(optional)</span>
+                  <span className="text-[12px] font-normal" style={{ color: "var(--text-disabled)" }}>(optional)</span>
                 </label>
                 <input
                   type="text"
@@ -299,16 +297,16 @@ export default function NewAbstract() {
                   onChange={(e) => set("coAuthors", e.target.value)}
                   placeholder="e.g. Dr. Jane Smith (UM), Prof. Ali Hassan (USM)"
                   className={INPUT_CLS}
-                  style={{ border: "1px solid #dee2e6" }}
+                  style={{ border: "1px solid var(--border-color)" }}
                 />
               </div>
 
               <div>
                 <div className="flex items-center justify-between mb-1.5">
-                  <label className="text-[13px] font-semibold" style={{ color: "#495057" }}>
-                    Abstract Body <span style={{ color: "#dc3545" }}>*</span>
+                  <label className="text-[13px] font-semibold" style={{ color: "var(--text-secondary)" }}>
+                    Abstract Body <span style={{ color: "var(--red)" }}>*</span>
                   </label>
-                  <span className="text-[12px]" style={{ color: form.body.length > 2800 ? "#dc3545" : "#adb5bd" }}>
+                  <span className="text-[12px]" style={{ color: form.body.length > 2800 ? "var(--red)" : "var(--text-disabled)" }}>
                     {form.body.length}/3000
                   </span>
                 </div>
@@ -319,19 +317,15 @@ export default function NewAbstract() {
                   rows={10}
                   className={`${INPUT_CLS} resize-y`}
                   style={{
-                    border: `1px solid ${errors.body ? "#dc3545" : "#dee2e6"}`,
+                    border: `1px solid ${errors.body ? "var(--red)" : "var(--border-color)"}`,
                     lineHeight: 1.7,
                   }}
                 />
-                {errors.body && <p className="text-[12px] mt-1" style={{ color: "#dc3545" }}>{errors.body}</p>}
+                {errors.body && <p className="text-[12px] mt-1" style={{ color: "var(--red)" }}>{errors.body}</p>}
               </div>
             </div>
-            <div className="flex justify-end mt-6 pt-4" style={{ borderTop: "1px solid #f1f3f5" }}>
-              <button
-                onClick={handleNext}
-                className="px-6 py-2.5 rounded-lg text-[14px] font-semibold text-white"
-                style={{ background: "#0E6E74" }}
-              >
+            <div className="flex justify-end mt-6 pt-4" style={{ borderTop: "1px solid var(--border-color-light)" }}>
+              <button onClick={handleNext} className="btn btn-primary">
                 Next: File Upload →
               </button>
             </div>
@@ -340,19 +334,19 @@ export default function NewAbstract() {
 
         {/* Step 1: File Upload */}
         {step === 1 && (
-          <div className="bg-white rounded-xl p-6" style={{ border: "1px solid #e9ecef" }}>
-            <h2 className="text-[17px] font-sans font-bold mb-2" style={{ color: "#0B2744" }}>
+          <div className="card p-6">
+            <h2 className="text-[17px] font-sans font-bold mb-2" style={{ color: "var(--navy)" }}>
               Upload Abstract Document
             </h2>
-            <p className="text-[13px] mb-6" style={{ color: "#6c757d" }}>
+            <p className="text-[13px] mb-6" style={{ color: "var(--text-muted)" }}>
               Upload a formatted copy of your abstract in PDF or Word format. Maximum file size: {MAX_SIZE_MB} MB.
-              <span className="ml-1" style={{ color: "#adb5bd" }}>(Optional — you may skip this step)</span>
+              <span className="ml-1" style={{ color: "var(--text-disabled)" }}>(Optional — you may skip this step)</span>
             </p>
 
             {!selectedFile ? (
               <label
                 className="flex flex-col items-center justify-center w-full rounded-xl cursor-pointer transition-all"
-                style={{ border: "2px dashed #dee2e6", background: "#f8f9fa", minHeight: 180 }}
+                style={{ border: "2px dashed var(--border-color)", background: "var(--bg-surface-secondary)", minHeight: 180 }}
                 onDragOver={(e) => e.preventDefault()}
                 onDrop={(e) => {
                   e.preventDefault();
@@ -364,29 +358,29 @@ export default function NewAbstract() {
                 }}
               >
                 <input type="file" className="sr-only" accept=".pdf,.doc,.docx" onChange={handleFileSelect} />
-                <Upload className="w-10 h-10 mb-3" style={{ color: "#adb5bd" }} />
-                <div className="text-[14px] font-medium mb-1" style={{ color: "#495057" }}>
+                <Upload className="w-10 h-10 mb-3" style={{ color: "var(--text-disabled)" }} />
+                <div className="text-[14px] font-medium mb-1" style={{ color: "var(--text-secondary)" }}>
                   Click or drag to upload your abstract
                 </div>
-                <div className="text-[12px]" style={{ color: "#adb5bd" }}>
+                <div className="text-[12px]" style={{ color: "var(--text-disabled)" }}>
                   Accepted: {ALLOWED_EXT} · Max: {MAX_SIZE_MB} MB
                 </div>
               </label>
             ) : (
-              <div className="rounded-xl p-4" style={{ background: "#f8f9fa", border: "1px solid #e9ecef" }}>
+              <div className="rounded-xl p-4" style={{ background: "var(--bg-surface-secondary)", border: "1px solid var(--border-color)" }}>
                 <div className="flex items-center gap-3">
                   <div
                     className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
-                    style={{ background: "#e6f4f5" }}
+                    style={{ background: "var(--primary-lt)" }}
                   >
-                    <FileText className="w-5 h-5" style={{ color: "#0E6E74" }} />
+                    <FileText className="w-5 h-5" style={{ color: "var(--primary)" }} />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-[14px] font-medium truncate" style={{ color: "#212529" }}>{selectedFile.name}</div>
-                    <div className="text-[12px]" style={{ color: "#6c757d" }}>
+                    <div className="text-[14px] font-medium truncate" style={{ color: "var(--text)" }}>{selectedFile.name}</div>
+                    <div className="text-[12px]" style={{ color: "var(--text-muted)" }}>
                       {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
                       {uploadedObjectPath && (
-                        <span className="ml-2 font-semibold" style={{ color: "#198754" }}>✓ Uploaded successfully</span>
+                        <span className="ml-2 font-semibold" style={{ color: "var(--status-success-text)" }}>✓ Uploaded successfully</span>
                       )}
                     </div>
                   </div>
@@ -394,7 +388,7 @@ export default function NewAbstract() {
                     <button
                       onClick={() => { setSelectedFile(null); setFileError(""); }}
                       className="p-1.5 rounded-lg transition-colors hover:bg-gray-200"
-                      style={{ color: "#6c757d", background: "none" }}
+                      style={{ color: "var(--text-muted)", background: "none" }}
                     >
                       <X className="w-4 h-4" />
                     </button>
@@ -404,8 +398,7 @@ export default function NewAbstract() {
                   <button
                     onClick={handleUpload}
                     disabled={uploading}
-                    className="w-full mt-3 py-2.5 rounded-lg text-[13px] font-semibold text-white flex items-center justify-center gap-2 disabled:opacity-60"
-                    style={{ background: "#0E6E74" }}
+                    className="btn btn-primary w-full mt-3 disabled:opacity-60"
                   >
                     {uploading ? (
                       <><Loader2 className="w-4 h-4 animate-spin" /> Uploading…</>
@@ -418,28 +411,19 @@ export default function NewAbstract() {
             )}
 
             {fileError && (
-              <div className="flex items-center gap-2 mt-3 text-[13px]" style={{ color: "#dc3545" }}>
+              <div className="flex items-center gap-2 mt-3 text-[13px]" style={{ color: "var(--red)" }}>
                 <AlertCircle className="w-4 h-4 flex-shrink-0" />
                 {fileError}
               </div>
             )}
 
-            <div className="flex justify-between mt-6 pt-4" style={{ borderTop: "1px solid #f1f3f5" }}>
-              <button
-                onClick={() => setStep(0)}
-                className="px-5 py-2.5 rounded-lg text-[13px] font-medium"
-                style={{ border: "1px solid #e9ecef", color: "#6c757d" }}
-              >
-                ← Back
-              </button>
+            <div className="flex justify-between mt-6 pt-4" style={{ borderTop: "1px solid var(--border-color-light)" }}>
+              <button onClick={() => setStep(0)} className="btn btn-outline">← Back</button>
               <button
                 onClick={() => setStep(2)}
                 disabled={!!selectedFile && !uploadedObjectPath}
-                className="px-6 py-2.5 rounded-lg text-[14px] font-semibold text-white disabled:opacity-60"
-                style={{
-                  background: selectedFile && !uploadedObjectPath ? "#adb5bd" : "#0E6E74",
-                  cursor: selectedFile && !uploadedObjectPath ? "not-allowed" : "pointer",
-                }}
+                className="btn btn-primary disabled:opacity-60"
+                style={{ cursor: selectedFile && !uploadedObjectPath ? "not-allowed" : "pointer" }}
               >
                 {selectedFile && !uploadedObjectPath ? "Please upload first" : "Next: Preview →"}
               </button>
@@ -449,8 +433,8 @@ export default function NewAbstract() {
 
         {/* Step 2: Preview */}
         {step === 2 && (
-          <div className="bg-white rounded-xl p-6" style={{ border: "1px solid #e9ecef" }}>
-            <h2 className="text-[17px] font-sans font-bold mb-5" style={{ color: "#0B2744" }}>Review Your Abstract</h2>
+          <div className="card p-6">
+            <h2 className="text-[17px] font-sans font-bold mb-5" style={{ color: "var(--navy)" }}>Review Your Abstract</h2>
             <div className="space-y-4">
               {[
                 { label: "Title", value: form.title },
@@ -467,80 +451,61 @@ export default function NewAbstract() {
                 <div key={label} className="flex gap-4">
                   <div
                     className="w-28 flex-shrink-0 text-[12px] font-semibold uppercase tracking-wide pt-0.5"
-                    style={{ color: "#adb5bd" }}
+                    style={{ color: "var(--text-disabled)" }}
                   >
                     {label}
                   </div>
-                  <div className="text-[14px]" style={{ color: "#212529" }}>{value}</div>
+                  <div className="text-[14px]" style={{ color: "var(--text)" }}>{value}</div>
                 </div>
               ))}
               <div className="flex gap-4">
                 <div
                   className="w-28 flex-shrink-0 text-[12px] font-semibold uppercase tracking-wide pt-0.5"
-                  style={{ color: "#adb5bd" }}
+                  style={{ color: "var(--text-disabled)" }}
                 >
                   Abstract
                 </div>
                 <div
                   className="text-[13px] rounded-lg p-4 flex-1"
-                  style={{ background: "#f8f9fa", color: "#495057", lineHeight: 1.8, whiteSpace: "pre-wrap" }}
+                  style={{ background: "var(--bg-surface-secondary)", color: "var(--text-secondary)", lineHeight: 1.8, whiteSpace: "pre-wrap" }}
                 >
                   {form.body}
                 </div>
               </div>
             </div>
-            <div className="flex justify-between mt-6 pt-4" style={{ borderTop: "1px solid #f1f3f5" }}>
-              <button
-                onClick={() => setStep(1)}
-                className="px-5 py-2.5 rounded-lg text-[13px] font-medium"
-                style={{ border: "1px solid #e9ecef", color: "#6c757d" }}
-              >
-                ← Back
-              </button>
-              <button
-                onClick={() => setStep(3)}
-                className="px-6 py-2.5 rounded-lg text-[14px] font-semibold text-white"
-                style={{ background: "#0E6E74" }}
-              >
-                Looks Good →
-              </button>
+            <div className="flex justify-between mt-6 pt-4" style={{ borderTop: "1px solid var(--border-color-light)" }}>
+              <button onClick={() => setStep(1)} className="btn btn-outline">← Back</button>
+              <button onClick={() => setStep(3)} className="btn btn-primary">Looks Good →</button>
             </div>
           </div>
         )}
 
         {/* Step 3: Submit */}
         {step === 3 && (
-          <div className="bg-white rounded-xl p-6" style={{ border: "1px solid #e9ecef" }}>
-            <h2 className="text-[17px] font-sans font-bold mb-3" style={{ color: "#0B2744" }}>Confirm Submission</h2>
-            <div className="rounded-xl p-5 mb-5" style={{ background: "#e6f4f5", border: "1px solid #a3d4d6" }}>
-              <div className="text-[13px] mb-1 font-semibold" style={{ color: "#0E6E74" }}>You are about to submit:</div>
-              <div className="text-[15px] font-sans font-bold" style={{ color: "#0B2744" }}>{form.title}</div>
-              <div className="text-[13px] mt-1" style={{ color: "#495057" }}>
+          <div className="card p-6">
+            <h2 className="text-[17px] font-sans font-bold mb-3" style={{ color: "var(--navy)" }}>Confirm Submission</h2>
+            <div className="rounded-xl p-5 mb-5" style={{ background: "var(--primary-lt)", border: "1px solid var(--border-color)" }}>
+              <div className="text-[13px] mb-1 font-semibold" style={{ color: "var(--primary)" }}>You are about to submit:</div>
+              <div className="text-[15px] font-sans font-bold" style={{ color: "var(--navy)" }}>{form.title}</div>
+              <div className="text-[13px] mt-1" style={{ color: "var(--text-secondary)" }}>
                 {form.abstractType === "oral" ? "Oral Presentation" : "Poster Presentation"} · {form.keywords}
               </div>
               {uploadedObjectPath && (
-                <div className="flex items-center gap-1.5 mt-2 text-[12px]" style={{ color: "#0a5c39" }}>
+                <div className="flex items-center gap-1.5 mt-2 text-[12px]" style={{ color: "var(--status-success-text)" }}>
                   <FileText className="w-3.5 h-3.5" />
                   Document attached: {selectedFile?.name}
                 </div>
               )}
             </div>
-            <p className="text-[13px] mb-6" style={{ color: "#6c757d" }}>
+            <p className="text-[13px] mb-6" style={{ color: "var(--text-muted)" }}>
               Once submitted, your abstract cannot be edited. The organising committee will review it and contact you with the outcome.
             </p>
             <div className="flex justify-between">
-              <button
-                onClick={() => setStep(2)}
-                className="px-5 py-2.5 rounded-lg text-[13px] font-medium"
-                style={{ border: "1px solid #e9ecef", color: "#6c757d" }}
-              >
-                ← Back
-              </button>
+              <button onClick={() => setStep(2)} className="btn btn-outline">← Back</button>
               <button
                 onClick={handleSubmit}
                 disabled={createMutation.isPending}
-                className="flex items-center gap-2 px-6 py-2.5 rounded-lg text-[14px] font-semibold text-white disabled:opacity-60"
-                style={{ background: "#0E6E74" }}
+                className="btn btn-primary disabled:opacity-60"
               >
                 {createMutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
                 Submit Abstract

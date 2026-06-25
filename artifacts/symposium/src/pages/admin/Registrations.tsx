@@ -6,10 +6,10 @@ import { useToast } from "@/hooks/use-toast";
 import { ModalShell, FormField, INPUT_BASE, SELECT_BASE, TEXTAREA_BASE, inputBorder } from "@/components/ui/form-primitives";
 
 const PAYMENT_STYLES: Record<string, { bg: string; color: string }> = {
-  paid: { bg: "#d1e7dd", color: "#0a5c39" },
-  pending: { bg: "#fff3cd", color: "#856404" },
-  overdue: { bg: "#f8d7da", color: "#842029" },
-  waived: { bg: "var(--primary-lt)", color: "var(--primary)" },
+  paid:    { bg: "var(--status-success-bg)", color: "var(--status-success-text)" },
+  pending: { bg: "var(--status-warning-bg)", color: "var(--status-warning-text)" },
+  overdue: { bg: "var(--status-danger-bg)",  color: "var(--status-danger-text)" },
+  waived:  { bg: "var(--primary-lt)",        color: "var(--primary)" },
 };
 
 interface AddRegistrationForm {
@@ -211,7 +211,7 @@ function AddRegistrationModal({ onClose, onSuccess }: { onClose: () => void; onS
             Delegate Category
           </h3>
           {errors.category && (
-            <p className="text-[12px] mb-2" style={{ color: "#dc3545" }}>{errors.category}</p>
+            <p className="text-[12px] mb-2" style={{ color: "var(--red)" }}>{errors.category}</p>
           )}
           <div className="space-y-2">
             {categories.length === 0 ? (
@@ -223,7 +223,7 @@ function AddRegistrationModal({ onClose, onSuccess }: { onClose: () => void; onS
                   key={cat.slug}
                   className="flex items-center gap-3 p-3.5 rounded-xl cursor-pointer transition-all"
                   style={{
-                    border: selected ? "2px solid var(--primary)" : errors.category ? "1px solid #dc3545" : "1px solid var(--border-color)",
+                    border: selected ? "2px solid var(--primary)" : errors.category ? `1px solid var(--red)` : "1px solid var(--border-color)",
                     background: selected ? "var(--primary-lt)" : "var(--bg-surface)",
                   }}
                 >

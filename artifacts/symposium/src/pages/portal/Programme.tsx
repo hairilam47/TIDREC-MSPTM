@@ -11,13 +11,18 @@ import { getGetSavedSessionsQueryKey } from "@workspace/api-client-react";
 import { Clock, MapPin, Bookmark, BookmarkCheck, Loader2 } from "lucide-react";
 
 const SESSION_TYPE_COLORS: Record<string, { bg: string; color: string }> = {
-  keynote:  { bg: "rgba(200,155,60,0.12)", color: "#8a6a24" },
-  panel:    { bg: "var(--primary-lt)",     color: "var(--primary)" },
-  workshop: { bg: "rgba(11,39,68,0.08)",  color: "#0B2744" },
-  oral:     { bg: "var(--primary-lt)",     color: "var(--primary)" },
-  poster:   { bg: "var(--red-lt)",         color: "var(--red)" },
-  opening:  { bg: "var(--green-lt)",       color: "var(--green)" },
-  closing:  { bg: "var(--green-lt)",       color: "var(--green)" },
+  keynote:  { bg: "var(--gold-lt)",  color: "var(--gold-dk)" },
+  panel:    { bg: "var(--primary-lt)", color: "var(--primary)" },
+  workshop: { bg: "var(--navy-lt)",  color: "var(--navy)" },
+  oral:     { bg: "var(--primary-lt)", color: "var(--primary)" },
+  poster:   { bg: "var(--red-lt)",   color: "var(--red)" },
+  opening:  { bg: "var(--green-lt)", color: "var(--green)" },
+  closing:  { bg: "var(--green-lt)", color: "var(--green)" },
+};
+
+const DAY_LABELS: Record<number, string> = {
+  1: "Sunday, 22 March 2027",
+  2: "Monday, 23 March 2027",
 };
 
 export default function Programme() {
@@ -62,7 +67,7 @@ export default function Programme() {
           <Loader2 className="w-8 h-8 animate-spin" style={{ color: "var(--primary)" }} />
         </div>
       ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
           {[1, 2].map((day) => {
             const daySessions =
               sessions
@@ -70,28 +75,34 @@ export default function Programme() {
                 .sort((a, b) => a.startTime.localeCompare(b.startTime)) ?? [];
             if (daySessions.length === 0) return null;
             return (
-              <div key={day}>
-                <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
-                  <div style={{ padding: "6px 16px", borderRadius: 6, fontWeight: 700, color: "#fff", fontSize: 15, background: "#0B2744" }}>
-                    Day {day}
+              <div key={day} className="card">
+                <div className="card-header">
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <span style={{ padding: "4px 12px", borderRadius: "var(--radius)", fontWeight: 700, color: "#fff", fontSize: 13, background: "var(--navy)" }}>
+                      Day {day}
+                    </span>
+                    <span style={{ fontSize: 14, fontWeight: 500, color: "var(--text-muted)" }}>
+                      {DAY_LABELS[day] ?? `Day ${day}`}
+                    </span>
                   </div>
-                  <span style={{ fontSize: 14, fontWeight: 500, color: "var(--text-muted)" }}>
-                    {day === 1 ? "Sunday, 22 March 2027" : "Monday, 23 March 2027"}
-                  </span>
                 </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                  {daySessions.map((session) => {
+                <div className="card-body p-0">
+                  {daySessions.map((session, idx) => {
                     const tc = SESSION_TYPE_COLORS[session.sessionType] ?? { bg: "var(--bg-surface-secondary)", color: "var(--text-muted)" };
                     const saved = isSaved(session.id);
                     const pending = pendingId === session.id;
                     return (
                       <div
                         key={session.id}
-                        className="card"
-                        style={{ display: "flex", overflow: "hidden", borderLeft: "4px solid var(--primary)" }}
+                        style={{
+                          display: "flex",
+                          overflow: "hidden",
+                          borderLeft: "4px solid var(--primary)",
+                          borderBottom: idx < daySessions.length - 1 ? "1px solid var(--border-color)" : "none",
+                        }}
                       >
                         {/* Time + room */}
-                        <div style={{ flexShrink: 0, display: "flex", flexDirection: "column", justifyContent: "center", padding: "16px", background: "var(--bg-surface-secondary)", borderRight: "1px solid var(--border-color)", minWidth: 130 }}>
+                        <div style={{ flexShrink: 0, display: "flex", flexDirection: "column", justifyContent: "center", padding: "14px 16px", background: "var(--bg-surface-secondary)", borderRight: "1px solid var(--border-color)", minWidth: 130 }}>
                           <div style={{ display: "flex", alignItems: "center", gap: 6, fontWeight: 600, fontSize: 13, color: "var(--text)", marginBottom: 4 }}>
                             <Clock style={{ width: 14, height: 14, color: "var(--text-muted)" }} />
                             {session.startTime}
@@ -106,7 +117,7 @@ export default function Programme() {
                         </div>
 
                         {/* Content */}
-                        <div style={{ flex: 1, padding: 16 }}>
+                        <div style={{ flex: 1, padding: "14px 16px" }}>
                           <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
                             <div style={{ flex: 1, minWidth: 0 }}>
                               <div style={{ marginBottom: 6 }}>
@@ -132,13 +143,12 @@ export default function Programme() {
                               onClick={() => toggleSave(session.id)}
                               disabled={pending}
                               title={saved ? "Remove from schedule" : "Save to schedule"}
+                              className="btn btn-sm"
                               style={{
-                                flexShrink: 0, width: 32, height: 32, borderRadius: 6,
-                                display: "flex", alignItems: "center", justifyContent: "center",
-                                border: `1px solid ${saved ? "rgba(200,155,60,0.3)" : "var(--border-color)"}`,
-                                background: saved ? "rgba(200,155,60,0.12)" : "var(--bg-surface-secondary)",
-                                color: saved ? "#C89B3C" : "var(--text-disabled)",
-                                cursor: "pointer", transition: "all 120ms",
+                                flexShrink: 0, width: 32, height: 32, padding: 0,
+                                borderColor: saved ? "var(--gold)" : "var(--border-color)",
+                                background: saved ? "var(--gold-lt)" : "var(--bg-surface-secondary)",
+                                color: saved ? "var(--gold)" : "var(--text-disabled)",
                               }}
                             >
                               {pending ? (

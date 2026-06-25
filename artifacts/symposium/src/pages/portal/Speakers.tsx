@@ -17,7 +17,7 @@ export default function Speakers() {
           <Loader2 className="w-8 h-8 animate-spin" style={{ color: "var(--primary)" }} />
         </div>
       ) : (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 20 }}>
+        <div className="row col-3">
           {speakers?.map((speaker) => (
             <div key={speaker.id} className="card" style={{ overflow: "hidden" }}>
               {/* Photo area */}

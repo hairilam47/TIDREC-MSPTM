@@ -5,7 +5,7 @@ import { Loader2, Receipt, Download, CheckCircle, Clock, AlertCircle } from "luc
 
 const STATUS_CONFIG: Record<string, { bg: string; color: string; label: string; icon: React.ReactNode }> = {
   paid:    { bg: "var(--green-lt)",        color: "var(--green)",   label: "Paid",             icon: <CheckCircle style={{ width: 16, height: 16 }} /> },
-  pending: { bg: "rgba(245,159,0,0.10)",  color: "#856404",         label: "Awaiting Payment", icon: <Clock style={{ width: 16, height: 16 }} /> },
+  pending: { bg: "var(--status-warning-bg)", color: "var(--status-warning-text)", label: "Awaiting Payment", icon: <Clock style={{ width: 16, height: 16 }} /> },
   overdue: { bg: "var(--red-lt)",         color: "var(--red)",      label: "Overdue",          icon: <AlertCircle style={{ width: 16, height: 16 }} /> },
   waived:  { bg: "var(--primary-lt)",     color: "var(--primary)",  label: "Waived",           icon: <CheckCircle style={{ width: 16, height: 16 }} /> },
 };
@@ -36,7 +36,7 @@ export default function Invoices() {
         <div style={{ maxWidth: 640 }}>
           <div className="card" style={{ overflow: "hidden" }}>
             {/* Invoice header — brand gradient, intentionally not using CSS vars */}
-            <div style={{ padding: "24px 32px", display: "flex", alignItems: "flex-start", justifyContent: "space-between", background: "linear-gradient(135deg, #0B2744, #0E6E74)" }}>
+            <div style={{ padding: "24px 32px", display: "flex", alignItems: "flex-start", justifyContent: "space-between", background: "linear-gradient(135deg, var(--navy), var(--teal))" }}>
               <div>
                 <div style={{ color: "#fff", fontSize: 20, fontWeight: 700, marginBottom: 4 }}>INVOICE</div>
                 <div style={{ fontSize: 13, color: "rgba(255,255,255,0.7)" }}>
@@ -44,7 +44,7 @@ export default function Invoices() {
                 </div>
               </div>
               <div style={{ textAlign: "right" }}>
-                <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "#C89B3C", marginBottom: 4 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "var(--gold)", marginBottom: 4 }}>
                   Invoice Number
                 </div>
                 <div style={{ color: "#fff", fontFamily: "monospace", fontSize: 16, fontWeight: 700 }}>

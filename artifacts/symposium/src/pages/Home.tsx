@@ -30,16 +30,16 @@ export default function Home() {
 
           {/* Nav links + Login + Registration — centred in remaining space */}
           <nav className="hidden md:flex flex-1 items-center justify-center gap-5">
-            <Link href="/" className="hover:text-accent transition-colors text-[#0B2744] font-semibold text-sm">Home</Link>
-            <a href="#about" className="hover:text-accent transition-colors cursor-pointer text-[#0B2744] font-semibold text-sm">About</a>
-            <Link href="/portal/programme" className="hover:text-accent transition-colors text-[#0B2744] font-semibold text-sm">Programme</Link>
-            <Link href="/portal/abstracts/new" className="hover:text-accent transition-colors text-[#0B2744] font-semibold text-sm">Abstract</Link>
-            <a href="#sponsors" className="hover:text-accent transition-colors cursor-pointer text-[#0B2744] font-semibold text-sm">Sponsors</a>
-            <a href="#contact" className="hover:text-accent transition-colors cursor-pointer text-[#0B2744] font-semibold text-sm">Contact</a>
+            <Link href="/" className="hover:text-accent transition-colors text-[var(--navy)] font-semibold text-sm">Home</Link>
+            <a href="#about" className="hover:text-accent transition-colors cursor-pointer text-[var(--navy)] font-semibold text-sm">About</a>
+            <Link href="/portal/programme" className="hover:text-accent transition-colors text-[var(--navy)] font-semibold text-sm">Programme</Link>
+            <Link href="/portal/abstracts/new" className="hover:text-accent transition-colors text-[var(--navy)] font-semibold text-sm">Abstract</Link>
+            <a href="#sponsors" className="hover:text-accent transition-colors cursor-pointer text-[var(--navy)] font-semibold text-sm">Sponsors</a>
+            <a href="#contact" className="hover:text-accent transition-colors cursor-pointer text-[var(--navy)] font-semibold text-sm">Contact</a>
             {cms?.sponsor_prospectus_url && (
-              <a href="/api/sponsor-prospectus" download className="hover:text-accent transition-colors text-[#0B2744] font-semibold text-sm cursor-pointer">Prospectus</a>
+              <a href="/api/sponsor-prospectus" download className="hover:text-accent transition-colors text-[var(--navy)] font-semibold text-sm cursor-pointer">Prospectus</a>
             )}
-            <Link href="/login" className="hover:text-accent transition-colors text-[#0B2744] font-semibold text-sm">Login</Link>
+            <Link href="/login" className="hover:text-accent transition-colors text-[var(--navy)] font-semibold text-sm">Login</Link>
             <Button asChild className="bg-accent text-accent-foreground hover:bg-accent/90 text-sm px-5">
               <Link href="/register">Registration</Link>
             </Button>
@@ -54,7 +54,7 @@ export default function Home() {
       <main className="flex-1">
 
         {/* ── Hero banner ── */}
-        <section style={{ background: "#0B2744" }} className="relative">
+        <section style={{ background: "var(--navy)" }} className="relative">
           <div className="relative w-full">
             <img
               src={bannerImg}
@@ -90,7 +90,7 @@ export default function Home() {
               <Link
                 href="/register"
                 className="flex items-center justify-between w-full px-5 py-4 rounded-lg text-white font-semibold text-base transition-opacity hover:opacity-90"
-                style={{ background: "#C89B3C" }}
+                style={{ background: "var(--gold)" }}
               >
                 <span className="flex items-center gap-3">
                   <CalendarDays className="w-5 h-5 flex-shrink-0" />
@@ -101,7 +101,7 @@ export default function Home() {
               <Link
                 href="/portal/abstracts/new"
                 className="flex items-center justify-between w-full px-5 py-4 rounded-lg text-white font-semibold text-base transition-opacity hover:opacity-90"
-                style={{ background: "#C89B3C" }}
+                style={{ background: "var(--gold)" }}
               >
                 <span className="flex items-center gap-3">
                   <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
@@ -112,7 +112,7 @@ export default function Home() {
 
               {/* Important Dates */}
               <div className="border border-border rounded-lg overflow-hidden mt-2">
-                <div className="px-5 py-3 font-bold text-sm uppercase tracking-widest text-secondary" style={{ background: "#f4f6f8", borderBottom: "1px solid var(--border)" }}>
+                <div className="px-5 py-3 font-bold text-sm uppercase tracking-widest text-secondary" style={{ background: "var(--bg-surface-secondary)", borderBottom: "1px solid var(--border)" }}>
                   Important Dates
                 </div>
                 <div className="divide-y divide-border">
@@ -229,7 +229,7 @@ export default function Home() {
                   <div className="flex flex-col justify-center min-w-0">
                     <span
                       className="inline-block self-start text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded mb-2"
-                      style={{ background: "rgba(200,155,60,0.15)", color: "#C89B3C" }}
+                      style={{ background: "rgba(200,155,60,0.15)", color: "var(--gold)" }}
                     >
                       Keynote Speaker
                     </span>

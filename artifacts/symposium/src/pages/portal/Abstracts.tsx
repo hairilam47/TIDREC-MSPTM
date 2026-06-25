@@ -5,11 +5,11 @@ import { Link } from "wouter";
 import { Plus, FileText, Loader2, ArrowRight } from "lucide-react";
 
 const STATUS_STYLES: Record<string, { bg: string; color: string; label: string }> = {
-  submitted:          { bg: "var(--primary-lt)", color: "var(--primary)", label: "Submitted" },
-  under_review:       { bg: "rgba(245,159,0,0.10)", color: "#856404", label: "Under Review" },
-  accepted:           { bg: "var(--green-lt)", color: "var(--green)", label: "Accepted" },
-  rejected:           { bg: "var(--red-lt)", color: "var(--red)", label: "Rejected" },
-  revision_requested: { bg: "rgba(245,159,0,0.10)", color: "#856404", label: "Revision Needed" },
+  submitted:          { bg: "var(--primary-lt)",        color: "var(--primary)",              label: "Submitted" },
+  under_review:       { bg: "var(--status-warning-bg)", color: "var(--status-warning-text)",  label: "Under Review" },
+  accepted:           { bg: "var(--status-success-bg)", color: "var(--status-success-text)",  label: "Accepted" },
+  rejected:           { bg: "var(--status-danger-bg)",  color: "var(--status-danger-text)",   label: "Rejected" },
+  revision_requested: { bg: "var(--status-warning-bg)", color: "var(--status-warning-text)",  label: "Revision Needed" },
 };
 
 export default function Abstracts() {
@@ -55,7 +55,7 @@ export default function Abstracts() {
                             {a.title.length > 50 ? a.title.slice(0, 50) + "…" : a.title}
                           </div>
                           {a.reviewNotes && (
-                            <div style={{ fontSize: 11, marginTop: 2, color: "#856404" }}>
+                            <div style={{ fontSize: 11, marginTop: 2, color: "var(--text-secondary)" }}>
                               Reviewer notes available
                             </div>
                           )}

@@ -1,2 +1,1 @@
-- [Upload error diagnosis](upload-error-diagnosis.md) — "Failed to get upload URL" is usually a transient restart issue; confirm with curl before chasing code bugs.
-- [Shared component BASE_URL pitfall](shared-component-base-url.md) — symposium src is shared with admin portal via @/ alias; never use import.meta.env.BASE_URL in shared files.
+- [CSS var standardisation rules](css-var-rules.md) — zero hardcoded hex policy, exceptions, and design token map for all three portals.

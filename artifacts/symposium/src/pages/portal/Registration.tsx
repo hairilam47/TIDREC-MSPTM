@@ -5,10 +5,10 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2, CheckCircle, AlertCircle, Clock, ClipboardList } from "lucide-react";
 
 const PAYMENT_STATUS_CONFIG: Record<string, { bg: string; color: string; label: string; icon: React.ReactNode }> = {
-  paid:    { bg: "var(--green-lt)",             color: "var(--green)", label: "Paid",            icon: <CheckCircle style={{ width: 16, height: 16 }} /> },
-  pending: { bg: "rgba(245,159,0,0.10)",         color: "#856404",      label: "Payment Pending", icon: <Clock style={{ width: 16, height: 16 }} /> },
-  overdue: { bg: "var(--red-lt)",               color: "var(--red)",   label: "Overdue",         icon: <AlertCircle style={{ width: 16, height: 16 }} /> },
-  waived:  { bg: "var(--primary-lt)",           color: "var(--primary)", label: "Waived",         icon: <CheckCircle style={{ width: 16, height: 16 }} /> },
+  paid:    { bg: "var(--status-success-bg)", color: "var(--status-success-text)", label: "Paid",            icon: <CheckCircle style={{ width: 16, height: 16 }} /> },
+  pending: { bg: "var(--status-warning-bg)", color: "var(--status-warning-text)", label: "Payment Pending", icon: <Clock style={{ width: 16, height: 16 }} /> },
+  overdue: { bg: "var(--status-danger-bg)",  color: "var(--status-danger-text)",  label: "Overdue",         icon: <AlertCircle style={{ width: 16, height: 16 }} /> },
+  waived:  { bg: "var(--primary-lt)",        color: "var(--primary)",             label: "Waived",          icon: <CheckCircle style={{ width: 16, height: 16 }} /> },
 };
 
 export default function Registration() {
@@ -192,7 +192,7 @@ export default function Registration() {
                 {new Date(registration.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
               </div>
               {registration.paymentStatus === "pending" && (
-                <div style={{ borderRadius: 6, padding: "10px 12px", background: "rgba(245,159,0,0.10)", color: "#664d03", fontSize: 12 }}>
+                <div style={{ borderRadius: 6, padding: "10px 12px", background: "var(--yellow-lt)", color: "var(--yellow-dk)", fontSize: 12 }}>
                   Payment instructions will be sent to your registered email. Please complete payment within 48 hours to secure your spot.
                 </div>
               )}

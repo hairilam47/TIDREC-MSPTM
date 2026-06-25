@@ -23,17 +23,17 @@ import {
 
 /* ── Status badge maps ── */
 const PAYMENT_BADGE: Record<string, { bg: string; color: string }> = {
-  paid:    { bg: "#d1e7dd", color: "#0a5c39" },
-  pending: { bg: "#fff3cd", color: "#856404" },
-  overdue: { bg: "#f8d7da", color: "#842029" },
-  waived:  { bg: "#e6f4f5", color: "#0E6E74" },
+  paid:    { bg: "var(--status-success-bg)", color: "var(--status-success-text)" },
+  pending: { bg: "var(--status-warning-bg)", color: "var(--status-warning-text)" },
+  overdue: { bg: "var(--status-danger-bg)",  color: "var(--status-danger-text)" },
+  waived:  { bg: "var(--teal-lt)",           color: "var(--teal)" },
 };
 const ABSTRACT_BADGE: Record<string, { bg: string; color: string; label: string }> = {
-  submitted:          { bg: "#e6f4f5", color: "#0E6E74",  label: "Submitted" },
-  under_review:       { bg: "#fff3cd", color: "#856404",  label: "Under Review" },
-  accepted:           { bg: "#d1e7dd", color: "#0a5c39",  label: "Accepted" },
-  rejected:           { bg: "#f8d7da", color: "#842029",  label: "Rejected" },
-  revision_requested: { bg: "#fff3cd", color: "#856404",  label: "Revision Needed" },
+  submitted:          { bg: "var(--teal-lt)",           color: "var(--teal)",                 label: "Submitted" },
+  under_review:       { bg: "var(--status-warning-bg)", color: "var(--status-warning-text)",  label: "Under Review" },
+  accepted:           { bg: "var(--status-success-bg)", color: "var(--status-success-text)",  label: "Accepted" },
+  rejected:           { bg: "var(--status-danger-bg)",  color: "var(--status-danger-text)",   label: "Rejected" },
+  revision_requested: { bg: "var(--status-warning-bg)", color: "var(--status-warning-text)",  label: "Revision Needed" },
 };
 const CHART_COLORS = ["#0E6E74", "#C89B3C", "#0B2744", "#0a5c39", "#842029", "#6c757d"];
 const MONTHLY_TREND_FALLBACK = [
@@ -424,7 +424,7 @@ export default function AdminDashboard() {
                     className="bar"
                     style={{
                       width: `${stats?.totalRegistrations ? Math.min((stats.totalRegistrations / 300) * 100, 100) : 0}%`,
-                      background: "linear-gradient(90deg, #0E6E74 0%, #0B2744 100%)",
+                      background: "linear-gradient(90deg, var(--teal) 0%, var(--navy) 100%)",
                     }}
                   />
                 </div>
@@ -596,7 +596,7 @@ export default function AdminDashboard() {
                                   <div style={{ display: "flex", gap: 4 }}>
                                     <button
                                       className="btn btn-sm"
-                                      style={{ background: "#d1e7dd", color: "#0a5c39", border: "none", height: 26 }}
+                                      style={{ background: "var(--status-success-bg)", color: "var(--status-success-text)", border: "none", height: 26 }}
                                       title="Accept"
                                       onClick={() => handleReview(a.id, "accepted")}
                                     >
@@ -604,7 +604,7 @@ export default function AdminDashboard() {
                                     </button>
                                     <button
                                       className="btn btn-sm"
-                                      style={{ background: "#f8d7da", color: "#842029", border: "none", height: 26 }}
+                                      style={{ background: "var(--status-danger-bg)", color: "var(--status-danger-text)", border: "none", height: 26 }}
                                       title="Reject"
                                       onClick={() => handleReview(a.id, "rejected")}
                                     >

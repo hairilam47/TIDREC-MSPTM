@@ -4,10 +4,10 @@ import { useGetRegistrations } from "@workspace/api-client-react";
 import { Search, Download, FileText } from "lucide-react";
 
 const STATUS_STYLES: Record<string, { bg: string; color: string }> = {
-  paid: { bg: "#d1e7dd", color: "#0a5c39" },
-  pending: { bg: "#fff3cd", color: "#856404" },
-  overdue: { bg: "#f8d7da", color: "#842029" },
-  waived: { bg: "var(--primary-lt)", color: "var(--primary)" },
+  paid:    { bg: "var(--status-success-bg)", color: "var(--status-success-text)" },
+  pending: { bg: "var(--status-warning-bg)", color: "var(--status-warning-text)" },
+  overdue: { bg: "var(--status-danger-bg)",  color: "var(--status-danger-text)" },
+  waived:  { bg: "var(--primary-lt)",        color: "var(--primary)" },
 };
 
 function toInvoiceNumber(code: string) {
@@ -58,8 +58,8 @@ export default function AdminInvoices() {
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         {[
           { label: "Total Invoices", value: registrations?.length ?? 0, color: "var(--text)" },
-          { label: "Revenue Collected", value: `MYR ${totalRevenue.toLocaleString("en-MY", { minimumFractionDigits: 2 })}`, color: "#0a5c39" },
-          { label: "Outstanding", value: outstandingCount, color: "#856404" },
+          { label: "Revenue Collected", value: `MYR ${totalRevenue.toLocaleString("en-MY", { minimumFractionDigits: 2 })}`, color: "var(--status-success-text)" },
+          { label: "Outstanding", value: outstandingCount, color: "var(--status-warning-text)" },
         ].map((s) => (
           <div key={s.label} className="card">
             <div className="card-body">

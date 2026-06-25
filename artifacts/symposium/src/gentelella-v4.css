@@ -45,6 +45,26 @@
   --azure-lt:  rgba(66,153,225,0.06);  --purple-lt: rgba(174,62,201,0.06);
   --cyan-lt:   rgba(23,162,184,0.06);
 
+  /* Context-independent brand palette */
+  --gold:      #C89B3C;
+  --gold-lt:   rgba(200,155,60,0.12);
+  --gold-dk:   #a07820;
+  --navy:      #0B2744;
+  --navy-lt:   rgba(11,39,68,0.08);
+  --teal:      #0E6E74;
+  --teal-lt:   rgba(14,110,116,0.08);
+  --teal-dk:   #0a5c61;
+  --yellow-dk: #856404;
+
+  /* Semantic status palette (bootstrap-compatible) */
+  --status-success-bg:     #d1e7dd;
+  --status-success-text:   #0a5c39;
+  --status-warning-bg:     rgba(245,159,0,0.10);
+  --status-warning-text:   #856404;
+  --status-danger-bg:      #f8d7da;
+  --status-danger-text:    #842029;
+  --status-danger-border:  #f1aeb5;
+
   --radius:    6px;  --radius-sm: 4px;  --radius-lg: 8px;
 
   --space-1:4px; --space-2:8px; --space-3:12px;

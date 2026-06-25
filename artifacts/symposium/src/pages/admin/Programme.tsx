@@ -9,13 +9,13 @@ import { FormField, ModalShell, ConfirmDialog, INPUT_BASE, SELECT_BASE, TEXTAREA
 const BLANK: SessionInput = { title: "", day: 1, startTime: "09:00", endTime: "", room: "", sessionType: "keynote", description: "", speakerId: undefined };
 
 const TYPE_BADGE: Record<string, { bg: string; color: string }> = {
-  keynote:  { bg: "#FDF6E8", color: "#8a6a24" },
-  panel:    { bg: "#e6f4f5", color: "#0E6E74" },
-  workshop: { bg: "rgba(11,39,68,0.07)", color: "#0B2744" },
-  oral:     { bg: "#d1e7dd", color: "#0a5c39" },
-  poster:   { bg: "#f8d7da", color: "#842029" },
-  opening:  { bg: "#e9ecef", color: "#495057" },
-  closing:  { bg: "#e9ecef", color: "#495057" },
+  keynote:  { bg: "var(--gold-lt)",    color: "var(--gold-dk)" },
+  panel:    { bg: "var(--teal-lt)",    color: "var(--teal)" },
+  workshop: { bg: "var(--navy-lt)",    color: "var(--navy)" },
+  oral:     { bg: "var(--green-lt)",   color: "var(--green)" },
+  poster:   { bg: "var(--red-lt)",     color: "var(--red)" },
+  opening:  { bg: "var(--border-color)", color: "var(--text-secondary)" },
+  closing:  { bg: "var(--border-color)", color: "var(--text-secondary)" },
 };
 
 export default function AdminProgramme() {
@@ -184,7 +184,7 @@ export default function AdminProgramme() {
                           </button>
                           <button
                             className="btn btn-sm"
-                            style={{ background: "#f8d7da", color: "#842029", borderColor: "#f1aeb5" }}
+                            style={{ background: "var(--status-danger-bg)", color: "var(--status-danger-text)", borderColor: "var(--status-danger-border)" }}
                             onClick={() => setDeleteId(s.id)}
                             title="Delete"
                           >

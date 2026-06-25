@@ -203,7 +203,7 @@ export default function AdminSettings() {
                 <button
                   onClick={() => { set("sponsor_prospectus_url", ""); setProspectusError(null); }}
                   className="flex items-center gap-1 text-[12px] px-2.5 py-1 rounded-md"
-                  style={{ color: "#842029", background: "#f8d7da", border: "none", cursor: "pointer" }}
+                  style={{ color: "var(--status-danger-text)", background: "var(--status-danger-bg)", border: "none", cursor: "pointer" }}
                 >
                   <X className="w-3 h-3" /> Remove
                 </button>
@@ -235,7 +235,7 @@ export default function AdminSettings() {
             </label>
 
             {prospectusError && (
-              <p className="text-[12px] mt-2" style={{ color: "#842029" }}>{prospectusError}</p>
+              <p className="text-[12px] mt-2" style={{ color: "var(--status-danger-text)" }}>{prospectusError}</p>
             )}
           </div>
         </div>
