@@ -19,6 +19,7 @@ import AdminEmails from "@/pages/admin/Emails";
 import AdminReports from "@/pages/admin/Reports";
 import AdminSettings from "@/pages/admin/Settings";
 import AdminRegistrationCategories from "@/pages/admin/RegistrationCategories";
+import AdminCommittee from "@/pages/admin/Committee";
 
 const queryClient = new QueryClient();
 
@@ -69,6 +70,9 @@ function Router() {
       </Route>
       <Route path="/admin/registration-categories">
         <RequireAdmin><AdminRegistrationCategories /></RequireAdmin>
+      </Route>
+      <Route path="/admin/committee">
+        <RequireAdmin><AdminCommittee /></RequireAdmin>
       </Route>
       {/* Fallback: unauthenticated → login */}
       <Route>

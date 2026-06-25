@@ -39,10 +39,11 @@ const NAV: { section: string; items: NavItem[] }[] = [
           { key: "invoices",       href: "/admin/invoices",                label: "Invoices" },
         ],
       },
-      { key: "abstracts", href: "/admin/abstracts", label: "Abstracts", icon: <IcoDoc /> },
-      { key: "speakers",  href: "/admin/speakers",  label: "Speakers",  icon: <IcoMic /> },
-      { key: "programme", href: "/admin/programme", label: "Programme", icon: <IcoCal /> },
-      { key: "sponsors",  href: "/admin/sponsors",  label: "Sponsors",  icon: <IcoStar /> },
+      { key: "abstracts",  href: "/admin/abstracts",  label: "Abstracts",  icon: <IcoDoc /> },
+      { key: "speakers",   href: "/admin/speakers",   label: "Speakers",   icon: <IcoMic /> },
+      { key: "committee",  href: "/admin/committee",  label: "Committee",  icon: <IcoPeople /> },
+      { key: "programme",  href: "/admin/programme",  label: "Programme",  icon: <IcoCal /> },
+      { key: "sponsors",   href: "/admin/sponsors",   label: "Sponsors",   icon: <IcoStar /> },
     ],
   },
   {
@@ -377,3 +378,4 @@ function IcoTeam()     { return <svg className="icon" width="18" height="18" vie
 function IcoBell()     { return <svg className="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M12 3a6 6 0 00-6 6c0 6-3 7-3 7h18s-3-1-3-7a6 6 0 00-6-6z"/><path d="M10.5 21a1.5 1.5 0 003 0"/></svg>; }
 function IcoMail()     { return <svg className="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M2 7l10 6 10-6"/></svg>; }
 function IcoSettings() { return <svg className="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></svg>; }
+function IcoPeople()   { return <svg className="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><circle cx="9" cy="7" r="3"/><circle cx="17" cy="8" r="2.5"/><path d="M1 21v-1a8 8 0 0116 0v1"/><path d="M21 21v-1a5 5 0 00-4-4.9"/></svg>; }

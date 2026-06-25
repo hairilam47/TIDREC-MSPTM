@@ -28,6 +28,8 @@ import type {
   Announcement,
   AnnouncementInput,
   AuthResponse,
+  CommitteeMember,
+  CommitteeMemberInput,
   HealthStatus,
   Invoice,
   LoginInput,
@@ -3632,6 +3634,88 @@ export function useDeleteRegistrationCategory<TError = ErrorType<unknown>, TCont
   options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof deleteRegistrationCategory>>, TError, { id: number }, TContext>, request?: SecondParameter<typeof customFetch> }
 ): UseMutationResult<Awaited<ReturnType<typeof deleteRegistrationCategory>>, TError, { id: number }, TContext> {
   const mutationOptions = getDeleteRegistrationCategoryMutationOptions(options);
+  return useMutation(mutationOptions);
+}
+
+export const getCommitteeMembersUrl = () => `/api/committee-members`;
+
+export const getCommitteeMembers = async (options?: RequestInit): Promise<CommitteeMember[]> => {
+  return customFetch<CommitteeMember[]>(getCommitteeMembersUrl(), options);
+};
+
+export const getGetCommitteeMembersQueryOptions = <TData = Awaited<ReturnType<typeof getCommitteeMembers>>, TError = ErrorType<unknown>>(
+  options?: { query?: UseQueryOptions<Awaited<ReturnType<typeof getCommitteeMembers>>, TError, TData>, request?: SecondParameter<typeof customFetch> }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+  const queryKey = queryOptions?.queryKey ?? [getCommitteeMembersUrl()];
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getCommitteeMembers>>> = ({ signal }) => getCommitteeMembers({ signal, ...requestOptions });
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<Awaited<ReturnType<typeof getCommitteeMembers>>, TError, TData> & { queryKey: QueryKey };
+};
+
+export type GetCommitteeMembersQueryResult = NonNullable<Awaited<ReturnType<typeof getCommitteeMembers>>>;
+
+export function useGetCommitteeMembers<TData = Awaited<ReturnType<typeof getCommitteeMembers>>, TError = ErrorType<unknown>>(
+  options?: { query?: UseQueryOptions<Awaited<ReturnType<typeof getCommitteeMembers>>, TError, TData>, request?: SecondParameter<typeof customFetch> }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetCommitteeMembersQueryOptions(options);
+  const query = useQuery(queryOptions);
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+export const createCommitteeMember = async (committeeMemberInput: CommitteeMemberInput, options?: RequestInit): Promise<CommitteeMember> => {
+  return customFetch<CommitteeMember>(`/api/committee-members`, { ...options, method: 'POST', headers: { 'Content-Type': 'application/json', ...options?.headers }, body: JSON.stringify(committeeMemberInput) });
+};
+
+export const getCreateCommitteeMemberMutationOptions = <TError = ErrorType<unknown>, TContext = unknown>(
+  options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof createCommitteeMember>>, TError, { data: BodyType<CommitteeMemberInput> }, TContext>, request?: SecondParameter<typeof customFetch> }
+): UseMutationOptions<Awaited<ReturnType<typeof createCommitteeMember>>, TError, { data: BodyType<CommitteeMemberInput> }, TContext> => {
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof createCommitteeMember>>, { data: BodyType<CommitteeMemberInput> }> = ({ data }) => createCommitteeMember(data, requestOptions);
+  return { mutationFn, ...mutationOptions };
+};
+
+export function useCreateCommitteeMember<TError = ErrorType<unknown>, TContext = unknown>(
+  options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof createCommitteeMember>>, TError, { data: BodyType<CommitteeMemberInput> }, TContext>, request?: SecondParameter<typeof customFetch> }
+): UseMutationResult<Awaited<ReturnType<typeof createCommitteeMember>>, TError, { data: BodyType<CommitteeMemberInput> }, TContext> {
+  const mutationOptions = getCreateCommitteeMemberMutationOptions(options);
+  return useMutation(mutationOptions);
+}
+
+export const updateCommitteeMember = async (id: number, committeeMemberInput: CommitteeMemberInput, options?: RequestInit): Promise<CommitteeMember> => {
+  return customFetch<CommitteeMember>(`/api/committee-members/${id}`, { ...options, method: 'PUT', headers: { 'Content-Type': 'application/json', ...options?.headers }, body: JSON.stringify(committeeMemberInput) });
+};
+
+export const getUpdateCommitteeMemberMutationOptions = <TError = ErrorType<unknown>, TContext = unknown>(
+  options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof updateCommitteeMember>>, TError, { id: number; data: CommitteeMemberInput }, TContext>, request?: SecondParameter<typeof customFetch> }
+): UseMutationOptions<Awaited<ReturnType<typeof updateCommitteeMember>>, TError, { id: number; data: CommitteeMemberInput }, TContext> => {
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateCommitteeMember>>, { id: number; data: CommitteeMemberInput }> = ({ id, data }) => updateCommitteeMember(id, data, requestOptions);
+  return { mutationFn, ...mutationOptions };
+};
+
+export function useUpdateCommitteeMember<TError = ErrorType<unknown>, TContext = unknown>(
+  options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof updateCommitteeMember>>, TError, { id: number; data: CommitteeMemberInput }, TContext>, request?: SecondParameter<typeof customFetch> }
+): UseMutationResult<Awaited<ReturnType<typeof updateCommitteeMember>>, TError, { id: number; data: CommitteeMemberInput }, TContext> {
+  const mutationOptions = getUpdateCommitteeMemberMutationOptions(options);
+  return useMutation(mutationOptions);
+}
+
+export const deleteCommitteeMember = async (id: number, options?: RequestInit): Promise<void> => {
+  return customFetch<void>(`/api/committee-members/${id}`, { ...options, method: 'DELETE' });
+};
+
+export const getDeleteCommitteeMemberMutationOptions = <TError = ErrorType<unknown>, TContext = unknown>(
+  options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof deleteCommitteeMember>>, TError, { id: number }, TContext>, request?: SecondParameter<typeof customFetch> }
+): UseMutationOptions<Awaited<ReturnType<typeof deleteCommitteeMember>>, TError, { id: number }, TContext> => {
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteCommitteeMember>>, { id: number }> = ({ id }) => deleteCommitteeMember(id, requestOptions);
+  return { mutationFn, ...mutationOptions };
+};
+
+export function useDeleteCommitteeMember<TError = ErrorType<unknown>, TContext = unknown>(
+  options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof deleteCommitteeMember>>, TError, { id: number }, TContext>, request?: SecondParameter<typeof customFetch> }
+): UseMutationResult<Awaited<ReturnType<typeof deleteCommitteeMember>>, TError, { id: number }, TContext> {
+  const mutationOptions = getDeleteCommitteeMemberMutationOptions(options);
   return useMutation(mutationOptions);
 }
 

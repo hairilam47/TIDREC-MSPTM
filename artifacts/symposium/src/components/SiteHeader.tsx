@@ -5,6 +5,90 @@ import { CountdownBadge } from "@/components/ui/CountdownBadge";
 import { useGetSettings } from "@workspace/api-client-react";
 import logoImg from "@assets/[WEBSITE LOGO] SEAT-MSPTM.png";
 
+function AboutDropdown({ firstAnnouncementUrl }: { firstAnnouncementUrl?: string }) {
+  return (
+    <div className="relative group">
+      <button
+        type="button"
+        className="hover:text-accent transition-colors text-[var(--navy)] font-semibold text-sm flex items-center gap-1 cursor-pointer bg-transparent border-none p-0"
+      >
+        About
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true" className="mt-0.5 transition-transform group-hover:rotate-180">
+          <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </button>
+
+      <div className="absolute left-0 top-full pt-2 hidden group-hover:block z-50" style={{ minWidth: 228 }}>
+        <div
+          className="rounded-xl overflow-hidden border"
+          style={{ background: "white", borderColor: "var(--border-color)", boxShadow: "0 8px 24px rgba(11,39,68,0.12)" }}
+        >
+          <Link
+            href="/committee"
+            className="flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium transition-colors hover:bg-gray-50"
+            style={{ color: "var(--navy)" }}
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+              <circle cx="9" cy="7" r="3" /><circle cx="17" cy="8" r="2.5" />
+              <path d="M1 21v-1a8 8 0 0116 0v1" /><path d="M21 21v-1a5 5 0 00-4-4.9" />
+            </svg>
+            Organising Committee
+          </Link>
+
+          <a
+            href="https://msptm.org.my"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium transition-colors hover:bg-gray-50"
+            style={{ color: "var(--navy)" }}
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+              <circle cx="12" cy="12" r="10" /><path d="M2 12h20M12 2a15 15 0 010 20M12 2a15 15 0 000 20" />
+            </svg>
+            MSPTM
+            <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" className="ml-auto opacity-40" aria-hidden="true">
+              <path d="M3.5 1H11v7.5M11 1L1 11" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </a>
+
+          <a
+            href="https://tidrec.um.edu.my"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium transition-colors hover:bg-gray-50"
+            style={{ color: "var(--navy)" }}
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+              <path d="M12 2L2 7l10 5 10-5-10-5z" /><path d="M2 17l10 5 10-5" /><path d="M2 12l10 5 10-5" />
+            </svg>
+            TIDREC
+            <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" className="ml-auto opacity-40" aria-hidden="true">
+              <path d="M3.5 1H11v7.5M11 1L1 11" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </a>
+
+          {firstAnnouncementUrl && (
+            <a
+              href="/api/first-announcement"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium transition-colors hover:bg-gray-50 border-t"
+              style={{ color: "var(--teal)", borderColor: "var(--border-color)" }}
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" />
+              </svg>
+              First Announcement
+            </a>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function SiteHeader() {
   const { data: cms } = useGetSettings();
 
@@ -17,7 +101,7 @@ export function SiteHeader() {
 
         <nav className="hidden md:flex flex-1 items-center justify-center gap-5">
           <Link href="/" className="hover:text-accent transition-colors text-[var(--navy)] font-semibold text-sm">Home</Link>
-          <a href="/#about" className="hover:text-accent transition-colors cursor-pointer text-[var(--navy)] font-semibold text-sm">About</a>
+          <AboutDropdown firstAnnouncementUrl={cms?.first_announcement_url} />
           <Link href="/portal/programme" className="hover:text-accent transition-colors text-[var(--navy)] font-semibold text-sm">Programme</Link>
           <Link href="/portal/abstracts/new" className="hover:text-accent transition-colors text-[var(--navy)] font-semibold text-sm">Abstract</Link>
           <Link href="/speakers" className="hover:text-accent transition-colors text-[var(--navy)] font-semibold text-sm">Speakers</Link>

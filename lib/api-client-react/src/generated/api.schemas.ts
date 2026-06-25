@@ -487,3 +487,33 @@ export interface RegistrationCategoryInput {
   isActive?: boolean;
 }
 
+export type CommitteeLevel = typeof CommitteeLevel[keyof typeof CommitteeLevel];
+
+export const CommitteeLevel = {
+  international_advisory: 'international_advisory',
+  local_organising: 'local_organising',
+  subcommittee: 'subcommittee',
+} as const;
+
+export interface CommitteeMember {
+  id: number;
+  name: string;
+  title: string;
+  /** @nullable */
+  photoUrl?: string | null;
+  initials: string;
+  committeeLevel: string;
+  /** @nullable */
+  subcommitteeName?: string | null;
+  sortOrder: number;
+}
+
+export interface CommitteeMemberInput {
+  name: string;
+  title: string;
+  photoUrl?: string;
+  committeeLevel: CommitteeLevel;
+  subcommitteeName?: string;
+  sortOrder?: number;
+}
+

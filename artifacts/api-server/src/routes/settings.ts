@@ -21,6 +21,7 @@ const DEFAULT_SETTINGS: Record<string, string> = {
   abstract_deadline: "15 January 2027",
   early_bird_deadline: "01 March 2027",
   sponsor_prospectus_url: "",
+  first_announcement_url: "",
   co_organiser_tidrec_logo: "",
   co_organiser_msptm_logo: "",
   date_registration_opens: "10 Aug 2026",
@@ -65,6 +66,41 @@ router.get("/co-organiser-logo/:slug", async (req, res) => {
   } catch (err) {
     if (err instanceof ObjectNotFoundError) {
       res.status(404).json({ error: "Logo file not found" });
+      return;
+    }
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.get("/first-announcement", async (_req, res) => {
+  try {
+    const rows = await db.select().from(settingsTable);
+    const settings: Record<string, string> = { ...DEFAULT_SETTINGS };
+    for (const row of rows) settings[row.key] = row.value;
+    const url = settings.first_announcement_url;
+    if (!url) {
+      res.status(404).json({ error: "First announcement not available" });
+      return;
+    }
+    if (url.startsWith("http://") || url.startsWith("https://")) {
+      res.redirect(url);
+      return;
+    }
+    const objectFile = await objectStorageService.getObjectEntityFile(url);
+    const response = await objectStorageService.downloadObject(objectFile);
+    res.setHeader("Content-Disposition", 'inline; filename="SEAT-MSPTM2027-First-Announcement.pdf"');
+    res.status(response.status);
+    response.headers.forEach((value, key) => res.setHeader(key, value));
+    if (response.body) {
+      const nodeStream = Readable.fromWeb(response.body as ReadableStream<Uint8Array>);
+      nodeStream.pipe(res);
+    } else {
+      res.end();
+    }
+  } catch (err) {
+    if (err instanceof ObjectNotFoundError) {
+      res.status(404).json({ error: "First announcement file not found" });
       return;
     }
     console.error(err);

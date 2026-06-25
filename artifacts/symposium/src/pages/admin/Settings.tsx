@@ -61,6 +61,42 @@ export default function AdminSettings() {
   const [saving, setSaving] = React.useState(false);
   const [uploadingProspectus, setUploadingProspectus] = React.useState(false);
   const [prospectusError, setProspectusError] = React.useState<string | null>(null);
+  const [uploadingAnnouncement, setUploadingAnnouncement] = React.useState(false);
+  const [announcementError, setAnnouncementError] = React.useState<string | null>(null);
+
+  const handleAnnouncementUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.type !== "application/pdf") {
+      setAnnouncementError("Only PDF files are allowed.");
+      return;
+    }
+    setUploadingAnnouncement(true);
+    setAnnouncementError(null);
+    try {
+      const token = localStorage.getItem("satbds_token");
+      const urlRes = await fetch(`${API}/storage/uploads/request-url`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ name: file.name, size: file.size, contentType: "application/pdf" }),
+      });
+      if (!urlRes.ok) throw new Error("Failed to get upload URL");
+      const { uploadURL, objectPath } = await urlRes.json();
+      const putRes = await fetch(uploadURL, {
+        method: "PUT",
+        body: file,
+        headers: { "Content-Type": "application/pdf" },
+      });
+      if (!putRes.ok) throw new Error("Upload to storage failed");
+      set("first_announcement_url", objectPath);
+      toast({ title: "PDF uploaded — click Save Changes to publish." });
+    } catch (err) {
+      setAnnouncementError(err instanceof Error ? err.message : "Upload failed");
+    } finally {
+      setUploadingAnnouncement(false);
+      e.target.value = "";
+    }
+  };
 
   const handleProspectusUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -185,6 +221,59 @@ export default function AdminSettings() {
             </div>
           </div>
         ))}
+
+        {/* First Announcement */}
+        <div className="card">
+          <div className="card-body">
+            <h3 className="text-[14px] font-semibold mb-1" style={{ color: "var(--text)" }}>First Announcement</h3>
+            <p className="text-[13px] mb-5" style={{ color: "var(--text-muted)" }}>
+              Upload a PDF to add a "First Announcement" item to the About dropdown on the marketing site.
+            </p>
+
+            {values.first_announcement_url ? (
+              <div className="flex items-center gap-3 p-3 rounded-lg mb-4" style={{ background: "var(--primary-lt)", border: "1px solid var(--teal-focus)" }}>
+                <FileText className="w-4 h-4 flex-shrink-0" style={{ color: "var(--primary)" }} />
+                <span className="text-[13px] flex-1" style={{ color: "var(--text)", fontWeight: 500 }}>
+                  First Announcement PDF is configured
+                </span>
+                <button
+                  onClick={() => { set("first_announcement_url", ""); setAnnouncementError(null); }}
+                  className="btn btn-sm"
+                  style={{ background: "var(--status-danger-bg)", color: "var(--status-danger-text)", borderColor: "var(--status-danger-border)" }}
+                >
+                  <X className="w-3 h-3" /> Remove
+                </button>
+              </div>
+            ) : (
+              <p className="text-[13px] mb-4 italic" style={{ color: "var(--text-disabled)" }}>
+                No PDF uploaded yet. The dropdown item will be hidden until a PDF is added.
+              </p>
+            )}
+
+            <label
+              className="btn btn-primary"
+              style={{
+                opacity: uploadingAnnouncement ? 0.6 : 1,
+                pointerEvents: uploadingAnnouncement ? "none" : "auto",
+                cursor: uploadingAnnouncement ? "default" : "pointer",
+              }}
+            >
+              <Upload className="w-4 h-4" />
+              {uploadingAnnouncement ? "Uploading…" : values.first_announcement_url ? "Replace PDF" : "Upload PDF"}
+              <input
+                type="file"
+                accept="application/pdf"
+                className="hidden"
+                disabled={uploadingAnnouncement}
+                onChange={handleAnnouncementUpload}
+              />
+            </label>
+
+            {announcementError && (
+              <p className="text-[12px] mt-2" style={{ color: "var(--status-danger-text)" }}>{announcementError}</p>
+            )}
+          </div>
+        </div>
 
         {/* Sponsor Prospectus */}
         <div className="card">

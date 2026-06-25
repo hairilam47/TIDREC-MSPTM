@@ -11,3 +11,4 @@ export * from "./settings";
 export * from "./abstract_history";
 export * from "./payment_reminders";
 export * from "./registration_categories";
+export * from "./committee_members";
