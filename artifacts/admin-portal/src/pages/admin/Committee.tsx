@@ -1,7 +1,7 @@
 import React from "react";
 import { AdminLayout } from "@/components/AdminLayout";
 import { Plus, Pencil, Trash2, UserRound } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import {
   useGetCommitteeMembers,
   useCreateCommitteeMember,
@@ -46,13 +46,11 @@ const API = "/api";
 
 function resolvePhotoSrc(photoUrl: string | null | undefined): string | null {
   if (!photoUrl) return null;
-  if (photoUrl.startsWith("http://") || photoUrl.startsWith("https://") || photoUrl.startsWith("/api/")) {
-    return photoUrl;
-  }
+  if (photoUrl.startsWith("http://") || photoUrl.startsWith("https://")) return photoUrl;
   if (photoUrl.startsWith("/objects/")) {
-    const stripped = photoUrl.slice("/objects/".length);
-    return `${API}/storage/objects/${stripped}`;
+    return `/api/media/objects/${photoUrl.slice("/objects/".length)}`;
   }
+  if (photoUrl.startsWith("/api/")) return photoUrl;
   return null;
 }
 
