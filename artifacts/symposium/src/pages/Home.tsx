@@ -59,8 +59,7 @@ export default function Home() {
               {/* CTA buttons */}
               <Link
                 href="/register"
-                className="flex items-center justify-between w-full px-5 py-4 rounded-lg text-white font-semibold text-base transition-opacity hover:opacity-90"
-                style={{ background: "var(--gold)" }}
+                className="flex items-center justify-between w-full px-5 py-4 rounded-lg bg-accent text-white font-semibold text-base transition-opacity hover:opacity-90"
               >
                 <span className="flex items-center gap-3">
                   <CalendarDays className="w-5 h-5 flex-shrink-0" />
@@ -70,8 +69,7 @@ export default function Home() {
               </Link>
               <Link
                 href="/portal/abstracts/new"
-                className="flex items-center justify-between w-full px-5 py-4 rounded-lg text-white font-semibold text-base transition-opacity hover:opacity-90"
-                style={{ background: "var(--gold)" }}
+                className="flex items-center justify-between w-full px-5 py-4 rounded-lg bg-secondary text-white font-semibold text-base transition-opacity hover:opacity-90"
               >
                 <span className="flex items-center gap-3">
                   <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
