@@ -214,7 +214,7 @@ export default function Home() {
               <p className="text-base text-muted-foreground max-w-xl mx-auto">Hear from world-renowned experts in tropical medicine and infectious diseases.</p>
             </div>
 
-            <div className="grid gap-6 mb-10 [grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr))]">
+            <div className="grid gap-6 mb-10 [grid-template-columns:repeat(auto-fill,minmax(min(480px,100%),1fr))]">
               {featuredSpeakers.map(speaker => (
                 <div key={speaker.id} className="flex gap-6 p-6 rounded-xl border border-border bg-white shadow-sm">
                   {/* Photo */}
@@ -228,8 +228,8 @@ export default function Home() {
                   </div>
                   {/* Info */}
                   <div className="flex flex-col justify-center min-w-0">
-                    <h3 className="font-bold text-secondary text-base leading-snug mb-0.5 truncate">{speaker.name}</h3>
-                    {speaker.institution && <p className="text-sm text-muted-foreground truncate">{speaker.institution}</p>}
+                    <h3 className="font-bold text-secondary text-base leading-snug mb-0.5">{speaker.name}</h3>
+                    {speaker.institution && <p className="text-sm text-muted-foreground">{speaker.institution}</p>}
                     <p className="text-sm text-primary font-medium">{speaker.country}</p>
                   </div>
                 </div>
