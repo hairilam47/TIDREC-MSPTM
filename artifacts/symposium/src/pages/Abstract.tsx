@@ -19,30 +19,36 @@ const MSPTM_TOPICS = [
   "Other Related Topics",
 ];
 
-const GUIDELINES = [
+const GUIDELINE_DEFAULTS = [
   {
+    key: "guideline_submission",
     title: "Abstract Submission Guidelines",
-    body: "Abstracts must be submitted through the online submission portal. Each abstract should be no more than 300 words (excluding title and authors). The title should be concise and clearly reflect the content of the abstract. All abstracts must be written in English. Presenting authors are required to register for the conference.",
+    defaultBody: "Abstracts must be submitted through the online submission portal. Each abstract should be no more than 300 words (excluding title and authors). The title should be concise and clearly reflect the content of the abstract. All abstracts must be written in English. Presenting authors are required to register for the conference.",
   },
   {
+    key: "guideline_mode",
     title: "Mode of Presentation & Presentation Guidelines",
-    body: "Authors may indicate their preferred mode of presentation (oral or poster) during submission. The Scientific Committee reserves the right to reassign the mode of presentation based on the programme requirements. Notification of acceptance and assigned mode will be communicated via email.",
+    defaultBody: "Authors may indicate their preferred mode of presentation (oral or poster) during submission. The Scientific Committee reserves the right to reassign the mode of presentation based on the programme requirements. Notification of acceptance and assigned mode will be communicated via email.",
   },
   {
+    key: "guideline_oral",
     title: "Oral Presentation Guidelines",
-    body: "Oral presentations are allocated 12 minutes for presentation and 3 minutes for Q&A. Slides must be prepared in PowerPoint (.pptx) or PDF format in widescreen (16:9) ratio. Presenters are requested to submit their slides to the audio-visual desk at least 2 hours before their session.",
+    defaultBody: "Oral presentations are allocated 12 minutes for presentation and 3 minutes for Q&A. Slides must be prepared in PowerPoint (.pptx) or PDF format in widescreen (16:9) ratio. Presenters are requested to submit their slides to the audio-visual desk at least 2 hours before their session.",
   },
   {
+    key: "guideline_poster",
     title: "Poster Display Guidelines",
-    body: "Posters should be prepared in portrait orientation (A0 size: 841 mm × 1189 mm). Presenters must be available at their poster during the designated poster viewing sessions. Posters must be mounted and removed within the stipulated times. The organisers will not be responsible for posters left after the event.",
+    defaultBody: "Posters should be prepared in portrait orientation (A0 size: 841 mm × 1189 mm). Presenters must be available at their poster during the designated poster viewing sessions. Posters must be mounted and removed within the stipulated times. The organisers will not be responsible for posters left after the event.",
   },
   {
+    key: "guideline_competition",
     title: "MSPTM Student Competition – Rapid Oral Presentation",
-    body: "This competition is open to students (undergraduate and postgraduate) presenting under the MSPTM Scientific Conference track. Each participant will have 5 minutes to present followed by 2 minutes of Q&A. Participants must indicate their intention to compete during abstract submission. Judging criteria include scientific content, clarity of presentation, and ability to answer questions.",
+    defaultBody: "This competition is open to students (undergraduate and postgraduate) presenting under the MSPTM Scientific Conference track. Each participant will have 5 minutes to present followed by 2 minutes of Q&A. Participants must indicate their intention to compete during abstract submission. Judging criteria include scientific content, clarity of presentation, and ability to answer questions.",
   },
   {
+    key: "guideline_consent",
     title: "Consent, Permission & Copyright",
-    body: "By submitting an abstract, authors confirm that the work is original and has not been published or presented elsewhere. Authors grant the organisers permission to publish the accepted abstracts in the conference proceedings and digital platforms. All co-authors have given their consent for the submission. Authors are responsible for obtaining necessary ethics approvals and institutional permissions prior to submission.",
+    defaultBody: "By submitting an abstract, authors confirm that the work is original and has not been published or presented elsewhere. Authors grant the organisers permission to publish the accepted abstracts in the conference proceedings and digital platforms. All co-authors have given their consent for the submission. Authors are responsible for obtaining necessary ethics approvals and institutional permissions prior to submission.",
   },
 ];
 
@@ -126,6 +132,11 @@ export default function AbstractPage() {
   const callForAbstractOpens = cms?.date_call_for_abstract_opens ?? "1 August 2026";
   const submissionDeadline = cms?.date_abstract_submission_deadline ?? "30 December 2026";
   const resultNotification = cms?.date_abstract_result_notification ?? "15 January 2027";
+
+  const guidelines = GUIDELINE_DEFAULTS.map((g) => ({
+    title: g.title,
+    body: (cms as Record<string, string> | undefined)?.[g.key] ?? g.defaultBody,
+  }));
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
@@ -256,7 +267,7 @@ export default function AbstractPage() {
               </p>
             </div>
             <div className="mt-8 space-y-3">
-              {GUIDELINES.map((g) => (
+              {guidelines.map((g) => (
                 <GuidelineItem key={g.title} title={g.title} body={g.body} />
               ))}
             </div>

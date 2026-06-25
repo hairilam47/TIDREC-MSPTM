@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { AdminLayout } from "@/components/AdminLayout";
-import { Upload, Loader2, ImageIcon, Trash2, FileText, ExternalLink, CalendarDays, Save, Info } from "lucide-react";
+import { Upload, Loader2, ImageIcon, Trash2, FileText, ExternalLink, CalendarDays, Save, Info, BookOpen } from "lucide-react";
 
 interface LogoUploaderProps {
   slug: "tidrec" | "msptm";
@@ -228,6 +228,15 @@ function ProspectusUploader({ currentPath, onSave, onClear, saving }: Prospectus
   );
 }
 
+const GUIDELINE_FIELDS = [
+  { key: "guideline_submission", label: "Abstract Submission Guidelines" },
+  { key: "guideline_mode", label: "Mode of Presentation & Presentation Guidelines" },
+  { key: "guideline_oral", label: "Oral Presentation Guidelines" },
+  { key: "guideline_poster", label: "Poster Display Guidelines" },
+  { key: "guideline_competition", label: "MSPTM Student Competition – Rapid Oral Presentation" },
+  { key: "guideline_consent", label: "Consent, Permission & Copyright" },
+] as const;
+
 const DATE_FIELDS = [
   { key: "date_registration_opens", label: "Registration Opens" },
   { key: "date_early_bird_closes", label: "Early Bird Registration Closes" },
@@ -257,6 +266,8 @@ export default function AdminSettings() {
   const [savingDates, setSavingDates] = useState(false);
   const [eventDetailValues, setEventDetailValues] = useState<Record<string, string>>({});
   const [savingEventDetails, setSavingEventDetails] = useState(false);
+  const [guidelineValues, setGuidelineValues] = useState<Record<string, string>>({});
+  const [savingGuidelines, setSavingGuidelines] = useState(false);
 
   useEffect(() => {
     if (settings) {
@@ -271,6 +282,12 @@ export default function AdminSettings() {
         edVals[key] = (settings as Record<string, string>)[key] ?? "";
       }
       setEventDetailValues(edVals);
+
+      const gVals: Record<string, string> = {};
+      for (const { key } of GUIDELINE_FIELDS) {
+        gVals[key] = (settings as Record<string, string>)[key] ?? "";
+      }
+      setGuidelineValues(gVals);
     }
   }, [settings]);
 
@@ -297,6 +314,19 @@ export default function AdminSettings() {
       toast({ title: "Save failed", description: "Something went wrong. Please try again.", variant: "destructive" });
     } finally {
       setSavingDates(false);
+    }
+  };
+
+  const handleSaveGuidelines = async () => {
+    setSavingGuidelines(true);
+    try {
+      await putSettings({ data: guidelineValues });
+      await queryClient.invalidateQueries({ queryKey: getGetSettingsQueryKey() });
+      toast({ title: "Abstract guidelines saved", description: "The public abstract page will now show the updated text." });
+    } catch {
+      toast({ title: "Save failed", description: "Something went wrong. Please try again.", variant: "destructive" });
+    } finally {
+      setSavingGuidelines(false);
     }
   };
 
@@ -436,6 +466,45 @@ export default function AdminSettings() {
                           <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Saving…</>
                         ) : (
                           <><Save className="w-4 h-4 mr-2" /> Save Dates</>
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <BookOpen className="w-4 h-4 text-amber-500" />
+                    Abstract Guidelines
+                  </CardTitle>
+                  <p className="text-sm text-gray-500">
+                    Edit the body text for each guideline accordion item shown on the public abstract page.
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {GUIDELINE_FIELDS.map(({ key, label }) => (
+                      <div key={key} className="space-y-1.5">
+                        <Label htmlFor={key} className="text-sm font-medium text-gray-700">{label}</Label>
+                        <Textarea
+                          id={key}
+                          value={guidelineValues[key] ?? ""}
+                          onChange={(e) => setGuidelineValues(prev => ({ ...prev, [key]: e.target.value }))}
+                          placeholder={`Enter text for "${label}"…`}
+                          disabled={savingGuidelines}
+                          rows={4}
+                          className="resize-y"
+                        />
+                      </div>
+                    ))}
+                    <div className="pt-2 flex justify-end">
+                      <Button onClick={handleSaveGuidelines} disabled={savingGuidelines}>
+                        {savingGuidelines ? (
+                          <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Saving…</>
+                        ) : (
+                          <><Save className="w-4 h-4 mr-2" /> Save Guidelines</>
                         )}
                       </Button>
                     </div>
