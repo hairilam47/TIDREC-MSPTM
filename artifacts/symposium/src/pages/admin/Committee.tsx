@@ -1,7 +1,8 @@
 import React from "react";
 import AdminLayout from "@/components/AdminLayout";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Plus, Pencil, Trash2, UserRound } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { resolveImageUrl } from "@/lib/resolveImageUrl";
 import { FormField, ModalShell, ConfirmDialog, INPUT_BASE, inputBorder } from "@/components/ui/form-primitives";
 import {
   useGetCommitteeMembers,
@@ -117,10 +118,14 @@ export default function AdminCommittee() {
           const lvl = LEVEL_LABELS[m.committeeLevel];
           return (
             <div key={m.id} className="card" style={{ overflow: "hidden" }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 72, background: "linear-gradient(135deg, var(--primary-lt), var(--bg-surface-secondary))" }}>
-                <span className="font-sans" style={{ fontSize: 26, fontWeight: 700, color: "var(--primary)" }}>
-                  {m.initials}
-                </span>
+              <div style={{ height: 72, overflow: "hidden", flexShrink: 0, background: "linear-gradient(135deg, var(--primary-lt), var(--bg-surface-secondary))", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                {resolveImageUrl(m.photoUrl) ? (
+                  <img src={resolveImageUrl(m.photoUrl)!} alt={m.name} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                ) : (
+                  <span className="font-sans" style={{ fontSize: 26, fontWeight: 700, color: "var(--primary)" }}>
+                    {m.initials}
+                  </span>
+                )}
               </div>
               <div className="card-body" style={{ paddingTop: 10, paddingBottom: 8 }}>
                 {lvl && (
