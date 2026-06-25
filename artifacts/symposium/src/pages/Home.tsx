@@ -16,7 +16,8 @@ export default function Home() {
   const { data: sponsors } = useGetSponsors();
   const { data: cms } = useGetSettings();
 
-  const featuredSpeakers = speakers?.filter(s => s.speakerTier === "keynote") || [];
+  const keynoteSpeakers = speakers?.filter(s => s.speakerTier === "keynote") || [];
+  const featuredSpeakers = keynoteSpeakers.length > 0 ? keynoteSpeakers : (speakers?.slice(0, 2) || []);
 
   return (
     <div className="min-h-screen flex flex-col bg-background font-sans">
@@ -213,7 +214,7 @@ export default function Home() {
               <p className="text-base text-muted-foreground max-w-xl mx-auto">Hear from world-renowned experts in tropical medicine and infectious diseases.</p>
             </div>
 
-            <div className="grid gap-6 mb-10 [grid-template-columns:repeat(auto-fill,minmax(320px,1fr))]">
+            <div className="grid gap-6 mb-10 [grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr))]">
               {featuredSpeakers.map(speaker => (
                 <div key={speaker.id} className="flex gap-6 p-6 rounded-xl border border-border bg-white shadow-sm">
                   {/* Photo */}
