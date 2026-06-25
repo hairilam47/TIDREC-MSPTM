@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { db, usersTable } from "@workspace/db";
-import { eq } from "drizzle-orm";
-import { requireAdmin } from "../lib/auth";
+import { eq, inArray } from "drizzle-orm";
+import { requireSuperAdmin } from "../lib/auth";
 
 const router = Router();
 
@@ -19,9 +19,13 @@ function formatUser(u: typeof usersTable.$inferSelect) {
   };
 }
 
-router.get("/users", requireAdmin, async (_req, res) => {
+router.get("/users", requireSuperAdmin, async (_req, res) => {
   try {
-    const users = await db.select().from(usersTable).orderBy(usersTable.createdAt);
+    const users = await db
+      .select()
+      .from(usersTable)
+      .where(inArray(usersTable.role, ["admin", "super_admin"]))
+      .orderBy(usersTable.createdAt);
     res.json(users.map(formatUser));
   } catch (err) {
     console.error(err);
@@ -29,17 +33,20 @@ router.get("/users", requireAdmin, async (_req, res) => {
   }
 });
 
-router.patch("/users/:id", requireAdmin, async (req, res) => {
+router.patch("/users/:id/name", requireSuperAdmin, async (req, res) => {
   try {
     const id = parseInt(String(req.params.id));
-    const { role } = req.body;
-    if (!role || !["attendee", "admin"].includes(role)) {
-      res.status(400).json({ error: "Invalid role" });
+    const { firstName, lastName } = req.body as { firstName?: string; lastName?: string };
+    if (!firstName?.trim() && !lastName?.trim()) {
+      res.status(400).json({ error: "firstName or lastName required" });
       return;
     }
+    const updates: Partial<typeof usersTable.$inferInsert> = {};
+    if (firstName?.trim()) updates.firstName = firstName.trim();
+    if (lastName?.trim()) updates.lastName = lastName.trim();
     const [updated] = await db
       .update(usersTable)
-      .set({ role })
+      .set(updates)
       .where(eq(usersTable.id, id))
       .returning();
     if (!updated) {

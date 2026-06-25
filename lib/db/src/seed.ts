@@ -21,6 +21,7 @@ async function seed() {
   console.log("Seeding database...");
 
   const adminHash = await bcrypt.hash("admin123", 10);
+  const superAdminHash = await bcrypt.hash("superadmin123", 10);
   const demoHash = await bcrypt.hash("demo123", 10);
 
   await db.insert(usersTable).values([
@@ -30,6 +31,51 @@ async function seed() {
       firstName: "Admin",
       lastName: "User",
       institution: "SEAT-MSPTM 2027",
+      country: "Malaysia",
+      role: "admin",
+    },
+    {
+      email: "superadmin@seat-msptm2027.org",
+      passwordHash: superAdminHash,
+      firstName: "Dr. Wan Faiziah",
+      lastName: "Wan Ismail",
+      institution: "TIDREC@UM",
+      country: "Malaysia",
+      role: "super_admin",
+    },
+    {
+      email: "admin2@seat-msptm2027.org",
+      passwordHash: adminHash,
+      firstName: "Prof. Sazali",
+      lastName: "Hassan",
+      institution: "Universiti Malaya",
+      country: "Malaysia",
+      role: "admin",
+    },
+    {
+      email: "admin3@seat-msptm2027.org",
+      passwordHash: adminHash,
+      firstName: "Dr. Nurul Ain",
+      lastName: "Mohd Noor",
+      institution: "Universiti Kebangsaan Malaysia",
+      country: "Malaysia",
+      role: "admin",
+    },
+    {
+      email: "admin4@seat-msptm2027.org",
+      passwordHash: adminHash,
+      firstName: "Dr. Tengku Shahrul",
+      lastName: "Tengku Ahmad",
+      institution: "Universiti Putra Malaysia",
+      country: "Malaysia",
+      role: "admin",
+    },
+    {
+      email: "admin5@seat-msptm2027.org",
+      passwordHash: adminHash,
+      firstName: "Assoc. Prof. Hamidah",
+      lastName: "Rusli",
+      institution: "Hospital Kuala Lumpur",
       country: "Malaysia",
       role: "admin",
     },

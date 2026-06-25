@@ -41,6 +41,7 @@ export type UserRole = typeof UserRole[keyof typeof UserRole];
 export const UserRole = {
   attendee: 'attendee',
   admin: 'admin',
+  super_admin: 'super_admin',
 } as const;
 
 export interface User {
@@ -431,10 +432,16 @@ export type UserRoleUpdateRole = typeof UserRoleUpdateRole[keyof typeof UserRole
 export const UserRoleUpdateRole = {
   attendee: 'attendee',
   admin: 'admin',
+  super_admin: 'super_admin',
 } as const;
 
 export interface UserRoleUpdate {
   role: UserRoleUpdateRole;
+}
+
+export interface AdminNameUpdate {
+  firstName?: string;
+  lastName?: string;
 }
 
 export interface CategoryCount {

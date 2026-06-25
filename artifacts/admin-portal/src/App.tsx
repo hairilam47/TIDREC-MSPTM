@@ -2,7 +2,7 @@ import { Switch, Route, Router as WouterRouter } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { RequireAdmin } from "./lib/auth";
+import { RequireAdmin, RequireSuperAdmin } from "./lib/auth";
 
 import AdminDashboard from "@/pages/admin/Dashboard";
 import AdminAnalytics from "@/pages/admin/Analytics";
@@ -54,7 +54,7 @@ function Router() {
         <RequireAdmin><AdminSponsors /></RequireAdmin>
       </Route>
       <Route path="/admin/users">
-        <RequireAdmin><AdminUsers /></RequireAdmin>
+        <RequireSuperAdmin><AdminUsers /></RequireSuperAdmin>
       </Route>
       <Route path="/admin/announcements">
         <RequireAdmin><AdminAnnouncements /></RequireAdmin>

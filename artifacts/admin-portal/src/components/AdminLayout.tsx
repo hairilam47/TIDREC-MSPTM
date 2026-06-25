@@ -16,27 +16,32 @@ import {
   UserCog,
   LogOut,
 } from "lucide-react";
+import { useGetMe, getGetMeQueryKey } from "@workspace/api-client-react";
 
 const NAV_ITEMS = [
-  { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
-  { href: "/admin/registrations", label: "Registrations", icon: Users },
-  { href: "/admin/registration-categories", label: "Categories", icon: ClipboardList },
-  { href: "/admin/payments", label: "Payments", icon: CreditCard },
-  { href: "/admin/invoices", label: "Invoices", icon: FileText },
-  { href: "/admin/abstracts", label: "Abstracts", icon: FileText },
-  { href: "/admin/speakers", label: "Speakers", icon: Mic2 },
-  { href: "/admin/programme", label: "Programme", icon: CalendarDays },
-  { href: "/admin/sponsors", label: "Sponsors", icon: Star },
-  { href: "/admin/announcements", label: "Announcements", icon: Megaphone },
-  { href: "/admin/emails", label: "Emails", icon: Mail },
-  { href: "/admin/users", label: "Users", icon: UserCog },
-  { href: "/admin/reports", label: "Reports", icon: BarChart3 },
-  { href: "/admin/settings", label: "Settings", icon: Settings },
+  { href: "/admin", label: "Dashboard", icon: LayoutDashboard, superAdminOnly: false },
+  { href: "/admin/analytics", label: "Analytics", icon: BarChart3, superAdminOnly: false },
+  { href: "/admin/registrations", label: "Registrations", icon: Users, superAdminOnly: false },
+  { href: "/admin/registration-categories", label: "Categories", icon: ClipboardList, superAdminOnly: false },
+  { href: "/admin/payments", label: "Payments", icon: CreditCard, superAdminOnly: false },
+  { href: "/admin/invoices", label: "Invoices", icon: FileText, superAdminOnly: false },
+  { href: "/admin/abstracts", label: "Abstracts", icon: FileText, superAdminOnly: false },
+  { href: "/admin/speakers", label: "Speakers", icon: Mic2, superAdminOnly: false },
+  { href: "/admin/programme", label: "Programme", icon: CalendarDays, superAdminOnly: false },
+  { href: "/admin/sponsors", label: "Sponsors", icon: Star, superAdminOnly: false },
+  { href: "/admin/announcements", label: "Announcements", icon: Megaphone, superAdminOnly: false },
+  { href: "/admin/emails", label: "Emails", icon: Mail, superAdminOnly: false },
+  { href: "/admin/users", label: "Admin Accounts", icon: UserCog, superAdminOnly: true },
+  { href: "/admin/reports", label: "Reports", icon: BarChart3, superAdminOnly: false },
+  { href: "/admin/settings", label: "Settings", icon: Settings, superAdminOnly: false },
 ];
 
 export function AdminLayout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
+  const { data: me } = useGetMe({ query: { queryKey: getGetMeQueryKey(), retry: false } });
+  const isSuperAdmin = me?.role === "super_admin";
+
+  const visibleItems = NAV_ITEMS.filter((item) => !item.superAdminOnly || isSuperAdmin);
 
   return (
     <div className="min-h-screen flex bg-gray-50">
@@ -46,7 +51,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
           <p className="text-xs text-white/50 mt-0.5">Admin Portal</p>
         </div>
         <nav className="flex-1 py-3 overflow-y-auto">
-          {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
+          {visibleItems.map(({ href, label, icon: Icon }) => {
             const active = location === href;
             return (
               <Link key={href} href={href}>

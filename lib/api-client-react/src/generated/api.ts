@@ -24,6 +24,7 @@ import type {
   AbstractHistoryItem,
   AbstractInput,
   AbstractUpdate,
+  AdminNameUpdate,
   AdminRegistrationInput,
   Announcement,
   AnnouncementInput,
@@ -3822,5 +3823,52 @@ export function useReorderProgrammeSessions<TError = ErrorType<unknown>, TContex
   return useMutation(mutationOptions);
 }
 
+export const getListAdminUsersUrl = () => `/api/users`;
 
+export const listAdminUsers = async (options?: RequestInit): Promise<User[]> => {
+  return customFetch<User[]>(getListAdminUsersUrl(), { ...options, method: 'GET' });
+};
+
+export const getListAdminUsersQueryKey = () => [getListAdminUsersUrl()] as const;
+
+export const getListAdminUsersQueryOptions = <TData = Awaited<ReturnType<typeof listAdminUsers>>, TError = ErrorType<unknown>>(
+  options?: { query?: UseQueryOptions<Awaited<ReturnType<typeof listAdminUsers>>, TError, TData>, request?: SecondParameter<typeof customFetch> }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+  const queryKey = queryOptions?.queryKey ?? getListAdminUsersQueryKey();
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof listAdminUsers>>> = ({ signal }) => listAdminUsers({ signal, ...requestOptions });
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<Awaited<ReturnType<typeof listAdminUsers>>, TError, TData> & { queryKey: QueryKey };
+};
+
+export function useListAdminUsers<TData = Awaited<ReturnType<typeof listAdminUsers>>, TError = ErrorType<unknown>>(
+  options?: { query?: UseQueryOptions<Awaited<ReturnType<typeof listAdminUsers>>, TError, TData>, request?: SecondParameter<typeof customFetch> }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getListAdminUsersQueryOptions(options);
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+export const updateAdminName = async (id: number, data: AdminNameUpdate, options?: RequestInit): Promise<User> => {
+  return customFetch<User>(`/api/users/${id}/name`, {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(data),
+  });
+};
+
+export const getUpdateAdminNameMutationOptions = <TError = ErrorType<unknown>, TContext = unknown>(
+  options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof updateAdminName>>, TError, { id: number; data: AdminNameUpdate }, TContext>, request?: SecondParameter<typeof customFetch> }
+): UseMutationOptions<Awaited<ReturnType<typeof updateAdminName>>, TError, { id: number; data: AdminNameUpdate }, TContext> => {
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateAdminName>>, { id: number; data: AdminNameUpdate }> = ({ id, data }) => updateAdminName(id, data, requestOptions);
+  return { mutationFn, ...mutationOptions };
+};
+
+export function useUpdateAdminName<TError = ErrorType<unknown>, TContext = unknown>(
+  options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof updateAdminName>>, TError, { id: number; data: AdminNameUpdate }, TContext>, request?: SecondParameter<typeof customFetch> }
+): UseMutationResult<Awaited<ReturnType<typeof updateAdminName>>, TError, { id: number; data: AdminNameUpdate }, TContext> {
+  const mutationOptions = getUpdateAdminNameMutationOptions(options);
+  return useMutation(mutationOptions);
+}
 
