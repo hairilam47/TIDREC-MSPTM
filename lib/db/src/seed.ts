@@ -9,6 +9,7 @@ import {
   sponsorsTable,
   announcementsTable,
   registrationCategoriesTable,
+  committeeMembersTable,
 } from "./schema";
 
 const { Pool } = pg;
@@ -329,6 +330,33 @@ async function seed() {
       sortOrder: 4,
       isActive: true,
     },
+  ]).onConflictDoNothing();
+
+  await db.insert(committeeMembersTable).values([
+    { name: "Dr Benoit Malleret", title: "International Advisory Committee", initials: "BM", committeeLevel: "international_advisory", sortOrder: 1 },
+    { name: "Dr Sebastien Boyer", title: "International Advisory Committee", initials: "SB", committeeLevel: "international_advisory", sortOrder: 2 },
+    { name: "Dr Kittipong Chaisiri", title: "International Advisory Committee", initials: "KC", committeeLevel: "international_advisory", sortOrder: 3 },
+    { name: "Prof Benjamin Makepeace", title: "International Advisory Committee", initials: "BM", committeeLevel: "international_advisory", sortOrder: 4 },
+    { name: "Prof Serge Morand", title: "International Advisory Committee", initials: "SM", committeeLevel: "international_advisory", sortOrder: 5 },
+    { name: "Prof Ryo Nakao", title: "International Advisory Committee", initials: "RN", committeeLevel: "international_advisory", sortOrder: 6 },
+    { name: "Asst. Prof. Tomonori Hoshi", title: "International Advisory Committee", initials: "TH", committeeLevel: "international_advisory", sortOrder: 7 },
+    { name: "Dr Janin Nouhin", title: "International Advisory Committee", initials: "JN", committeeLevel: "international_advisory", sortOrder: 8 },
+    { name: "Dr Norhidayu Sahimin", title: "Chairperson", initials: "NS", committeeLevel: "local_organising", sortOrder: 1 },
+    { name: "Dr Stanley Tan Tiong Kai", title: "Co-Chairperson", initials: "ST", committeeLevel: "local_organising", sortOrder: 2 },
+    { name: "Assoc. Prof. Dr. Lucas Low Van Lun", title: "Advisor", initials: "LL", committeeLevel: "local_organising", sortOrder: 3 },
+    { name: "Assoc. Prof. Dr. Heo Chong Chin", title: "Advisor", initials: "HC", committeeLevel: "local_organising", sortOrder: 4 },
+    { name: "Ms. Adela Ida Jiram", title: "Advisor", initials: "AJ", committeeLevel: "local_organising", sortOrder: 5 },
+    { name: "Ms. Nurul Aini Binti Husin", title: "Secretary", initials: "NH", committeeLevel: "local_organising", sortOrder: 6 },
+    { name: "Dr Lee Ii Li", title: "Assistant Secretary", initials: "LI", committeeLevel: "local_organising", sortOrder: 7 },
+    { name: "Ms. Nurhainis Ogu Salim", title: "Treasurer", initials: "NO", committeeLevel: "local_organising", sortOrder: 8 },
+    { name: "Dr. Mehru Nisha A/P Muhammad Haneef", title: "Assistant Treasurer", initials: "MN", committeeLevel: "local_organising", sortOrder: 9 },
+    { name: "Assoc. Prof. Dr. Lucas Low Van Lun", title: "Lead", initials: "LL", committeeLevel: "subcommittee", subcommitteeName: "Event Flow Committee", sortOrder: 1 },
+    { name: "Dr. Aida Syaffiius Binti Mokhtar", title: "Lead", initials: "AM", committeeLevel: "subcommittee", subcommitteeName: "Programme Planning Committee", sortOrder: 2 },
+    { name: "Dr. Chen Chee Dhang", title: "Lead", initials: "CD", committeeLevel: "subcommittee", subcommitteeName: "Sponsorship Committee", sortOrder: 3 },
+    { name: "Dr. Lee Ii Li", title: "Lead", initials: "LI", committeeLevel: "subcommittee", subcommitteeName: "Registration Committee", sortOrder: 4 },
+    { name: "Assoc. Prof. Dr. Heo Chong Chin", title: "Lead", initials: "HC", committeeLevel: "subcommittee", subcommitteeName: "Scientific Committee", sortOrder: 5 },
+    { name: "Ms. Adela Ida Jiram", title: "Lead", initials: "AJ", committeeLevel: "subcommittee", subcommitteeName: "Publicity & IT Committee", sortOrder: 6 },
+    { name: "Dr. Farah Haziqah Meer Termizi", title: "Lead", initials: "FM", committeeLevel: "subcommittee", subcommitteeName: "Logistics & Operations Committee", sortOrder: 7 },
   ]).onConflictDoNothing();
 
   console.log("Database seeded successfully.");

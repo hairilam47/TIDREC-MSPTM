@@ -15,6 +15,7 @@ import {
   Settings,
   UserCog,
   LogOut,
+  Users2,
 } from "lucide-react";
 import { useGetMe, getGetMeQueryKey } from "@workspace/api-client-react";
 
@@ -27,6 +28,7 @@ const NAV_ITEMS = [
   { href: "/admin/invoices", label: "Invoices", icon: FileText, superAdminOnly: false },
   { href: "/admin/abstracts", label: "Abstracts", icon: FileText, superAdminOnly: false },
   { href: "/admin/speakers", label: "Speakers", icon: Mic2, superAdminOnly: false },
+  { href: "/admin/committee", label: "Committee", icon: Users2, superAdminOnly: false },
   { href: "/admin/programme", label: "Programme", icon: CalendarDays, superAdminOnly: false },
   { href: "/admin/sponsors", label: "Sponsors", icon: Star, superAdminOnly: false },
   { href: "/admin/announcements", label: "Announcements", icon: Megaphone, superAdminOnly: false },
