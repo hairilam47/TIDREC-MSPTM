@@ -36,7 +36,7 @@ function AboutDropdown({ firstAnnouncementUrl }: { firstAnnouncementUrl?: string
           </Link>
 
           <a
-            href="https://msptm.org.my"
+            href="https://msptm.org/about-us"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium transition-colors hover:bg-gray-50"
@@ -52,7 +52,7 @@ function AboutDropdown({ firstAnnouncementUrl }: { firstAnnouncementUrl?: string
           </a>
 
           <a
-            href="https://tidrec.um.edu.my"
+            href="https://tidrec.um.edu.my/about-us"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium transition-colors hover:bg-gray-50"

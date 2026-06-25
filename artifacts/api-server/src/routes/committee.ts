@@ -5,6 +5,12 @@ import { requireAdmin } from "../lib/auth";
 
 const router = Router();
 
+const VALID_LEVELS = ["international_advisory", "local_organising", "subcommittee"] as const;
+
+function isValidLevel(level: string): level is typeof VALID_LEVELS[number] {
+  return (VALID_LEVELS as readonly string[]).includes(level);
+}
+
 function getInitials(name: string): string {
   return name
     .split(" ")
@@ -47,6 +53,10 @@ router.post("/committee-members", requireAdmin, async (req, res) => {
       res.status(400).json({ error: "Missing required fields" });
       return;
     }
+    if (!isValidLevel(committeeLevel)) {
+      res.status(400).json({ error: `Invalid committeeLevel. Must be one of: ${VALID_LEVELS.join(", ")}` });
+      return;
+    }
     const [member] = await db.insert(committeeMembersTable).values({
       name,
       title,
@@ -67,6 +77,10 @@ router.put("/committee-members/:id", requireAdmin, async (req, res) => {
   try {
     const id = parseInt(String(req.params.id));
     const { name, title, photoUrl, committeeLevel, subcommitteeName, sortOrder } = req.body;
+    if (committeeLevel && !isValidLevel(committeeLevel)) {
+      res.status(400).json({ error: `Invalid committeeLevel. Must be one of: ${VALID_LEVELS.join(", ")}` });
+      return;
+    }
     const [member] = await db.update(committeeMembersTable)
       .set({
         name,

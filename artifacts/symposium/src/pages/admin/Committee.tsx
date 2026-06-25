@@ -2,7 +2,7 @@ import React from "react";
 import AdminLayout from "@/components/AdminLayout";
 import { Plus, Pencil, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { FormField, ModalShell, ConfirmDialog, INPUT_BASE, TEXTAREA_BASE, inputBorder } from "@/components/ui/form-primitives";
+import { FormField, ModalShell, ConfirmDialog, INPUT_BASE, inputBorder } from "@/components/ui/form-primitives";
 import {
   useGetCommitteeMembers,
   useCreateCommitteeMember,
@@ -11,6 +11,7 @@ import {
   CommitteeLevel,
 } from "@workspace/api-client-react";
 import type { CommitteeMemberInput } from "@workspace/api-client-react";
+import { ImageUploadField } from "@/components/ui/ImageUploadField";
 
 const BLANK: CommitteeMemberInput = {
   name: "",
@@ -225,6 +226,14 @@ export default function AdminCommittee() {
               onChange={(e) => set("sortOrder", parseInt(e.target.value) || 0)}
               className={INPUT_BASE}
               style={inputBorder()}
+            />
+          </FormField>
+
+          <FormField label="Photo" hint="Optional — PNG, JPG, or WebP portrait">
+            <ImageUploadField
+              value={form.photoUrl ?? ""}
+              onChange={(path) => set("photoUrl", path)}
+              accept="image/png,image/jpeg,image/webp"
             />
           </FormField>
         </ModalShell>
