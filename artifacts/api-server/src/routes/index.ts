@@ -14,6 +14,7 @@ import usersRouter from "./users";
 import settingsRouter from "./settings";
 import registrationCategoriesRouter from "./registrationCategories";
 import committeeRouter from "./committee";
+import programmeSessionsRouter from "./programme-sessions";
 
 const router: IRouter = Router();
 
@@ -32,5 +33,6 @@ router.use(storageRouter);
 router.use(usersRouter);
 router.use(settingsRouter);
 router.use(committeeRouter);
+router.use(programmeSessionsRouter);
 
 export default router;

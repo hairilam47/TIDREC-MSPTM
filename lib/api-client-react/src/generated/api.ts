@@ -53,7 +53,9 @@ import type {
   User,
   UserRoleUpdate,
   RegistrationCategory,
-  RegistrationCategoryInput
+  RegistrationCategoryInput,
+  ProgrammeSession,
+  ProgrammeSessionInput,
 } from './api.schemas';
 
 import { customFetch } from '../custom-fetch';
@@ -3716,6 +3718,107 @@ export function useDeleteCommitteeMember<TError = ErrorType<unknown>, TContext =
   options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof deleteCommitteeMember>>, TError, { id: number }, TContext>, request?: SecondParameter<typeof customFetch> }
 ): UseMutationResult<Awaited<ReturnType<typeof deleteCommitteeMember>>, TError, { id: number }, TContext> {
   const mutationOptions = getDeleteCommitteeMemberMutationOptions(options);
+  return useMutation(mutationOptions);
+}
+
+export const getListProgrammeSessionsUrl = () => `/api/programme-sessions`;
+
+export const listProgrammeSessions = async (options?: RequestInit): Promise<ProgrammeSession[]> => {
+  return customFetch<ProgrammeSession[]>(getListProgrammeSessionsUrl(), { ...options, method: 'GET' });
+};
+
+export const getListProgrammeSessionsQueryKey = () => ['/api/programme-sessions'] as const;
+
+export const getListProgrammeSessionsQueryOptions = <TData = Awaited<ReturnType<typeof listProgrammeSessions>>, TError = ErrorType<unknown>>(
+  options?: { query?: UseQueryOptions<Awaited<ReturnType<typeof listProgrammeSessions>>, TError, TData>, request?: SecondParameter<typeof customFetch> }
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+  const queryKey = queryOptions?.queryKey ?? getListProgrammeSessionsQueryKey();
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof listProgrammeSessions>>> = ({ signal }) => listProgrammeSessions({ signal, ...requestOptions });
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<Awaited<ReturnType<typeof listProgrammeSessions>>, TError, TData> & { queryKey: QueryKey };
+};
+
+export function useListProgrammeSessions<TData = Awaited<ReturnType<typeof listProgrammeSessions>>, TError = ErrorType<unknown>>(
+  options?: { query?: UseQueryOptions<Awaited<ReturnType<typeof listProgrammeSessions>>, TError, TData>, request?: SecondParameter<typeof customFetch> }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getListProgrammeSessionsQueryOptions(options);
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+export const createProgrammeSession = async (input: ProgrammeSessionInput, options?: RequestInit): Promise<ProgrammeSession> => {
+  return customFetch<ProgrammeSession>(getListProgrammeSessionsUrl(), { ...options, method: 'POST', headers: { 'Content-Type': 'application/json', ...options?.headers }, body: JSON.stringify(input) });
+};
+
+export const getCreateProgrammeSessionMutationOptions = <TError = ErrorType<unknown>, TContext = unknown>(
+  options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof createProgrammeSession>>, TError, { data: ProgrammeSessionInput }, TContext>, request?: SecondParameter<typeof customFetch> }
+): UseMutationOptions<Awaited<ReturnType<typeof createProgrammeSession>>, TError, { data: ProgrammeSessionInput }, TContext> => {
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof createProgrammeSession>>, { data: ProgrammeSessionInput }> = ({ data }) => createProgrammeSession(data, requestOptions);
+  return { mutationFn, ...mutationOptions };
+};
+
+export function useCreateProgrammeSession<TError = ErrorType<unknown>, TContext = unknown>(
+  options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof createProgrammeSession>>, TError, { data: ProgrammeSessionInput }, TContext>, request?: SecondParameter<typeof customFetch> }
+): UseMutationResult<Awaited<ReturnType<typeof createProgrammeSession>>, TError, { data: ProgrammeSessionInput }, TContext> {
+  const mutationOptions = getCreateProgrammeSessionMutationOptions(options);
+  return useMutation(mutationOptions);
+}
+
+export const updateProgrammeSession = async (id: number, input: ProgrammeSessionInput, options?: RequestInit): Promise<ProgrammeSession> => {
+  return customFetch<ProgrammeSession>(`/api/programme-sessions/${id}`, { ...options, method: 'PUT', headers: { 'Content-Type': 'application/json', ...options?.headers }, body: JSON.stringify(input) });
+};
+
+export const getUpdateProgrammeSessionMutationOptions = <TError = ErrorType<unknown>, TContext = unknown>(
+  options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof updateProgrammeSession>>, TError, { id: number; data: ProgrammeSessionInput }, TContext>, request?: SecondParameter<typeof customFetch> }
+): UseMutationOptions<Awaited<ReturnType<typeof updateProgrammeSession>>, TError, { id: number; data: ProgrammeSessionInput }, TContext> => {
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateProgrammeSession>>, { id: number; data: ProgrammeSessionInput }> = ({ id, data }) => updateProgrammeSession(id, data, requestOptions);
+  return { mutationFn, ...mutationOptions };
+};
+
+export function useUpdateProgrammeSession<TError = ErrorType<unknown>, TContext = unknown>(
+  options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof updateProgrammeSession>>, TError, { id: number; data: ProgrammeSessionInput }, TContext>, request?: SecondParameter<typeof customFetch> }
+): UseMutationResult<Awaited<ReturnType<typeof updateProgrammeSession>>, TError, { id: number; data: ProgrammeSessionInput }, TContext> {
+  const mutationOptions = getUpdateProgrammeSessionMutationOptions(options);
+  return useMutation(mutationOptions);
+}
+
+export const deleteProgrammeSession = async (id: number, options?: RequestInit): Promise<void> => {
+  return customFetch<void>(`/api/programme-sessions/${id}`, { ...options, method: 'DELETE' });
+};
+
+export const getDeleteProgrammeSessionMutationOptions = <TError = ErrorType<unknown>, TContext = unknown>(
+  options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof deleteProgrammeSession>>, TError, { id: number }, TContext>, request?: SecondParameter<typeof customFetch> }
+): UseMutationOptions<Awaited<ReturnType<typeof deleteProgrammeSession>>, TError, { id: number }, TContext> => {
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteProgrammeSession>>, { id: number }> = ({ id }) => deleteProgrammeSession(id, requestOptions);
+  return { mutationFn, ...mutationOptions };
+};
+
+export function useDeleteProgrammeSession<TError = ErrorType<unknown>, TContext = unknown>(
+  options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof deleteProgrammeSession>>, TError, { id: number }, TContext>, request?: SecondParameter<typeof customFetch> }
+): UseMutationResult<Awaited<ReturnType<typeof deleteProgrammeSession>>, TError, { id: number }, TContext> {
+  const mutationOptions = getDeleteProgrammeSessionMutationOptions(options);
+  return useMutation(mutationOptions);
+}
+
+export const reorderProgrammeSessions = async (updates: Array<{ id: number; sortOrder: number }>, options?: RequestInit): Promise<{ ok: boolean }> => {
+  return customFetch<{ ok: boolean }>(`/api/programme-sessions/reorder`, { ...options, method: 'PUT', headers: { 'Content-Type': 'application/json', ...options?.headers }, body: JSON.stringify(updates) });
+};
+
+export const getReorderProgrammeSessionsMutationOptions = <TError = ErrorType<unknown>, TContext = unknown>(
+  options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof reorderProgrammeSessions>>, TError, { data: Array<{ id: number; sortOrder: number }> }, TContext>, request?: SecondParameter<typeof customFetch> }
+): UseMutationOptions<Awaited<ReturnType<typeof reorderProgrammeSessions>>, TError, { data: Array<{ id: number; sortOrder: number }> }, TContext> => {
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof reorderProgrammeSessions>>, { data: Array<{ id: number; sortOrder: number }> }> = ({ data }) => reorderProgrammeSessions(data, requestOptions);
+  return { mutationFn, ...mutationOptions };
+};
+
+export function useReorderProgrammeSessions<TError = ErrorType<unknown>, TContext = unknown>(
+  options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof reorderProgrammeSessions>>, TError, { data: Array<{ id: number; sortOrder: number }> }, TContext>, request?: SecondParameter<typeof customFetch> }
+): UseMutationResult<Awaited<ReturnType<typeof reorderProgrammeSessions>>, TError, { data: Array<{ id: number; sortOrder: number }> }, TContext> {
+  const mutationOptions = getReorderProgrammeSessionsMutationOptions(options);
   return useMutation(mutationOptions);
 }
 

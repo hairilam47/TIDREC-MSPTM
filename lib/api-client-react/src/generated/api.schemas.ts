@@ -517,3 +517,59 @@ export interface CommitteeMemberInput {
   sortOrder?: number;
 }
 
+export type ProgrammeSessionKind = typeof ProgrammeSessionKind[keyof typeof ProgrammeSessionKind];
+
+export const ProgrammeSessionKind = {
+  single: 'single',
+  dual: 'dual',
+} as const;
+
+export type ProgrammeSessionType = typeof ProgrammeSessionType[keyof typeof ProgrammeSessionType];
+
+export const ProgrammeSessionType = {
+  registration: 'registration',
+  keynote: 'keynote',
+  plenary: 'plenary',
+  break: 'break',
+  industry: 'industry',
+  social: 'social',
+  session: 'session',
+} as const;
+
+export interface ProgrammeSession {
+  id: number;
+  day: number;
+  dayLabel: string;
+  timeSlot: string;
+  kind: string;
+  sessionType: string;
+  /** @nullable */
+  title?: string | null;
+  /** @nullable */
+  location?: string | null;
+  /** @nullable */
+  trackATitle?: string | null;
+  /** @nullable */
+  trackALocation?: string | null;
+  /** @nullable */
+  trackBTitle?: string | null;
+  /** @nullable */
+  trackBLocation?: string | null;
+  sortOrder: number;
+}
+
+export interface ProgrammeSessionInput {
+  day: number;
+  dayLabel: string;
+  timeSlot: string;
+  kind: string;
+  sessionType: string;
+  title?: string;
+  location?: string;
+  trackATitle?: string;
+  trackALocation?: string;
+  trackBTitle?: string;
+  trackBLocation?: string;
+  sortOrder?: number;
+}
+
