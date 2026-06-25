@@ -89,6 +89,51 @@ function AboutDropdown({ firstAnnouncementUrl }: { firstAnnouncementUrl?: string
   );
 }
 
+function AbstractDropdown() {
+  return (
+    <div className="relative group">
+      <button
+        type="button"
+        className="hover:text-accent transition-colors text-[var(--navy)] font-semibold text-sm flex items-center gap-1 cursor-pointer bg-transparent border-none p-0"
+      >
+        Abstract
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true" className="mt-0.5 transition-transform group-hover:rotate-180">
+          <path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </button>
+
+      <div className="absolute left-0 top-full pt-2 hidden group-hover:block z-50" style={{ minWidth: 200 }}>
+        <div
+          className="rounded-xl overflow-hidden border"
+          style={{ background: "white", borderColor: "var(--border-color)", boxShadow: "0 8px 24px rgba(11,39,68,0.12)" }}
+        >
+          <Link
+            href="/abstract"
+            className="flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium transition-colors hover:bg-gray-50"
+            style={{ color: "var(--navy)" }}
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+              <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            Abstract
+          </Link>
+
+          <a
+            href="/portal/abstracts/new"
+            className="flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium transition-colors hover:bg-gray-50 border-t"
+            style={{ color: "var(--teal)", borderColor: "var(--border-color)" }}
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+              <path d="M12 4v16m8-8H4" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            Submit Abstract
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function SiteHeader() {
   const { data: cms } = useGetSettings();
 
@@ -103,7 +148,7 @@ export function SiteHeader() {
           <Link href="/" className="hover:text-accent transition-colors text-[var(--navy)] font-semibold text-sm">Home</Link>
           <AboutDropdown firstAnnouncementUrl={cms?.first_announcement_url} />
           <Link href="/portal/programme" className="hover:text-accent transition-colors text-[var(--navy)] font-semibold text-sm">Programme</Link>
-          <Link href="/portal/abstracts/new" className="hover:text-accent transition-colors text-[var(--navy)] font-semibold text-sm">Abstract</Link>
+          <AbstractDropdown />
           <Link href="/speakers" className="hover:text-accent transition-colors text-[var(--navy)] font-semibold text-sm">Speakers</Link>
           <a href="/#sponsors" className="hover:text-accent transition-colors cursor-pointer text-[var(--navy)] font-semibold text-sm">Sponsors</a>
           <a href="/#contact" className="hover:text-accent transition-colors cursor-pointer text-[var(--navy)] font-semibold text-sm">Contact</a>

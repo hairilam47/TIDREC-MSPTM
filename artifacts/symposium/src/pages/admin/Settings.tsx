@@ -35,6 +35,14 @@ const FIELD_GROUPS = [
     ],
   },
   {
+    label: "Abstract Key Dates",
+    fields: [
+      { key: "date_call_for_abstract_opens", label: "Call for Abstract Opens", type: "text", placeholder: "1 August 2026" },
+      { key: "date_abstract_submission_deadline", label: "Abstract Submission Deadline", type: "text", placeholder: "30 December 2026" },
+      { key: "date_abstract_result_notification", label: "Abstract Result Notification", type: "text", placeholder: "15 January 2027" },
+    ],
+  },
+  {
     label: "Registration Settings",
     fields: [
       { key: "registration_target", label: "Registration Target (delegates)", type: "text" },
