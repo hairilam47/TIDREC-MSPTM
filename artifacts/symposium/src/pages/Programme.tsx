@@ -2,7 +2,7 @@ import React from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { useListProgrammeSessions } from "@workspace/api-client-react";
 import type { ProgrammeSession } from "@workspace/api-client-react";
-import { Calendar, MapPin } from "lucide-react";
+import { Calendar, MapPin, Coffee, Utensils, Star, Clock } from "lucide-react";
 
 const SESSION_TYPE_CONFIG: Record<string, { dot: string; badge?: string; badgeText?: string; isBreak?: boolean }> = {
   registration: { dot: "#9ca3af", isBreak: true },
@@ -18,12 +18,23 @@ function getConfig(sessionType: string) {
   return SESSION_TYPE_CONFIG[sessionType] ?? SESSION_TYPE_CONFIG.session;
 }
 
+function breakIcon(title: string | null | undefined) {
+  const t = (title ?? "").toLowerCase();
+  if (t.includes("lunch") || t.includes("dinner") || t.includes("gala") || t.includes("meal")) return <Utensils className="w-3.5 h-3.5 flex-shrink-0" />;
+  if (t.includes("social") || t.includes("networking")) return <Star className="w-3.5 h-3.5 flex-shrink-0" />;
+  if (t.includes("registration")) return <Clock className="w-3.5 h-3.5 flex-shrink-0" />;
+  return <Coffee className="w-3.5 h-3.5 flex-shrink-0" />;
+}
+
 function SingleRow({ s }: { s: ProgrammeSession }) {
   const cfg = getConfig(s.sessionType);
   if (cfg.isBreak) {
     return (
-      <div className="flex items-center gap-4 py-2.5 px-4 rounded-lg"
+      <div className="flex items-center gap-3 py-2.5 px-4 rounded-lg"
         style={{ background: "rgba(200,155,60,0.06)", border: "1px dashed rgba(200,155,60,0.25)" }}>
+        <span className="flex items-center gap-1.5 flex-shrink-0" style={{ color: "#C89B3C" }}>
+          {breakIcon(s.title)}
+        </span>
         <span className="text-xs font-semibold tabular-nums flex-shrink-0 w-28" style={{ color: "#9ca3af" }}>
           {s.timeSlot}
         </span>
@@ -134,7 +145,7 @@ export default function ProgrammePage() {
           <p className="text-xs font-bold tracking-widest uppercase mb-3" style={{ color: "#C89B3C" }}>
             3rd SEAT-MSPTM 2027
           </p>
-          <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">Programme</h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">Detailed Programme</h1>
           <div className="mx-auto w-16 h-1 rounded-full" style={{ background: "#C89B3C" }} />
           <p className="mt-5 text-sm md:text-base max-w-2xl mx-auto" style={{ color: "rgba(255,255,255,0.72)" }}>
             Conference schedule for the 3rd SEAT-MSPTM 2027 · Sunway Putra Hotel, Kuala Lumpur · 22–23 March 2027.
@@ -195,14 +206,11 @@ export default function ProgrammePage() {
           <div className="mt-12 rounded-2xl px-6 py-5 border"
             style={{ background: "rgba(11,39,68,0.03)", borderColor: "rgba(11,39,68,0.12)" }}>
             <p className="text-xs font-bold uppercase tracking-wide mb-1" style={{ color: "#0B2744" }}>
-              Please note
+              Disclaimer
             </p>
             <p className="text-sm leading-relaxed" style={{ color: "#4a5568" }}>
-              The conference programme is subject to change. Session titles, speakers, and timings may be updated
-              prior to the event. All confirmed changes will be reflected here. For enquiries, contact the secretariat at{" "}
-              <a href="mailto:events@msptm.network" className="font-semibold hover:underline" style={{ color: "#0B2744" }}>
-                events@msptm.network
-              </a>.
+              The programme is subject to change without prior notice. The Organising Committee reserves the right
+              to modify session timings, topics, and speakers as necessary.
             </p>
           </div>
         </div>

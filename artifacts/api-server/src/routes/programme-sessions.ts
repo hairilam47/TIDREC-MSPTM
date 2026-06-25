@@ -39,9 +39,12 @@ async function seedIfEmpty() {
   try {
     const [{ count }] = await db.select({ count: sql<number>`count(*)::int` }).from(programmeSessionsTable);
     if (count === 0) {
+      console.log("[programme-sessions] Seeding 27 default sessions…");
       await db.insert(programmeSessionsTable).values(SEED_DATA);
+      console.log("[programme-sessions] Seed complete.");
     }
-  } catch {
+  } catch (err) {
+    console.error("[programme-sessions] Seed/bootstrap failed — ensure the programme_sessions table exists (run lib/db/src/migrations/002_programme_sessions.sql):", err);
   }
 }
 
