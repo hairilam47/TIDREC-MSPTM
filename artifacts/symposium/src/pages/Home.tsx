@@ -234,7 +234,7 @@ export default function Home() {
                       Keynote Speaker
                     </span>
                     <h3 className="font-bold text-secondary text-base leading-snug mb-0.5 truncate">{speaker.name}</h3>
-                    {speaker.affiliation && <p className="text-sm text-muted-foreground truncate">{speaker.affiliation}</p>}
+                    {speaker.institution && <p className="text-sm text-muted-foreground truncate">{speaker.institution}</p>}
                     <p className="text-sm text-primary font-medium">{speaker.country}</p>
                   </div>
                 </div>

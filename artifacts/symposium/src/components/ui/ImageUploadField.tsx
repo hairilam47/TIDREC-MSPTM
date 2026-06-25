@@ -50,6 +50,7 @@ export function ImageUploadField({ value, onChange, accept = "image/*", hint }: 
       };
     }
     setPreviewSrc(null);
+    return;
   }, [value]);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
