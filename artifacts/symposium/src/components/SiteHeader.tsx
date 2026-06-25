@@ -147,7 +147,7 @@ export function SiteHeader() {
         <nav className="hidden md:flex flex-1 items-center justify-center gap-5">
           <Link href="/" className="hover:text-accent transition-colors text-[var(--navy)] font-semibold text-sm">Home</Link>
           <AboutDropdown firstAnnouncementUrl={cms?.first_announcement_url} />
-          <Link href="/portal/programme" className="hover:text-accent transition-colors text-[var(--navy)] font-semibold text-sm">Programme</Link>
+          <Link href="/programme" className="hover:text-accent transition-colors text-[var(--navy)] font-semibold text-sm">Programme</Link>
           <AbstractDropdown />
           <Link href="/speakers" className="hover:text-accent transition-colors text-[var(--navy)] font-semibold text-sm">Speakers</Link>
           <a href="/#sponsors" className="hover:text-accent transition-colors cursor-pointer text-[var(--navy)] font-semibold text-sm">Sponsors</a>
