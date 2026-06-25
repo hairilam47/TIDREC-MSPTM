@@ -103,16 +103,6 @@ export default function SpeakersPage() {
     <div className="font-sans" style={{ minHeight: "100vh", background: "var(--bg-surface)" }}>
       <SiteHeader />
 
-      {/* Hero banner */}
-      <div style={{ background: "linear-gradient(135deg, var(--navy) 0%, var(--teal) 100%)", padding: "56px 24px 48px", textAlign: "center" }}>
-        <h1 className="font-sans" style={{ fontSize: 40, fontWeight: 700, color: "#fff", margin: 0, marginBottom: 12 }}>
-          Our Speakers
-        </h1>
-        <p style={{ color: "rgba(255,255,255,0.75)", fontSize: 17, margin: 0 }}>
-          Distinguished experts presenting at {cms?.event_short_name ?? "SEAT-MSPTM 2027"} — {cms?.event_dates ?? "22–23 March 2027"}, {cms?.event_city ?? "Kuala Lumpur"}
-        </p>
-      </div>
-
       {/* Speaker tiers */}
       <main style={{ maxWidth: 1200, margin: "0 auto", padding: "60px 24px" }}>
         {isLoading ? (
