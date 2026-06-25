@@ -1,11 +1,9 @@
 import React from "react";
-import { Link } from "wouter";
-import { Button } from "@/components/ui/button";
-import { CountdownBadge } from "@/components/ui/CountdownBadge";
 import { useGetSpeakers, useGetSettings } from "@workspace/api-client-react";
 import { resolveImageUrl } from "@/lib/resolveImageUrl";
-import type { Speaker } from "@workspace/api-client-react";
+import { SiteHeader } from "@/components/SiteHeader";
 import { Loader2 } from "lucide-react";
+import type { Speaker } from "@workspace/api-client-react";
 
 const TIERS: { key: string; label: string }[] = [
   { key: "keynote", label: "Keynote Speakers" },
@@ -26,6 +24,8 @@ function SpeakerCard({ speaker }: { speaker: Speaker }) {
         alignItems: "center",
         textAlign: "center",
         border: "1px solid var(--border-color)",
+        width: 220,
+        flexShrink: 0,
       }}
     >
       <div
@@ -52,11 +52,7 @@ function SpeakerCard({ speaker }: { speaker: Speaker }) {
         ) : (
           <span
             className="font-sans"
-            style={{
-              fontSize: 36,
-              fontWeight: 700,
-              color: "var(--navy)",
-            }}
+            style={{ fontSize: 36, fontWeight: 700, color: "var(--navy)" }}
           >
             {speaker.initials || speaker.name.substring(0, 2)}
           </span>
@@ -65,19 +61,18 @@ function SpeakerCard({ speaker }: { speaker: Speaker }) {
 
       <div
         className="font-sans"
-        style={{
-          fontSize: 15,
-          fontWeight: 600,
-          color: "var(--navy)",
-          marginBottom: 4,
-          lineHeight: 1.3,
-        }}
+        style={{ fontSize: 15, fontWeight: 600, color: "var(--navy)", marginBottom: 4, lineHeight: 1.3 }}
       >
         {speaker.name}
       </div>
       <div style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: speaker.topic ? 8 : 0 }}>
         {speaker.country}
       </div>
+      {speaker.institution && (
+        <div style={{ fontSize: 12, color: "var(--text-muted)", marginBottom: speaker.topic ? 4 : 0 }}>
+          {speaker.institution}
+        </div>
+      )}
       {speaker.topic && (
         <div style={{ fontSize: 12, color: "var(--teal)", marginTop: 4, lineHeight: 1.4 }}>
           {speaker.topic}
@@ -106,31 +101,7 @@ export default function SpeakersPage() {
 
   return (
     <div className="font-sans" style={{ minHeight: "100vh", background: "var(--bg-surface)" }}>
-      {/* Nav */}
-      <header style={{ background: "var(--navy)", borderBottom: "1px solid rgba(255,255,255,0.1)", position: "sticky", top: 0, zIndex: 50 }}>
-        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px", height: 72, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <nav style={{ display: "flex", gap: 28, alignItems: "center" }}>
-            <Link href="/" style={{ color: "#fff", textDecoration: "none", fontSize: 14, fontWeight: 500 }}>Home</Link>
-            <a href="/#about" style={{ color: "#fff", textDecoration: "none", fontSize: 14, fontWeight: 500 }}>About</a>
-            <a href="/#programme" style={{ color: "#fff", textDecoration: "none", fontSize: 14, fontWeight: 500 }}>Programme</a>
-            <Link href="/speakers" style={{ color: "var(--gold)", textDecoration: "none", fontSize: 14, fontWeight: 600 }}>Speakers</Link>
-            <a href="/#sponsors" style={{ color: "#fff", textDecoration: "none", fontSize: 14, fontWeight: 500 }}>Sponsors</a>
-            {cms?.sponsor_prospectus_url && (
-              <a href="/api/sponsor-prospectus" download style={{ color: "#fff", textDecoration: "none", fontSize: 14, fontWeight: 500 }}>Sponsor Prospectus</a>
-            )}
-          </nav>
-          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-            <CountdownBadge variant="dark" />
-            <Link href="/login" style={{ color: "#fff", textDecoration: "none", fontSize: 14, fontWeight: 500 }}>Login</Link>
-            <Link
-              href="/register"
-              style={{ background: "var(--gold)", color: "#fff", padding: "8px 20px", borderRadius: 6, textDecoration: "none", fontSize: 14, fontWeight: 600 }}
-            >
-              Register Now
-            </Link>
-          </div>
-        </div>
-      </header>
+      <SiteHeader />
 
       {/* Hero banner */}
       <div style={{ background: "linear-gradient(135deg, var(--navy) 0%, var(--teal) 100%)", padding: "56px 24px 48px", textAlign: "center" }}>
@@ -138,7 +109,7 @@ export default function SpeakersPage() {
           Our Speakers
         </h1>
         <p style={{ color: "rgba(255,255,255,0.75)", fontSize: 17, margin: 0 }}>
-          Distinguished experts presenting at SEAT-MSPTM 2027 — 22–23 March, Kuala Lumpur
+          Distinguished experts presenting at {cms?.event_short_name ?? "SEAT-MSPTM 2027"} — {cms?.event_dates ?? "22–23 March 2027"}, {cms?.event_city ?? "Kuala Lumpur"}
         </p>
       </div>
 
@@ -154,23 +125,18 @@ export default function SpeakersPage() {
               const list = grouped[key] ?? [];
               if (list.length === 0) return null;
               return (
-                <section key={key} style={{ marginBottom: 64 }}>
+                <section key={key} style={{ marginBottom: 64, textAlign: "center" }}>
                   <h2
                     className="font-sans"
-                    style={{
-                      fontSize: 28,
-                      fontWeight: 700,
-                      color: "var(--navy)",
-                      textAlign: "center",
-                      marginBottom: 36,
-                    }}
+                    style={{ fontSize: 28, fontWeight: 700, color: "var(--navy)", textAlign: "center", marginBottom: 36 }}
                   >
                     {label}
                   </h2>
                   <div
                     style={{
-                      display: "grid",
-                      gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+                      display: "flex",
+                      flexWrap: "wrap",
+                      justifyContent: "center",
                       gap: 24,
                     }}
                   >
@@ -183,20 +149,14 @@ export default function SpeakersPage() {
             })}
 
             {hasOther && (
-              <section style={{ marginBottom: 64 }}>
+              <section style={{ marginBottom: 64, textAlign: "center" }}>
                 <h2
                   className="font-sans"
-                  style={{
-                    fontSize: 28,
-                    fontWeight: 700,
-                    color: "var(--navy)",
-                    textAlign: "center",
-                    marginBottom: 36,
-                  }}
+                  style={{ fontSize: 28, fontWeight: 700, color: "var(--navy)", textAlign: "center", marginBottom: 36 }}
                 >
                   Speakers
                 </h2>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 24 }}>
+                <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 24 }}>
                   {(grouped["other"] ?? []).map((s) => (
                     <SpeakerCard key={s.id} speaker={s} />
                   ))}

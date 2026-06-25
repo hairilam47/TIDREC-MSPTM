@@ -4,11 +4,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Link } from "wouter";
 import { MapPin, ChevronRight, CalendarDays, ExternalLink } from "lucide-react";
 import { resolveImageUrl } from "@/lib/resolveImageUrl";
-import { CountdownBadge } from "@/components/ui/CountdownBadge";
 import { useGetSpeakers, useGetSponsors, useGetSettings } from "@workspace/api-client-react";
+import { SiteHeader } from "@/components/SiteHeader";
 
 import bannerImg from "@assets/Banner for website.png";
-import logoImg from "@assets/[WEBSITE LOGO] SEAT-MSPTM.png";
 
 
 export default function Home() {
@@ -21,37 +20,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background font-sans">
-      {/* ── Navigation ── */}
-      <header className="border-b border-sidebar-border sticky top-0 z-50 bg-white">
-        <div className="w-full h-32 flex items-center pr-6">
-          {/* Logo — flush to the left edge, no left padding */}
-          <Link href="/" className="flex-shrink-0">
-            <img src={logoImg} alt="SEAT-MSPTM 2027" className="h-32 w-auto object-contain" />
-          </Link>
-
-          {/* Nav links + Login + Registration — centred in remaining space */}
-          <nav className="hidden md:flex flex-1 items-center justify-center gap-5">
-            <Link href="/" className="hover:text-accent transition-colors text-[var(--navy)] font-semibold text-sm">Home</Link>
-            <a href="#about" className="hover:text-accent transition-colors cursor-pointer text-[var(--navy)] font-semibold text-sm">About</a>
-            <Link href="/portal/programme" className="hover:text-accent transition-colors text-[var(--navy)] font-semibold text-sm">Programme</Link>
-            <Link href="/portal/abstracts/new" className="hover:text-accent transition-colors text-[var(--navy)] font-semibold text-sm">Abstract</Link>
-            <a href="#sponsors" className="hover:text-accent transition-colors cursor-pointer text-[var(--navy)] font-semibold text-sm">Sponsors</a>
-            <a href="#contact" className="hover:text-accent transition-colors cursor-pointer text-[var(--navy)] font-semibold text-sm">Contact</a>
-            {cms?.sponsor_prospectus_url && (
-              <a href="/api/sponsor-prospectus" download className="hover:text-accent transition-colors text-[var(--navy)] font-semibold text-sm cursor-pointer">Prospectus</a>
-            )}
-            <Link href="/login" className="hover:text-accent transition-colors text-[var(--navy)] font-semibold text-sm">Login</Link>
-            <Button asChild className="bg-accent text-accent-foreground hover:bg-accent/90 text-sm px-5">
-              <Link href="/register">Registration</Link>
-            </Button>
-          </nav>
-
-          {/* Countdown card */}
-          <div className="flex-shrink-0 border-t-[color:var(--tw-ring-offset-color)] border-r-[color:var(--tw-ring-offset-color)] border-b-[color:var(--tw-ring-offset-color)] border-l-[color:var(--tw-ring-offset-color)]">
-            <CountdownBadge />
-          </div>
-        </div>
-      </header>
+      <SiteHeader />
       <main className="flex-1">
 
         {/* ── Hero banner ── */}
