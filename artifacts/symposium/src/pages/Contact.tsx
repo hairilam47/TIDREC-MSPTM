@@ -1,0 +1,112 @@
+import { SiteHeader } from "@/components/SiteHeader";
+import logoImg from "@assets/[WEBSITE LOGO] SEAT-MSPTM.png";
+
+function InfoSection({ heading, children }: { heading: string; children: React.ReactNode }) {
+  return (
+    <div className="text-center py-8">
+      <h2 className="font-bold tracking-widest text-sm uppercase mb-4" style={{ color: "#0B2744" }}>
+        {heading}
+      </h2>
+      {children}
+    </div>
+  );
+}
+
+function Divider() {
+  return <hr style={{ borderColor: "#e5e7eb", margin: "0 0" }} />;
+}
+
+export default function ContactPage() {
+  return (
+    <div className="min-h-screen bg-white flex flex-col">
+      <SiteHeader />
+
+      {/* Hero */}
+      <section className="py-14 px-4" style={{ background: "#0B2744" }}>
+        <div className="max-w-4xl mx-auto text-center">
+          <h1 className="text-3xl md:text-5xl font-extrabold tracking-wide text-white">
+            Contact
+          </h1>
+          <div className="flex items-center justify-center gap-3 mt-4">
+            <div className="w-8 h-px" style={{ background: "#C89B3C" }} />
+            <div className="w-2 h-2 rounded-full" style={{ background: "#C89B3C" }} />
+            <div className="w-8 h-px" style={{ background: "#C89B3C" }} />
+          </div>
+        </div>
+      </section>
+
+      {/* Content card */}
+      <main className="flex-1 flex items-start justify-center px-4 py-12">
+        <div className="w-full max-w-xl bg-white rounded-2xl border shadow-sm overflow-hidden" style={{ borderColor: "#e5e7eb" }}>
+
+          {/* Logo */}
+          <div className="flex justify-center pt-10 pb-6 px-8">
+            <img src={logoImg} alt="3rd SEAT-MSPTM 2027" className="h-36 w-auto object-contain" />
+          </div>
+
+          <Divider />
+
+          {/* Conference Secretariat */}
+          <div className="px-8">
+            <InfoSection heading="Conference Secretariat">
+              <p className="text-sm leading-relaxed" style={{ color: "#374151" }}>
+                3rd Southeast Asia Ticks and Tick-borne Diseases Symposium<br />
+                Sunway Putra Hotel, Kuala Lumpur, Malaysia
+              </p>
+              <p className="text-sm mt-2">
+                Email:{" "}
+                <a
+                  href="mailto:events@msptm.network"
+                  className="font-medium underline underline-offset-2"
+                  style={{ color: "#0E6E74" }}
+                >
+                  events@msptm.network
+                </a>
+              </p>
+            </InfoSection>
+          </div>
+
+          <Divider />
+
+          {/* Organised By */}
+          <div className="px-8">
+            <InfoSection heading="Organised By">
+              <p className="text-sm leading-relaxed" style={{ color: "#374151" }}>
+                Malaysian Society of Parasitology and Tropical Medicine (MSPTM)<br />
+                Tropical Infectious Diseases Research &amp; Education Centre (TIDREC@UM)
+              </p>
+            </InfoSection>
+          </div>
+
+          <Divider />
+
+          {/* Venue */}
+          <div className="px-8">
+            <InfoSection heading="Venue">
+              <p className="text-sm leading-relaxed" style={{ color: "#374151" }}>
+                Sunway Putra Hotel<br />
+                Kuala Lumpur, Malaysia
+              </p>
+              <p className="mt-2">
+                <a
+                  href="https://maps.google.com/?q=Sunway+Putra+Hotel+Kuala+Lumpur"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm font-medium underline underline-offset-2"
+                  style={{ color: "#0E6E74" }}
+                >
+                  Google Maps
+                </a>
+              </p>
+            </InfoSection>
+          </div>
+
+        </div>
+      </main>
+
+      <footer className="py-6 text-center text-xs border-t" style={{ color: "#aaa" }}>
+        © 2027 3rd Southeast Asia Ticks and Tick-borne Diseases Symposium. All rights reserved.
+      </footer>
+    </div>
+  );
+}

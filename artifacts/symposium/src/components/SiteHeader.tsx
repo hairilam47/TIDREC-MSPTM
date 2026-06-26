@@ -151,7 +151,7 @@ export function SiteHeader() {
           <AbstractDropdown />
           <Link href="/speakers" className="hover:text-accent transition-colors text-[var(--navy)] font-semibold text-sm">Speakers</Link>
           <a href="/#sponsors" className="hover:text-accent transition-colors cursor-pointer text-[var(--navy)] font-semibold text-sm">Sponsors</a>
-          <a href="/#contact" className="hover:text-accent transition-colors cursor-pointer text-[var(--navy)] font-semibold text-sm">Contact</a>
+          <Link href="/contact" className="hover:text-accent transition-colors text-[var(--navy)] font-semibold text-sm">Contact</Link>
           {cms?.sponsor_prospectus_url && (
             <a href="/api/sponsor-prospectus" download className="hover:text-accent transition-colors text-[var(--navy)] font-semibold text-sm cursor-pointer">Prospectus</a>
           )}
