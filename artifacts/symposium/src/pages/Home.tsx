@@ -347,14 +347,28 @@ export default function Home() {
           </div>
           <div>
             <h4 className="font-bold text-white mb-5 uppercase text-xs tracking-wider">Organisers</h4>
-            <ul className="space-y-3 text-sm text-muted/70">
-              <li className="flex items-start gap-2">
-                <span className="font-bold text-white text-xs mt-0.5">MSPTM</span>
-                <span>Malaysian Society of Parasitology and Tropical Medicine</span>
+            <ul className="space-y-4 text-sm text-muted/70">
+              <li>
+                {cms?.co_organiser_msptm_logo ? (
+                  <img
+                    src="/api/co-organiser-logo/msptm"
+                    alt="MSPTM"
+                    className="max-h-10 max-w-[120px] object-contain brightness-0 invert opacity-80"
+                  />
+                ) : (
+                  <span className="font-bold text-white text-xs">MSPTM</span>
+                )}
               </li>
-              <li className="flex items-start gap-2">
-                <span className="font-bold text-white text-xs mt-0.5">TIDREC</span>
-                <span>Tropical Infectious Diseases Research &amp; Education Centre (TIDREC@UM)</span>
+              <li>
+                {cms?.co_organiser_tidrec_logo ? (
+                  <img
+                    src="/api/co-organiser-logo/tidrec"
+                    alt="TIDREC@UM"
+                    className="max-h-10 max-w-[120px] object-contain brightness-0 invert opacity-80"
+                  />
+                ) : (
+                  <span className="font-bold text-white text-xs">TIDREC@UM</span>
+                )}
               </li>
               <li id="contact" className="pt-3 border-t border-white/10">
                 <span className="text-white font-medium block mb-1">Contact Us</span>
