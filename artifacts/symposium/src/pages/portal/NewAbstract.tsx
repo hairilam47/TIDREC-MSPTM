@@ -4,6 +4,7 @@ import { useCreateAbstract } from "@workspace/api-client-react";
 import { Link, useLocation } from "wouter";
 import { ArrowLeft, Loader2, CheckCircle, Upload, FileText, X, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { INPUT_BASE } from "@/components/ui/form-primitives";
 
 const STEPS = ["Details", "File Upload", "Preview", "Submit"];
 
@@ -15,8 +16,6 @@ const ALLOWED_TYPES = [
 const ALLOWED_EXT = ".pdf, .doc, .docx";
 const MAX_SIZE_MB = 5;
 
-const INPUT_CLS =
-  "w-full px-3.5 py-3 rounded-lg text-[14px] outline-none transition-colors focus:ring-2 focus:ring-[rgba(14,110,116,0.2)]";
 
 async function requestUploadUrl(file: File): Promise<{ uploadURL: string; objectPath: string }> {
   const token = localStorage.getItem("satbds_token");
@@ -230,7 +229,7 @@ export default function NewAbstract() {
                   value={form.title}
                   onChange={(e) => set("title", e.target.value)}
                   placeholder="Enter the full title of your presentation"
-                  className={INPUT_CLS}
+                  className={INPUT_BASE}
                   style={{ border: `1px solid ${errors.title ? "var(--red)" : "var(--border-color)"}` }}
                 />
                 {errors.title && <p className="text-[12px] mt-1" style={{ color: "var(--red)" }}>{errors.title}</p>}
@@ -278,7 +277,7 @@ export default function NewAbstract() {
                   value={form.keywords}
                   onChange={(e) => set("keywords", e.target.value)}
                   placeholder="e.g. tick-borne diseases, vector control, epidemiology"
-                  className={INPUT_CLS}
+                  className={INPUT_BASE}
                   style={{ border: `1px solid ${errors.keywords ? "var(--red)" : "var(--border-color)"}` }}
                 />
                 {errors.keywords && (
@@ -296,7 +295,7 @@ export default function NewAbstract() {
                   value={form.coAuthors}
                   onChange={(e) => set("coAuthors", e.target.value)}
                   placeholder="e.g. Dr. Jane Smith (UM), Prof. Ali Hassan (USM)"
-                  className={INPUT_CLS}
+                  className={INPUT_BASE}
                   style={{ border: "1px solid var(--border-color)" }}
                 />
               </div>
@@ -315,7 +314,7 @@ export default function NewAbstract() {
                   onChange={(e) => set("body", e.target.value)}
                   placeholder={"Background: …\nMethods: …\nResults: …\nConclusion: …"}
                   rows={10}
-                  className={`${INPUT_CLS} resize-y`}
+                  className={`${INPUT_BASE} resize-y`}
                   style={{
                     border: `1px solid ${errors.body ? "var(--red)" : "var(--border-color)"}`,
                     lineHeight: 1.7,

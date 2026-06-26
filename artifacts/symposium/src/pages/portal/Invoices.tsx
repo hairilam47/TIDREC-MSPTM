@@ -26,7 +26,7 @@ export default function Invoices() {
             <div style={{ width: 56, height: 56, borderRadius: "50%", background: "var(--bg-surface-secondary)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
               <Receipt style={{ width: 28, height: 28, color: "var(--text-disabled)" }} />
             </div>
-            <h3 style={{ fontSize: 18, fontWeight: 700, color: "var(--text)", marginBottom: 8 }}>No Invoice Yet</h3>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: "var(--text)", marginBottom: 8 }}>No Invoice Yet</h3>
             <p style={{ fontSize: 13, color: "var(--text-muted)", margin: 0 }}>
               Complete your registration to generate an invoice.
             </p>

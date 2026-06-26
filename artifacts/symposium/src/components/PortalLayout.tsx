@@ -70,12 +70,20 @@ export default function PortalLayout({ children, title }: { children: React.Reac
 
   /* ── Theme ── */
   React.useEffect(() => {
-    try { const v = localStorage.getItem("theme"); if (v === "dark" || v === "light") setTheme(v); } catch (_) {}
+    try {
+      const v = localStorage.getItem("theme");
+      if (v === "dark" || v === "light") {
+        setTheme(v);
+        document.documentElement.setAttribute("data-theme", v);
+        document.documentElement.classList.toggle("dark", v === "dark");
+      }
+    } catch (_) {}
   }, []);
   const toggleTheme = () => {
     const next = theme === "dark" ? "light" : "dark";
     setTheme(next);
     document.documentElement.setAttribute("data-theme", next);
+    document.documentElement.classList.toggle("dark", next === "dark");
     try { localStorage.setItem("theme", next); } catch (_) {}
   };
 
