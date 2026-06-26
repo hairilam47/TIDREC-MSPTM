@@ -349,41 +349,39 @@ export default function Home() {
             <h4 className="font-bold text-white mb-5 uppercase text-xs tracking-wider">Organisers</h4>
             <ul className="space-y-4 text-sm text-muted/70">
               <li className="flex items-center gap-3">
-                <a
-                  href={(cms as Record<string, string> | undefined)?.co_organiser_msptm_website_url || "https://msptm.org"}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex-shrink-0 hover:opacity-80 transition-opacity"
-                >
-                  {cms?.co_organiser_msptm_logo ? (
-                    <img
-                      src="/api/co-organiser-logo/msptm"
-                      alt="MSPTM"
-                      className="max-h-10 max-w-[80px] object-contain"
-                    />
+                {(() => {
+                  const msptmUrl = (cms as Record<string, string> | undefined)?.co_organiser_msptm_website_url?.trim();
+                  const logo = cms?.co_organiser_msptm_logo ? (
+                    <img src="/api/co-organiser-logo/msptm" alt="MSPTM" className="max-h-10 max-w-[80px] object-contain" />
                   ) : (
                     <span className="font-bold text-white text-xs">MSPTM</span>
-                  )}
-                </a>
+                  );
+                  return msptmUrl ? (
+                    <a href={msptmUrl} target="_blank" rel="noopener noreferrer" className="flex-shrink-0 hover:opacity-80 transition-opacity">
+                      {logo}
+                    </a>
+                  ) : (
+                    <span className="flex-shrink-0">{logo}</span>
+                  );
+                })()}
                 <span>Malaysian Society of Parasitology &amp; Tropical Medicine</span>
               </li>
               <li className="flex items-center gap-3">
-                <a
-                  href={(cms as Record<string, string> | undefined)?.co_organiser_tidrec_website_url || "https://tidrec.um.edu.my"}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex-shrink-0 hover:opacity-80 transition-opacity"
-                >
-                  {cms?.co_organiser_tidrec_logo ? (
-                    <img
-                      src="/api/co-organiser-logo/tidrec"
-                      alt="TIDREC"
-                      className="max-h-10 max-w-[80px] object-contain"
-                    />
+                {(() => {
+                  const tidrecUrl = (cms as Record<string, string> | undefined)?.co_organiser_tidrec_website_url?.trim();
+                  const logo = cms?.co_organiser_tidrec_logo ? (
+                    <img src="/api/co-organiser-logo/tidrec" alt="TIDREC" className="max-h-10 max-w-[80px] object-contain" />
                   ) : (
                     <span className="font-bold text-white text-xs">TIDREC</span>
-                  )}
-                </a>
+                  );
+                  return tidrecUrl ? (
+                    <a href={tidrecUrl} target="_blank" rel="noopener noreferrer" className="flex-shrink-0 hover:opacity-80 transition-opacity">
+                      {logo}
+                    </a>
+                  ) : (
+                    <span className="flex-shrink-0">{logo}</span>
+                  );
+                })()}
                 <span>Tropical Infectious Diseases Research &amp; Education Centre (TIDREC)</span>
               </li>
               <li id="contact" className="pt-3 border-t border-white/10">
