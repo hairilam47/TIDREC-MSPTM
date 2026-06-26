@@ -212,35 +212,64 @@ export default function Home() {
         </section>
 
         {/* ── Sponsors ── */}
-        <section id="sponsors" className="py-20 bg-muted/30">
-          <div className="max-w-7xl mx-auto px-4 text-center">
-            <h2 className="text-3xl md:text-4xl font-bold text-secondary mb-12">Our Sponsors</h2>
-            {['platinum', 'gold', 'silver', 'bronze'].map(tier => {
-              const tierSponsors = sponsors?.filter(s => s.tier === tier) || [];
-              if (tierSponsors.length === 0) return null;
-              return (
-                <div key={tier} className="mb-10">
-                  <div className="flex items-center gap-4 justify-center mb-6">
-                    <div className="h-px flex-1 max-w-24 bg-border" />
-                    <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                      {tier} Sponsors
-                    </h3>
-                    <div className="h-px flex-1 max-w-24 bg-border" />
+        <section id="sponsors" className="py-20 bg-white">
+          <div className="max-w-5xl mx-auto px-4">
+            <div className="text-center mb-10">
+              <h2 className="text-3xl md:text-4xl font-bold" style={{ color: "#0B2744" }}>Our Sponsors</h2>
+              <div className="mx-auto mt-2 h-0.5 w-12 rounded-full" style={{ background: "#C89B3C" }} />
+            </div>
+            {(() => {
+              const TIER_PAIRS: [string, string][] = [["platinum", "gold"], ["silver", "bronze"]];
+              const TIER_LABELS: Record<string, string> = {
+                platinum: "PLATINUM SPONSOR",
+                gold: "GOLD SPONSORS",
+                silver: "SILVER SPONSORS",
+                bronze: "BRONZE SPONSORS",
+              };
+              const LOGO_SIZE: Record<string, string> = {
+                platinum: "h-16 max-w-[160px]",
+                gold: "h-12 max-w-[140px]",
+                silver: "h-10 max-w-[120px]",
+                bronze: "h-10 max-w-[120px]",
+              };
+              return TIER_PAIRS.map(([left, right]) => {
+                const leftSponsors = sponsors?.filter(s => s.tier === left) ?? [];
+                const rightSponsors = sponsors?.filter(s => s.tier === right) ?? [];
+                if (leftSponsors.length === 0 && rightSponsors.length === 0) return null;
+                return (
+                  <div key={`${left}-${right}`} className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    {[left, right].map(tier => {
+                      const tierSponsors = sponsors?.filter(s => s.tier === tier) ?? [];
+                      if (tierSponsors.length === 0) return <div key={tier} />;
+                      return (
+                        <div key={tier} className="rounded-xl border p-6 flex flex-col items-center gap-6 bg-white"
+                          style={{ borderColor: "rgba(200,155,60,0.35)" }}>
+                          <p className="text-xs font-bold uppercase tracking-widest"
+                            style={{ color: "#C89B3C" }}>
+                            + {TIER_LABELS[tier]} +
+                          </p>
+                          <div className="flex flex-wrap justify-center items-center gap-8">
+                            {tierSponsors.map(sponsor => (
+                              <div key={sponsor.id} className="flex items-center justify-center">
+                                {sponsor.logoUrl ? (
+                                  <img
+                                    src={resolveImageUrl(sponsor.logoUrl) ?? ""}
+                                    alt={sponsor.name}
+                                    className={`object-contain ${LOGO_SIZE[tier]}`}
+                                  />
+                                ) : (
+                                  <span className="font-bold text-lg" style={{ color: "#0B2744" }}>{sponsor.name}</span>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
-                  <div className="flex flex-wrap justify-center gap-8 md:gap-16 items-center">
-                    {tierSponsors.map(sponsor => (
-                      <div key={sponsor.id} className={`grayscale hover:grayscale-0 transition-all opacity-70 hover:opacity-100 ${tier === 'platinum' ? 'w-48' : tier === 'gold' ? 'w-40' : 'w-32'}`}>
-                        {sponsor.logoUrl ? (
-                          <img src={resolveImageUrl(sponsor.logoUrl) ?? ""} alt={sponsor.name} className="w-full h-auto object-contain" />
-                        ) : (
-                          <div className="font-bold text-xl text-secondary">{sponsor.name}</div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              );
-            })}
+                );
+              });
+            })()}
           </div>
         </section>
 
