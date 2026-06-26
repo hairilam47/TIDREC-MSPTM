@@ -44,10 +44,10 @@ export default function AboutPage() {
               </strong>{" "}
               in Kuala Lumpur, Malaysia. This joint event provides a platform for researchers, healthcare professionals, veterinarians, public health practitioners, students, and industry partners to exchange knowledge and discuss the latest advances in parasitology, tropical medicine, vector-borne diseases, and related disciplines.
             </p>
-            <p>
+            <p className="text-justify">
               MSPTM has long served as a leading forum for scientific discussion and collaboration in parasitology and tropical medicine, while SEAT highlights current research and emerging challenges related to ticks and tick-borne diseases in Southeast Asia. Together, these meetings bring together experts from diverse fields to share research findings, foster collaborations, and promote innovation in disease surveillance, diagnosis, prevention, and control.
             </p>
-            <p>
+            <p className="text-justify">
               Building on the success of previous meetings, the inaugural Southeast Asia Ticks and Tick-borne Diseases Symposium was held in Cambodia in 2023, followed by the second symposium in Singapore in 2025. SEAT-MSPTM 2027 continues this tradition of strengthening regional networks and advancing scientific research across Southeast Asia and beyond.
             </p>
           </div>
@@ -78,14 +78,14 @@ export default function AboutPage() {
                     className="w-5 h-5 mt-0.5 flex-shrink-0"
                     style={{ color: "#0E6E74" }}
                   />
-                  <span className="text-base text-gray-700 leading-relaxed">{obj}</span>
+                  <span className="text-base text-gray-700 leading-relaxed text-justify">{obj}</span>
                 </li>
               ))}
             </ul>
           </div>
 
           {/* Closing */}
-          <p className="text-base text-gray-700 leading-relaxed">
+          <p className="text-base text-gray-700 leading-relaxed text-justify">
             Join us at SEAT-MSPTM 2027 as we foster scientific collaboration, share innovative research, and address current and emerging health challenges in Southeast Asia.
           </p>
 
