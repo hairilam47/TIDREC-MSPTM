@@ -157,3 +157,18 @@
   * { @apply border-border; }
   body { @apply font-sans antialiased bg-background text-foreground; }
 }
+
+.btn-primary {
+  background: #a07820;
+  color: #ffffff;
+  border-color: #8a6618;
+}
+.btn-primary:hover,
+.btn-primary:focus-visible {
+  background: #8a6618;
+  color: #ffffff;
+}
+.btn-primary:active {
+  background: #75560f;
+  color: #ffffff;
+}
