@@ -13,7 +13,6 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <SiteHeader />
-
       {/* Hero */}
       <section className="py-14 px-4" style={{ background: "#0B2744" }}>
         <div className="max-w-4xl mx-auto text-center">
@@ -28,14 +27,13 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
-
       {/* Content */}
       <main className="flex-1 px-4 py-16">
         <div className="max-w-3xl mx-auto">
 
           {/* Body paragraphs */}
           <div className="space-y-5 text-base leading-relaxed text-gray-700 mb-12">
-            <p>
+            <p className="text-justify">
               The{" "}
               <strong className="text-gray-900 font-semibold">
                 3rd Southeast Asia Ticks and Tick-borne Diseases Symposium (SEAT 2027)
