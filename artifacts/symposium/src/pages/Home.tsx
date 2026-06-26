@@ -244,25 +244,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── CTA banner ── */}
-        <section className="bg-secondary text-secondary-foreground py-20 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-primary/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
-          <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
-            <h2 className="text-3xl md:text-5xl font-bold mb-6">Don't miss {cms?.event_short_name ?? "SEAT-MSPTM 2027"}</h2>
-            <p className="text-xl text-secondary-foreground/80 mb-10">
-              Join us in {cms?.event_city ?? "Kuala Lumpur"} to share knowledge, foster collaborations, and advance research.
-            </p>
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 h-14 px-8 text-lg">
-                <Link href="/register">Register Now</Link>
-              </Button>
-              <Button asChild variant="outline" size="lg" className="bg-transparent border-white text-white hover:bg-white/10 h-14 px-8 text-lg">
-                <Link href="/portal/abstracts/new">Submit Abstract</Link>
-              </Button>
-            </div>
-          </div>
-        </section>
       </main>
       {/* ── Footer ── */}
       <footer className="bg-secondary text-secondary-foreground py-16 border-t border-sidebar-border">
