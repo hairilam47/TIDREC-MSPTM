@@ -12,6 +12,7 @@ import CommitteePage from "@/pages/Committee";
 import AbstractPage from "@/pages/Abstract";
 import ProgrammePage from "@/pages/Programme";
 import ContactPage from "@/pages/Contact";
+import AboutPage from "@/pages/About";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +27,7 @@ function Router() {
       <Route path="/abstract" component={AbstractPage} />
       <Route path="/programme" component={ProgrammePage} />
       <Route path="/contact" component={ContactPage} />
+      <Route path="/about" component={AboutPage} />
       <Route component={NotFound} />
     </Switch>
   );

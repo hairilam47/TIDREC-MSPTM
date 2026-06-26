@@ -50,7 +50,7 @@ export default function Home() {
                 </p>
               )}
               <Button asChild variant="outline" className="border-secondary text-secondary hover:bg-secondary hover:text-white">
-                <Link href="/register">Read More</Link>
+                <Link href="/about">Read More</Link>
               </Button>
             </div>
 
