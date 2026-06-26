@@ -1,6 +1,6 @@
 import React from "react";
 import AdminLayout from "@/components/AdminLayout";
-import { Save, Info, FileText, Upload, X } from "lucide-react";
+import { Save, Info, FileText, Upload, X, ImageIcon, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const BASE_URL = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
@@ -71,6 +71,8 @@ export default function AdminSettings() {
   const [prospectusError, setProspectusError] = React.useState<string | null>(null);
   const [uploadingAnnouncement, setUploadingAnnouncement] = React.useState(false);
   const [announcementError, setAnnouncementError] = React.useState<string | null>(null);
+  const [uploadingLogoKey, setUploadingLogoKey] = React.useState<string | null>(null);
+  const [logoError, setLogoError] = React.useState<string | null>(null);
 
   const handleAnnouncementUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -137,6 +139,64 @@ export default function AdminSettings() {
     } finally {
       setUploadingProspectus(false);
       e.target.value = "";
+    }
+  };
+
+  const handleLogoUpload = async (key: string, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      setLogoError("Please upload an image file (PNG, JPG, SVG, etc.).");
+      return;
+    }
+    setUploadingLogoKey(key);
+    setLogoError(null);
+    try {
+      const token = localStorage.getItem("satbds_token");
+      const urlRes = await fetch(`${API}/storage/uploads/request-url`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ name: file.name, size: file.size, contentType: file.type }),
+      });
+      if (!urlRes.ok) throw new Error("Failed to get upload URL");
+      const { uploadURL, objectPath } = await urlRes.json();
+      const putRes = await fetch(uploadURL, { method: "PUT", body: file, headers: { "Content-Type": file.type } });
+      if (!putRes.ok) throw new Error("Upload to storage failed");
+      const saveRes = await fetch(`${API}/settings`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ [key]: objectPath }),
+      });
+      if (!saveRes.ok) throw new Error("Failed to save logo path");
+      const updated = await saveRes.json();
+      setValues(updated);
+      toast({ title: "Logo uploaded successfully." });
+    } catch (err) {
+      setLogoError(err instanceof Error ? err.message : "Upload failed");
+    } finally {
+      setUploadingLogoKey(null);
+      e.target.value = "";
+    }
+  };
+
+  const handleLogoRemove = async (key: string) => {
+    setUploadingLogoKey(key);
+    setLogoError(null);
+    try {
+      const token = localStorage.getItem("satbds_token");
+      const saveRes = await fetch(`${API}/settings`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ [key]: "" }),
+      });
+      if (!saveRes.ok) throw new Error("Failed to remove logo");
+      const updated = await saveRes.json();
+      setValues(updated);
+      toast({ title: "Logo removed." });
+    } catch (err) {
+      setLogoError(err instanceof Error ? err.message : "Remove failed");
+    } finally {
+      setUploadingLogoKey(null);
     }
   };
 
@@ -332,6 +392,82 @@ export default function AdminSettings() {
 
             {prospectusError && (
               <p className="text-[12px] mt-2" style={{ color: "var(--status-danger-text)" }}>{prospectusError}</p>
+            )}
+          </div>
+        </div>
+
+        {/* Co-organiser & Venue Logos */}
+        <div className="card">
+          <div className="card-body">
+            <h3 className="text-[14px] font-semibold mb-1" style={{ color: "var(--text)" }}>Co-organiser &amp; Venue Logos</h3>
+            <p className="text-[13px] mb-5" style={{ color: "var(--text-muted)" }}>
+              Upload logos for the co-organiser cards shown on the marketing site home page. Images save immediately — no need to click Save Changes.
+            </p>
+
+            {(
+              [
+                { key: "co_organiser_tidrec_logo", slug: "tidrec", label: "TIDREC@UM", desc: "Tropical Infectious Diseases Research & Education Centre" },
+                { key: "co_organiser_msptm_logo", slug: "msptm", label: "MSPTM", desc: "Malaysian Society of Parasitology and Tropical Medicine" },
+                { key: "venue_logo", slug: "venue", label: "Venue — Sunway Putra Hotel", desc: "Hotel / venue logo" },
+              ] as const
+            ).map(({ key, slug, label, desc }) => {
+              const hasLogo = Boolean(values[key]);
+              const isBusy = uploadingLogoKey === key;
+              return (
+                <div key={key} className="flex items-start gap-4 py-4 border-b last:border-0" style={{ borderColor: "var(--border-color)" }}>
+                  {/* Preview */}
+                  <div
+                    className="flex-shrink-0 w-28 h-20 rounded-lg flex items-center justify-center overflow-hidden"
+                    style={{ border: "1px solid var(--border-color)", background: "var(--bg-subtle, #f8f9fa)" }}
+                  >
+                    {hasLogo ? (
+                      <img
+                        src={`${API}/co-organiser-logo/${slug}`}
+                        alt={label}
+                        className="max-w-full max-h-full object-contain p-1"
+                      />
+                    ) : (
+                      <ImageIcon className="w-8 h-8" style={{ color: "var(--text-disabled)" }} />
+                    )}
+                  </div>
+
+                  {/* Info + buttons */}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[13px] font-semibold" style={{ color: "var(--text)" }}>{label}</p>
+                    <p className="text-[12px] mb-3" style={{ color: "var(--text-muted)" }}>{hasLogo ? "Logo uploaded" : desc}</p>
+                    <div className="flex flex-wrap gap-2">
+                      <label
+                        className="btn btn-sm btn-primary flex items-center gap-1.5"
+                        style={{ opacity: isBusy ? 0.6 : 1, pointerEvents: isBusy ? "none" : "auto", cursor: isBusy ? "default" : "pointer" }}
+                      >
+                        {isBusy ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />}
+                        {isBusy ? "Uploading…" : hasLogo ? "Replace" : "Upload Logo"}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          disabled={isBusy}
+                          onChange={(e) => handleLogoUpload(key, e)}
+                        />
+                      </label>
+                      {hasLogo && (
+                        <button
+                          className="btn btn-sm"
+                          disabled={isBusy}
+                          onClick={() => handleLogoRemove(key)}
+                          style={{ background: "var(--status-danger-bg)", color: "var(--status-danger-text)", borderColor: "var(--status-danger-border)" }}
+                        >
+                          <X className="w-3 h-3" /> Remove
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+
+            {logoError && (
+              <p className="text-[12px] mt-3" style={{ color: "var(--status-danger-text)" }}>{logoError}</p>
             )}
           </div>
         </div>
