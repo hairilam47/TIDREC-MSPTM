@@ -265,10 +265,10 @@ export default function Home() {
                 bronze: "BRONZE SPONSORS",
               };
               const LOGO_SIZE: Record<string, string> = {
-                platinum: "h-16 max-w-[160px]",
-                gold: "h-12 max-w-[140px]",
-                silver: "h-10 max-w-[120px]",
-                bronze: "h-10 max-w-[120px]",
+                platinum: "h-28 max-w-[240px]",
+                gold: "h-28 max-w-[240px]",
+                silver: "h-28 max-w-[240px]",
+                bronze: "h-28 max-w-[240px]",
               };
               return TIER_PAIRS.map(([left, right]) => {
                 const populated = [left, right].filter(
