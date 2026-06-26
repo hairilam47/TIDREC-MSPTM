@@ -28,6 +28,8 @@ const DEFAULT_SETTINGS: Record<string, string> = {
   first_announcement_url: "",
   co_organiser_tidrec_logo: "",
   co_organiser_msptm_logo: "",
+  venue_logo: "",
+  venue_website_url: "https://www.sunwayhotels.com/sunway-putra",
   date_registration_opens: "10 Aug 2026",
   date_early_bird_closes: "05 Oct 2026",
   date_abstract_submission_closes: "31 Jan 2027",
@@ -49,11 +51,16 @@ const objectStorageService = new ObjectStorageService();
 router.get("/co-organiser-logo/:slug", async (req, res) => {
   try {
     const { slug } = req.params;
-    if (slug !== "tidrec" && slug !== "msptm") {
+    if (slug !== "tidrec" && slug !== "msptm" && slug !== "venue") {
       res.status(404).json({ error: "Unknown co-organiser slug" });
       return;
     }
-    const key = slug === "tidrec" ? "co_organiser_tidrec_logo" : "co_organiser_msptm_logo";
+    const keyMap: Record<string, string> = {
+      tidrec: "co_organiser_tidrec_logo",
+      msptm: "co_organiser_msptm_logo",
+      venue: "venue_logo",
+    };
+    const key = keyMap[slug];
     const rows = await db.select().from(settingsTable);
     const settings: Record<string, string> = { ...DEFAULT_SETTINGS };
     for (const row of rows) settings[row.key] = row.value;

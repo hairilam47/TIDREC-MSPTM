@@ -16,7 +16,7 @@ import { AdminLayout } from "@/components/AdminLayout";
 import { Upload, Loader2, ImageIcon, Trash2, FileText, ExternalLink, CalendarDays, Save, Info, BookOpen, Mail } from "lucide-react";
 
 interface LogoUploaderProps {
-  slug: "tidrec" | "msptm";
+  slug: "tidrec" | "msptm" | "venue";
   label: string;
   currentPath: string;
   onSave: (objectPath: string) => Promise<void>;
@@ -233,6 +233,7 @@ const CONTACT_FIELDS = [
   { key: "event_venue", label: "Venue Name", placeholder: "e.g. Sunway Putra Hotel", type: "text" },
   { key: "event_city", label: "City / Country", placeholder: "e.g. Kuala Lumpur, Malaysia", type: "text" },
   { key: "contact_maps_url", label: "Google Maps URL", placeholder: "https://maps.google.com/?q=…", type: "url" },
+  { key: "venue_website_url", label: "Venue Website URL", placeholder: "https://www.sunwayhotels.com/sunway-putra", type: "url" },
   { key: "organiser_full_primary", label: "Organiser (Primary)", placeholder: "e.g. Malaysian Society of Parasitology…", type: "text" },
   { key: "organiser_full_secondary", label: "Organiser (Secondary)", placeholder: "e.g. TIDREC@UM…", type: "text" },
 ] as const;
@@ -581,9 +582,9 @@ export default function AdminSettings() {
 
               <Card>
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-base">Co-organiser Logos</CardTitle>
+                  <CardTitle className="text-base">Co-organiser &amp; Venue Logos</CardTitle>
                   <p className="text-sm text-gray-500">
-                    Upload logos for co-organisers shown on the marketing site. When uploaded, the logo image replaces the text name in the co-organisers strip.
+                    Upload logos shown on the marketing site co-organisers strip. When uploaded, the image replaces the text name.
                   </p>
                 </CardHeader>
                 <CardContent>
@@ -602,6 +603,14 @@ export default function AdminSettings() {
                     onSave={(path) => handleSaveLogo("co_organiser_msptm_logo", path)}
                     onClear={() => handleClearLogo("co_organiser_msptm_logo")}
                     saving={savingKey === "co_organiser_msptm_logo"}
+                  />
+                  <LogoUploader
+                    slug="venue"
+                    label="Venue (Sunway Putra Hotel)"
+                    currentPath={settings?.venue_logo ?? ""}
+                    onSave={(path) => handleSaveLogo("venue_logo", path)}
+                    onClear={() => handleClearLogo("venue_logo")}
+                    saving={savingKey === "venue_logo"}
                   />
                 </CardContent>
               </Card>

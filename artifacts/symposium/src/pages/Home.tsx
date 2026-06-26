@@ -110,65 +110,103 @@ export default function Home() {
         </section>
 
         {/* ── Co-organisers strip ── */}
-        <section className="py-10 bg-white border-y border-border">
-          <div className="max-w-7xl mx-auto px-4">
-            <div className="flex flex-wrap items-stretch justify-center divide-y md:divide-y-0 md:divide-x divide-border">
+        <section className="py-12 bg-white border-y border-border">
+          <div className="max-w-6xl mx-auto px-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+
               {/* TIDREC@UM */}
-              <div className="flex flex-col items-center justify-center gap-1 px-10 py-4 text-center">
-                {cms?.co_organiser_tidrec_logo ? (
-                  <img
-                    src="/api/co-organiser-logo/tidrec"
-                    alt="TIDREC@UM"
-                    className="h-14 max-w-[140px] object-contain mb-1"
-                  />
-                ) : (
-                  <span className="text-lg font-bold text-secondary tracking-tight">TIDREC@UM</span>
-                )}
-                <span className="text-xs text-muted-foreground">Tick-borne Diseases Research &amp; Education Centre</span>
-                <span className="text-xs font-medium text-primary mt-1">Co-Organiser</span>
-                <a href="https://tidrec.um.edu.my" target="_blank" rel="noopener noreferrer" className="text-xs text-accent hover:underline flex items-center gap-1 mt-1">
-                  Visit Website <ExternalLink className="w-3 h-3" />
-                </a>
-              </div>
-              {/* MSPTM */}
-              <div className="flex flex-col items-center justify-center gap-1 px-10 py-4 text-center">
-                {cms?.co_organiser_msptm_logo ? (
-                  <img
-                    src="/api/co-organiser-logo/msptm"
-                    alt="MSPTM"
-                    className="h-14 max-w-[140px] object-contain mb-1"
-                  />
-                ) : (
-                  <span className="text-lg font-bold text-secondary tracking-tight">MSPTM</span>
-                )}
-                <span className="text-xs text-muted-foreground">Malaysian Society of Parasitology &amp; Tropical Medicine</span>
-                <span className="text-xs font-medium text-primary mt-1">Co-Organiser</span>
-                <a href="https://msptm.org" target="_blank" rel="noopener noreferrer" className="text-xs text-accent hover:underline flex items-center gap-1 mt-1">
-                  Visit Website <ExternalLink className="w-3 h-3" />
-                </a>
-              </div>
-              {/* Venue */}
-              <div className="flex flex-col items-center justify-center gap-1 px-10 py-4 text-center">
-                <span className="text-lg font-bold text-secondary tracking-tight">{cms?.event_venue ?? "Sunway Putra Hotel"}</span>
-                <span className="text-xs text-muted-foreground">{cms?.event_city ?? "Kuala Lumpur, Malaysia"}</span>
-                <span className="text-xs font-medium text-primary mt-1">Venue</span>
-                <a href="https://www.sunwayhotels.com/sunway-putra" target="_blank" rel="noopener noreferrer" className="text-xs text-accent hover:underline flex items-center gap-1 mt-1">
-                  Visit Website <ExternalLink className="w-3 h-3" />
-                </a>
-              </div>
-              {/* Google Maps */}
-              <div className="flex flex-col items-center justify-center gap-1 px-10 py-4 text-center">
-                <MapPin className="w-7 h-7 text-accent mb-1" />
-                <span className="text-sm font-semibold text-secondary">Venue Location</span>
-                <span className="text-xs text-muted-foreground">{cms?.event_venue ?? "Sunway Putra Hotel"}<br />{cms?.event_city ?? "Kuala Lumpur"}</span>
+              <div className="flex flex-col items-center text-center rounded-xl border border-border shadow-sm bg-white p-6 gap-3">
+                <div className="h-20 flex items-center justify-center">
+                  {cms?.co_organiser_tidrec_logo ? (
+                    <img src="/api/co-organiser-logo/tidrec" alt="TIDREC@UM" className="max-h-20 max-w-[140px] object-contain" />
+                  ) : (
+                    <span className="text-xl font-bold text-secondary tracking-tight">TIDREC@UM</span>
+                  )}
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-secondary leading-tight">TIDREC@UM</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Co-Organiser</p>
+                </div>
                 <a
-                  href={`https://maps.google.com/?q=${encodeURIComponent(`${cms?.event_venue ?? "Sunway Putra Hotel"} ${cms?.event_city ?? "Kuala Lumpur"}`)}`}
-                  target="_blank" rel="noopener noreferrer"
-                  className="text-xs text-accent hover:underline flex items-center gap-1 mt-1"
+                  href="https://tidrec.um.edu.my"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-auto inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border text-xs font-medium text-secondary hover:bg-gray-50 transition-colors"
                 >
-                  View on Google Maps <ExternalLink className="w-3 h-3" />
+                  <ExternalLink className="w-3 h-3" /> Visit Website
                 </a>
               </div>
+
+              {/* MSPTM */}
+              <div className="flex flex-col items-center text-center rounded-xl border border-border shadow-sm bg-white p-6 gap-3">
+                <div className="h-20 flex items-center justify-center">
+                  {cms?.co_organiser_msptm_logo ? (
+                    <img src="/api/co-organiser-logo/msptm" alt="MSPTM" className="max-h-20 max-w-[140px] object-contain" />
+                  ) : (
+                    <span className="text-xl font-bold text-secondary tracking-tight">MSPTM</span>
+                  )}
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-secondary leading-tight">MSPTM</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Co-Organiser</p>
+                </div>
+                <a
+                  href="https://msptm.org"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-auto inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border text-xs font-medium text-secondary hover:bg-gray-50 transition-colors"
+                >
+                  <ExternalLink className="w-3 h-3" /> Visit Website
+                </a>
+              </div>
+
+              {/* Venue */}
+              <div className="flex flex-col items-center text-center rounded-xl border border-border shadow-sm bg-white p-6 gap-3">
+                <div className="h-20 flex items-center justify-center">
+                  {cms?.venue_logo ? (
+                    <img src="/api/co-organiser-logo/venue" alt={cms?.event_venue ?? "Venue"} className="max-h-20 max-w-[140px] object-contain" />
+                  ) : (
+                    <span className="text-xl font-bold text-secondary tracking-tight text-center leading-tight">
+                      {cms?.event_venue ?? "Sunway Putra Hotel"}
+                    </span>
+                  )}
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-secondary leading-tight">{cms?.event_venue ?? "Sunway Putra Hotel"}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Venue</p>
+                </div>
+                <a
+                  href={cms?.venue_website_url || "https://www.sunwayhotels.com/sunway-putra"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-auto inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border text-xs font-medium text-secondary hover:bg-gray-50 transition-colors"
+                >
+                  <ExternalLink className="w-3 h-3" /> Visit Website
+                </a>
+              </div>
+
+              {/* Venue Location / Google Maps */}
+              <div className="flex flex-col items-center text-center rounded-xl border border-border shadow-sm bg-white p-6 gap-3">
+                <div className="h-20 flex items-center justify-center">
+                  <MapPin className="w-12 h-12" style={{ color: "var(--teal)" }} />
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-secondary leading-tight">Venue Location</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {cms?.event_venue ?? "Sunway Putra Hotel"}<br />{cms?.event_city ?? "Kuala Lumpur, Malaysia"}
+                  </p>
+                </div>
+                <a
+                  href={cms?.contact_maps_url || `https://maps.google.com/?q=${encodeURIComponent(`${cms?.event_venue ?? "Sunway Putra Hotel"} ${cms?.event_city ?? "Kuala Lumpur"}`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-auto inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border text-xs font-medium transition-colors"
+                  style={{ borderColor: "var(--teal)", color: "var(--teal)" }}
+                >
+                  <MapPin className="w-3 h-3" /> View on Google Maps
+                </a>
+              </div>
+
             </div>
           </div>
         </section>
