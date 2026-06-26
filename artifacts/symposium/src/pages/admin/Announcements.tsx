@@ -103,7 +103,7 @@ export default function AdminAnnouncements() {
                         {new Date(a.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
                       </span>
                     </div>
-                    <div className="text-[15px] font-semibold mb-1" style={{ color: "var(--text)" }}>{a.title}</div>
+                    <div className="text-[14px] font-semibold mb-1" style={{ color: "var(--text)" }}>{a.title}</div>
                     <div className="text-[13px] leading-relaxed whitespace-pre-wrap" style={{ color: "var(--text-secondary)" }}>{a.body}</div>
                   </div>
                   <div className="flex gap-1.5 flex-shrink-0">

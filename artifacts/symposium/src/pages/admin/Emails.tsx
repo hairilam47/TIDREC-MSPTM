@@ -82,7 +82,7 @@ export default function AdminEmails() {
         <div className="card mb-5">
           <div className="card-body">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-[15px] font-semibold flex items-center gap-2" style={{ color: "var(--navy)" }}>
+              <h3 className="text-[14px] font-semibold flex items-center gap-2" style={{ color: "var(--navy)" }}>
                 <Mail className="w-4 h-4" />
                 {editId ? "Edit Email / Announcement" : "Compose Email"}
               </h3>
@@ -193,7 +193,7 @@ export default function AdminEmails() {
                       {new Date(a.createdAt).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
                     </span>
                   </div>
-                  <div className="text-[15px] font-semibold mb-1" style={{ color: "var(--navy)" }}>{a.title}</div>
+                  <div className="text-[14px] font-semibold mb-1" style={{ color: "var(--navy)" }}>{a.title}</div>
                   <div className="text-[13px] leading-relaxed whitespace-pre-wrap line-clamp-3" style={{ color: "var(--text-secondary)" }}>{a.body}</div>
                 </div>
                 <div className="flex gap-1.5 flex-shrink-0">
