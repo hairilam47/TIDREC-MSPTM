@@ -349,27 +349,41 @@ export default function Home() {
             <h4 className="font-bold text-white mb-5 uppercase text-xs tracking-wider">Organisers</h4>
             <ul className="space-y-4 text-sm text-muted/70">
               <li className="flex items-center gap-3">
-                {cms?.co_organiser_msptm_logo ? (
-                  <img
-                    src="/api/co-organiser-logo/msptm"
-                    alt="MSPTM"
-                    className="max-h-10 max-w-[80px] object-contain flex-shrink-0"
-                  />
-                ) : (
-                  <span className="font-bold text-white text-xs flex-shrink-0">MSPTM</span>
-                )}
+                <a
+                  href={(cms as Record<string, string> | undefined)?.co_organiser_msptm_website_url || "https://msptm.org"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-shrink-0 hover:opacity-80 transition-opacity"
+                >
+                  {cms?.co_organiser_msptm_logo ? (
+                    <img
+                      src="/api/co-organiser-logo/msptm"
+                      alt="MSPTM"
+                      className="max-h-10 max-w-[80px] object-contain"
+                    />
+                  ) : (
+                    <span className="font-bold text-white text-xs">MSPTM</span>
+                  )}
+                </a>
                 <span>Malaysian Society of Parasitology &amp; Tropical Medicine</span>
               </li>
               <li className="flex items-center gap-3">
-                {cms?.co_organiser_tidrec_logo ? (
-                  <img
-                    src="/api/co-organiser-logo/tidrec"
-                    alt="TIDREC"
-                    className="max-h-10 max-w-[80px] object-contain flex-shrink-0"
-                  />
-                ) : (
-                  <span className="font-bold text-white text-xs flex-shrink-0">TIDREC</span>
-                )}
+                <a
+                  href={(cms as Record<string, string> | undefined)?.co_organiser_tidrec_website_url || "https://tidrec.um.edu.my"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-shrink-0 hover:opacity-80 transition-opacity"
+                >
+                  {cms?.co_organiser_tidrec_logo ? (
+                    <img
+                      src="/api/co-organiser-logo/tidrec"
+                      alt="TIDREC"
+                      className="max-h-10 max-w-[80px] object-contain"
+                    />
+                  ) : (
+                    <span className="font-bold text-white text-xs">TIDREC</span>
+                  )}
+                </a>
                 <span>Tropical Infectious Diseases Research &amp; Education Centre (TIDREC)</span>
               </li>
               <li id="contact" className="pt-3 border-t border-white/10">
