@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { AdminLayout } from "@/components/AdminLayout";
-import { Upload, Loader2, ImageIcon, Trash2, FileText, ExternalLink, CalendarDays, Save, Info, BookOpen } from "lucide-react";
+import { Upload, Loader2, ImageIcon, Trash2, FileText, ExternalLink, CalendarDays, Save, Info, BookOpen, Mail } from "lucide-react";
 
 interface LogoUploaderProps {
   slug: "tidrec" | "msptm";
@@ -228,6 +228,15 @@ function ProspectusUploader({ currentPath, onSave, onClear, saving }: Prospectus
   );
 }
 
+const CONTACT_FIELDS = [
+  { key: "contact_email", label: "Secretariat Email", placeholder: "e.g. events@msptm.network", type: "email" },
+  { key: "event_venue", label: "Venue Name", placeholder: "e.g. Sunway Putra Hotel", type: "text" },
+  { key: "event_city", label: "City / Country", placeholder: "e.g. Kuala Lumpur, Malaysia", type: "text" },
+  { key: "contact_maps_url", label: "Google Maps URL", placeholder: "https://maps.google.com/?q=…", type: "url" },
+  { key: "organiser_full_primary", label: "Organiser (Primary)", placeholder: "e.g. Malaysian Society of Parasitology…", type: "text" },
+  { key: "organiser_full_secondary", label: "Organiser (Secondary)", placeholder: "e.g. TIDREC@UM…", type: "text" },
+] as const;
+
 const GUIDELINE_FIELDS = [
   { key: "guideline_submission", label: "Abstract Submission Guidelines" },
   { key: "guideline_mode", label: "Mode of Presentation & Presentation Guidelines" },
@@ -268,6 +277,8 @@ export default function AdminSettings() {
   const [savingEventDetails, setSavingEventDetails] = useState(false);
   const [guidelineValues, setGuidelineValues] = useState<Record<string, string>>({});
   const [savingGuidelines, setSavingGuidelines] = useState(false);
+  const [contactValues, setContactValues] = useState<Record<string, string>>({});
+  const [savingContact, setSavingContact] = useState(false);
 
   useEffect(() => {
     if (settings) {
@@ -288,6 +299,12 @@ export default function AdminSettings() {
         gVals[key] = (settings as Record<string, string>)[key] ?? "";
       }
       setGuidelineValues(gVals);
+
+      const cVals: Record<string, string> = {};
+      for (const { key } of CONTACT_FIELDS) {
+        cVals[key] = (settings as Record<string, string>)[key] ?? "";
+      }
+      setContactValues(cVals);
     }
   }, [settings]);
 
@@ -327,6 +344,19 @@ export default function AdminSettings() {
       toast({ title: "Save failed", description: "Something went wrong. Please try again.", variant: "destructive" });
     } finally {
       setSavingGuidelines(false);
+    }
+  };
+
+  const handleSaveContact = async () => {
+    setSavingContact(true);
+    try {
+      await putSettings({ data: contactValues });
+      await queryClient.invalidateQueries({ queryKey: getGetSettingsQueryKey() });
+      toast({ title: "Contact details saved", description: "The public contact page will now show the updated information." });
+    } catch {
+      toast({ title: "Save failed", description: "Something went wrong. Please try again.", variant: "destructive" });
+    } finally {
+      setSavingContact(false);
     }
   };
 
@@ -505,6 +535,43 @@ export default function AdminSettings() {
                           <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Saving…</>
                         ) : (
                           <><Save className="w-4 h-4 mr-2" /> Save Guidelines</>
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Mail className="w-4 h-4 text-amber-500" />
+                    Contact Details
+                  </CardTitle>
+                  <p className="text-sm text-gray-500">
+                    Information shown on the public Contact page — secretariat email, venue, and organiser names.
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {CONTACT_FIELDS.map(({ key, label, placeholder }) => (
+                      <div key={key} className="space-y-1.5">
+                        <Label htmlFor={`contact-${key}`} className="text-sm font-medium text-gray-700">{label}</Label>
+                        <Input
+                          id={`contact-${key}`}
+                          value={contactValues[key] ?? ""}
+                          onChange={(e) => setContactValues(prev => ({ ...prev, [key]: e.target.value }))}
+                          placeholder={placeholder}
+                          disabled={savingContact}
+                        />
+                      </div>
+                    ))}
+                    <div className="pt-2 flex justify-end">
+                      <Button onClick={handleSaveContact} disabled={savingContact}>
+                        {savingContact ? (
+                          <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Saving…</>
+                        ) : (
+                          <><Save className="w-4 h-4 mr-2" /> Save Contact Details</>
                         )}
                       </Button>
                     </div>

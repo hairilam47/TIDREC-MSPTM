@@ -1,5 +1,6 @@
 import { SiteHeader } from "@/components/SiteHeader";
 import logoImg from "@assets/[WEBSITE LOGO] SEAT-MSPTM.png";
+import { useGetSettings } from "@workspace/api-client-react";
 
 function InfoSection({ heading, children }: { heading: string; children: React.ReactNode }) {
   return (
@@ -17,6 +18,16 @@ function Divider() {
 }
 
 export default function ContactPage() {
+  const { data: cms } = useGetSettings();
+
+  const email = (cms as Record<string, string> | undefined)?.contact_email ?? "events@msptm.network";
+  const venue = (cms as Record<string, string> | undefined)?.event_venue ?? "Sunway Putra Hotel";
+  const city = (cms as Record<string, string> | undefined)?.event_city ?? "Kuala Lumpur, Malaysia";
+  const mapsUrl = (cms as Record<string, string> | undefined)?.contact_maps_url ?? "https://maps.google.com/?q=Sunway+Putra+Hotel+Kuala+Lumpur";
+  const organiserPrimary = (cms as Record<string, string> | undefined)?.organiser_full_primary ?? "Malaysian Society of Parasitology and Tropical Medicine (MSPTM)";
+  const organiserSecondary = (cms as Record<string, string> | undefined)?.organiser_full_secondary ?? "Tropical Infectious Diseases Research & Education Centre (TIDREC@UM)";
+  const eventName = (cms as Record<string, string> | undefined)?.event_name ?? "3rd Southeast Asia Ticks and Tick-borne Diseases Symposium";
+
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <SiteHeader />
@@ -50,17 +61,17 @@ export default function ContactPage() {
           <div className="px-8">
             <InfoSection heading="Conference Secretariat">
               <p className="text-sm leading-relaxed" style={{ color: "#374151" }}>
-                3rd Southeast Asia Ticks and Tick-borne Diseases Symposium<br />
-                Sunway Putra Hotel, Kuala Lumpur, Malaysia
+                {eventName}<br />
+                {venue}, {city}
               </p>
               <p className="text-sm mt-2">
                 Email:{" "}
                 <a
-                  href="mailto:events@msptm.network"
+                  href={`mailto:${email}`}
                   className="font-medium underline underline-offset-2"
                   style={{ color: "#0E6E74" }}
                 >
-                  events@msptm.network
+                  {email}
                 </a>
               </p>
             </InfoSection>
@@ -72,8 +83,8 @@ export default function ContactPage() {
           <div className="px-8">
             <InfoSection heading="Organised By">
               <p className="text-sm leading-relaxed" style={{ color: "#374151" }}>
-                Malaysian Society of Parasitology and Tropical Medicine (MSPTM)<br />
-                Tropical Infectious Diseases Research &amp; Education Centre (TIDREC@UM)
+                {organiserPrimary}<br />
+                {organiserSecondary}
               </p>
             </InfoSection>
           </div>
@@ -84,20 +95,22 @@ export default function ContactPage() {
           <div className="px-8">
             <InfoSection heading="Venue">
               <p className="text-sm leading-relaxed" style={{ color: "#374151" }}>
-                Sunway Putra Hotel<br />
-                Kuala Lumpur, Malaysia
+                {venue}<br />
+                {city}
               </p>
-              <p className="mt-2">
-                <a
-                  href="https://maps.google.com/?q=Sunway+Putra+Hotel+Kuala+Lumpur"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm font-medium underline underline-offset-2"
-                  style={{ color: "#0E6E74" }}
-                >
-                  Google Maps
-                </a>
-              </p>
+              {mapsUrl && (
+                <p className="mt-2">
+                  <a
+                    href={mapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm font-medium underline underline-offset-2"
+                    style={{ color: "#0E6E74" }}
+                  >
+                    Google Maps
+                  </a>
+                </p>
+              )}
             </InfoSection>
           </div>
 
