@@ -108,8 +108,7 @@ export default function Registration() {
               <button
                 onClick={handleRegister}
                 disabled={!selectedCategory || createMutation.isPending}
-                className="btn btn-primary"
-                style={{ width: "100%", height: 40, justifyContent: "center" }}
+                className="btn btn-primary w-full h-10 justify-center"
               >
                 {createMutation.isPending && <Loader2 style={{ width: 14, height: 14 }} className="animate-spin" />}
                 Submit Registration

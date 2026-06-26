@@ -5,19 +5,13 @@ import { useQueryClient } from "@tanstack/react-query";
 import { getGetMeQueryKey } from "@workspace/api-client-react";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, CheckCircle } from "lucide-react";
+import { INPUT_BASE, SELECT_BASE, inputBorder } from "@/components/ui/form-primitives";
 
 const COUNTRIES = [
   "Malaysia", "Singapore", "Thailand", "Indonesia", "Philippines", "Vietnam",
   "Myanmar", "Cambodia", "Laos", "Brunei", "Australia", "United Kingdom",
   "United States", "Japan", "South Korea", "China", "India", "Other",
 ];
-
-const inputStyle: React.CSSProperties = {
-  width: "100%", padding: "10px 14px", borderRadius: 6, fontSize: 14,
-  outline: "none", border: "1px solid var(--border-color)",
-  background: "var(--bg-surface)", color: "var(--text)",
-  fontFamily: "inherit", boxSizing: "border-box",
-};
 
 export default function Profile() {
   const queryClient = useQueryClient();
@@ -112,7 +106,7 @@ export default function Profile() {
               <form onSubmit={handleSave} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
                   <div>
-                    <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "var(--text-secondary)", marginBottom: 6 }}>
+                    <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--text-secondary)", marginBottom: 6 }}>
                       First Name <span style={{ color: "var(--red)" }}>*</span>
                     </label>
                     <input
@@ -121,11 +115,12 @@ export default function Profile() {
                       onChange={(e) => setForm((f) => ({ ...f, firstName: e.target.value }))}
                       required
                       placeholder="e.g. Ahmad"
-                      style={inputStyle}
+                      className={INPUT_BASE}
+                      style={inputBorder()}
                     />
                   </div>
                   <div>
-                    <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "var(--text-secondary)", marginBottom: 6 }}>
+                    <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--text-secondary)", marginBottom: 6 }}>
                       Last Name <span style={{ color: "var(--red)" }}>*</span>
                     </label>
                     <input
@@ -134,26 +129,28 @@ export default function Profile() {
                       onChange={(e) => setForm((f) => ({ ...f, lastName: e.target.value }))}
                       required
                       placeholder="e.g. Rahman"
-                      style={inputStyle}
+                      className={INPUT_BASE}
+                      style={inputBorder()}
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "var(--text-secondary)", marginBottom: 6 }}>
+                  <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--text-secondary)", marginBottom: 6 }}>
                     Email Address
                   </label>
                   <input
                     type="email"
                     value={user?.email ?? ""}
                     disabled
-                    style={{ ...inputStyle, background: "var(--bg-surface-secondary)", color: "var(--text-disabled)" }}
+                    className={INPUT_BASE}
+                    style={{ ...inputBorder(), background: "var(--bg-surface-secondary)", color: "var(--text-disabled)", cursor: "not-allowed" }}
                   />
-                  <p style={{ fontSize: 12, marginTop: 4, color: "var(--text-disabled)" }}>Email address cannot be changed.</p>
+                  <p style={{ fontSize: 11, marginTop: 4, color: "var(--text-disabled)" }}>Email address cannot be changed.</p>
                 </div>
 
                 <div>
-                  <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "var(--text-secondary)", marginBottom: 6 }}>
+                  <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--text-secondary)", marginBottom: 6 }}>
                     Institution / Organisation
                   </label>
                   <input
@@ -161,18 +158,20 @@ export default function Profile() {
                     value={form.institution}
                     onChange={(e) => setForm((f) => ({ ...f, institution: e.target.value }))}
                     placeholder="e.g. University of Malaya"
-                    style={inputStyle}
+                    className={INPUT_BASE}
+                    style={inputBorder()}
                   />
                 </div>
 
                 <div>
-                  <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "var(--text-secondary)", marginBottom: 6 }}>
+                  <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--text-secondary)", marginBottom: 6 }}>
                     Country
                   </label>
                   <select
                     value={form.country}
                     onChange={(e) => setForm((f) => ({ ...f, country: e.target.value }))}
-                    style={{ ...inputStyle, appearance: "auto" }}
+                    className={SELECT_BASE}
+                    style={{ ...inputBorder(), appearance: "auto" }}
                   >
                     <option value="">Select country…</option>
                     {COUNTRIES.map((c) => (
