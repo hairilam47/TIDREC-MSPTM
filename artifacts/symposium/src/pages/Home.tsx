@@ -233,14 +233,17 @@ export default function Home() {
                 bronze: "h-10 max-w-[120px]",
               };
               return TIER_PAIRS.map(([left, right]) => {
-                const leftSponsors = sponsors?.filter(s => s.tier === left) ?? [];
-                const rightSponsors = sponsors?.filter(s => s.tier === right) ?? [];
-                if (leftSponsors.length === 0 && rightSponsors.length === 0) return null;
+                const populated = [left, right].filter(
+                  tier => (sponsors?.filter(s => s.tier === tier) ?? []).length > 0
+                );
+                if (populated.length === 0) return null;
                 return (
-                  <div key={`${left}-${right}`} className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    {[left, right].map(tier => {
+                  <div
+                    key={`${left}-${right}`}
+                    className={`grid gap-4 mb-4 ${populated.length === 2 ? "md:grid-cols-2" : "grid-cols-1"}`}
+                  >
+                    {populated.map(tier => {
                       const tierSponsors = sponsors?.filter(s => s.tier === tier) ?? [];
-                      if (tierSponsors.length === 0) return <div key={tier} />;
                       return (
                         <div key={tier} className="rounded-xl border p-6 flex flex-col items-center gap-6 bg-white"
                           style={{ borderColor: "rgba(200,155,60,0.35)" }}>
