@@ -38,7 +38,7 @@ function PersonAvatar({ photoUrl, name }: { photoUrl?: string | null; name: stri
   return (
     <div className="w-16 h-16 rounded-full flex items-center justify-center border-2"
       style={{ background: "rgba(200,155,60,0.10)", borderColor: "rgba(200,155,60,0.35)" }}>
-      <UserRound className="w-8 h-8" style={{ color: "#C89B3C" }} />
+      <UserRound className="w-8 h-8" style={{ color: "var(--gold)" }} />
     </div>
   );
 }
@@ -51,8 +51,8 @@ function PersonCard({ member }: {
       style={{ borderColor: "#f0f0f0" }}>
       <PersonAvatar photoUrl={member.photoUrl} name={member.name} />
       <div>
-        <div className="font-semibold text-sm leading-snug" style={{ color: "#0B2744" }}>{member.name}</div>
-        <div className="text-xs mt-1" style={{ color: "#0E6E74" }}>{member.title}</div>
+        <div className="font-semibold text-sm leading-snug" style={{ color: "var(--navy)" }}>{member.name}</div>
+        <div className="text-xs mt-1" style={{ color: "var(--teal)" }}>{member.title}</div>
       </div>
     </div>
   );
@@ -63,10 +63,10 @@ function SubcommitteeCard({ name, leadName }: { name: string; leadName: string }
   return (
     <div className="flex flex-col items-center text-center gap-2 px-4 py-5" style={{ minWidth: 160, maxWidth: 200 }}>
       <div className="w-14 h-14 rounded-full flex items-center justify-center flex-shrink-0"
-        style={{ background: "#0E6E74" }}>
+        style={{ background: "var(--teal)" }}>
         <Icon className="w-6 h-6 text-white" />
       </div>
-      <div className="font-semibold text-sm leading-snug mt-1" style={{ color: "#0B2744" }}>{name}</div>
+      <div className="font-semibold text-sm leading-snug mt-1" style={{ color: "var(--navy)" }}>{name}</div>
       <div className="text-xs" style={{ color: "#555" }}>
         <span style={{ color: "#888" }}>Lead: </span>{leadName}
       </div>
@@ -77,12 +77,12 @@ function SubcommitteeCard({ name, leadName }: { name: string; leadName: string }
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex items-center gap-4 my-10">
-      <div className="flex-1 h-px" style={{ background: "#C89B3C" }} />
+      <div className="flex-1 h-px" style={{ background: "var(--gold)" }} />
       <span className="font-bold tracking-widest text-sm uppercase whitespace-nowrap px-2"
-        style={{ color: "#0B2744" }}>
+        style={{ color: "var(--navy)" }}>
         {children}
       </span>
-      <div className="flex-1 h-px" style={{ background: "#C89B3C" }} />
+      <div className="flex-1 h-px" style={{ background: "var(--gold)" }} />
     </div>
   );
 }
@@ -104,16 +104,16 @@ export default function CommitteePage() {
     <div className="min-h-screen bg-white flex flex-col">
       <SiteHeader />
 
-      <section className="py-14 px-4" style={{ background: "#0B2744" }}>
+      <section className="py-14 px-4" style={{ background: "var(--navy)" }}>
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-3xl md:text-5xl font-extrabold tracking-wide uppercase text-white">
             ORGANISING{" "}
-            <span style={{ color: "#C89B3C" }}>COMMITTEE</span>
+            <span style={{ color: "var(--gold)" }}>COMMITTEE</span>
           </h1>
           <div className="flex items-center justify-center gap-3 mt-4">
-            <div className="w-8 h-px" style={{ background: "#C89B3C" }} />
-            <div className="w-2 h-2 rounded-full" style={{ background: "#C89B3C" }} />
-            <div className="w-8 h-px" style={{ background: "#C89B3C" }} />
+            <div className="w-8 h-px" style={{ background: "var(--gold)" }} />
+            <div className="w-2 h-2 rounded-full" style={{ background: "var(--gold)" }} />
+            <div className="w-8 h-px" style={{ background: "var(--gold)" }} />
           </div>
         </div>
       </section>

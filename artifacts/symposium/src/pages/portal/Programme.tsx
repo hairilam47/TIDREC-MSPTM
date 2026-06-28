@@ -14,11 +14,11 @@ import { Calendar, MapPin, Coffee, Utensils, Star, Clock, Bookmark, BookmarkChec
 const SESSION_TYPE_CONFIG: Record<string, { dot: string; badge?: string; badgeText?: string; isBreak?: boolean }> = {
   registration: { dot: "#9ca3af", isBreak: true },
   break:        { dot: "#9ca3af", isBreak: true },
-  keynote:      { dot: "#C89B3C", badge: "rgba(200,155,60,0.15)", badgeText: "Keynote" },
-  plenary:      { dot: "#0B2744", badge: "rgba(11,39,68,0.10)", badgeText: "Plenary" },
-  industry:     { dot: "#0E6E74", badge: "rgba(14,110,116,0.12)", badgeText: "Industry" },
-  social:       { dot: "#C89B3C", badge: "rgba(200,155,60,0.15)", badgeText: "Social" },
-  session:      { dot: "#0E6E74" },
+  keynote:      { dot: "var(--gold)", badge: "var(--gold-lt)", badgeText: "Keynote" },
+  plenary:      { dot: "var(--navy)", badge: "var(--navy-lt)", badgeText: "Plenary" },
+  industry:     { dot: "var(--teal)", badge: "var(--teal-lt)", badgeText: "Industry" },
+  social:       { dot: "var(--gold)", badge: "var(--gold-lt)", badgeText: "Social" },
+  session:      { dot: "var(--teal)" },
 };
 
 function getConfig(sessionType: string) {
@@ -57,10 +57,10 @@ function BookmarkButton({ id, saved, pending, onToggle }: BookmarkButtonProps) {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        border: `1px solid ${saved ? "#C89B3C" : "#e5e9ef"}`,
+        border: `1px solid ${saved ? "var(--gold)" : "var(--border-color)"}`,
         borderRadius: 6,
-        background: saved ? "rgba(200,155,60,0.12)" : "#f7f9fc",
-        color: saved ? "#C89B3C" : "#9ca3af",
+        background: saved ? "var(--gold-lt)" : "var(--bg-surface-secondary)",
+        color: saved ? "var(--gold)" : "var(--text-disabled)",
         cursor: pending ? "not-allowed" : "pointer",
         opacity: pending ? 0.6 : 1,
         transition: "all 0.15s",
@@ -90,17 +90,17 @@ function SingleRow({ s, saved, pending, onToggle }: RowProps) {
     return (
       <div className="flex items-center gap-3 py-2.5 px-4 rounded-lg"
         style={{ background: "rgba(200,155,60,0.06)", border: "1px dashed rgba(200,155,60,0.25)" }}>
-        <span className="flex items-center gap-1.5 flex-shrink-0" style={{ color: "#C89B3C" }}>
+        <span className="flex items-center gap-1.5 flex-shrink-0" style={{ color: "var(--gold)" }}>
           {breakIcon(s.title)}
         </span>
         <span className="text-xs font-semibold tabular-nums flex-shrink-0 w-28" style={{ color: "#9ca3af" }}>
           {s.timeSlot}
         </span>
-        <span className="text-xs font-semibold tracking-wide" style={{ color: "#C89B3C" }}>
+        <span className="text-xs font-semibold tracking-wide" style={{ color: "var(--gold)" }}>
           {s.title}
         </span>
         {s.location && (
-          <span className="ml-auto flex items-center gap-1 text-xs flex-shrink-0" style={{ color: "#C89B3C", opacity: 0.7 }}>
+          <span className="ml-auto flex items-center gap-1 text-xs flex-shrink-0" style={{ color: "var(--gold)", opacity: 0.7 }}>
             <MapPin className="w-3 h-3" /> {s.location}
           </span>
         )}
@@ -124,7 +124,7 @@ function SingleRow({ s, saved, pending, onToggle }: RowProps) {
             </span>
           )}
         </div>
-        <p className="text-sm font-semibold leading-snug" style={{ color: "#0B2744" }}>{s.title}</p>
+        <p className="text-sm font-semibold leading-snug" style={{ color: "var(--navy)" }}>{s.title}</p>
         {s.location && (
           <p className="mt-1 flex items-center gap-1 text-xs" style={{ color: "#6b7a8d" }}>
             <MapPin className="w-3 h-3 flex-shrink-0" /> {s.location}
@@ -140,18 +140,18 @@ function DualRow({ s, saved, pending, onToggle }: RowProps) {
   return (
     <div className="rounded-xl overflow-hidden" style={{ border: "1px solid #e5e9ef" }}>
       <div className="px-5 py-2.5 flex items-center gap-3 border-b" style={{ background: "#f7f9fc", borderColor: "#e5e9ef" }}>
-        <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: "#0E6E74" }} />
+        <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: "var(--teal)" }} />
         <span className="text-xs font-semibold tabular-nums" style={{ color: "#6b7a8d" }}>{s.timeSlot}</span>
         <span className="text-xs font-bold ml-auto px-2 py-0.5 rounded-full"
-          style={{ background: "rgba(14,110,116,0.12)", color: "#0E6E74" }}>
+          style={{ background: "rgba(14,110,116,0.12)", color: "var(--teal)" }}>
           Concurrent
         </span>
         <BookmarkButton id={s.id} saved={saved} pending={pending} onToggle={onToggle} />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x" style={{ divideColor: "#e5e9ef" }}>
         <div className="px-5 py-4 bg-white">
-          <p className="text-xs font-bold mb-1" style={{ color: "#0B2744" }}>Track A</p>
-          <p className="text-sm font-semibold leading-snug" style={{ color: "#0B2744" }}>{s.trackATitle}</p>
+          <p className="text-xs font-bold mb-1" style={{ color: "var(--navy)" }}>Track A</p>
+          <p className="text-sm font-semibold leading-snug" style={{ color: "var(--navy)" }}>{s.trackATitle}</p>
           {s.trackALocation && (
             <p className="mt-1.5 flex items-center gap-1 text-xs" style={{ color: "#6b7a8d" }}>
               <MapPin className="w-3 h-3 flex-shrink-0" /> {s.trackALocation}
@@ -159,8 +159,8 @@ function DualRow({ s, saved, pending, onToggle }: RowProps) {
           )}
         </div>
         <div className="px-5 py-4" style={{ background: "rgba(14,110,116,0.03)" }}>
-          <p className="text-xs font-bold mb-1" style={{ color: "#0E6E74" }}>Track B</p>
-          <p className="text-sm font-semibold leading-snug" style={{ color: "#0B2744" }}>{s.trackBTitle}</p>
+          <p className="text-xs font-bold mb-1" style={{ color: "var(--teal)" }}>Track B</p>
+          <p className="text-sm font-semibold leading-snug" style={{ color: "var(--navy)" }}>{s.trackBTitle}</p>
           {s.trackBLocation && (
             <p className="mt-1.5 flex items-center gap-1 text-xs" style={{ color: "#6b7a8d" }}>
               <MapPin className="w-3 h-3 flex-shrink-0" /> {s.trackBLocation}
@@ -175,13 +175,13 @@ function DualRow({ s, saved, pending, onToggle }: RowProps) {
 function DayBand({ label, dayLabel }: { label: string; dayLabel: string }) {
   return (
     <div className="flex items-center gap-4 rounded-2xl px-6 py-4 mb-4"
-      style={{ background: "#0B2744" }}>
+      style={{ background: "var(--navy)" }}>
       <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
         style={{ background: "rgba(200,155,60,0.18)" }}>
-        <Calendar className="w-4 h-4" style={{ color: "#C89B3C" }} />
+        <Calendar className="w-4 h-4" style={{ color: "var(--gold)" }} />
       </div>
       <div>
-        <p className="text-xs font-bold tracking-widest uppercase" style={{ color: "#C89B3C" }}>{label}</p>
+        <p className="text-xs font-bold tracking-widest uppercase" style={{ color: "var(--gold)" }}>{label}</p>
         <p className="text-white font-semibold text-base leading-tight">{dayLabel}</p>
       </div>
     </div>
@@ -230,14 +230,14 @@ export default function Programme() {
         22–23 March 2027 · Sunway Putra Hotel, Kuala Lumpur. Bookmark sessions to add them to your personal schedule.
       </p>
 
-      <div className="flex flex-wrap items-center gap-5 mb-8 pb-5 border-b" style={{ borderColor: "#e5e9ef" }}>
+      <div className="flex flex-wrap items-center gap-5 mb-8 pb-5 border-b" style={{ borderColor: "var(--border-color)" }}>
         {[
-          { label: "Keynote", dot: "#C89B3C" },
-          { label: "Plenary", dot: "#0B2744" },
-          { label: "Session / Concurrent", dot: "#0E6E74" },
-          { label: "Break / Registration", dot: "#9ca3af" },
+          { label: "Keynote", dot: "var(--gold)" },
+          { label: "Plenary", dot: "var(--navy)" },
+          { label: "Session / Concurrent", dot: "var(--teal)" },
+          { label: "Break / Registration", dot: "var(--text-disabled)" },
         ].map(({ label, dot }) => (
-          <div key={label} className="flex items-center gap-2 text-xs font-medium" style={{ color: "#4a5568" }}>
+          <div key={label} className="flex items-center gap-2 text-xs font-medium" style={{ color: "var(--text-secondary)" }}>
             <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ background: dot }} />
             {label}
           </div>
@@ -292,7 +292,7 @@ export default function Programme() {
 
       <div className="mt-12 rounded-2xl px-6 py-5 border"
         style={{ background: "rgba(11,39,68,0.03)", borderColor: "rgba(11,39,68,0.12)" }}>
-        <p className="text-xs font-bold uppercase tracking-wide mb-1" style={{ color: "#0B2744" }}>
+        <p className="text-xs font-bold uppercase tracking-wide mb-1" style={{ color: "var(--navy)" }}>
           Disclaimer
         </p>
         <p className="text-sm leading-relaxed" style={{ color: "#4a5568" }}>

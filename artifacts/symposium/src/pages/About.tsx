@@ -14,16 +14,16 @@ export default function AboutPage() {
     <div className="min-h-screen bg-white flex flex-col">
       <SiteHeader />
       {/* Hero */}
-      <section className="py-14 px-4" style={{ background: "#0B2744" }}>
+      <section className="py-14 px-4" style={{ background: "var(--navy)" }}>
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-3xl md:text-5xl font-extrabold tracking-wide text-white">
             About{" "}
-            <span style={{ color: "#C89B3C" }}>SEAT-MSPTM 2027</span>
+            <span style={{ color: "var(--gold)" }}>SEAT-MSPTM 2027</span>
           </h1>
           <div className="flex items-center justify-center gap-3 mt-5">
-            <div className="w-12 h-px" style={{ background: "#C89B3C" }} />
-            <div className="w-2 h-2 rounded-full" style={{ background: "#0E6E74" }} />
-            <div className="w-12 h-px" style={{ background: "#C89B3C" }} />
+            <div className="w-12 h-px" style={{ background: "var(--gold)" }} />
+            <div className="w-2 h-2 rounded-full" style={{ background: "var(--teal)" }} />
+            <div className="w-12 h-px" style={{ background: "var(--gold)" }} />
           </div>
         </div>
       </section>
@@ -60,13 +60,13 @@ export default function AboutPage() {
                 className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
                 style={{ background: "rgba(14,110,116,0.12)" }}
               >
-                <Target className="w-6 h-6" style={{ color: "#0E6E74" }} />
+                <Target className="w-6 h-6" style={{ color: "var(--teal)" }} />
               </div>
               <div>
-                <h2 className="text-2xl font-bold" style={{ color: "#0B2744" }}>
+                <h2 className="text-2xl font-bold" style={{ color: "var(--navy)" }}>
                   Objectives
                 </h2>
-                <div className="mt-1 h-0.5 w-10 rounded-full" style={{ background: "#C89B3C" }} />
+                <div className="mt-1 h-0.5 w-10 rounded-full" style={{ background: "var(--gold)" }} />
               </div>
             </div>
 
@@ -76,7 +76,7 @@ export default function AboutPage() {
                 <li key={i} className="flex items-start gap-3">
                   <CheckCircle2
                     className="w-5 h-5 mt-0.5 flex-shrink-0"
-                    style={{ color: "#0E6E74" }}
+                    style={{ color: "var(--teal)" }}
                   />
                   <span className="text-base text-gray-700 leading-relaxed">{obj}</span>
                 </li>

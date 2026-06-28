@@ -5,7 +5,7 @@ import { useGetSettings } from "@workspace/api-client-react";
 function InfoSection({ heading, children }: { heading: string; children: React.ReactNode }) {
   return (
     <div className="text-center py-8">
-      <h2 className="font-bold tracking-widest text-sm uppercase mb-4" style={{ color: "#0B2744" }}>
+      <h2 className="font-bold tracking-widest text-sm uppercase mb-4" style={{ color: "var(--navy)" }}>
         {heading}
       </h2>
       {children}
@@ -33,15 +33,15 @@ export default function ContactPage() {
       <SiteHeader />
 
       {/* Hero */}
-      <section className="py-14 px-4" style={{ background: "#0B2744" }}>
+      <section className="py-14 px-4" style={{ background: "var(--navy)" }}>
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-3xl md:text-5xl font-extrabold tracking-wide text-white">
             Contact
           </h1>
           <div className="flex items-center justify-center gap-3 mt-4">
-            <div className="w-8 h-px" style={{ background: "#C89B3C" }} />
-            <div className="w-2 h-2 rounded-full" style={{ background: "#C89B3C" }} />
-            <div className="w-8 h-px" style={{ background: "#C89B3C" }} />
+            <div className="w-8 h-px" style={{ background: "var(--gold)" }} />
+            <div className="w-2 h-2 rounded-full" style={{ background: "var(--gold)" }} />
+            <div className="w-8 h-px" style={{ background: "var(--gold)" }} />
           </div>
         </div>
       </section>
@@ -69,7 +69,7 @@ export default function ContactPage() {
                 <a
                   href={`mailto:${email}`}
                   className="font-medium underline underline-offset-2"
-                  style={{ color: "#0E6E74" }}
+                  style={{ color: "var(--teal)" }}
                 >
                   {email}
                 </a>
@@ -105,7 +105,7 @@ export default function ContactPage() {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-sm font-medium underline underline-offset-2"
-                    style={{ color: "#0E6E74" }}
+                    style={{ color: "var(--teal)" }}
                   >
                     Google Maps
                   </a>

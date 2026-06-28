@@ -35,7 +35,7 @@ const ABSTRACT_BADGE: Record<string, { bg: string; color: string; label: string 
   rejected:           { bg: "var(--status-danger-bg)",  color: "var(--status-danger-text)",   label: "Rejected" },
   revision_requested: { bg: "var(--status-warning-bg)", color: "var(--status-warning-text)",  label: "Revision Needed" },
 };
-const CHART_COLORS = ["#0E6E74", "#C89B3C", "#0B2744", "#0a5c39", "#842029", "#6c757d"];
+const CHART_COLORS = ["var(--teal)", "var(--gold)", "var(--navy)", "var(--teal-dk)", "var(--red)", "var(--text-muted)"];
 const MONTHLY_TREND_FALLBACK = [
   { month: "Mar '26", count: 0 }, { month: "Apr", count: 2 },
   { month: "May", count: 5 },     { month: "Jun", count: 9 },
@@ -323,8 +323,8 @@ export default function AdminDashboard() {
                   <AreaChart data={trendData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
                     <defs>
                       <linearGradient id="tealGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%"  stopColor="#0E6E74" stopOpacity={0.25} />
-                        <stop offset="95%" stopColor="#0E6E74" stopOpacity={0} />
+                        <stop offset="5%"  stopColor="var(--teal)" stopOpacity={0.25} />
+                        <stop offset="95%" stopColor="var(--teal)" stopOpacity={0} />
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color-light)" />
@@ -334,7 +334,7 @@ export default function AdminDashboard() {
                       contentStyle={{ border: "1px solid var(--border-color)", borderRadius: 6, fontSize: 12, background: "var(--bg-surface)" }}
                       labelStyle={{ fontWeight: 600, color: "var(--text)" }}
                     />
-                    <Area type="monotone" dataKey="count" name="Registrations" stroke="#0E6E74" strokeWidth={2} fill="url(#tealGrad)" dot={false} />
+                    <Area type="monotone" dataKey="count" name="Registrations" stroke="var(--teal)" strokeWidth={2} fill="url(#tealGrad)" dot={false} />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
@@ -517,8 +517,8 @@ export default function AdminDashboard() {
                   <YAxis tick={{ fontSize: 10, fill: "var(--text-muted)" }} />
                   <Tooltip contentStyle={{ border: "1px solid var(--border-color)", borderRadius: 6, fontSize: 12 }} />
                   <Legend wrapperStyle={{ fontSize: 11 }} />
-                  <Bar dataKey="revenue" name="Revenue (MYR)" fill="#0E6E74" radius={[3, 3, 0, 0]} />
-                  <Bar dataKey="delegates" name="Delegates" fill="#C89B3C" radius={[3, 3, 0, 0]} />
+                  <Bar dataKey="revenue" name="Revenue (MYR)" fill="var(--teal)" radius={[3, 3, 0, 0]} />
+                  <Bar dataKey="delegates" name="Delegates" fill="var(--gold)" radius={[3, 3, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -704,8 +704,8 @@ export default function AdminDashboard() {
                   <YAxis tick={{ fontSize: 10, fill: "var(--text-muted)" }} />
                   <Tooltip contentStyle={{ border: "1px solid var(--border-color)", borderRadius: 6, fontSize: 12 }} />
                   <Legend wrapperStyle={{ fontSize: 11 }} />
-                  <Bar dataKey="revenue" name="Revenue (MYR)" fill="#0E6E74" radius={[3, 3, 0, 0]} />
-                  <Bar dataKey="delegates" name="Delegates" fill="#C89B3C" radius={[3, 3, 0, 0]} />
+                  <Bar dataKey="revenue" name="Revenue (MYR)" fill="var(--teal)" radius={[3, 3, 0, 0]} />
+                  <Bar dataKey="delegates" name="Delegates" fill="var(--gold)" radius={[3, 3, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
