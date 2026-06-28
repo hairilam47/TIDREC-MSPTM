@@ -40,7 +40,7 @@ export default function Home() {
 
             {/* Left — text */}
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-secondary mb-6">About {cms?.event_short_name ?? "SEAT-MSPTM 2027"}</h2>
+              <h2 className="text-3xl md:text-4xl font-bold font-serif text-secondary mb-6">About {cms?.event_short_name ?? "SEAT-MSPTM 2027"}</h2>
               <p className="text-base text-muted-foreground mb-5 leading-relaxed text-justify">
                 {cms?.about_text ?? "The 3rd Southeast Asia Ticks and Tick-borne Diseases Symposium (SEA TTBD 2027), held in conjunction with the 63rd Annual Scientific Conference of the Malaysian Society of Parasitology and Tropical Medicine (MSPTM), brings together researchers, veterinarians, healthcare professionals, and students to discuss the latest advances in tick and tick-borne disease research."}
               </p>
@@ -215,7 +215,7 @@ export default function Home() {
         <section id="speakers" className="py-20 bg-background">
           <div className="max-w-5xl mx-auto px-4">
             <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold text-secondary mb-3">Keynote Speakers</h2>
+              <h2 className="text-3xl md:text-4xl font-bold font-serif text-secondary mb-3">Keynote Speakers</h2>
               <p className="text-base text-muted-foreground max-w-xl mx-auto">Hear from world-renowned experts in tropical medicine and infectious diseases.</p>
             </div>
 
@@ -253,7 +253,7 @@ export default function Home() {
         <section id="sponsors" className="py-20 bg-white">
           <div className="max-w-5xl mx-auto px-4">
             <div className="text-center mb-10">
-              <h2 className="text-3xl md:text-4xl font-bold" style={{ color: "var(--navy)" }}>Our Sponsors</h2>
+              <h2 className="text-3xl md:text-4xl font-bold font-serif" style={{ color: "var(--navy)" }}>Our Sponsors</h2>
               <div className="mx-auto mt-2 h-0.5 w-12 rounded-full" style={{ background: "var(--gold)" }} />
             </div>
             {(() => {

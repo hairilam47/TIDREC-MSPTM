@@ -35,6 +35,7 @@ const DEFAULT_SETTINGS: Record<string, string> = {
   date_abstract_submission_closes: "31 Jan 2027",
   date_regular_submission_closes: "10 Feb 2027",
   date_conference: "22–23 Mar 2027",
+  date_conference_start: "2027-03-22",
   date_call_for_abstract_opens: "1 August 2026",
   date_abstract_submission_deadline: "30 December 2026",
   date_abstract_result_notification: "15 January 2027",

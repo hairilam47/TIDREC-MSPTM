@@ -106,7 +106,7 @@ export default function CommitteePage() {
 
       <section className="py-14 px-4" style={{ background: "var(--navy)" }}>
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-3xl md:text-5xl font-extrabold tracking-wide uppercase text-white">
+          <h1 className="text-3xl md:text-5xl font-extrabold font-serif tracking-wide uppercase text-white">
             ORGANISING{" "}
             <span style={{ color: "var(--gold)" }}>COMMITTEE</span>
           </h1>

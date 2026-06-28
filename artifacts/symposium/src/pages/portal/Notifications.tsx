@@ -2,6 +2,7 @@ import React from "react";
 import PortalLayout from "@/components/PortalLayout";
 import { useGetAnnouncements } from "@workspace/api-client-react";
 import { Loader2, Bell, AlertCircle, Info } from "lucide-react";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 export default function Notifications() {
   const { data: announcements, isLoading } = useGetAnnouncements();
@@ -22,10 +23,11 @@ export default function Notifications() {
           <Loader2 className="w-8 h-8 animate-spin" style={{ color: "var(--primary)" }} />
         </div>
       ) : sorted.length === 0 ? (
-        <div style={{ textAlign: "center", padding: "64px 0" }}>
-          <Bell style={{ width: 40, height: 40, color: "var(--text-disabled)", margin: "0 auto 12px" }} />
-          <p style={{ fontSize: 14, color: "var(--text-muted)" }}>No announcements yet.</p>
-        </div>
+        <EmptyState
+          icon={<Bell style={{ width: 28, height: 28, color: "var(--text-disabled)" }} />}
+          title="No announcements yet"
+          body="Check back later for updates from the organising committee."
+        />
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 10, maxWidth: 640 }}>
           {sorted.map((a) => (

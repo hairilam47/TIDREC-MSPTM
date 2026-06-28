@@ -15,6 +15,7 @@ import Invoices from "@/pages/portal/Invoices";
 import Profile from "@/pages/portal/Profile";
 import Notifications from "@/pages/portal/Notifications";
 import Support from "@/pages/portal/Support";
+import Schedule from "@/pages/portal/Schedule";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +39,9 @@ function Router() {
       </Route>
       <Route path="/portal/programme">
         <RequireAuth><Programme /></RequireAuth>
+      </Route>
+      <Route path="/portal/schedule">
+        <RequireAuth><Schedule /></RequireAuth>
       </Route>
       <Route path="/portal/speakers">
         <RequireAuth><Speakers /></RequireAuth>

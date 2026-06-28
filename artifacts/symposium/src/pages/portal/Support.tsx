@@ -1,5 +1,6 @@
 import React from "react";
 import PortalLayout from "@/components/PortalLayout";
+import { useGetSettings } from "@workspace/api-client-react";
 import { Mail, MapPin, ExternalLink, Clock, HelpCircle } from "lucide-react";
 
 const FAQS = [
@@ -25,43 +26,62 @@ const FAQS = [
   },
 ];
 
-const CONTACT_TILES = [
-  {
-    icon: Mail,
-    iconBg: "var(--primary-lt)",
-    iconColor: "var(--primary)",
-    label: "Email",
-    value: <a href="mailto:secretariat@seat-msptm2027.org" style={{ fontSize: 14, fontWeight: 500, color: "var(--primary)", textDecoration: "none" }}>secretariat@seat-msptm2027.org</a>,
-    sub: "Usually responds within 2 business days",
-  },
-  {
-    icon: Clock,
-    iconBg: "var(--gold-lt)",
-    iconColor: "var(--gold)",
-    label: "Office Hours",
-    value: <div style={{ fontSize: 14, fontWeight: 500, color: "var(--text)" }}>Mon–Fri, 9am–5pm MYT</div>,
-    sub: "Malaysia Time (UTC+8)",
-  },
-  {
-    icon: MapPin,
-    iconBg: "var(--navy-lt)",
-    iconColor: "var(--navy)",
-    label: "Venue",
-    value: <div style={{ fontSize: 14, fontWeight: 500, color: "var(--text)" }}>Sunway Putra Hotel</div>,
-    sub: "100, Jalan Putra, Kuala Lumpur",
-  },
-  {
-    icon: ExternalLink,
-    iconBg: "var(--red-lt)",
-    iconColor: "var(--red)",
-    label: "Organisers",
-    value: <div style={{ fontSize: 14, fontWeight: 500, color: "var(--text)" }}>MSPTM &amp; TIDREC@UM</div>,
-    sub: "Malaysian Society for Parasitology & Tropical Medicine",
-  },
-];
-
 export default function Support() {
+  const { data: settings } = useGetSettings();
   const [open, setOpen] = React.useState<number | null>(null);
+
+  const contactEmail = settings?.["contact_email"] ?? "events@msptm.network";
+  const venue = settings?.["event_venue"] ?? "Sunway Putra Hotel";
+  const venueCity = settings?.["event_city"] ?? "Kuala Lumpur";
+  const organiserPrimary = settings?.["organiser_primary"] ?? "MSPTM";
+  const organiserFullPrimary = settings?.["organiser_full_primary"] ?? "Malaysian Society of Parasitology and Tropical Medicine";
+  const organiserSecondary = settings?.["organiser_secondary"] ?? "TIDREC@UM";
+
+  const CONTACT_TILES = [
+    {
+      icon: Mail,
+      iconBg: "var(--primary-lt)",
+      iconColor: "var(--primary)",
+      label: "Email",
+      value: (
+        <a
+          href={`mailto:${contactEmail}`}
+          style={{ fontSize: 14, fontWeight: 500, color: "var(--primary)", textDecoration: "none" }}
+        >
+          {contactEmail}
+        </a>
+      ),
+      sub: "Usually responds within 2 business days",
+    },
+    {
+      icon: Clock,
+      iconBg: "var(--gold-lt)",
+      iconColor: "var(--gold)",
+      label: "Office Hours",
+      value: <div style={{ fontSize: 14, fontWeight: 500, color: "var(--text)" }}>Mon–Fri, 9am–5pm MYT</div>,
+      sub: "Malaysia Time (UTC+8)",
+    },
+    {
+      icon: MapPin,
+      iconBg: "var(--navy-lt)",
+      iconColor: "var(--navy)",
+      label: "Venue",
+      value: <div style={{ fontSize: 14, fontWeight: 500, color: "var(--text)" }}>{venue}</div>,
+      sub: venueCity,
+    },
+    {
+      icon: ExternalLink,
+      iconBg: "var(--red-lt)",
+      iconColor: "var(--red)",
+      label: "Organisers",
+      value: (
+        <div style={{ fontSize: 14, fontWeight: 500, color: "var(--text)" }}>
+          {organiserPrimary} &amp; {organiserSecondary}
+        </div>
+      ),
+      sub: organiserFullPrimary,
+    },
+  ];
 
   return (
     <PortalLayout title="Support">

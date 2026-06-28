@@ -1,22 +1,34 @@
 import React from "react";
+import { useGetSettings } from "@workspace/api-client-react";
 
-const EVENT_DATE = new Date("2027-03-22T00:00:00+08:00");
+const FALLBACK_DATE = new Date("2027-03-22T00:00:00+08:00");
 
-function useCountdown() {
-  const calc = () => {
-    const diff = EVENT_DATE.getTime() - Date.now();
-    if (diff <= 0) return null;
-    const d = Math.floor(diff / 86_400_000);
-    const h = Math.floor((diff % 86_400_000) / 3_600_000);
-    const m = Math.floor((diff % 3_600_000) / 60_000);
-    const s = Math.floor((diff % 60_000) / 1_000);
-    return { d, h, m, s };
-  };
-  const [time, setTime] = React.useState(calc);
+function parseEventDate(settings: Record<string, string> | undefined): Date {
+  const raw = settings?.["date_conference_start"];
+  if (raw) {
+    const d = new Date(raw + "T00:00:00+08:00");
+    if (!isNaN(d.getTime())) return d;
+  }
+  return FALLBACK_DATE;
+}
+
+function calcTime(eventDate: Date) {
+  const diff = eventDate.getTime() - Date.now();
+  if (diff <= 0) return null;
+  const d = Math.floor(diff / 86_400_000);
+  const h = Math.floor((diff % 86_400_000) / 3_600_000);
+  const m = Math.floor((diff % 3_600_000) / 60_000);
+  const s = Math.floor((diff % 60_000) / 1_000);
+  return { d, h, m, s };
+}
+
+function useCountdown(eventDate: Date) {
+  const [time, setTime] = React.useState(() => calcTime(eventDate));
   React.useEffect(() => {
-    const id = setInterval(() => setTime(calc()), 1000);
+    setTime(calcTime(eventDate));
+    const id = setInterval(() => setTime(calcTime(eventDate)), 1000);
     return () => clearInterval(id);
-  }, []);
+  }, [eventDate]);
   return time;
 }
 
@@ -25,7 +37,9 @@ interface CountdownBadgeProps {
 }
 
 export function CountdownBadge({ variant = "light" }: CountdownBadgeProps) {
-  const t = useCountdown();
+  const { data: settings } = useGetSettings();
+  const eventDate = React.useMemo(() => parseEventDate(settings), [settings]);
+  const t = useCountdown(eventDate);
   if (!t) return null;
 
   const pad = (n: number) => String(n).padStart(2, "0");

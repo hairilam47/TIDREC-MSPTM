@@ -4,13 +4,7 @@ import { useGetRegistrations, useUpdateRegistration, useAdminCreateRegistration,
 import { Search, Download, ChevronDown, Pencil, UserPlus, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ModalShell, FormField, INPUT_BASE, SELECT_BASE, TEXTAREA_BASE, inputBorder } from "@/components/ui/form-primitives";
-
-const PAYMENT_STYLES: Record<string, { bg: string; color: string }> = {
-  paid:    { bg: "var(--status-success-bg)", color: "var(--status-success-text)" },
-  pending: { bg: "var(--status-warning-bg)", color: "var(--status-warning-text)" },
-  overdue: { bg: "var(--status-danger-bg)",  color: "var(--status-danger-text)" },
-  waived:  { bg: "var(--primary-lt)",        color: "var(--primary)" },
-};
+import { StatusBadge } from "@/components/ui/StatusBadge";
 
 interface AddRegistrationForm {
   firstName: string;
@@ -458,7 +452,6 @@ export default function AdminRegistrations() {
                     </td>
                   </tr>
                 ) : filtered.map((r) => {
-                  const ps = PAYMENT_STYLES[r.paymentStatus] ?? PAYMENT_STYLES.pending;
                   const isEditing = editingId === r.id;
                   return (
                     <tr key={r.id}>
@@ -489,12 +482,7 @@ export default function AdminRegistrations() {
                             <option value="waived">Waived</option>
                           </select>
                         ) : (
-                          <span
-                            className="text-[11px] font-semibold px-2 py-0.5 rounded-full capitalize"
-                            style={{ background: ps.bg, color: ps.color }}
-                          >
-                            {r.paymentStatus}
-                          </span>
+                          <StatusBadge status={r.paymentStatus} />
                         )}
                       </td>
                       <td>

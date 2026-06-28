@@ -117,7 +117,7 @@ export default function SpeakersPage() {
               return (
                 <section key={key} style={{ marginBottom: 64, textAlign: "center" }}>
                   <h2
-                    className="font-sans"
+                    className="font-serif"
                     style={{ fontSize: 28, fontWeight: 700, color: "var(--navy)", textAlign: "center", marginBottom: 36 }}
                   >
                     {label}

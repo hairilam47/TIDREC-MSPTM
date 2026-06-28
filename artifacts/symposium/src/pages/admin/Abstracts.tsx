@@ -1,5 +1,6 @@
 import React from "react";
 import AdminLayout from "@/components/AdminLayout";
+import { StatusBadge } from "@/components/ui/StatusBadge";
 import { useGetAbstracts, useUpdateAbstract, useGetAbstractHistory } from "@workspace/api-client-react";
 import { Search, ChevronDown, CheckCircle, XCircle, Edit3, Eye, Clock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -49,14 +50,6 @@ function AbstractHistorySection({ abstractId }: { abstractId: number }) {
     </div>
   );
 }
-
-const STATUS_STYLES: Record<string, { bg: string; color: string; label: string }> = {
-  submitted:          { bg: "var(--primary-lt)",        color: "var(--primary)",              label: "Submitted" },
-  under_review:       { bg: "var(--status-warning-bg)", color: "var(--status-warning-text)",  label: "Under Review" },
-  accepted:           { bg: "var(--status-success-bg)", color: "var(--status-success-text)",  label: "Accepted" },
-  rejected:           { bg: "var(--status-danger-bg)",  color: "var(--status-danger-text)",   label: "Rejected" },
-  revision_requested: { bg: "var(--status-warning-bg)", color: "var(--status-warning-text)",  label: "Revision" },
-};
 
 export default function AdminAbstracts() {
   const { data: abstracts, refetch } = useGetAbstracts();
@@ -160,7 +153,6 @@ export default function AdminAbstracts() {
         {filtered.length === 0 ? (
           <div className="text-center py-12 text-[14px]" style={{ color: "var(--text-disabled)" }}>No abstracts found</div>
         ) : filtered.map((a) => {
-          const sc = STATUS_STYLES[a.status];
           const isExpanded = expanded === a.id;
           return (
             <div key={a.id} className="card">
@@ -168,7 +160,7 @@ export default function AdminAbstracts() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap mb-1">
                     <code className="cell-mono" style={{ background: "var(--bg-surface-secondary)", padding: "2px 6px", borderRadius: 4 }}>{a.abstractCode}</code>
-                    <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full capitalize" style={{ background: sc.bg, color: sc.color }}>{sc.label}</span>
+                    <StatusBadge status={a.status} />
                     <span className="text-[11px] px-2 py-0.5 rounded-full capitalize" style={{ background: "var(--border-color)", color: "var(--text-secondary)" }}>{a.abstractType}</span>
                   </div>
                   <div className="text-[14px] font-semibold leading-snug mb-1" style={{ color: "var(--text)" }}>{a.title}</div>

@@ -4,13 +4,7 @@ import { useGetRegistrations, useUpdateRegistration, useSendPaymentReminder, use
 import { Search, Bell } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { INPUT_BASE } from "@/components/ui/form-primitives";
-
-const PAYMENT_STYLES: Record<string, { bg: string; color: string; border?: string }> = {
-  paid:    { bg: "var(--status-success-bg)", color: "var(--status-success-text)", border: "var(--status-success-text)" },
-  pending: { bg: "var(--status-warning-bg)", color: "var(--status-warning-text)", border: "var(--status-warning-text)" },
-  overdue: { bg: "var(--status-danger-bg)",  color: "var(--status-danger-text)",  border: "var(--status-danger-border)" },
-  waived:  { bg: "var(--primary-lt)",        color: "var(--primary)",             border: "var(--primary)" },
-};
+import { StatusBadge } from "@/components/ui/StatusBadge";
 
 export default function AdminPayments() {
   const { data: registrations, refetch } = useGetRegistrations();
@@ -123,7 +117,6 @@ export default function AdminPayments() {
                 {filtered.length === 0 ? (
                   <tr><td colSpan={6} className="text-center py-10 text-[13px]" style={{ color: "var(--text-disabled)" }}>No payments found</td></tr>
                 ) : filtered.map((r) => {
-                  const ps = PAYMENT_STYLES[r.paymentStatus] ?? PAYMENT_STYLES.pending;
                   return (
                     <tr key={r.id}>
                       <td>
@@ -145,7 +138,7 @@ export default function AdminPayments() {
                         {r.paymentAmount == null && <span className="text-[11px] ml-1" style={{ color: "var(--text-disabled)" }}>(suggested)</span>}
                       </td>
                       <td>
-                        <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full capitalize" style={{ background: ps.bg, color: ps.color }}>{r.paymentStatus}</span>
+                        <StatusBadge status={r.paymentStatus} />
                       </td>
                       <td>
                         <div className="flex gap-1.5 flex-wrap">

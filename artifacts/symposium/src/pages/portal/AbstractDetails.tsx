@@ -3,14 +3,7 @@ import PortalLayout from "@/components/PortalLayout";
 import { useGetAbstract } from "@workspace/api-client-react";
 import { useRoute, Link } from "wouter";
 import { ArrowLeft, Loader2, FileText, Calendar, Download } from "lucide-react";
-
-const STATUS_STYLES: Record<string, { bg: string; color: string; label: string }> = {
-  submitted:          { bg: "var(--primary-lt)",        color: "var(--primary)",              label: "Submitted" },
-  under_review:       { bg: "var(--status-warning-bg)", color: "var(--status-warning-text)",  label: "Under Review" },
-  accepted:           { bg: "var(--status-success-bg)", color: "var(--status-success-text)",  label: "Accepted" },
-  rejected:           { bg: "var(--status-danger-bg)",  color: "var(--status-danger-text)",   label: "Rejected" },
-  revision_requested: { bg: "var(--status-warning-bg)", color: "var(--status-warning-text)",  label: "Revision Needed" },
-};
+import { StatusBadge } from "@/components/ui/StatusBadge";
 
 export default function AbstractDetails() {
   const [, params] = useRoute("/portal/abstracts/:id");
@@ -42,8 +35,6 @@ export default function AbstractDetails() {
     );
   }
 
-  const sc = STATUS_STYLES[abstract.status] ?? STATUS_STYLES.submitted;
-
   return (
     <PortalLayout title="Abstract Details">
       <div className="max-w-3xl">
@@ -57,12 +48,7 @@ export default function AbstractDetails() {
             <code className="text-[12px] font-mono bg-gray-100 px-2.5 py-1 rounded" style={{ color: "var(--text-secondary)" }}>
               {abstract.abstractCode}
             </code>
-            <span
-              className="text-[12px] font-semibold px-3 py-1 rounded-full flex-shrink-0"
-              style={{ background: sc.bg, color: sc.color }}
-            >
-              {sc.label}
-            </span>
+            <StatusBadge status={abstract.status} size="md" />
           </div>
           <h1 className="text-2xl font-sans font-bold mb-3 leading-snug" style={{ color: "var(--navy)" }}>
             {abstract.title}
