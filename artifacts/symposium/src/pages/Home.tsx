@@ -253,8 +253,8 @@ export default function Home() {
         <section id="sponsors" className="py-20 bg-white">
           <div className="max-w-5xl mx-auto px-4">
             <div className="text-center mb-10">
-              <h2 className="text-3xl md:text-4xl font-bold" style={{ color: "#0B2744" }}>Our Sponsors</h2>
-              <div className="mx-auto mt-2 h-0.5 w-12 rounded-full" style={{ background: "#C89B3C" }} />
+              <h2 className="text-3xl md:text-4xl font-bold" style={{ color: "var(--navy)" }}>Our Sponsors</h2>
+              <div className="mx-auto mt-2 h-0.5 w-12 rounded-full" style={{ background: "var(--gold)" }} />
             </div>
             {(() => {
               const TIER_PAIRS: [string, string][] = [["platinum", "gold"], ["silver", "bronze"]];
@@ -286,7 +286,7 @@ export default function Home() {
                         <div key={tier} className="rounded-xl border p-6 flex flex-col items-center gap-6 bg-white"
                           style={{ borderColor: "rgba(200,155,60,0.35)" }}>
                           <p className="text-xs font-bold uppercase tracking-widest"
-                            style={{ color: "#C89B3C" }}>
+                            style={{ color: "var(--gold)" }}>
                             + {TIER_LABELS[tier]} +
                           </p>
                           <div className="flex flex-wrap justify-center items-center gap-8">
@@ -299,7 +299,7 @@ export default function Home() {
                                     className={`object-contain ${LOGO_SIZE[tier]}`}
                                   />
                                 ) : (
-                                  <span className="font-bold text-lg" style={{ color: "#0B2744" }}>{sponsor.name}</span>
+                                  <span className="font-bold text-lg" style={{ color: "var(--navy)" }}>{sponsor.name}</span>
                                 )}
                               </div>
                             ))}
