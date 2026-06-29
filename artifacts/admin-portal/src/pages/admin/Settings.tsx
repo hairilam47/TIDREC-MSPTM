@@ -239,6 +239,18 @@ const CONTACT_FIELDS = [
   { key: "co_organiser_uitm_website_url", label: "UiTM Website URL", placeholder: "https://www.uitm.edu.my", type: "url" },
 ] as const;
 
+const ABSTRACT_CONTENT_FIELDS = [
+  { key: "abstract_conference_theme", label: "Conference Theme", placeholder: "Enter the full conference theme text shown on the Abstract page…", rows: 3 },
+  { key: "abstract_seat_topics", label: "SEAT Symposium Topics (one per line)", placeholder: "Tick Biology and Ecology\nTick-Borne Pathogens and Diseases\n…", rows: 7 },
+  { key: "abstract_msptm_topics", label: "MSPTM Conference Topics (one per line)", placeholder: "Tropical and Infectious Diseases\nVector Biology and Medical Entomology\n…", rows: 7 },
+] as const;
+
+const ABSTRACT_DATE_FIELDS = [
+  { key: "date_call_for_abstract_opens", label: "Call for Abstract Opens" },
+  { key: "date_abstract_submission_deadline", label: "Abstract Submission Deadline" },
+  { key: "date_abstract_result_notification", label: "Abstract Result Notification" },
+] as const;
+
 const GUIDELINE_FIELDS = [
   { key: "guideline_submission", label: "Abstract Submission Guidelines" },
   { key: "guideline_mode", label: "Mode of Presentation & Presentation Guidelines" },
@@ -279,6 +291,8 @@ export default function AdminSettings() {
   const [savingEventDetails, setSavingEventDetails] = useState(false);
   const [guidelineValues, setGuidelineValues] = useState<Record<string, string>>({});
   const [savingGuidelines, setSavingGuidelines] = useState(false);
+  const [abstractValues, setAbstractValues] = useState<Record<string, string>>({});
+  const [savingAbstract, setSavingAbstract] = useState(false);
   const [contactValues, setContactValues] = useState<Record<string, string>>({});
   const [savingContact, setSavingContact] = useState(false);
 
@@ -301,6 +315,15 @@ export default function AdminSettings() {
         gVals[key] = (settings as Record<string, string>)[key] ?? "";
       }
       setGuidelineValues(gVals);
+
+      const absVals: Record<string, string> = {};
+      for (const { key } of ABSTRACT_CONTENT_FIELDS) {
+        absVals[key] = (settings as Record<string, string>)[key] ?? "";
+      }
+      for (const { key } of ABSTRACT_DATE_FIELDS) {
+        absVals[key] = (settings as Record<string, string>)[key] ?? "";
+      }
+      setAbstractValues(absVals);
 
       const cVals: Record<string, string> = {};
       for (const { key } of CONTACT_FIELDS) {
@@ -346,6 +369,19 @@ export default function AdminSettings() {
       toast({ title: "Save failed", description: "Something went wrong. Please try again.", variant: "destructive" });
     } finally {
       setSavingGuidelines(false);
+    }
+  };
+
+  const handleSaveAbstract = async () => {
+    setSavingAbstract(true);
+    try {
+      await putSettings({ data: abstractValues });
+      await queryClient.invalidateQueries({ queryKey: getGetSettingsQueryKey() });
+      toast({ title: "Abstract page saved", description: "The public abstract page will now reflect the updated content." });
+    } catch {
+      toast({ title: "Save failed", description: "Something went wrong. Please try again.", variant: "destructive" });
+    } finally {
+      setSavingAbstract(false);
     }
   };
 
@@ -537,6 +573,58 @@ export default function AdminSettings() {
                           <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Saving…</>
                         ) : (
                           <><Save className="w-4 h-4 mr-2" /> Save Guidelines</>
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-amber-500" />
+                    Abstract Page Content
+                  </CardTitle>
+                  <p className="text-sm text-gray-500">
+                    Edit the conference theme, topic lists (one per line), and key dates shown on the public Abstract page.
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {ABSTRACT_DATE_FIELDS.map(({ key, label }) => (
+                      <div key={key} className="space-y-1.5">
+                        <Label htmlFor={`abs-date-${key}`} className="text-sm font-medium text-gray-700">{label}</Label>
+                        <Input
+                          id={`abs-date-${key}`}
+                          value={abstractValues[key] ?? ""}
+                          onChange={(e) => setAbstractValues(prev => ({ ...prev, [key]: e.target.value }))}
+                          placeholder="e.g. 1 August 2026"
+                          disabled={savingAbstract}
+                        />
+                      </div>
+                    ))}
+                    <div className="border-t pt-4 mt-2" />
+                    {ABSTRACT_CONTENT_FIELDS.map(({ key, label, placeholder, rows }) => (
+                      <div key={key} className="space-y-1.5">
+                        <Label htmlFor={`abs-${key}`} className="text-sm font-medium text-gray-700">{label}</Label>
+                        <Textarea
+                          id={`abs-${key}`}
+                          value={abstractValues[key] ?? ""}
+                          onChange={(e) => setAbstractValues(prev => ({ ...prev, [key]: e.target.value }))}
+                          placeholder={placeholder}
+                          disabled={savingAbstract}
+                          rows={rows}
+                          className="resize-y font-mono text-xs"
+                        />
+                      </div>
+                    ))}
+                    <div className="pt-2 flex justify-end">
+                      <Button onClick={handleSaveAbstract} disabled={savingAbstract}>
+                        {savingAbstract ? (
+                          <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Saving…</>
+                        ) : (
+                          <><Save className="w-4 h-4 mr-2" /> Save Abstract Page</>
                         )}
                       </Button>
                     </div>

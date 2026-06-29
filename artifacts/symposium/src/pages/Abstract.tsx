@@ -3,7 +3,7 @@ import { Link } from "wouter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { useGetSettings } from "@workspace/api-client-react";
 
-const SEAT_TOPICS = [
+const SEAT_TOPICS_DEFAULT = [
   "Tick Biology and Ecology",
   "Tick-Borne Pathogens and Diseases",
   "Surveillance and Public Health",
@@ -11,7 +11,7 @@ const SEAT_TOPICS = [
   "Tick Control and Management",
 ];
 
-const MSPTM_TOPICS = [
+const MSPTM_TOPICS_DEFAULT = [
   "Tropical and Infectious Diseases",
   "Vector Biology and Medical Entomology",
   "Microbiology and Parasitology",
@@ -133,6 +133,21 @@ export default function AbstractPage() {
   const submissionDeadline = cms?.date_abstract_submission_deadline ?? "30 December 2026";
   const resultNotification = cms?.date_abstract_result_notification ?? "15 January 2027";
 
+  const cmsRecord = cms as Record<string, string> | undefined;
+
+  const conferenceTheme = cmsRecord?.abstract_conference_theme
+    ?? "Advancing One Health: Bridging Research, Surveillance, and Control of Ticks and Tick-Borne Diseases in Southeast Asia.";
+
+  const seatTopics = cmsRecord?.abstract_seat_topics
+    ? cmsRecord.abstract_seat_topics.split("\n").map((s) => s.trim()).filter(Boolean)
+    : SEAT_TOPICS_DEFAULT;
+
+  const msptmTopics = cmsRecord?.abstract_msptm_topics
+    ? cmsRecord.abstract_msptm_topics.split("\n").map((s) => s.trim()).filter(Boolean)
+    : MSPTM_TOPICS_DEFAULT;
+
+  const contactEmail = cmsRecord?.contact_email ?? "events@msptm.network";
+
   const guidelines = GUIDELINE_DEFAULTS.map((g) => ({
     title: g.title,
     body: (cms as Record<string, string> | undefined)?.[g.key] ?? g.defaultBody,
@@ -205,7 +220,7 @@ export default function AbstractPage() {
               <div className="mt-2 mx-auto w-12 h-0.5 rounded" style={{ background: "var(--gold, #C89B3C)" }} />
             </div>
             <p className="text-sm text-center mb-10 max-w-2xl mx-auto" style={{ color: "var(--text-muted, #6b7a8d)" }}>
-              The conference theme is <span className="font-semibold" style={{ color: "var(--navy, #0B2744)" }}>"Advancing One Health: Bridging Research, Surveillance, and Control of Ticks and Tick-Borne Diseases in Southeast Asia."</span> Abstract submissions are accepted under the following tracks:
+              The conference theme is <span className="font-semibold" style={{ color: "var(--navy, #0B2744)" }}>"{conferenceTheme}"</span> Abstract submissions are accepted under the following tracks:
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               {/* SEAT card */}
@@ -219,7 +234,7 @@ export default function AbstractPage() {
                   <h3 className="font-bold text-base text-white">SEAT Symposium</h3>
                 </div>
                 <ul className="space-y-2.5">
-                  {SEAT_TOPICS.map((t) => (
+                  {seatTopics.map((t) => (
                     <li key={t} className="flex items-start gap-2.5 text-sm" style={{ color: "rgba(255,255,255,0.82)" }}>
                       <span className="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: "var(--gold, #C89B3C)" }} />
                       {t}
@@ -242,7 +257,7 @@ export default function AbstractPage() {
                   </h3>
                 </div>
                 <ul className="space-y-2.5">
-                  {MSPTM_TOPICS.map((t) => (
+                  {msptmTopics.map((t) => (
                     <li key={t} className="flex items-start gap-2.5 text-sm" style={{ color: "rgba(255,255,255,0.82)" }}>
                       <span className="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: "var(--gold, #C89B3C)" }} />
                       {t}
@@ -292,11 +307,11 @@ export default function AbstractPage() {
               For any issues or enquiries, please contact the conference secretariat:
             </p>
             <a
-              href="mailto:events@msptm.network"
+              href={`mailto:${contactEmail}`}
               className="font-bold text-base hover:underline"
               style={{ color: "var(--navy, #0B2744)" }}
             >
-              events@msptm.network
+              {contactEmail}
             </a>
             <div className="mt-4">
               <Link
