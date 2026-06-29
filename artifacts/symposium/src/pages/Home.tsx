@@ -42,7 +42,7 @@ export default function Home() {
             <div>
               <h2 className="text-3xl md:text-4xl font-bold text-secondary mb-6">About {cms?.event_short_name ?? "SEAT-MSPTM 2027"}</h2>
               <p className="text-base text-muted-foreground mb-5 leading-relaxed text-justify">
-                {cms?.about_text ?? "The 3rd Southeast Asia Ticks and Tick-borne Diseases Symposium (SEA TTBD 2027), held in conjunction with the 63rd Annual Scientific Conference of the Malaysian Society of Parasitology and Tropical Medicine (MSPTM), brings together researchers, veterinarians, healthcare professionals, and students to discuss the latest advances in tick and tick-borne disease research."}
+                {cms?.about_text ?? "The 3rd Southeast Asia Ticks and Tick-borne Diseases Symposium, held in conjunction with the 63rd Annual Scientific Conference of the Malaysian Society of Parasitology and Tropical Medicine (SEAT-MSPTM 2027), brings together researchers, clinicians, veterinarians, public health professionals, policymakers, industry partners, and students to exchange knowledge and foster collaboration on tropical infectious diseases of regional and global importance."}
               </p>
               {cms?.hero_subtitle && (
                 <p className="text-base text-muted-foreground mb-8 leading-relaxed text-justify">
