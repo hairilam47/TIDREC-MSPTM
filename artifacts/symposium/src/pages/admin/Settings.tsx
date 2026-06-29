@@ -55,6 +55,8 @@ const FIELD_GROUPS: FieldGroup[] = [
       { key: "organiser_full_primary", label: "Primary Organiser (full name)", type: "text" },
       { key: "organiser_full_secondary", label: "Co-Organiser (full name)", type: "text" },
       { key: "organiser_full_tertiary", label: "3rd Organiser (full name)", type: "text", placeholder: "Universiti Teknologi MARA (UiTM)" },
+      { key: "co_organiser_tidrec_website_url", label: "TIDREC Website URL", type: "text", placeholder: "https://www.tidrec.com" },
+      { key: "co_organiser_msptm_website_url", label: "MSPTM Website URL", type: "text", placeholder: "https://www.msptm.org" },
       { key: "co_organiser_uitm_website_url", label: "UiTM Website URL", type: "text", placeholder: "https://www.uitm.edu.my" },
     ],
   },
