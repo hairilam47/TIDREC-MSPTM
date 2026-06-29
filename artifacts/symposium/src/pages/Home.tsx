@@ -264,64 +264,79 @@ export default function Home() {
         {/* ── Sponsors ── */}
         <section id="sponsors" className="py-20 bg-white">
           <div className="max-w-5xl mx-auto px-4">
-            <div className="text-center mb-10">
+            <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold" style={{ color: "var(--navy)" }}>Our Sponsors</h2>
               <div className="mx-auto mt-2 h-0.5 w-12 rounded-full" style={{ background: "var(--gold)" }} />
             </div>
+
             {(() => {
-              const TIER_PAIRS: [string, string][] = [["platinum", "gold"], ["silver", "bronze"]];
-              const TIER_LABELS: Record<string, string> = {
-                platinum: "PLATINUM SPONSOR",
-                gold: "GOLD SPONSORS",
-                silver: "SILVER SPONSORS",
-                bronze: "BRONZE SPONSORS",
-              };
-              const LOGO_SIZE: Record<string, string> = {
-                platinum: "h-28 max-w-[240px]",
-                gold: "h-28 max-w-[240px]",
-                silver: "h-28 max-w-[240px]",
-                bronze: "h-28 max-w-[240px]",
-              };
-              return TIER_PAIRS.map(([left, right]) => {
-                const populated = [left, right].filter(
-                  tier => (sponsors?.filter(s => s.tier === tier) ?? []).length > 0
-                );
-                if (populated.length === 0) return null;
-                return (
-                  <div
-                    key={`${left}-${right}`}
-                    className={`grid gap-4 mb-4 ${populated.length === 2 ? "md:grid-cols-2" : "grid-cols-1"}`}
-                  >
-                    {populated.map(tier => {
-                      const tierSponsors = sponsors?.filter(s => s.tier === tier) ?? [];
-                      return (
-                        <div key={tier} className="rounded-xl border p-6 flex flex-col items-center gap-6 bg-white"
-                          style={{ borderColor: "rgba(200,155,60,0.35)" }}>
-                          <p className="text-xs font-bold uppercase tracking-widest"
-                            style={{ color: "var(--gold)" }}>
-                            + {TIER_LABELS[tier]} +
-                          </p>
-                          <div className="flex flex-wrap justify-center items-center gap-8">
-                            {tierSponsors.map(sponsor => (
-                              <div key={sponsor.id} className="flex items-center justify-center">
-                                {sponsor.logoUrl ? (
-                                  <img
-                                    src={resolveImageUrl(sponsor.logoUrl) ?? ""}
-                                    alt={sponsor.name}
-                                    className={`object-contain ${LOGO_SIZE[tier]}`}
-                                  />
-                                ) : (
-                                  <span className="font-bold text-lg" style={{ color: "var(--navy)" }}>{sponsor.name}</span>
-                                )}
-                              </div>
-                            ))}
-                          </div>
+              const TIERS = [
+                {
+                  key: "platinum",
+                  label: "PLATINUM SPONSOR",
+                  logoClass: "h-32 max-w-[280px]",
+                  maxWidth: "max-w-xl",
+                  border: "var(--gold)",
+                  bg: "rgba(200,155,60,0.05)",
+                  labelSize: "text-xs",
+                },
+                {
+                  key: "gold",
+                  label: "GOLD SPONSORS",
+                  logoClass: "h-24 max-w-[200px]",
+                  maxWidth: "max-w-3xl",
+                  border: "rgba(200,155,60,0.5)",
+                  bg: "rgba(200,155,60,0.03)",
+                  labelSize: "text-xs",
+                },
+                {
+                  key: "silver",
+                  label: "SILVER SPONSORS",
+                  logoClass: "h-16 max-w-[160px]",
+                  maxWidth: "max-w-4xl",
+                  border: "rgba(200,155,60,0.25)",
+                  bg: "white",
+                  labelSize: "text-xs",
+                },
+              ];
+
+              const anyVisible = TIERS.some(t => (sponsors?.filter(s => s.tier === t.key) ?? []).length > 0);
+              if (!anyVisible) return null;
+
+              return (
+                <div className="flex flex-col items-center gap-5">
+                  {TIERS.map(({ key, label, logoClass, maxWidth, border, bg, labelSize }) => {
+                    const tierSponsors = sponsors?.filter(s => s.tier === key) ?? [];
+                    if (tierSponsors.length === 0) return null;
+                    return (
+                      <div
+                        key={key}
+                        className={`w-full ${maxWidth} mx-auto rounded-2xl border-2 px-8 py-8 flex flex-col items-center gap-6`}
+                        style={{ borderColor: border, background: bg }}
+                      >
+                        <p className={`${labelSize} font-bold uppercase tracking-widest`} style={{ color: "var(--gold)" }}>
+                          ✦ {label} ✦
+                        </p>
+                        <div className="flex flex-wrap justify-center items-center gap-10">
+                          {tierSponsors.map(sponsor => (
+                            <div key={sponsor.id} className="flex items-center justify-center">
+                              {sponsor.logoUrl ? (
+                                <img
+                                  src={resolveImageUrl(sponsor.logoUrl) ?? ""}
+                                  alt={sponsor.name}
+                                  className={`object-contain ${logoClass}`}
+                                />
+                              ) : (
+                                <span className="font-bold text-lg" style={{ color: "var(--navy)" }}>{sponsor.name}</span>
+                              )}
+                            </div>
+                          ))}
                         </div>
-                      );
-                    })}
-                  </div>
-                );
-              });
+                      </div>
+                    );
+                  })}
+                </div>
+              );
             })()}
           </div>
         </section>
