@@ -33,7 +33,7 @@ const DEFAULT_SETTINGS: Record<string, string> = {
   register_early_bird_deadline: "Until 31 Dec 2026",
   register_regular_label: "Regular",
   register_regular_deadline: "Until 15 Feb 2027",
-  register_additional_fees_json: JSON.stringify([{ category: "Gala Dinner", fee: "MYR XX" }]),
+  register_additional_fees_json: JSON.stringify([{ category: "Gala Dinner", fee: "MYR 200" }]),
   register_fees_notes: "* Students must provide a valid student identification card.\n** Senior Researchers refer to retired academic staff, retired researchers, or retired professionals aged 60 years and above.\n*** ASEAN Alliance members refer to members of recognised partner societies including: TSP (Taiwan), VSD (Vietnam), IPDCA (Indonesia), IAMCP (Indonesia), PTAT (Thailand), PSP (Philippines), IAAVP (India), KSP (Korea).\nProof of membership may be required upon registration.\n\nAll registration fees are inclusive of 8% Sales and Service Tax (SST).",
   register_entitlements_heading: "Conference Delegates Entitlements",
   register_entitlements_json: JSON.stringify(["Admission to all scientific sessions", "Conference materials", "Certificate of attendance (e-certificate)", "Opening Ceremony", "Closing Ceremony", "Coffee Breaks", "Lunches", "Welcome Reception"]),

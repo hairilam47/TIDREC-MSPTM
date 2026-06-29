@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { db, registrationsTable, usersTable, paymentRemindersTable, registrationCategoriesTable } from "@workspace/db";
+import { db, registrationsTable, usersTable, paymentRemindersTable, registrationCategoriesTable, settingsTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
 import { requireAuth, requireAdmin, type AuthRequest } from "../lib/auth";
 import crypto from "node:crypto";
@@ -8,6 +8,27 @@ const router = Router();
 
 function generateRegistrationCode(): string {
   return "REG-" + crypto.randomBytes(4).toString("hex").toUpperCase();
+}
+
+async function getEarlyBirdDeadlineStr(): Promise<string | null> {
+  try {
+    const [row] = await db.select().from(settingsTable).where(eq(settingsTable.key, "date_early_bird_closes")).limit(1);
+    return row?.value ?? null;
+  } catch { return null; }
+}
+
+function isEarlyBirdActive(deadlineStr: string | null): boolean {
+  if (!deadlineStr) return false;
+  const d = new Date(deadlineStr);
+  if (isNaN(d.getTime())) return false;
+  return new Date() <= d;
+}
+
+function resolveBasePrice(catRow: { priceMyr: string; earlyBirdPriceMyr: string | null }, earlyBird: boolean): number {
+  if (earlyBird && catRow.earlyBirdPriceMyr != null) {
+    return parseFloat(catRow.earlyBirdPriceMyr);
+  }
+  return parseFloat(catRow.priceMyr);
 }
 
 async function formatRegistration(r: typeof registrationsTable.$inferSelect) {
@@ -94,7 +115,7 @@ router.post("/admin/registrations", requireAdmin, async (req: AuthRequest, res) 
 
 router.post("/registrations", requireAuth, async (req: AuthRequest, res) => {
   try {
-    const { category, dietaryRequirements, specialNeeds } = req.body;
+    const { category, dietaryRequirements, specialNeeds, addonsTotal } = req.body;
     const userId = req.user!.userId;
     const existing = await db.select().from(registrationsTable).where(eq(registrationsTable.userId, userId)).limit(1);
     if (existing.length > 0) {
@@ -103,6 +124,8 @@ router.post("/registrations", requireAuth, async (req: AuthRequest, res) => {
     }
     const [user] = await db.select().from(usersTable).where(eq(usersTable.id, userId)).limit(1);
     const finalCategory = category || user?.category || "";
+    const safeAddonsTotal = typeof addonsTotal === "number" && addonsTotal >= 0 ? addonsTotal : 0;
+
     let autoPaymentAmount: string | null = null;
     if (finalCategory) {
       const [catRow] = await db
@@ -110,7 +133,12 @@ router.post("/registrations", requireAuth, async (req: AuthRequest, res) => {
         .from(registrationCategoriesTable)
         .where(eq(registrationCategoriesTable.slug, finalCategory))
         .limit(1);
-      if (catRow) autoPaymentAmount = catRow.priceMyr;
+      if (catRow) {
+        const deadlineStr = await getEarlyBirdDeadlineStr();
+        const earlyBird = isEarlyBirdActive(deadlineStr);
+        const base = resolveBasePrice(catRow, earlyBird);
+        autoPaymentAmount = String(base + safeAddonsTotal);
+      }
     }
     const [registration] = await db.insert(registrationsTable).values({
       userId,

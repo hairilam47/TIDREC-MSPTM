@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 
 const COUNTRIES = [
-  "Afghanistan","Albania","Algeria","Andorra","Angola","Antigua and Barbuda","Argentina","Armenia","Australia","Austria","Azerbaijan","Bahamas","Bahrain","Bangladesh","Barbados","Belarus","Belgium","Belize","Benin","Bhutan","Bolivia","Bosnia and Herzegovina","Botswana","Brazil","Brunei","Bulgaria","Burkina Faso","Burundi","Cabo Verde","Cambodia","Cameroon","Canada","Central African Republic","Chad","Chile","China","Colombia","Comoros","Congo (Congo-Brazzaville)","Costa Rica","Croatia","Cuba","Cyprus","Czech Republic","Democratic Republic of the Congo","Denmark","Djibouti","Dominica","Dominican Republic","Ecuador","Egypt","El Salvador","Equatorial Guinea","Eritrea","Estonia","Eswatini","Ethiopia","Fiji","Finland","France","Gabon","Gambia","Georgia","Germany","Ghana","Greece","Grenada","Guatemala","Guinea","Guinea-Bissau","Guyana","Haiti","Honduras","Hungary","Iceland","India","Indonesia","Iran","Iraq","Ireland","Italy","Ivory Coast","Jamaica","Japan","Jordan","Kazakhstan","Kenya","Kiribati","Kuwait","Kyrgyzstan","Laos","Latvia","Lebanon","Lesotho","Liberia","Libya","Liechtenstein","Lithuania","Luxembourg","Madagascar","Malawi","Malaysia","Maldives","Mali","Malta","Marshall Islands","Mauritania","Mauritius","Mexico","Micronesia","Moldova","Monaco","Mongolia","Montenegro","Morocco","Mozambique","Myanmar","Namibia","Nauru","Nepal","Netherlands","New Zealand","Nicaragua","Niger","Nigeria","North Korea","North Macedonia","Norway","Oman","Pakistan","Palau","Palestine","Panama","Papua New Guinea","Paraguay","Peru","Philippines","Poland","Portugal","Qatar","Romania","Russia","Rwanda","Saint Kitts and Nevis","Saint Lucia","Saint Vincent and the Grenadines","Samoa","San Marino","Sao Tome and Principe","Saudi Arabia","Senegal","Serbia","Seychelles","Sierra Leone","Singapore","Slovakia","Slovenia","Solomon Islands","Somalia","South Africa","South Korea","South Sudan","Spain","Sri Lanka","Sudan","Suriname","Sweden","Switzerland","Syria","Taiwan","Tajikistan","Tanzania","Thailand","Timor-Leste","Togo","Tonga","Trinidad and Tobago","Tunisia","Turkey","Turkmenistan","Tuvalu","Uganda","Ukraine","United Arab Emirates","United Kingdom","United States","Uruguay","Uzbekistan","Vanuatu","Vatican City","Venezuela","Vietnam","Yemen","Zambia","Zimbabwe",
+  "Afghanistan","Albania","Algeria","Andorra","Angola","Antigua and Barbuda","Argentina","Armenia","Australia","Austria","Azerbaijan","Bahamas","Bahrain","Bangladesh","Barbados","Belarus","Belgium","Belize","Benin","Bhutan","Bolivia","Bosnia and Herzegovina","Botswana","Brazil","Brunei","Bulgaria","Burkina Faso","Burundi","Cabo Verde","Cambodia","Cameroon","Canada","Central African Republic","Chad","Chile","China","Colombia","Comoros","Congo (Congo-Brazzaville)","Costa Rica","Croatia","Cuba","Cyprus","Czech Republic","Democratic Republic of the Congo","Denmark","Djibouti","Dominica","Dominican Republic","Ecuador","Egypt","El Salvador","Equatorial Guinea","Eritrea","Estonia","Eswatini","Ethiopia","Fiji","Finland","France","Gabon","Gambia","Georgia","Germany","Ghana","Greece","Grenada","Guatemala","Guinea","Guinea-Bissau","Guyana","Haiti","Honduras","Hungary","Iceland","India","Indonesia","Iran","Iraq","Ireland","Italy","Ivory Coast","Jamaica","Japan","Jordan","Kazakhstan","Kenya","Kiribati","Kuwait","Kyrgyzstan","Laos","Latvia","Lebanon","Lesotho","Liberia","Libya","Liechtenstein","Lithuania","Luxembourg","Madagascar","Malawi","Malaysia","Maldives","Mali","Malta","Marshall Islands","Mauritania","Mauritius","Mexico","Micronesia","Moldova","Monaco","Mongolia","Montenegro","Morocco","Mozambique","Myanmar","Namibia","Nauru","Nepal","Netherlands","New Zealand","Nicaragua","Niger","Nigeria","North Korea","North Macedonia","Norway","Oman","Pakistan","Palau","Palestine","Panama","Papua New Guinea","Paraguay","Peru","Philippines","Poland","Portugal","Qatar","Romania","Russia","Rwanda","Saint Kitts and Nevis","Saint Lucia","Saint Vincent and the Grenadines","Samoa","San Marino","Sao Tome and Principe","Saudi Arabia","Senegal","Serbia","Seychelles","Sierra Leone","Singapore","Slovakia","Slovenia","Solomon Islands","Somalia","South Africa","South Korea","South Sudan","Spain","Sri Lanka","Sudan","Suriname","Sweden","Switzerland","Syria","Taiwan","Tajikistan","Tanzania","Thailand","Timor-Leste","Togo","Tonga","Trinidad and Tobago","Tunisia","Turkey","Turkmenistan","Tuvalu","Uganda","Ukraine","United Arab Emirates","United Kingdom","United States","Uruguay","Uzbekistan","Vanuatu","Vatican City","Venezuela","Vietnam","Yemen","Zambia","Zimbabwe"
 ];
 import { useLocation } from "wouter";
 import { motion } from "framer-motion";
-import { useRegister, useCreateRegistration, useGetRegistrationCategories } from "@workspace/api-client-react";
+import { useRegister, useGetRegistrationCategories } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -18,6 +18,23 @@ import { Link } from "wouter";
 import logoImg from "@assets/[WEBSITE LOGO] SEAT-MSPTM.png";
 
 type Step = 1 | 2 | 3 | 4;
+
+interface AddonFee {
+  category: string;
+  fee: string;
+  amount: number;
+}
+
+interface CategoryWithEarlyBird {
+  id: number;
+  slug: string;
+  label: string;
+  priceMyr: number;
+  earlyBirdPriceMyr?: number | null;
+  description?: string | null;
+  sortOrder: number;
+  isActive: boolean;
+}
 
 interface FormData {
   email: string;
@@ -46,6 +63,17 @@ const STEPS = [
   { num: 4, label: "Payment", icon: CreditCard },
 ];
 
+function parseFeeAmount(feeStr: string): number {
+  const n = parseFloat(feeStr.replace(/[^0-9.]/g, ""));
+  return isNaN(n) ? 0 : n;
+}
+
+function parseEarlyBirdDeadline(dateStr: string): Date | null {
+  if (!dateStr) return null;
+  const d = new Date(dateStr);
+  return isNaN(d.getTime()) ? null : d;
+}
+
 export default function Register() {
   const [step, setStep] = useState<Step>(1);
   const [formData, setFormData] = useState<FormData>({
@@ -55,14 +83,75 @@ export default function Register() {
     registrationType: "", paymentType: "",
     dietaryRequirements: "", specialNeeds: "",
   });
+  const [selectedAddons, setSelectedAddons] = useState<Set<string>>(new Set());
+  const [additionalFees, setAdditionalFees] = useState<AddonFee[]>([]);
+  const [isEarlyBird, setIsEarlyBird] = useState(false);
+  const [earlyBirdLabel, setEarlyBirdLabel] = useState("Early Bird");
+  const [earlyBirdDeadlineLabel, setEarlyBirdDeadlineLabel] = useState("");
+  const [logoSize, setLogoSize] = useState("md");
+  const [isPending, setIsPending] = useState(false);
+
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const registerMutation = useRegister();
-  const registrationMutation = useCreateRegistration();
-  const { data: categories = [] } = useGetRegistrationCategories();
+  const { data: rawCategories = [] } = useGetRegistrationCategories();
+  const categories = rawCategories as CategoryWithEarlyBird[];
+
+  const LOGO_HEIGHT: Record<string, string> = { xs: "h-12", sm: "h-16", md: "h-24", lg: "h-32", xl: "h-40" };
+
+  useEffect(() => {
+    fetch("/api/settings")
+      .then(r => r.json())
+      .then(d => {
+        if (d?.register_logo_size) setLogoSize(d.register_logo_size);
+        if (d?.register_early_bird_label) setEarlyBirdLabel(d.register_early_bird_label);
+        if (d?.register_early_bird_deadline) setEarlyBirdDeadlineLabel(d.register_early_bird_deadline);
+
+        const deadlineStr: string = d?.date_early_bird_closes ?? "";
+        const deadline = parseEarlyBirdDeadline(deadlineStr);
+        if (deadline) {
+          setIsEarlyBird(new Date() <= deadline);
+        }
+
+        try {
+          const raw = d?.register_additional_fees_json;
+          const parsed: { category: string; fee: string }[] = raw ? JSON.parse(raw) : [];
+          const fees: AddonFee[] = parsed.map(item => ({
+            category: item.category,
+            fee: item.fee,
+            amount: parseFeeAmount(item.fee),
+          }));
+          setAdditionalFees(fees.filter(f => f.amount > 0));
+        } catch {
+          setAdditionalFees([]);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const update = (field: keyof FormData, value: string) =>
     setFormData(prev => ({ ...prev, [field]: value }));
+
+  const toggleAddon = (category: string) => {
+    setSelectedAddons(prev => {
+      const next = new Set(prev);
+      if (next.has(category)) next.delete(category);
+      else next.add(category);
+      return next;
+    });
+  };
+
+  const getEffectivePrice = (cat: CategoryWithEarlyBird): number => {
+    if (isEarlyBird && cat.earlyBirdPriceMyr != null) return cat.earlyBirdPriceMyr;
+    return cat.priceMyr;
+  };
+
+  const selectedType = categories.find(c => c.slug === formData.registrationType);
+  const basePrice = selectedType ? getEffectivePrice(selectedType) : 0;
+  const addonsTotal = additionalFees
+    .filter(f => selectedAddons.has(f.category))
+    .reduce((sum, f) => sum + f.amount, 0);
+  const grandTotal = basePrice + addonsTotal;
 
   const validateStep = (): string | null => {
     if (step === 1) {
@@ -106,6 +195,8 @@ export default function Register() {
       return;
     }
 
+    setIsPending(true);
+
     registerMutation.mutate({
       data: {
         email: formData.email,
@@ -117,32 +208,53 @@ export default function Register() {
         category: formData.registrationType,
       },
     }, {
-      onSuccess: (data) => {
+      onSuccess: async (data) => {
         localStorage.setItem("satbds_token", data.token);
-        registrationMutation.mutate({
-          data: {
-            category: formData.registrationType,
-            dietaryRequirements: formData.dietaryRequirements || undefined,
-            specialNeeds: formData.specialNeeds || undefined,
-          },
-        }, {
-          onSuccess: () => {
+        try {
+          const selectedAddonItems = additionalFees
+            .filter(f => selectedAddons.has(f.category))
+            .map(f => ({ category: f.category, fee: f.fee, amount: f.amount }));
+
+          const regRes = await fetch("/api/registrations", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${data.token}`,
+            },
+            body: JSON.stringify({
+              category: formData.registrationType,
+              dietaryRequirements: formData.dietaryRequirements || undefined,
+              specialNeeds: formData.specialNeeds || undefined,
+              addonsTotal: selectedAddonItems.reduce((s, i) => s + i.amount, 0),
+              selectedAddons: selectedAddonItems,
+            }),
+          });
+
+          if (regRes.ok) {
             toast({
               title: "Registration complete!",
               description: "Welcome to SEAT-MSPTM 2027. Your delegate portal is ready.",
             });
             window.location.href = "/portal/";
-          },
-          onError: () => {
+          } else {
             toast({
               title: "Account created",
               description: "Please complete your conference registration in your portal.",
             });
             window.location.href = "/portal/registration";
-          },
-        });
+          }
+        } catch {
+          toast({
+            title: "Account created",
+            description: "Please complete your conference registration in your portal.",
+          });
+          window.location.href = "/portal/registration";
+        } finally {
+          setIsPending(false);
+        }
       },
       onError: (err: { message?: string }) => {
+        setIsPending(false);
         toast({
           title: "Registration failed",
           description: err.message || "Please try again",
@@ -151,18 +263,6 @@ export default function Register() {
       },
     });
   };
-
-  const isPending = registerMutation.isPending || registrationMutation.isPending;
-  const selectedType = categories.find(c => c.slug === formData.registrationType);
-
-  const [logoSize, setLogoSize] = useState("md");
-  const LOGO_HEIGHT: Record<string, string> = { xs: "h-12", sm: "h-16", md: "h-24", lg: "h-32", xl: "h-40" };
-  useEffect(() => {
-    fetch("/api/settings")
-      .then(r => r.json())
-      .then(d => { if (d?.register_logo_size) setLogoSize(d.register_logo_size); })
-      .catch(() => {});
-  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-secondary via-secondary/95 to-primary/20 flex items-center justify-center px-4 py-12">
@@ -326,47 +426,110 @@ export default function Register() {
             </>
           )}
 
-          {/* Step 3 — Registration Category */}
+          {/* Step 3 — Registration Category & Add-ons */}
           {step === 3 && (
             <>
               <CardHeader>
                 <CardTitle className="font-sans text-secondary text-2xl">Registration Category</CardTitle>
                 <CardDescription>Select the category that best describes your professional role</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-5">
+                {/* Early bird banner */}
+                {isEarlyBird && (
+                  <div className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium" style={{ background: "rgba(14,110,116,0.1)", color: "var(--teal, #0e6e74)", border: "1px solid rgba(14,110,116,0.25)" }}>
+                    <CheckCircle2 className="w-4 h-4 shrink-0" />
+                    <span>
+                      {earlyBirdLabel} pricing is active
+                      {earlyBirdDeadlineLabel ? ` — ${earlyBirdDeadlineLabel}` : ""}
+                    </span>
+                  </div>
+                )}
+
+                {/* Category selection */}
                 <div data-testid="select-registration-type" className="space-y-3">
                   {categories.length === 0 ? (
                     <div className="text-sm text-muted-foreground py-4 text-center">Loading categories…</div>
-                  ) : categories.map(cat => (
-                    <label
-                      key={cat.slug}
-                      className={`flex items-center justify-between p-4 rounded-lg border-2 cursor-pointer transition-all ${
-                        formData.registrationType === cat.slug
-                          ? "border-primary bg-primary/5"
-                          : "border-border hover:border-primary/40"
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <input
-                          type="radio"
-                          name="registrationType"
-                          value={cat.slug}
-                          checked={formData.registrationType === cat.slug}
-                          onChange={e => update("registrationType", e.target.value)}
-                        />
-                        <div>
-                          <div className="font-medium text-sm">{cat.label}</div>
-                          {cat.description && (
-                            <div className="text-xs text-muted-foreground">{cat.description}</div>
+                  ) : categories.map(cat => {
+                    const effectivePrice = getEffectivePrice(cat);
+                    const hasEarlyBird = isEarlyBird && cat.earlyBirdPriceMyr != null;
+                    return (
+                      <label
+                        key={cat.slug}
+                        className={`flex items-center justify-between p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                          formData.registrationType === cat.slug
+                            ? "border-primary bg-primary/5"
+                            : "border-border hover:border-primary/40"
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <input
+                            type="radio"
+                            name="registrationType"
+                            value={cat.slug}
+                            checked={formData.registrationType === cat.slug}
+                            onChange={e => update("registrationType", e.target.value)}
+                          />
+                          <div>
+                            <div className="font-medium text-sm">{cat.label}</div>
+                            {cat.description && (
+                              <div className="text-xs text-muted-foreground">{cat.description}</div>
+                            )}
+                          </div>
+                        </div>
+                        <div className="text-right ml-3 shrink-0">
+                          <div className="text-sm font-bold text-primary">
+                            MYR {effectivePrice.toLocaleString()}
+                          </div>
+                          {hasEarlyBird && (
+                            <div className="text-xs line-through text-muted-foreground">
+                              MYR {cat.priceMyr.toLocaleString()}
+                            </div>
+                          )}
+                          {hasEarlyBird && (
+                            <div className="text-xs font-semibold mt-0.5" style={{ color: "var(--teal, #0e6e74)" }}>
+                              {earlyBirdLabel}
+                            </div>
                           )}
                         </div>
-                      </div>
-                      <span className="text-sm font-bold text-primary whitespace-nowrap ml-3">
-                        MYR {cat.priceMyr.toLocaleString()}
-                      </span>
-                    </label>
-                  ))}
+                      </label>
+                    );
+                  })}
                 </div>
+
+                {/* Additional fees / add-ons */}
+                {additionalFees.length > 0 && (
+                  <div>
+                    <p className="text-sm font-semibold mb-2" style={{ color: "var(--navy, #0b2744)" }}>
+                      Optional Add-ons
+                    </p>
+                    <div className="space-y-2">
+                      {additionalFees.map(addon => (
+                        <label
+                          key={addon.category}
+                          className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-all ${
+                            selectedAddons.has(addon.category)
+                              ? "border-accent bg-accent/5"
+                              : "border-border hover:border-accent/40"
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <input
+                              type="checkbox"
+                              checked={selectedAddons.has(addon.category)}
+                              onChange={() => toggleAddon(addon.category)}
+                              className="rounded"
+                            />
+                            <span className="text-sm font-medium">{addon.category}</span>
+                          </div>
+                          <span className="text-sm font-bold text-primary ml-3 shrink-0">
+                            MYR {addon.amount.toLocaleString()}
+                          </span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 <div>
                   <Label htmlFor="dietary">Dietary Requirements (Optional)</Label>
                   <Textarea
@@ -420,15 +583,43 @@ export default function Register() {
                     <span className="text-muted-foreground">Institution</span>
                     <span className="font-medium">{formData.institution}, {formData.country}</span>
                   </div>
-                  <div className="flex justify-between text-sm border-t pt-2 mt-2">
-                    <span className="font-semibold">Category</span>
-                    <span className="font-medium">{selectedType?.label}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="font-semibold">Registration Fee</span>
-                    <span className="font-bold text-primary text-base">
-                      {selectedType ? `MYR ${selectedType.priceMyr.toLocaleString()}` : "—"}
-                    </span>
+
+                  <div className="border-t pt-2 mt-2 space-y-1.5">
+                    <div className="flex justify-between text-sm">
+                      <span className="font-semibold">Category</span>
+                      <span className="font-medium">
+                        {selectedType?.label}
+                        {isEarlyBird && selectedType?.earlyBirdPriceMyr != null && (
+                          <span className="ml-1.5 text-xs font-semibold px-1.5 py-0.5 rounded" style={{ background: "rgba(14,110,116,0.12)", color: "var(--teal, #0e6e74)" }}>
+                            {earlyBirdLabel}
+                          </span>
+                        )}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Registration Fee</span>
+                      <span className="font-semibold">
+                        MYR {basePrice.toLocaleString()}
+                      </span>
+                    </div>
+
+                    {/* Add-on line items */}
+                    {additionalFees
+                      .filter(f => selectedAddons.has(f.category))
+                      .map(addon => (
+                        <div key={addon.category} className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">{addon.category}</span>
+                          <span className="font-semibold">MYR {addon.amount.toLocaleString()}</span>
+                        </div>
+                      ))
+                    }
+
+                    <div className="flex justify-between text-sm border-t pt-2 mt-1">
+                      <span className="font-bold">Total</span>
+                      <span className="font-bold text-primary text-base">
+                        MYR {grandTotal.toLocaleString()}
+                      </span>
+                    </div>
                   </div>
                 </div>
 
@@ -472,7 +663,7 @@ export default function Register() {
               <Button
                 variant="outline"
                 onClick={goBack}
-                disabled={isPending}
+                disabled={isPending || registerMutation.isPending}
                 data-testid="button-back"
               >
                 Back
@@ -491,11 +682,11 @@ export default function Register() {
             ) : (
               <Button
                 onClick={handleSubmit}
-                disabled={isPending}
+                disabled={isPending || registerMutation.isPending}
                 className="bg-accent hover:bg-accent/90 text-white"
                 data-testid="button-submit-registration"
               >
-                {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {(isPending || registerMutation.isPending) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Complete Registration
               </Button>
             )}
