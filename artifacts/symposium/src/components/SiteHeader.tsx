@@ -5,7 +5,7 @@ import { CountdownBadge } from "@/components/ui/CountdownBadge";
 import { useGetSettings } from "@workspace/api-client-react";
 import logoImg from "@assets/[WEBSITE LOGO] SEAT-MSPTM.png";
 
-function AboutDropdown({ firstAnnouncementUrl }: { firstAnnouncementUrl?: string }) {
+function AboutDropdown({ firstAnnouncementUrl, uitm_url }: { firstAnnouncementUrl?: string; uitm_url?: string }) {
   return (
     <div className="relative group">
       <button
@@ -66,6 +66,24 @@ function AboutDropdown({ firstAnnouncementUrl }: { firstAnnouncementUrl?: string
               <path d="M3.5 1H11v7.5M11 1L1 11" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </a>
+
+          {uitm_url && (
+            <a
+              href={uitm_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium transition-colors hover:bg-gray-50"
+              style={{ color: "var(--navy)" }}
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+                <rect x="2" y="7" width="20" height="14" rx="2" /><path d="M16 7V5a2 2 0 00-4 0v2" /><path d="M12 12v4" /><path d="M8 12v4" /><path d="M16 12v4" />
+              </svg>
+              UiTM
+              <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" className="ml-auto opacity-40" aria-hidden="true">
+                <path d="M3.5 1H11v7.5M11 1L1 11" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </a>
+          )}
 
           {firstAnnouncementUrl && (
             <a
@@ -146,7 +164,7 @@ export function SiteHeader() {
 
         <nav className="hidden md:flex flex-1 items-center justify-center gap-5">
           <Link href="/" className="hover:text-accent transition-colors text-[var(--navy)] font-semibold text-sm">Home</Link>
-          <AboutDropdown firstAnnouncementUrl={cms?.first_announcement_url} />
+          <AboutDropdown firstAnnouncementUrl={cms?.first_announcement_url} uitm_url={(cms as Record<string, string> | undefined)?.co_organiser_uitm_website_url} />
           <Link href="/programme" className="hover:text-accent transition-colors text-[var(--navy)] font-semibold text-sm">Programme</Link>
           <AbstractDropdown />
           <Link href="/speakers" className="hover:text-accent transition-colors text-[var(--navy)] font-semibold text-sm">Speakers</Link>

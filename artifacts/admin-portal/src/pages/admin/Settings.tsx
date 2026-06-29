@@ -16,7 +16,7 @@ import { AdminLayout } from "@/components/AdminLayout";
 import { Upload, Loader2, ImageIcon, Trash2, FileText, ExternalLink, CalendarDays, Save, Info, BookOpen, Mail } from "lucide-react";
 
 interface LogoUploaderProps {
-  slug: "tidrec" | "msptm" | "venue";
+  slug: "tidrec" | "msptm" | "uitm" | "venue";
   label: string;
   currentPath: string;
   onSave: (objectPath: string) => Promise<void>;
@@ -236,6 +236,7 @@ const CONTACT_FIELDS = [
   { key: "venue_website_url", label: "Venue Website URL", placeholder: "https://www.sunwayhotels.com/sunway-putra", type: "url" },
   { key: "organiser_full_primary", label: "Organiser (Primary)", placeholder: "e.g. Malaysian Society of Parasitology…", type: "text" },
   { key: "organiser_full_secondary", label: "Organiser (Secondary)", placeholder: "e.g. TIDREC…", type: "text" },
+  { key: "co_organiser_uitm_website_url", label: "UiTM Website URL", placeholder: "https://www.uitm.edu.my", type: "url" },
 ] as const;
 
 const GUIDELINE_FIELDS = [
@@ -603,6 +604,14 @@ export default function AdminSettings() {
                     onSave={(path) => handleSaveLogo("co_organiser_msptm_logo", path)}
                     onClear={() => handleClearLogo("co_organiser_msptm_logo")}
                     saving={savingKey === "co_organiser_msptm_logo"}
+                  />
+                  <LogoUploader
+                    slug="uitm"
+                    label="UiTM"
+                    currentPath={(settings as Record<string, string> | undefined)?.co_organiser_uitm_logo ?? ""}
+                    onSave={(path) => handleSaveLogo("co_organiser_uitm_logo", path)}
+                    onClear={() => handleClearLogo("co_organiser_uitm_logo")}
+                    saving={savingKey === "co_organiser_uitm_logo"}
                   />
                   <LogoUploader
                     slug="venue"

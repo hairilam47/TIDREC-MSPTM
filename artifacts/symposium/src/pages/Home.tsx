@@ -124,7 +124,7 @@ export default function Home() {
         {/* ── Co-organisers strip ── */}
         <section className="py-12 bg-white border-y border-border">
           <div className="max-w-6xl mx-auto px-4">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
 
               {/* TIDREC */}
               <div className="flex flex-col items-center text-center rounded-xl border border-border shadow-sm bg-white p-6 gap-3">
@@ -164,6 +164,29 @@ export default function Home() {
                 </div>
                 <a
                   href="https://msptm.org"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-auto inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border text-xs font-medium text-secondary hover:bg-gray-50 transition-colors"
+                >
+                  <ExternalLink className="w-3 h-3" /> Visit Website
+                </a>
+              </div>
+
+              {/* UiTM */}
+              <div className="flex flex-col items-center text-center rounded-xl border border-border shadow-sm bg-white p-6 gap-3">
+                <div className="h-20 flex items-center justify-center">
+                  {(cms as Record<string, string> | undefined)?.co_organiser_uitm_logo ? (
+                    <img src="/api/co-organiser-logo/uitm" alt="UiTM" className="max-h-20 max-w-[140px] object-contain" />
+                  ) : (
+                    <span className="text-xl font-bold text-secondary tracking-tight">UiTM</span>
+                  )}
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-secondary leading-tight">UiTM</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">Co-Organiser</p>
+                </div>
+                <a
+                  href={(cms as Record<string, string> | undefined)?.co_organiser_uitm_website_url || "https://www.uitm.edu.my"}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="mt-auto inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border text-xs font-medium text-secondary hover:bg-gray-50 transition-colors"
@@ -410,6 +433,25 @@ export default function Home() {
                   );
                 })()}
                 <span>Tropical Infectious Diseases Research &amp; Education Centre (TIDREC)</span>
+              </li>
+              <li className="flex items-center gap-3">
+                {(() => {
+                  const uitm = cms as Record<string, string> | undefined;
+                  const uitmlUrl = uitm?.co_organiser_uitm_website_url?.trim();
+                  const logo = uitm?.co_organiser_uitm_logo ? (
+                    <img src="/api/co-organiser-logo/uitm" alt="UiTM" className="max-h-10 max-w-[80px] object-contain" />
+                  ) : (
+                    <span className="font-bold text-white text-xs">UiTM</span>
+                  );
+                  return uitmlUrl ? (
+                    <a href={uitmlUrl} target="_blank" rel="noopener noreferrer" className="flex-shrink-0 hover:opacity-80 transition-opacity">
+                      {logo}
+                    </a>
+                  ) : (
+                    <span className="flex-shrink-0">{logo}</span>
+                  );
+                })()}
+                <span>Universiti Teknologi MARA (UiTM)</span>
               </li>
               <li id="contact" className="pt-3 border-t border-white/10">
                 <span className="text-white font-medium block mb-1">Contact Us</span>

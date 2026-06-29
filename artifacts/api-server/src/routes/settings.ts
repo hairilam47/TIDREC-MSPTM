@@ -28,6 +28,8 @@ const DEFAULT_SETTINGS: Record<string, string> = {
   first_announcement_url: "",
   co_organiser_tidrec_logo: "https://tidrec.um.edu.my/images/Beige%20Pastel%20Minimalist%20Thesis%20Defense%20Presentation%20(400%20x%2070%20px)%20(1).png",
   co_organiser_msptm_logo: "https://msptm.org/wp-content/uploads/2024/02/MSPTM-Logo-No-BG-12Mar2022-ver2.png",
+  co_organiser_uitm_logo: "",
+  co_organiser_uitm_website_url: "https://www.uitm.edu.my",
   venue_logo: "https://image-tc.galaxy.tf/wipng-14z269ss45xgkfia6m5zxupd6/sunway-putra-hotel-kuala-lumpur.png",
   venue_website_url: "https://www.sunwayhotels.com/sunway-putra",
   date_registration_opens: "10 Aug 2026",
