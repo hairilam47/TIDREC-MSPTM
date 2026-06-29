@@ -51,9 +51,10 @@ interface FormData {
 }
 
 const PAYMENT_TYPES = [
-  { value: "bank_transfer", label: "Bank Transfer" },
-  { value: "online_banking", label: "Online Banking (FPX)" },
-  { value: "credit_card", label: "Credit / Debit Card" },
+  { value: "bank_transfer", label: "Bank Transfer", desc: "Transfer to our bank account. Payment instructions will be emailed after registration." },
+  { value: "online_banking", label: "Online Banking (FPX)", desc: "Pay via your internet banking (Maybank2u, CIMB Clicks, etc.). Link sent by email." },
+  { value: "credit_card", label: "Credit / Debit Card", desc: "Visa or Mastercard accepted. Secure payment link will be sent to your email." },
+  { value: "e_perolehan", label: "ePerolehan", desc: "For Malaysian government agencies using the ePerolehan procurement portal. A Purchase Order (PO) number is required." },
 ];
 
 const STEPS = [
@@ -227,6 +228,7 @@ export default function Register() {
               specialNeeds: formData.specialNeeds || undefined,
               addonsTotal: selectedAddonItems.reduce((s, i) => s + i.amount, 0),
               selectedAddons: selectedAddonItems,
+              paymentMethod: formData.paymentType || undefined,
             }),
           });
 
@@ -630,7 +632,7 @@ export default function Register() {
                     {PAYMENT_TYPES.map(pt => (
                       <label
                         key={pt.value}
-                        className={`flex items-center gap-3 p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                        className={`flex items-start gap-3 p-4 rounded-lg border-2 cursor-pointer transition-all ${
                           formData.paymentType === pt.value
                             ? "border-primary bg-primary/5"
                             : "border-border hover:border-primary/40"
@@ -642,8 +644,12 @@ export default function Register() {
                           value={pt.value}
                           checked={formData.paymentType === pt.value}
                           onChange={e => update("paymentType", e.target.value)}
+                          className="mt-0.5"
                         />
-                        <span className="font-medium text-sm">{pt.label}</span>
+                        <div>
+                          <div className="font-medium text-sm">{pt.label}</div>
+                          <div className="text-xs text-muted-foreground mt-0.5">{pt.desc}</div>
+                        </div>
                       </label>
                     ))}
                   </div>

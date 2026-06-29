@@ -1,7 +1,7 @@
 import React from "react";
 import AdminLayout from "@/components/AdminLayout";
 import { useGetRegistrations, useUpdateRegistration, useSendPaymentReminder, useGetRegistrationCategories } from "@workspace/api-client-react";
-import { Search, Bell } from "lucide-react";
+import { Search, Bell, ChevronDown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { INPUT_BASE } from "@/components/ui/form-primitives";
 
@@ -12,14 +12,44 @@ const PAYMENT_STYLES: Record<string, { bg: string; color: string; border?: strin
   waived:  { bg: "var(--primary-lt)",        color: "var(--primary)",             border: "var(--primary)" },
 };
 
+const PAYMENT_METHOD_LABELS: Record<string, string> = {
+  bank_transfer: "Bank Transfer",
+  online_banking: "Online Banking (FPX)",
+  credit_card: "Credit / Debit Card",
+  e_perolehan: "ePerolehan",
+};
+
+const PAYMENT_METHOD_OPTIONS = [
+  { value: "", label: "— Not specified —" },
+  { value: "bank_transfer", label: "Bank Transfer" },
+  { value: "online_banking", label: "Online Banking (FPX)" },
+  { value: "credit_card", label: "Credit / Debit Card" },
+  { value: "e_perolehan", label: "ePerolehan" },
+];
+
+interface RegistrationWithMethod {
+  id: number;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  category: string;
+  paymentStatus: string;
+  paymentAmount?: number | null;
+  paymentMethod?: string | null;
+  registrationCode?: string;
+}
+
 export default function AdminPayments() {
-  const { data: registrations, refetch } = useGetRegistrations();
+  const { data: rawRegistrations, refetch } = useGetRegistrations();
+  const registrations = rawRegistrations as RegistrationWithMethod[] | undefined;
   const { data: categories = [] } = useGetRegistrationCategories();
   const updateMutation = useUpdateRegistration();
   const reminderMutation = useSendPaymentReminder();
   const { toast } = useToast();
   const [search, setSearch] = React.useState("");
   const [statusFilter, setStatusFilter] = React.useState("all");
+  const [editingMethodId, setEditingMethodId] = React.useState<number | null>(null);
+  const [methodDraft, setMethodDraft] = React.useState<string>("");
 
   const filtered = (registrations ?? []).filter((r) => {
     const q = search.toLowerCase();
@@ -48,14 +78,33 @@ export default function AdminPayments() {
     );
   };
 
-  const sendReminder = (r: { id: number; firstName?: string; lastName?: string; email?: string }) => {
+  const startEditMethod = (r: RegistrationWithMethod) => {
+    setEditingMethodId(r.id);
+    setMethodDraft(r.paymentMethod ?? "");
+  };
+
+  const saveMethod = (id: number) => {
+    updateMutation.mutate(
+      { id, data: { paymentMethod: methodDraft } as Parameters<typeof updateMutation.mutate>[0]["data"] },
+      {
+        onSuccess: () => {
+          refetch();
+          setEditingMethodId(null);
+          toast({ title: "Payment method updated" });
+        },
+        onError: () => toast({ title: "Update failed", variant: "destructive" }),
+      }
+    );
+  };
+
+  const sendReminder = (r: RegistrationWithMethod) => {
     reminderMutation.mutate(
       { id: r.id },
       {
         onSuccess: (data) => {
           toast({
             title: `Reminder logged for ${r.firstName} ${r.lastName}`,
-            description: `Sent at ${new Date(data.sentAt).toLocaleString("en-GB")} · reminder #${data.reminderId}`,
+            description: `Sent at ${new Date((data as { sentAt: string }).sentAt).toLocaleString("en-GB")} · reminder #${(data as { reminderId: number }).reminderId}`,
           });
         },
         onError: () => toast({ title: "Reminder failed", variant: "destructive" }),
@@ -114,16 +163,19 @@ export default function AdminPayments() {
             <table className="table">
               <thead>
                 <tr>
-                  {["Delegate", "Registration Code", "Category", "Amount (MYR)", "Status", "Actions"].map((h) => (
+                  {["Delegate", "Code", "Category", "Payment Method", "Amount (MYR)", "Status", "Actions"].map((h) => (
                     <th key={h}>{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {filtered.length === 0 ? (
-                  <tr><td colSpan={6} className="text-center py-10 text-[13px]" style={{ color: "var(--text-disabled)" }}>No payments found</td></tr>
+                  <tr><td colSpan={7} className="text-center py-10 text-[13px]" style={{ color: "var(--text-disabled)" }}>No payments found</td></tr>
                 ) : filtered.map((r) => {
                   const ps = PAYMENT_STYLES[r.paymentStatus] ?? PAYMENT_STYLES.pending;
+                  const isEditingMethod = editingMethodId === r.id;
+                  const methodLabel = r.paymentMethod ? (PAYMENT_METHOD_LABELS[r.paymentMethod] ?? r.paymentMethod) : null;
+
                   return (
                     <tr key={r.id}>
                       <td>
@@ -136,6 +188,45 @@ export default function AdminPayments() {
                         </code>
                       </td>
                       <td className="capitalize" style={{ color: "var(--text-secondary)", fontSize: 12 }}>{r.category?.replace(/_/g, " ")}</td>
+
+                      {/* Payment Method — click to edit */}
+                      <td>
+                        {isEditingMethod ? (
+                          <div className="flex items-center gap-1.5">
+                            <select
+                              value={methodDraft}
+                              onChange={e => setMethodDraft(e.target.value)}
+                              className="text-[12px] px-2 py-1 rounded border"
+                              style={{ borderColor: "var(--border-color)", background: "var(--bg-surface)", color: "var(--text)", minWidth: 160 }}
+                              autoFocus
+                            >
+                              {PAYMENT_METHOD_OPTIONS.map(o => (
+                                <option key={o.value} value={o.value}>{o.label}</option>
+                              ))}
+                            </select>
+                            <button
+                              onClick={() => saveMethod(r.id)}
+                              disabled={updateMutation.isPending}
+                              className="btn btn-sm btn-primary disabled:opacity-60"
+                            >Save</button>
+                            <button
+                              onClick={() => setEditingMethodId(null)}
+                              className="btn btn-sm btn-outline"
+                            >✕</button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => startEditMethod(r)}
+                            className="flex items-center gap-1 text-[12px] group"
+                            style={{ color: methodLabel ? "var(--text-secondary)" : "var(--text-disabled)" }}
+                            title="Click to change payment method"
+                          >
+                            <span>{methodLabel ?? "—"}</span>
+                            <ChevronDown className="w-3 h-3 opacity-0 group-hover:opacity-60 transition-opacity" />
+                          </button>
+                        )}
+                      </td>
+
                       <td>
                         <span className="text-[13px] font-medium" style={{ color: r.paymentAmount ? "var(--text)" : "var(--text-disabled)" }}>
                           {r.paymentAmount != null

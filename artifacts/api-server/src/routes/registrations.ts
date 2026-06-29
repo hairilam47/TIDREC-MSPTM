@@ -44,6 +44,7 @@ async function formatRegistration(r: typeof registrationsTable.$inferSelect) {
     category: r.category,
     paymentStatus: r.paymentStatus,
     paymentAmount: r.paymentAmount ? parseFloat(r.paymentAmount) : null,
+    paymentMethod: r.paymentMethod ?? null,
     registrationCode: r.registrationCode,
     createdAt: r.createdAt.toISOString(),
   };
@@ -115,7 +116,7 @@ router.post("/admin/registrations", requireAdmin, async (req: AuthRequest, res) 
 
 router.post("/registrations", requireAuth, async (req: AuthRequest, res) => {
   try {
-    const { category, dietaryRequirements, specialNeeds, addonsTotal } = req.body;
+    const { category, dietaryRequirements, specialNeeds, addonsTotal, paymentMethod } = req.body;
     const userId = req.user!.userId;
     const existing = await db.select().from(registrationsTable).where(eq(registrationsTable.userId, userId)).limit(1);
     if (existing.length > 0) {
@@ -145,6 +146,7 @@ router.post("/registrations", requireAuth, async (req: AuthRequest, res) => {
       category: finalCategory,
       paymentStatus: "pending",
       paymentAmount: autoPaymentAmount,
+      paymentMethod: paymentMethod || null,
       registrationCode: generateRegistrationCode(),
       dietaryRequirements: dietaryRequirements || null,
       specialNeeds: specialNeeds || null,
@@ -241,11 +243,12 @@ router.get("/registrations/:id", requireAdmin, async (req, res) => {
 router.patch("/registrations/:id", requireAdmin, async (req, res) => {
   try {
     const id = parseInt(String(req.params.id));
-    const { paymentStatus, paymentAmount } = req.body;
+    const { paymentStatus, paymentAmount, paymentMethod } = req.body;
     const [reg] = await db.update(registrationsTable)
       .set({
         paymentStatus: paymentStatus || undefined,
         paymentAmount: paymentAmount !== undefined ? String(paymentAmount) : undefined,
+        paymentMethod: paymentMethod !== undefined ? (paymentMethod || null) : undefined,
         updatedAt: new Date(),
       })
       .where(eq(registrationsTable.id, id))
