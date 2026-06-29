@@ -60,6 +60,12 @@
 
 /* LIGHT MODE */
 :root {
+  /* ── Brand colour tokens (used across all marketing-site pages) ── */
+  --navy: #0B2744;
+  --teal: #0E6E74;
+  --gold: #C89B3C;
+  --gold-dk: #a07820;
+
   --button-outline: rgba(0,0,0, .10);
   --badge-outline: rgba(0,0,0, .05);
 
