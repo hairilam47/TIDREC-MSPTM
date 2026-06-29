@@ -1,2 +1,3 @@
 - [CSS var standardisation rules](css-var-rules.md) — zero hardcoded hex policy, exceptions, and design token map for all three portals.
 - [Programme sessions table](programme-sessions-table.md) — programme_sessions table was created via raw SQL (drizzle-kit push blocks on TTY prompt); run SQL directly for future schema adds.
+- [Admin portal Vite alias](admin-portal-vite-alias.md) — admin portal @/ → symposium/src; always edit artifacts/symposium/src/pages/admin/, never admin-portal/src/pages/admin/.

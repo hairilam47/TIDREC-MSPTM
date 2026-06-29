@@ -5,15 +5,20 @@ import {
   useCreateRegistrationCategory,
   useUpdateRegistrationCategory,
 } from "@workspace/api-client-react";
-import type { RegistrationCategory, RegistrationCategoryInput } from "@workspace/api-client-react";
+import type { RegistrationCategory } from "@workspace/api-client-react";
 import { Plus, Pencil, Loader2, ToggleLeft, ToggleRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ModalShell, FormField, INPUT_BASE, TEXTAREA_BASE, inputBorder } from "@/components/ui/form-primitives";
+
+interface CategoryWithEarlyBird extends RegistrationCategory {
+  earlyBirdPriceMyr?: number | null;
+}
 
 interface CatForm {
   label: string;
   slug: string;
   priceMyr: string;
+  earlyBirdPriceMyr: string;
   description: string;
   sortOrder: string;
   isActive: boolean;
@@ -23,6 +28,7 @@ const EMPTY_FORM: CatForm = {
   label: "",
   slug: "",
   priceMyr: "",
+  earlyBirdPriceMyr: "",
   description: "",
   sortOrder: "0",
   isActive: true,
@@ -37,7 +43,7 @@ function CategoryModal({
   onClose,
   onSuccess,
 }: {
-  initial?: RegistrationCategory;
+  initial?: CategoryWithEarlyBird;
   onClose: () => void;
   onSuccess: () => void;
 }) {
@@ -47,6 +53,7 @@ function CategoryModal({
           label: initial.label,
           slug: initial.slug,
           priceMyr: String(initial.priceMyr),
+          earlyBirdPriceMyr: initial.earlyBirdPriceMyr != null ? String(initial.earlyBirdPriceMyr) : "",
           description: initial.description ?? "",
           sortOrder: String(initial.sortOrder),
           isActive: initial.isActive,
@@ -81,6 +88,11 @@ function CategoryModal({
       newErrors.slug = "Only lowercase letters, numbers, underscores";
     const price = parseFloat(form.priceMyr);
     if (isNaN(price) || price < 0) newErrors.priceMyr = "Enter a valid price";
+    if (form.earlyBirdPriceMyr.trim() !== "") {
+      const eb = parseFloat(form.earlyBirdPriceMyr);
+      if (isNaN(eb) || eb < 0) newErrors.earlyBirdPriceMyr = "Enter a valid price";
+      else if (!isNaN(price) && eb >= price) newErrors.earlyBirdPriceMyr = "Must be less than the regular price";
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -88,17 +100,19 @@ function CategoryModal({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
-    const data: RegistrationCategoryInput = {
+    const earlyBirdVal = form.earlyBirdPriceMyr.trim() !== "" ? parseFloat(form.earlyBirdPriceMyr) : null;
+    const data = {
       label: form.label.trim(),
       slug: form.slug.trim(),
       priceMyr: parseFloat(form.priceMyr),
+      earlyBirdPriceMyr: earlyBirdVal,
       description: form.description.trim() || undefined,
       sortOrder: parseInt(form.sortOrder) || 0,
       isActive: form.isActive,
     };
     if (initial) {
       updateMutation.mutate(
-        { id: initial.id, data },
+        { id: initial.id, data: data as Parameters<typeof updateMutation.mutate>[0]["data"] },
         {
           onSuccess: () => {
             toast({ title: "Category updated" });
@@ -113,7 +127,7 @@ function CategoryModal({
       );
     } else {
       createMutation.mutate(
-        { data },
+        { data: data as Parameters<typeof createMutation.mutate>[0]["data"] },
         {
           onSuccess: () => {
             toast({ title: "Category created" });
@@ -137,11 +151,7 @@ function CategoryModal({
       onClose={onClose}
       footer={
         <div className="flex justify-end gap-3">
-          <button
-            type="button"
-            onClick={onClose}
-            className="btn btn-outline"
-          >
+          <button type="button" onClick={onClose} className="btn btn-outline">
             Cancel
           </button>
           <button
@@ -161,12 +171,13 @@ function CategoryModal({
           <input
             value={form.label}
             onChange={set("label")}
-            placeholder="e.g. MSPTM Member / ASIAN Alliance"
+            placeholder="e.g. MSPTM Member / ASEAN Alliance"
             className={INPUT_BASE}
             style={inputBorder(errors.label)}
             autoFocus
           />
         </FormField>
+
         <FormField
           label="Slug"
           required
@@ -184,18 +195,39 @@ function CategoryModal({
             style={inputBorder(errors.slug)}
           />
         </FormField>
-        <FormField label="Price (MYR)" required error={errors.priceMyr}>
-          <input
-            type="number"
-            value={form.priceMyr}
-            onChange={set("priceMyr")}
-            placeholder="0.00"
-            min="0"
-            step="0.01"
-            className={INPUT_BASE}
-            style={inputBorder(errors.priceMyr)}
-          />
-        </FormField>
+
+        <div className="grid grid-cols-2 gap-4">
+          <FormField label="Regular Price (MYR)" required error={errors.priceMyr}>
+            <input
+              type="number"
+              value={form.priceMyr}
+              onChange={set("priceMyr")}
+              placeholder="e.g. 800"
+              min="0"
+              step="0.01"
+              className={INPUT_BASE}
+              style={inputBorder(errors.priceMyr)}
+            />
+          </FormField>
+
+          <FormField
+            label="Early Bird Price (MYR)"
+            error={errors.earlyBirdPriceMyr}
+            hint="Leave blank to hide Early Bird column"
+          >
+            <input
+              type="number"
+              value={form.earlyBirdPriceMyr}
+              onChange={set("earlyBirdPriceMyr")}
+              placeholder="e.g. 650 (optional)"
+              min="0"
+              step="0.01"
+              className={INPUT_BASE}
+              style={inputBorder(errors.earlyBirdPriceMyr)}
+            />
+          </FormField>
+        </div>
+
         <div className="grid grid-cols-2 gap-4">
           <FormField label="Sort Order" hint="Lower = shown first">
             <input
@@ -217,11 +249,12 @@ function CategoryModal({
                 style={{ accentColor: "var(--primary)" }}
               />
               <span className="text-[13px]" style={{ color: "var(--text-secondary)" }}>
-                {form.isActive ? "Active — visible to delegates" : "Inactive — hidden from registration"}
+                {form.isActive ? "Active — visible to delegates" : "Inactive — hidden"}
               </span>
             </label>
           </FormField>
         </div>
+
         <FormField label="Description" hint="Optional — shown below category name in the registration form">
           <textarea
             value={form.description}
@@ -238,11 +271,12 @@ function CategoryModal({
 }
 
 export default function AdminRegistrationCategories() {
-  const { data: categories = [], isLoading, refetch } = useGetAllRegistrationCategories();
+  const { data: rawCategories = [], isLoading, refetch } = useGetAllRegistrationCategories();
+  const categories = rawCategories as CategoryWithEarlyBird[];
   const updateMutation = useUpdateRegistrationCategory();
   const { toast } = useToast();
   const [showModal, setShowModal] = React.useState(false);
-  const [editing, setEditing] = React.useState<RegistrationCategory | undefined>(undefined);
+  const [editing, setEditing] = React.useState<CategoryWithEarlyBird | undefined>(undefined);
 
   const handleSuccess = () => {
     setShowModal(false);
@@ -250,7 +284,7 @@ export default function AdminRegistrationCategories() {
     refetch();
   };
 
-  const toggleActive = (cat: RegistrationCategory) => {
+  const toggleActive = (cat: CategoryWithEarlyBird) => {
     updateMutation.mutate(
       {
         id: cat.id,
@@ -261,7 +295,7 @@ export default function AdminRegistrationCategories() {
           description: cat.description ?? undefined,
           sortOrder: cat.sortOrder,
           isActive: !cat.isActive,
-        },
+        } as Parameters<typeof updateMutation.mutate>[0]["data"],
       },
       {
         onSuccess: () => {
@@ -303,7 +337,7 @@ export default function AdminRegistrationCategories() {
               <table className="table">
                 <thead>
                   <tr>
-                    {["#", "Label", "Slug", "Price (MYR)", "Status", "Actions"].map((h) => (
+                    {["#", "Label", "Slug", "Early Bird (MYR)", "Regular (MYR)", "Status", "Actions"].map((h) => (
                       <th key={h}>{h}</th>
                     ))}
                   </tr>
@@ -312,7 +346,7 @@ export default function AdminRegistrationCategories() {
                   {categories.length === 0 ? (
                     <tr>
                       <td
-                        colSpan={6}
+                        colSpan={7}
                         className="text-center py-10 text-[13px]"
                         style={{ color: "var(--text-disabled)" }}
                       >
@@ -321,10 +355,7 @@ export default function AdminRegistrationCategories() {
                     </tr>
                   ) : (
                     categories.map((cat) => (
-                      <tr
-                        key={cat.id}
-                        style={{ opacity: cat.isActive ? 1 : 0.55 }}
-                      >
+                      <tr key={cat.id} style={{ opacity: cat.isActive ? 1 : 0.55 }}>
                         <td className="text-[12px] w-10" style={{ color: "var(--text-disabled)" }}>
                           {cat.sortOrder}
                         </td>
@@ -342,6 +373,15 @@ export default function AdminRegistrationCategories() {
                           <code className="cell-mono" style={{ background: "var(--bg-surface-secondary)", padding: "2px 6px", borderRadius: 4 }}>
                             {cat.slug}
                           </code>
+                        </td>
+                        <td>
+                          {cat.earlyBirdPriceMyr != null ? (
+                            <span className="text-[14px] font-semibold" style={{ color: "var(--teal, #0e6e74)" }}>
+                              {Number(cat.earlyBirdPriceMyr).toLocaleString("en-MY", { minimumFractionDigits: 2 })}
+                            </span>
+                          ) : (
+                            <span style={{ color: "var(--text-disabled)" }}>—</span>
+                          )}
                         </td>
                         <td>
                           <span className="text-[14px] font-semibold" style={{ color: "var(--text)" }}>
