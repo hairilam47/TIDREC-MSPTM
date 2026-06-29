@@ -49,7 +49,6 @@ function PersonCard({ member }: {
   return (
     <div className="flex flex-col items-center text-center gap-3 p-5 bg-white rounded-xl border shadow-sm"
       style={{ borderColor: "#f0f0f0" }}>
-      <PersonAvatar photoUrl={member.photoUrl} name={member.name} />
       <div>
         <div className="font-semibold text-sm leading-snug" style={{ color: "var(--navy)" }}>{member.name}</div>
         <div className="text-xs mt-1" style={{ color: "var(--teal)" }}>{member.title}</div>
