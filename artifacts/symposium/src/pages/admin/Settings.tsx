@@ -93,6 +93,32 @@ const FIELD_GROUPS: FieldGroup[] = [
 const INPUT_CLS =
   "w-full px-3.5 py-3 rounded-lg text-[14px] outline-none transition-colors focus:ring-2 focus:ring-[var(--teal-focus)] focus:border-[var(--primary)]";
 
+interface OrgCard {
+  id: string;
+  name: string;
+  role: string;
+  type: string;
+  logoKey: string;
+  websiteKey: string;
+  websiteUrl?: string;
+  custom?: boolean;
+}
+interface OrgRow { label: string; cards: string[] }
+
+const BUILT_IN_IDS = new Set(["tidrec", "msptm", "uitm", "venue", "venue_maps"]);
+
+const DEFAULT_ORG_CARDS: OrgCard[] = [
+  { id: "tidrec",     name: "TIDREC",            role: "Co-Organiser", type: "organiser", logoKey: "co_organiser_tidrec_logo", websiteKey: "co_organiser_tidrec_website_url", custom: false },
+  { id: "msptm",     name: "MSPTM",             role: "Co-Organiser", type: "organiser", logoKey: "co_organiser_msptm_logo",  websiteKey: "co_organiser_msptm_website_url",  custom: false },
+  { id: "uitm",      name: "UiTM",              role: "Co-Organiser", type: "organiser", logoKey: "co_organiser_uitm_logo",   websiteKey: "co_organiser_uitm_website_url",   custom: false },
+  { id: "venue",     name: "Sunway Putra Hotel", role: "Venue",        type: "venue",     logoKey: "venue_logo",               websiteKey: "venue_website_url",               custom: false },
+  { id: "venue_maps",name: "Venue Location",    role: "Google Maps",  type: "maps",      logoKey: "",                          websiteKey: "contact_maps_url",                custom: false },
+];
+const DEFAULT_ORG_ROWS: OrgRow[] = [
+  { label: "", cards: ["tidrec", "msptm", "uitm"] },
+  { label: "", cards: ["venue", "venue_maps"] },
+];
+
 export default function AdminSettings() {
   const { toast } = useToast();
   const [values, setValues] = React.useState<Record<string, string>>({});
@@ -104,6 +130,84 @@ export default function AdminSettings() {
   const [announcementError, setAnnouncementError] = React.useState<string | null>(null);
   const [uploadingLogoKey, setUploadingLogoKey] = React.useState<string | null>(null);
   const [logoError, setLogoError] = React.useState<string | null>(null);
+
+  const [newCardName, setNewCardName] = React.useState("");
+  const [newCardRole, setNewCardRole] = React.useState("Co-Organiser");
+  const [newCardType, setNewCardType] = React.useState("organiser");
+  const [newCardWebsiteUrl, setNewCardWebsiteUrl] = React.useState("");
+
+  const orgCards = React.useMemo<OrgCard[]>(() => {
+    try {
+      const p = JSON.parse(values.co_organisers_cards_json ?? "");
+      if (Array.isArray(p) && p.length > 0) return p as OrgCard[];
+    } catch { /* ignore */ }
+    return DEFAULT_ORG_CARDS;
+  }, [values.co_organisers_cards_json]);
+
+  const orgRows = React.useMemo<OrgRow[]>(() => {
+    try {
+      const p = JSON.parse(values.co_organisers_section_rows_json ?? "");
+      if (Array.isArray(p) && p.length > 0) return p as OrgRow[];
+    } catch { /* ignore */ }
+    return DEFAULT_ORG_ROWS;
+  }, [values.co_organisers_section_rows_json]);
+
+  const setOrgCards = (next: OrgCard[]) => set("co_organisers_cards_json", JSON.stringify(next));
+  const setOrgRows  = (next: OrgRow[])  => set("co_organisers_section_rows_json", JSON.stringify(next));
+
+  const addOrgCard = () => {
+    if (!newCardName.trim()) return;
+    const id = `custom_${Date.now().toString(36)}`;
+    const logoKey = `co_organiser_${id}_logo`;
+    const newCard: OrgCard = {
+      id, name: newCardName.trim(), role: newCardRole.trim() || "Co-Organiser",
+      type: newCardType, logoKey, websiteKey: "", websiteUrl: newCardWebsiteUrl.trim(), custom: true,
+    };
+    setOrgCards([...orgCards, newCard]);
+    setNewCardName(""); setNewCardRole("Co-Organiser"); setNewCardType("organiser"); setNewCardWebsiteUrl("");
+  };
+
+  const deleteOrgCard = (id: string) => {
+    setOrgCards(orgCards.filter(c => c.id !== id));
+    setOrgRows(orgRows.map(r => ({ ...r, cards: r.cards.filter(cid => cid !== id) })));
+  };
+
+  const addOrgRow = () => setOrgRows([...orgRows, { label: "", cards: [] }]);
+
+  const deleteOrgRow = (rowIdx: number) =>
+    setOrgRows(orgRows.filter((_, i) => i !== rowIdx));
+
+  const moveOrgRow = (rowIdx: number, dir: -1 | 1) => {
+    const j = rowIdx + dir;
+    if (j < 0 || j >= orgRows.length) return;
+    const next = [...orgRows];
+    [next[rowIdx], next[j]] = [next[j], next[rowIdx]];
+    setOrgRows(next);
+  };
+
+  const moveCardToRow = (cardId: string, fromRow: number, toRow: number) => {
+    const next = orgRows.map((r, i) => ({
+      ...r,
+      cards: i === fromRow
+        ? r.cards.filter(id => id !== cardId)
+        : i === toRow
+          ? [...r.cards, cardId]
+          : r.cards,
+    }));
+    setOrgRows(next);
+  };
+
+  const removeCardFromRow = (cardId: string, rowIdx: number) =>
+    setOrgRows(orgRows.map((r, i) => i === rowIdx ? { ...r, cards: r.cards.filter(id => id !== cardId) } : r));
+
+  const addCardToRow = (cardId: string, rowIdx: number) =>
+    setOrgRows(orgRows.map((r, i) => i === rowIdx ? { ...r, cards: [...r.cards, cardId] } : r));
+
+  const assignedCardIds = React.useMemo(
+    () => new Set(orgRows.flatMap(r => r.cards)),
+    [orgRows]
+  );
+  const unassignedCards = orgCards.filter(c => !assignedCardIds.has(c.id));
 
   const importantDates = React.useMemo<{ label: string; date: string }[]>(() => {
     try {
@@ -816,61 +920,79 @@ export default function AdminSettings() {
           <div className="card-body">
             <h3 className="text-[14px] font-semibold mb-1" style={{ color: "var(--text)" }}>Co-organiser &amp; Venue Logos</h3>
             <p className="text-[13px] mb-5" style={{ color: "var(--text-muted)" }}>
-              Upload logos for the co-organiser cards shown on the marketing site home page. Images save immediately — no need to click Save Changes.
+              Logos save immediately — no need to click Save Changes.
             </p>
 
-            {(
-              [
-                { key: "co_organiser_tidrec_logo", slug: "tidrec", label: "TIDREC", desc: "Tropical Infectious Diseases Research & Education Centre" },
-                { key: "co_organiser_msptm_logo", slug: "msptm", label: "MSPTM", desc: "Malaysian Society of Parasitology and Tropical Medicine" },
-                { key: "co_organiser_uitm_logo", slug: "uitm", label: "UiTM", desc: "Universiti Teknologi MARA" },
-                { key: "venue_logo", slug: "venue", label: "Venue — Sunway Putra Hotel", desc: "Hotel / venue logo" },
-              ] as const
-            ).map(({ key, slug, label, desc }) => {
-              const hasLogo = Boolean(values[key]);
-              const isBusy = uploadingLogoKey === key;
+            {/* Section Logos */}
+            <p className="text-[12px] font-bold uppercase tracking-wide mb-3" style={{ color: "var(--text-secondary)" }}>Section Logos (mid-page cards)</p>
+            {orgCards.filter(c => c.logoKey).map((card) => {
+              const hasLogo = Boolean(values[card.logoKey]);
+              const isBusy = uploadingLogoKey === card.logoKey;
               return (
-                <div key={key} className="flex items-start gap-4 py-4 border-b last:border-0" style={{ borderColor: "var(--border-color)" }}>
-                  <div
-                    className="flex-shrink-0 w-28 h-20 rounded-lg flex items-center justify-center overflow-hidden"
-                    style={{ border: "1px solid var(--border-color)", background: "var(--bg-subtle, #f8f9fa)" }}
-                  >
+                <div key={card.logoKey} className="flex items-start gap-4 py-4 border-b" style={{ borderColor: "var(--border-color)" }}>
+                  <div className="flex-shrink-0 w-28 h-20 rounded-lg flex items-center justify-center overflow-hidden"
+                    style={{ border: "1px solid var(--border-color)", background: "var(--bg-subtle, #f8f9fa)" }}>
                     {hasLogo ? (
-                      <img
-                        src={`${API}/co-organiser-logo/${slug}`}
-                        alt={label}
-                        className="max-w-full max-h-full object-contain p-1"
-                      />
+                      <img src={`${API}/co-organiser-logo/${card.id}`} alt={card.name} className="max-w-full max-h-full object-contain p-1" />
                     ) : (
                       <ImageIcon className="w-8 h-8" style={{ color: "var(--text-disabled)" }} />
                     )}
                   </div>
-
                   <div className="flex-1 min-w-0">
-                    <p className="text-[13px] font-semibold" style={{ color: "var(--text)" }}>{label}</p>
-                    <p className="text-[12px] mb-3" style={{ color: "var(--text-muted)" }}>{hasLogo ? "Logo uploaded" : desc}</p>
+                    <p className="text-[13px] font-semibold" style={{ color: "var(--text)" }}>{card.name}</p>
+                    <p className="text-[12px] mb-3" style={{ color: "var(--text-muted)" }}>{hasLogo ? "Logo uploaded" : card.role}</p>
                     <div className="flex flex-wrap gap-2">
-                      <label
-                        className="btn btn-sm btn-primary flex items-center gap-1.5"
-                        style={{ opacity: isBusy ? 0.6 : 1, pointerEvents: isBusy ? "none" : "auto", cursor: isBusy ? "default" : "pointer" }}
-                      >
+                      <label className="btn btn-sm btn-primary flex items-center gap-1.5"
+                        style={{ opacity: isBusy ? 0.6 : 1, pointerEvents: isBusy ? "none" : "auto", cursor: isBusy ? "default" : "pointer" }}>
                         {isBusy ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />}
                         {isBusy ? "Uploading…" : hasLogo ? "Replace" : "Upload Logo"}
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          disabled={isBusy}
-                          onChange={(e) => handleLogoUpload(key, e)}
-                        />
+                        <input type="file" accept="image/*" className="hidden" disabled={isBusy} onChange={(e) => handleLogoUpload(card.logoKey, e)} />
                       </label>
                       {hasLogo && (
-                        <button
-                          className="btn btn-sm"
-                          disabled={isBusy}
-                          onClick={() => handleLogoRemove(key)}
-                          style={{ background: "var(--status-danger-bg)", color: "var(--status-danger-text)", borderColor: "var(--status-danger-border)" }}
-                        >
+                        <button className="btn btn-sm" disabled={isBusy} onClick={() => handleLogoRemove(card.logoKey)}
+                          style={{ background: "var(--status-danger-bg)", color: "var(--status-danger-text)", borderColor: "var(--status-danger-border)" }}>
+                          <X className="w-3 h-3" /> Remove
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+
+            {/* Footer Logos */}
+            <p className="text-[12px] font-bold uppercase tracking-wide mt-6 mb-3" style={{ color: "var(--text-secondary)" }}>Footer Logos (Organisers column)</p>
+            <p className="text-[12px] mb-4" style={{ color: "var(--text-muted)" }}>Falls back to the Section logo above if not set.</p>
+            {([
+              { key: "co_organiser_msptm_footer_logo",  slug: "msptm-footer",  label: "MSPTM (footer)" },
+              { key: "co_organiser_tidrec_footer_logo", slug: "tidrec-footer", label: "TIDREC (footer)" },
+              { key: "co_organiser_uitm_footer_logo",   slug: "uitm-footer",   label: "UiTM (footer)" },
+            ] as const).map(({ key, slug, label }) => {
+              const hasLogo = Boolean(values[key]);
+              const isBusy = uploadingLogoKey === key;
+              return (
+                <div key={key} className="flex items-start gap-4 py-4 border-b last:border-0" style={{ borderColor: "var(--border-color)" }}>
+                  <div className="flex-shrink-0 w-28 h-16 rounded-lg flex items-center justify-center overflow-hidden"
+                    style={{ border: "1px solid var(--border-color)", background: "var(--bg-subtle, #f8f9fa)" }}>
+                    {hasLogo ? (
+                      <img src={`${API}/co-organiser-logo/${slug}`} alt={label} className="max-w-full max-h-full object-contain p-1" />
+                    ) : (
+                      <ImageIcon className="w-6 h-6" style={{ color: "var(--text-disabled)" }} />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[13px] font-semibold" style={{ color: "var(--text)" }}>{label}</p>
+                    <p className="text-[12px] mb-3" style={{ color: "var(--text-muted)" }}>{hasLogo ? "Custom footer logo uploaded" : "Using section logo as fallback"}</p>
+                    <div className="flex flex-wrap gap-2">
+                      <label className="btn btn-sm btn-primary flex items-center gap-1.5"
+                        style={{ opacity: isBusy ? 0.6 : 1, pointerEvents: isBusy ? "none" : "auto", cursor: isBusy ? "default" : "pointer" }}>
+                        {isBusy ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />}
+                        {isBusy ? "Uploading…" : hasLogo ? "Replace" : "Upload Footer Logo"}
+                        <input type="file" accept="image/*" className="hidden" disabled={isBusy} onChange={(e) => handleLogoUpload(key, e)} />
+                      </label>
+                      {hasLogo && (
+                        <button className="btn btn-sm" disabled={isBusy} onClick={() => handleLogoRemove(key)}
+                          style={{ background: "var(--status-danger-bg)", color: "var(--status-danger-text)", borderColor: "var(--status-danger-border)" }}>
                           <X className="w-3 h-3" /> Remove
                         </button>
                       )}
@@ -882,6 +1004,184 @@ export default function AdminSettings() {
 
             {logoError && (
               <p className="text-[12px] mt-3" style={{ color: "var(--status-danger-text)" }}>{logoError}</p>
+            )}
+          </div>
+        </div>
+
+        {/* ── Card Registry ── */}
+        <div className="card">
+          <div className="card-body">
+            <h3 className="text-[14px] font-semibold mb-1" style={{ color: "var(--text)" }}>Co-organiser Card Registry</h3>
+            <p className="text-[12px] mb-5" style={{ color: "var(--text-muted)" }}>
+              All cards available for the homepage section. Built-in cards cannot be deleted. Custom cards you add here can be placed into rows using the Section Row Layout card below. Save Changes to publish.
+            </p>
+
+            <div className="space-y-1 mb-5">
+              {orgCards.map((card) => {
+                const isBuiltIn = BUILT_IN_IDS.has(card.id);
+                return (
+                  <div key={card.id} className="flex items-center gap-3 px-3 py-2.5 rounded-lg" style={{ border: "1px solid var(--border-color)", background: "var(--bg-surface)" }}>
+                    <div className="flex-1 min-w-0">
+                      <span className="text-[13px] font-semibold mr-2" style={{ color: "var(--text)" }}>{card.name}</span>
+                      <span className="text-[11px]" style={{ color: "var(--text-muted)" }}>{card.role}</span>
+                      <span className="ml-2 text-[10px] px-1.5 py-0.5 rounded font-medium uppercase"
+                        style={{ background: isBuiltIn ? "var(--primary-lt)" : "rgba(200,155,60,0.12)", color: isBuiltIn ? "var(--primary)" : "var(--gold, #C89B3C)" }}>
+                        {isBuiltIn ? "built-in" : "custom"}
+                      </span>
+                    </div>
+                    <span className="text-[11px] flex-shrink-0" style={{ color: "var(--text-disabled)" }}>{card.type}</span>
+                    {!isBuiltIn && (
+                      <button type="button" onClick={() => deleteOrgCard(card.id)} title="Delete card"
+                        className="btn btn-sm flex-shrink-0"
+                        style={{ background: "var(--status-danger-bg)", color: "var(--status-danger-text)", borderColor: "var(--status-danger-border)", padding: "2px 8px" }}>
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Add Card form */}
+            <p className="text-[12px] font-bold uppercase tracking-wide mb-3" style={{ color: "var(--text-secondary)" }}>Add a New Card</p>
+            <div className="rounded-lg p-4 space-y-3" style={{ background: "var(--bg-subtle, #f8f9fa)", border: "1px dashed var(--border-color)" }}>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[12px] font-semibold mb-1" style={{ color: "var(--text-secondary)" }}>Name *</label>
+                  <input type="text" value={newCardName} onChange={e => setNewCardName(e.target.value)}
+                    placeholder="e.g. Ministry of Health" className={INPUT_CLS} style={{ border: "1px solid var(--border-color)" }} />
+                </div>
+                <div>
+                  <label className="block text-[12px] font-semibold mb-1" style={{ color: "var(--text-secondary)" }}>Role Label</label>
+                  <input type="text" value={newCardRole} onChange={e => setNewCardRole(e.target.value)}
+                    placeholder="e.g. Knowledge Partner" className={INPUT_CLS} style={{ border: "1px solid var(--border-color)" }} />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[12px] font-semibold mb-1" style={{ color: "var(--text-secondary)" }}>Type</label>
+                  <select value={newCardType} onChange={e => setNewCardType(e.target.value)}
+                    className={INPUT_CLS} style={{ border: "1px solid var(--border-color)" }}>
+                    <option value="organiser">Organiser</option>
+                    <option value="venue">Venue</option>
+                    <option value="custom">Other / Custom</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[12px] font-semibold mb-1" style={{ color: "var(--text-secondary)" }}>Website URL</label>
+                  <input type="text" value={newCardWebsiteUrl} onChange={e => setNewCardWebsiteUrl(e.target.value)}
+                    placeholder="https://…" className={INPUT_CLS} style={{ border: "1px solid var(--border-color)" }} />
+                </div>
+              </div>
+              <button type="button" onClick={addOrgCard} disabled={!newCardName.trim()}
+                className="btn btn-primary btn-sm flex items-center gap-1.5 disabled:opacity-50">
+                <Plus className="w-3.5 h-3.5" /> Add Card
+              </button>
+              <p className="text-[11px]" style={{ color: "var(--text-muted)" }}>
+                After adding, use the logo upload above to attach a logo, then place the card in a row using the Row Layout card below. Click <strong>Save Changes</strong> to publish.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* ── Section Row Layout ── */}
+        <div className="card">
+          <div className="card-body">
+            <h3 className="text-[14px] font-semibold mb-1" style={{ color: "var(--text)" }}>Section Row Layout</h3>
+            <p className="text-[12px] mb-5" style={{ color: "var(--text-muted)" }}>
+              Arrange cards into rows on the homepage co-organisers section. Each row is a separate grid. Add, reorder, and delete rows freely. Click Save Changes to publish.
+            </p>
+
+            <div className="space-y-4 mb-4">
+              {orgRows.map((row, rowIdx) => (
+                <div key={rowIdx} className="rounded-lg p-4" style={{ border: "1px solid var(--border-color)", background: "var(--bg-surface)" }}>
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="flex flex-col gap-0.5 flex-shrink-0">
+                      <button type="button" onClick={() => moveOrgRow(rowIdx, -1)} disabled={rowIdx === 0}
+                        className="btn btn-sm flex items-center justify-center disabled:opacity-30"
+                        style={{ width: 22, height: 20, padding: 0, border: "1px solid var(--border-color)" }} title="Move row up">
+                        <ArrowUp className="w-3 h-3" />
+                      </button>
+                      <button type="button" onClick={() => moveOrgRow(rowIdx, 1)} disabled={rowIdx === orgRows.length - 1}
+                        className="btn btn-sm flex items-center justify-center disabled:opacity-30"
+                        style={{ width: 22, height: 20, padding: 0, border: "1px solid var(--border-color)" }} title="Move row down">
+                        <ArrowDown className="w-3 h-3" />
+                      </button>
+                    </div>
+                    <input type="text" value={row.label}
+                      onChange={e => setOrgRows(orgRows.map((r, i) => i === rowIdx ? { ...r, label: e.target.value } : r))}
+                      placeholder={`Row ${rowIdx + 1} label (optional — shown as a sub-heading)`}
+                      className={INPUT_CLS} style={{ border: "1px solid var(--border-color)", flex: 1 }} />
+                    <button type="button" onClick={() => deleteOrgRow(rowIdx)}
+                      className="btn btn-sm flex-shrink-0 flex items-center gap-1"
+                      style={{ background: "var(--status-danger-bg)", color: "var(--status-danger-text)", borderColor: "var(--status-danger-border)" }}
+                      title="Delete row (cards become unassigned)">
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+
+                  {row.cards.length === 0 ? (
+                    <p className="text-[12px] italic text-center py-2" style={{ color: "var(--text-disabled)" }}>No cards in this row — add from the "Not shown" pool below.</p>
+                  ) : (
+                    <div className="flex flex-wrap gap-2">
+                      {row.cards.map(cardId => {
+                        const card = orgCards.find(c => c.id === cardId);
+                        if (!card) return null;
+                        return (
+                          <div key={cardId} className="flex items-center gap-1.5 px-2 py-1 rounded-md text-[12px]"
+                            style={{ background: "var(--primary-lt)", border: "1px solid var(--teal-focus, rgba(14,110,116,0.25))" }}>
+                            <span style={{ color: "var(--primary)" }} className="font-medium">{card.name}</span>
+                            <select
+                              value={rowIdx}
+                              onChange={e => moveCardToRow(cardId, rowIdx, Number(e.target.value))}
+                              className="text-[11px] rounded px-1 outline-none"
+                              style={{ background: "transparent", border: "1px solid var(--border-color)", color: "var(--text-muted)" }}
+                              title="Move to row">
+                              {orgRows.map((_, ri) => (
+                                <option key={ri} value={ri}>Row {ri + 1}</option>
+                              ))}
+                            </select>
+                            <button type="button" onClick={() => removeCardFromRow(cardId, rowIdx)}
+                              className="hover:opacity-70" style={{ color: "var(--text-muted)" }} title="Remove from row">
+                              <X className="w-3 h-3" />
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            <button type="button" onClick={addOrgRow}
+              className="btn btn-sm flex items-center gap-1.5 mb-6"
+              style={{ border: "1px dashed var(--border-color)", color: "var(--text-muted)" }}>
+              <Plus className="w-3.5 h-3.5" /> Add Row
+            </button>
+
+            {unassignedCards.length > 0 && (
+              <div className="rounded-lg p-4" style={{ background: "var(--bg-subtle, #f8f9fa)", border: "1px solid var(--border-color)" }}>
+                <p className="text-[12px] font-bold uppercase tracking-wide mb-3" style={{ color: "var(--text-secondary)" }}>Not shown (unassigned cards)</p>
+                <div className="flex flex-wrap gap-2">
+                  {unassignedCards.map(card => (
+                    <div key={card.id} className="flex items-center gap-2 px-2.5 py-1.5 rounded-md text-[12px]"
+                      style={{ background: "var(--bg-surface)", border: "1px solid var(--border-color)" }}>
+                      <span style={{ color: "var(--text)" }} className="font-medium">{card.name}</span>
+                      <select
+                        defaultValue=""
+                        onChange={e => { if (e.target.value !== "") addCardToRow(card.id, Number(e.target.value)); e.target.value = ""; }}
+                        className="text-[11px] rounded px-1 outline-none"
+                        style={{ background: "var(--bg-surface)", border: "1px solid var(--border-color)", color: "var(--text-muted)" }}>
+                        <option value="" disabled>Add to row…</option>
+                        {orgRows.map((_, ri) => (
+                          <option key={ri} value={ri}>Row {ri + 1}{orgRows[ri].label ? ` — ${orgRows[ri].label}` : ""}</option>
+                        ))}
+                      </select>
+                    </div>
+                  ))}
+                </div>
+              </div>
             )}
           </div>
         </div>

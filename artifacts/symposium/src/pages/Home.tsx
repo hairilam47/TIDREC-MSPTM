@@ -9,11 +9,68 @@ import { SiteHeader } from "@/components/SiteHeader";
 
 import bannerImg from "@assets/Banner for website.png";
 
+/* Tailwind safelist (do not remove): grid-cols-1 grid-cols-2 grid-cols-3 grid-cols-4 grid-cols-5 grid-cols-6 */
+const MD_GRID_COLS: Record<number, string> = {
+  1: "md:grid-cols-1", 2: "md:grid-cols-2", 3: "md:grid-cols-3",
+  4: "md:grid-cols-4", 5: "md:grid-cols-5", 6: "md:grid-cols-6",
+};
+
+interface OrgCard {
+  id: string;
+  name: string;
+  role: string;
+  type: string;
+  logoKey: string;
+  websiteKey: string;
+  websiteUrl?: string;
+  custom?: boolean;
+}
+
+interface OrgRow {
+  label: string;
+  cards: string[];
+}
+
+const DEFAULT_ORG_CARDS: OrgCard[] = [
+  { id: "tidrec",     name: "TIDREC",            role: "Co-Organiser", type: "organiser", logoKey: "co_organiser_tidrec_logo", websiteKey: "co_organiser_tidrec_website_url", custom: false },
+  { id: "msptm",     name: "MSPTM",             role: "Co-Organiser", type: "organiser", logoKey: "co_organiser_msptm_logo",  websiteKey: "co_organiser_msptm_website_url",  custom: false },
+  { id: "uitm",      name: "UiTM",              role: "Co-Organiser", type: "organiser", logoKey: "co_organiser_uitm_logo",   websiteKey: "co_organiser_uitm_website_url",   custom: false },
+  { id: "venue",     name: "Sunway Putra Hotel", role: "Venue",        type: "venue",     logoKey: "venue_logo",               websiteKey: "venue_website_url",               custom: false },
+  { id: "venue_maps",name: "Venue Location",    role: "Google Maps",  type: "maps",      logoKey: "",                          websiteKey: "contact_maps_url",                custom: false },
+];
+
+const DEFAULT_ORG_ROWS: OrgRow[] = [
+  { label: "", cards: ["tidrec", "msptm", "uitm"] },
+  { label: "", cards: ["venue", "venue_maps"] },
+];
 
 export default function Home() {
   const { data: speakers } = useGetSpeakers();
   const { data: sponsors } = useGetSponsors();
   const { data: cms } = useGetSettings();
+  const cmsRecord = cms as Record<string, string> | undefined;
+
+  const orgCards = React.useMemo<OrgCard[]>(() => {
+    try {
+      const p = JSON.parse(cmsRecord?.co_organisers_cards_json ?? "");
+      if (Array.isArray(p) && p.length > 0) return p as OrgCard[];
+    } catch { /* ignore */ }
+    return DEFAULT_ORG_CARDS;
+  }, [cmsRecord?.co_organisers_cards_json]);
+
+  const orgRows = React.useMemo<OrgRow[]>(() => {
+    try {
+      const p = JSON.parse(cmsRecord?.co_organisers_section_rows_json ?? "");
+      if (Array.isArray(p) && p.length > 0) return p as OrgRow[];
+    } catch { /* ignore */ }
+    return DEFAULT_ORG_ROWS;
+  }, [cmsRecord?.co_organisers_section_rows_json]);
+
+  const cardMap = React.useMemo(() => {
+    const m: Record<string, OrgCard> = {};
+    for (const c of orgCards) m[c.id] = c;
+    return m;
+  }, [orgCards]);
 
   const keynoteSpeakers = speakers?.filter(s => s.speakerTier === "keynote") || [];
   const featuredSpeakers = keynoteSpeakers.length > 0 ? keynoteSpeakers : (speakers || []);
@@ -123,126 +180,82 @@ export default function Home() {
 
         {/* ── Co-organisers strip ── */}
         <section className="py-12 bg-white border-y border-border">
-          <div className="max-w-6xl mx-auto px-4">
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          <div className="max-w-6xl mx-auto px-4 flex flex-col gap-4">
+            {orgRows.map((row, rowIdx) => {
+              const rowCards = row.cards
+                .map(id => cardMap[id])
+                .filter(Boolean) as OrgCard[];
+              if (rowCards.length === 0) return null;
+              const colClass = MD_GRID_COLS[Math.min(rowCards.length, 6)] ?? "md:grid-cols-4";
+              return (
+                <div key={rowIdx}>
+                  {row.label ? (
+                    <p className="text-xs font-bold uppercase tracking-widest mb-3 text-center" style={{ color: "var(--teal)" }}>{row.label}</p>
+                  ) : null}
+                  <div className={`grid grid-cols-2 ${colClass} gap-4`}>
+                    {rowCards.map(card => {
+                      const hasLogo = Boolean(card.logoKey && cmsRecord?.[card.logoKey]);
+                      const displayName = card.type === "venue" ? (cmsRecord?.event_venue ?? card.name) : card.name;
+                      const websiteUrl = card.websiteUrl || (card.websiteKey ? (cmsRecord?.[card.websiteKey] || "") : "");
+                      const mapsUrl = cmsRecord?.contact_maps_url || `https://maps.google.com/?q=${encodeURIComponent(`${cmsRecord?.event_venue ?? "Sunway Putra Hotel"} ${cmsRecord?.event_city ?? "Kuala Lumpur"}`)}`;
 
-              {/* TIDREC */}
-              <div className="flex flex-col items-center text-center rounded-xl border border-border shadow-sm bg-white p-6 gap-3">
-                <div className="h-20 flex items-center justify-center">
-                  {cms?.co_organiser_tidrec_logo ? (
-                    <img src="/api/co-organiser-logo/tidrec" alt="TIDREC" className="max-h-20 max-w-[140px] object-contain" />
-                  ) : (
-                    <span className="text-xl font-bold text-secondary tracking-tight">TIDREC</span>
-                  )}
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-secondary leading-tight">TIDREC</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">Co-Organiser</p>
-                </div>
-                <a
-                  href="https://tidrec.um.edu.my"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-auto inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border text-xs font-medium text-secondary hover:bg-gray-50 transition-colors"
-                >
-                  <ExternalLink className="w-3 h-3" /> Visit Website
-                </a>
-              </div>
+                      if (card.type === "maps") {
+                        return (
+                          <div key={card.id} className="flex flex-col items-center text-center rounded-xl border border-border shadow-sm bg-white p-6 gap-3">
+                            <div className="h-20 flex items-center justify-center">
+                              <MapPin className="w-12 h-12" style={{ color: "var(--teal)" }} />
+                            </div>
+                            <div>
+                              <p className="text-sm font-bold text-secondary leading-tight">{displayName}</p>
+                              <p className="text-xs text-muted-foreground mt-0.5">
+                                {cmsRecord?.event_venue ?? "Sunway Putra Hotel"}<br />{cmsRecord?.event_city ?? "Kuala Lumpur, Malaysia"}
+                              </p>
+                            </div>
+                            <a
+                              href={mapsUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="mt-auto inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border text-xs font-medium transition-colors"
+                              style={{ borderColor: "var(--teal)", color: "var(--teal)" }}
+                            >
+                              <MapPin className="w-3 h-3" /> View on Google Maps
+                            </a>
+                          </div>
+                        );
+                      }
 
-              {/* MSPTM */}
-              <div className="flex flex-col items-center text-center rounded-xl border border-border shadow-sm bg-white p-6 gap-3">
-                <div className="h-20 flex items-center justify-center">
-                  {cms?.co_organiser_msptm_logo ? (
-                    <img src="/api/co-organiser-logo/msptm" alt="MSPTM" className="max-h-20 max-w-[140px] object-contain" />
-                  ) : (
-                    <span className="text-xl font-bold text-secondary tracking-tight">MSPTM</span>
-                  )}
+                      return (
+                        <div key={card.id} className="flex flex-col items-center text-center rounded-xl border border-border shadow-sm bg-white p-6 gap-3">
+                          <div className="h-20 flex items-center justify-center">
+                            {hasLogo ? (
+                              <img src={`/api/co-organiser-logo/${card.id}`} alt={displayName} className="max-h-20 max-w-[140px] object-contain" />
+                            ) : (
+                              <span className="text-xl font-bold text-secondary tracking-tight text-center leading-tight">{displayName}</span>
+                            )}
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold text-secondary leading-tight">{displayName}</p>
+                            <p className="text-xs text-muted-foreground mt-0.5">{card.role}</p>
+                          </div>
+                          {websiteUrl ? (
+                            <a
+                              href={websiteUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="mt-auto inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border text-xs font-medium text-secondary hover:bg-gray-50 transition-colors"
+                            >
+                              <ExternalLink className="w-3 h-3" /> Visit Website
+                            </a>
+                          ) : (
+                            <span className="mt-auto" />
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-                <div>
-                  <p className="text-sm font-bold text-secondary leading-tight">MSPTM</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">Co-Organiser</p>
-                </div>
-                <a
-                  href="https://msptm.org"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-auto inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border text-xs font-medium text-secondary hover:bg-gray-50 transition-colors"
-                >
-                  <ExternalLink className="w-3 h-3" /> Visit Website
-                </a>
-              </div>
-
-              {/* UiTM */}
-              <div className="flex flex-col items-center text-center rounded-xl border border-border shadow-sm bg-white p-6 gap-3">
-                <div className="h-20 flex items-center justify-center">
-                  {(cms as Record<string, string> | undefined)?.co_organiser_uitm_logo ? (
-                    <img src="/api/co-organiser-logo/uitm" alt="UiTM" className="max-h-20 max-w-[140px] object-contain" />
-                  ) : (
-                    <span className="text-xl font-bold text-secondary tracking-tight">UiTM</span>
-                  )}
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-secondary leading-tight">UiTM</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">Co-Organiser</p>
-                </div>
-                <a
-                  href={(cms as Record<string, string> | undefined)?.co_organiser_uitm_website_url || "https://www.uitm.edu.my"}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-auto inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border text-xs font-medium text-secondary hover:bg-gray-50 transition-colors"
-                >
-                  <ExternalLink className="w-3 h-3" /> Visit Website
-                </a>
-              </div>
-
-              {/* Venue */}
-              <div className="flex flex-col items-center text-center rounded-xl border border-border shadow-sm bg-white p-6 gap-3">
-                <div className="h-20 flex items-center justify-center">
-                  {cms?.venue_logo ? (
-                    <img src="/api/co-organiser-logo/venue" alt={cms?.event_venue ?? "Venue"} className="max-h-20 max-w-[140px] object-contain" />
-                  ) : (
-                    <span className="text-xl font-bold text-secondary tracking-tight text-center leading-tight">
-                      {cms?.event_venue ?? "Sunway Putra Hotel"}
-                    </span>
-                  )}
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-secondary leading-tight">{cms?.event_venue ?? "Sunway Putra Hotel"}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">Venue</p>
-                </div>
-                <a
-                  href={cms?.venue_website_url || "https://www.sunwayhotels.com/sunway-putra"}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-auto inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-border text-xs font-medium text-secondary hover:bg-gray-50 transition-colors"
-                >
-                  <ExternalLink className="w-3 h-3" /> Visit Website
-                </a>
-              </div>
-
-              {/* Venue Location / Google Maps */}
-              <div className="flex flex-col items-center text-center rounded-xl border border-border shadow-sm bg-white p-6 gap-3">
-                <div className="h-20 flex items-center justify-center">
-                  <MapPin className="w-12 h-12" style={{ color: "var(--teal)" }} />
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-secondary leading-tight">Venue Location</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    {cms?.event_venue ?? "Sunway Putra Hotel"}<br />{cms?.event_city ?? "Kuala Lumpur, Malaysia"}
-                  </p>
-                </div>
-                <a
-                  href={cms?.contact_maps_url || `https://maps.google.com/?q=${encodeURIComponent(`${cms?.event_venue ?? "Sunway Putra Hotel"} ${cms?.event_city ?? "Kuala Lumpur"}`)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-auto inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border text-xs font-medium transition-colors"
-                  style={{ borderColor: "var(--teal)", color: "var(--teal)" }}
-                >
-                  <MapPin className="w-3 h-3" /> View on Google Maps
-                </a>
-              </div>
-
-            </div>
+              );
+            })}
           </div>
         </section>
 
@@ -398,61 +411,48 @@ export default function Home() {
           <div>
             <h4 className="font-bold text-white mb-5 uppercase text-xs tracking-wider">Organisers</h4>
             <ul className="space-y-4 text-sm text-muted/70">
-              <li className="flex items-center gap-3">
-                {(() => {
-                  const msptmUrl = (cms as Record<string, string> | undefined)?.co_organiser_msptm_website_url?.trim();
-                  const logo = cms?.co_organiser_msptm_logo ? (
-                    <img src="/api/co-organiser-logo/msptm" alt="MSPTM" className="max-h-10 max-w-[80px] object-contain" />
-                  ) : (
-                    <span className="font-bold text-white text-xs">MSPTM</span>
-                  );
-                  return msptmUrl ? (
-                    <a href={msptmUrl} target="_blank" rel="noopener noreferrer" className="flex-shrink-0 hover:opacity-80 transition-opacity">
-                      {logo}
-                    </a>
-                  ) : (
-                    <span className="flex-shrink-0">{logo}</span>
-                  );
-                })()}
-                <span>Malaysian Society of Parasitology &amp; Tropical Medicine</span>
-              </li>
-              <li className="flex items-center gap-3">
-                {(() => {
-                  const tidrecUrl = (cms as Record<string, string> | undefined)?.co_organiser_tidrec_website_url?.trim();
-                  const logo = cms?.co_organiser_tidrec_logo ? (
-                    <img src="/api/co-organiser-logo/tidrec" alt="TIDREC" className="max-h-10 max-w-[80px] object-contain" />
-                  ) : (
-                    <span className="font-bold text-white text-xs">TIDREC</span>
-                  );
-                  return tidrecUrl ? (
-                    <a href={tidrecUrl} target="_blank" rel="noopener noreferrer" className="flex-shrink-0 hover:opacity-80 transition-opacity">
-                      {logo}
-                    </a>
-                  ) : (
-                    <span className="flex-shrink-0">{logo}</span>
-                  );
-                })()}
-                <span>Tropical Infectious Diseases Research &amp; Education Centre (TIDREC)</span>
-              </li>
-              <li className="flex items-center gap-3">
-                {(() => {
-                  const uitm = cms as Record<string, string> | undefined;
-                  const uitmlUrl = uitm?.co_organiser_uitm_website_url?.trim();
-                  const logo = uitm?.co_organiser_uitm_logo ? (
-                    <img src="/api/co-organiser-logo/uitm" alt="UiTM" className="max-h-10 max-w-[80px] object-contain" />
-                  ) : (
-                    <span className="font-bold text-white text-xs">UiTM</span>
-                  );
-                  return uitmlUrl ? (
-                    <a href={uitmlUrl} target="_blank" rel="noopener noreferrer" className="flex-shrink-0 hover:opacity-80 transition-opacity">
-                      {logo}
-                    </a>
-                  ) : (
-                    <span className="flex-shrink-0">{logo}</span>
-                  );
-                })()}
-                <span>Universiti Teknologi MARA (UiTM)</span>
-              </li>
+              {([
+                {
+                  slug: "msptm-footer",
+                  hasLogo: Boolean(cmsRecord?.co_organiser_msptm_footer_logo || cmsRecord?.co_organiser_msptm_logo),
+                  alt: "MSPTM",
+                  fallback: "MSPTM",
+                  url: cmsRecord?.co_organiser_msptm_website_url?.trim() || "",
+                  label: "Malaysian Society of Parasitology & Tropical Medicine",
+                },
+                {
+                  slug: "tidrec-footer",
+                  hasLogo: Boolean(cmsRecord?.co_organiser_tidrec_footer_logo || cmsRecord?.co_organiser_tidrec_logo),
+                  alt: "TIDREC",
+                  fallback: "TIDREC",
+                  url: cmsRecord?.co_organiser_tidrec_website_url?.trim() || "",
+                  label: "Tropical Infectious Diseases Research & Education Centre (TIDREC)",
+                },
+                {
+                  slug: "uitm-footer",
+                  hasLogo: Boolean(cmsRecord?.co_organiser_uitm_footer_logo || cmsRecord?.co_organiser_uitm_logo),
+                  alt: "UiTM",
+                  fallback: "UiTM",
+                  url: cmsRecord?.co_organiser_uitm_website_url?.trim() || "",
+                  label: "Universiti Teknologi MARA (UiTM)",
+                },
+              ] as const).map(({ slug, hasLogo, alt, fallback, url, label }) => {
+                const logo = hasLogo ? (
+                  <img src={`/api/co-organiser-logo/${slug}`} alt={alt} className="max-h-10 max-w-[80px] object-contain" />
+                ) : (
+                  <span className="font-bold text-white text-xs">{fallback}</span>
+                );
+                return (
+                  <li key={slug} className="flex items-center gap-3">
+                    {url ? (
+                      <a href={url} target="_blank" rel="noopener noreferrer" className="flex-shrink-0 hover:opacity-80 transition-opacity">{logo}</a>
+                    ) : (
+                      <span className="flex-shrink-0">{logo}</span>
+                    )}
+                    <span>{label}</span>
+                  </li>
+                );
+              })}
               <li id="contact" className="pt-3 border-t border-white/10">
                 <span className="text-white font-medium block mb-1">Contact Us</span>
                 <a href="mailto:events@msptm.network" className="hover:text-accent transition-colors">events@msptm.network</a>

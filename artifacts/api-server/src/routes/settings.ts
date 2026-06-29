@@ -57,6 +57,22 @@ const DEFAULT_SETTINGS: Record<string, string> = {
   co_organiser_uitm_website_url: "https://www.uitm.edu.my",
   venue_logo: "https://image-tc.galaxy.tf/wipng-14z269ss45xgkfia6m5zxupd6/sunway-putra-hotel-kuala-lumpur.png",
   venue_website_url: "https://www.sunwayhotels.com/sunway-putra",
+  co_organiser_tidrec_website_url: "https://tidrec.um.edu.my",
+  co_organiser_msptm_website_url: "https://msptm.org",
+  co_organiser_msptm_footer_logo: "",
+  co_organiser_tidrec_footer_logo: "",
+  co_organiser_uitm_footer_logo: "",
+  co_organisers_cards_json: JSON.stringify([
+    { id: "tidrec", name: "TIDREC", role: "Co-Organiser", type: "organiser", logoKey: "co_organiser_tidrec_logo", websiteKey: "co_organiser_tidrec_website_url", custom: false },
+    { id: "msptm", name: "MSPTM", role: "Co-Organiser", type: "organiser", logoKey: "co_organiser_msptm_logo", websiteKey: "co_organiser_msptm_website_url", custom: false },
+    { id: "uitm", name: "UiTM", role: "Co-Organiser", type: "organiser", logoKey: "co_organiser_uitm_logo", websiteKey: "co_organiser_uitm_website_url", custom: false },
+    { id: "venue", name: "Sunway Putra Hotel", role: "Venue", type: "venue", logoKey: "venue_logo", websiteKey: "venue_website_url", custom: false },
+    { id: "venue_maps", name: "Venue Location", role: "Google Maps", type: "maps", logoKey: "", websiteKey: "contact_maps_url", custom: false },
+  ]),
+  co_organisers_section_rows_json: JSON.stringify([
+    { label: "", cards: ["tidrec", "msptm", "uitm"] },
+    { label: "", cards: ["venue", "venue_maps"] },
+  ]),
   date_registration_opens: "10 Aug 2026",
   date_early_bird_closes: "05 Oct 2026",
   date_abstract_submission_closes: "31 Jan 2027",
@@ -82,42 +98,68 @@ const DEFAULT_SETTINGS: Record<string, string> = {
 
 const objectStorageService = new ObjectStorageService();
 
+const FOOTER_LOGO_KEYS: Record<string, string> = {
+  "msptm-footer": "co_organiser_msptm_footer_logo",
+  "tidrec-footer": "co_organiser_tidrec_footer_logo",
+  "uitm-footer": "co_organiser_uitm_footer_logo",
+};
+
+async function serveLogoUrl(url: string, res: import("express").Response): Promise<void> {
+  if (url.startsWith("http://") || url.startsWith("https://")) {
+    res.redirect(url);
+    return;
+  }
+  const objectFile = await objectStorageService.getObjectEntityFile(url);
+  const response = await objectStorageService.downloadObject(objectFile);
+  res.status(response.status);
+  response.headers.forEach((value, key) => res.setHeader(key, value));
+  if (response.body) {
+    const nodeStream = Readable.fromWeb(response.body as ReadableStream<Uint8Array>);
+    nodeStream.pipe(res);
+  } else {
+    res.end();
+  }
+}
+
 router.get("/co-organiser-logo/:slug", async (req, res) => {
   try {
     const { slug } = req.params;
-    if (slug !== "tidrec" && slug !== "msptm" && slug !== "uitm" && slug !== "venue") {
-      res.status(404).json({ error: "Unknown co-organiser slug" });
-      return;
-    }
-    const keyMap: Record<string, string> = {
-      tidrec: "co_organiser_tidrec_logo",
-      msptm: "co_organiser_msptm_logo",
-      uitm: "co_organiser_uitm_logo",
-      venue: "venue_logo",
-    };
-    const key = keyMap[slug];
     const rows = await db.select().from(settingsTable);
     const settings: Record<string, string> = { ...DEFAULT_SETTINGS };
     for (const row of rows) settings[row.key] = row.value;
-    const url = settings[key];
+
+    // Parse card registry for dynamic slug→logoKey lookup
+    let cardsRegistry: Array<{ id: string; logoKey?: string }> = [];
+    try {
+      const parsed = JSON.parse(settings.co_organisers_cards_json ?? "");
+      if (Array.isArray(parsed)) cardsRegistry = parsed;
+    } catch { /* ignore */ }
+
+    // Footer logo slugs (fall back to section slug when footer key is empty)
+    if (FOOTER_LOGO_KEYS[slug]) {
+      const footerUrl = settings[FOOTER_LOGO_KEYS[slug]] ?? "";
+      if (footerUrl) {
+        await serveLogoUrl(footerUrl, res);
+        return;
+      }
+      // Fallback: redirect to section slug
+      const sectionSlug = slug.replace("-footer", "");
+      res.redirect(`/api/co-organiser-logo/${sectionSlug}`);
+      return;
+    }
+
+    // Look up card by ID in the registry
+    const card = cardsRegistry.find((c) => c.id === slug);
+    if (!card || !card.logoKey) {
+      res.status(404).json({ error: "Unknown co-organiser slug" });
+      return;
+    }
+    const url = settings[card.logoKey] ?? "";
     if (!url) {
       res.status(404).json({ error: "Logo not available" });
       return;
     }
-    if (url.startsWith("http://") || url.startsWith("https://")) {
-      res.redirect(url);
-      return;
-    }
-    const objectFile = await objectStorageService.getObjectEntityFile(url);
-    const response = await objectStorageService.downloadObject(objectFile);
-    res.status(response.status);
-    response.headers.forEach((value, key) => res.setHeader(key, value));
-    if (response.body) {
-      const nodeStream = Readable.fromWeb(response.body as ReadableStream<Uint8Array>);
-      nodeStream.pipe(res);
-    } else {
-      res.end();
-    }
+    await serveLogoUrl(url, res);
   } catch (err) {
     if (err instanceof ObjectNotFoundError) {
       res.status(404).json({ error: "Logo file not found" });
