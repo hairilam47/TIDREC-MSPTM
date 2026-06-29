@@ -150,7 +150,7 @@ export default function Invoices() {
             {/* Footer */}
             <div className="card-footer" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
               <div style={{ fontSize: 12, color: "var(--text-disabled)" }}>
-                Organised by MSPTM &amp; TIDREC@UM · seat-msptm2027.org
+                Organised by MSPTM &amp; TIDREC · seat-msptm2027.org
               </div>
               <button
                 className="btn"

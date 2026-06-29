@@ -55,7 +55,7 @@ const CONTACT_TILES = [
     iconBg: "var(--red-lt)",
     iconColor: "var(--red)",
     label: "Organisers",
-    value: <div style={{ fontSize: 14, fontWeight: 500, color: "var(--text)" }}>MSPTM &amp; TIDREC@UM</div>,
+    value: <div style={{ fontSize: 14, fontWeight: 500, color: "var(--text)" }}>MSPTM &amp; TIDREC</div>,
     sub: "Malaysian Society for Parasitology & Tropical Medicine",
   },
 ];

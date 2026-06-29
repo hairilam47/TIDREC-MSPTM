@@ -100,7 +100,7 @@ export default function AdminReports() {
         <tr><td>Overdue</td><td>${(registrations ?? []).filter((r) => r.paymentStatus === "overdue").length}</td></tr>
         <tr><td>Waived</td><td>${(registrations ?? []).filter((r) => r.paymentStatus === "waived").length}</td></tr>
       </tbody></table>
-      <div class="footer">SEAT-MSPTM 2027 · Malaysian Society for Parasitology and Tropical Medicine (MSPTM) · TIDREC@UM</div>
+      <div class="footer">SEAT-MSPTM 2027 · Malaysian Society for Parasitology and Tropical Medicine (MSPTM) · TIDREC</div>
     </body></html>`;
     printWindow.document.write(html);
     printWindow.document.close();

@@ -16,7 +16,7 @@ const SPEAKERS = [
   {
     id: 2,
     name: "Dr. Tay Shin Tyen",
-    institution: "TIDREC@UM",
+    institution: "TIDREC",
     country: "Malaysia",
     topic: "Molecular Epidemiology of Rickettsia in Malaysia",
     bio: "Dr. Tay is a molecular biologist whose research focuses on the genomics of tick-borne rickettsial pathogens.",
@@ -130,7 +130,7 @@ async function seedAdminUsers() {
 
     const ADMIN_USERS = [
       { email: "admin@seat-msptm2027.org", passwordHash: adminHash, firstName: "Admin", lastName: "User", institution: "SEAT-MSPTM 2027", country: "Malaysia", role: "admin" as const },
-      { email: "superadmin@seat-msptm2027.org", passwordHash: superAdminHash, firstName: "Dr. Wan Faiziah", lastName: "Wan Ismail", institution: "TIDREC@UM", country: "Malaysia", role: "super_admin" as const },
+      { email: "superadmin@seat-msptm2027.org", passwordHash: superAdminHash, firstName: "Dr. Wan Faiziah", lastName: "Wan Ismail", institution: "TIDREC", country: "Malaysia", role: "super_admin" as const },
       { email: "admin2@seat-msptm2027.org", passwordHash: adminHash, firstName: "Prof. Sazali", lastName: "Hassan", institution: "Universiti Malaya", country: "Malaysia", role: "admin" as const },
       { email: "admin3@seat-msptm2027.org", passwordHash: adminHash, firstName: "Dr. Nurul Ain", lastName: "Mohd Noor", institution: "Universiti Kebangsaan Malaysia", country: "Malaysia", role: "admin" as const },
       { email: "admin4@seat-msptm2027.org", passwordHash: adminHash, firstName: "Dr. Tengku Shahrul", lastName: "Tengku Ahmad", institution: "Universiti Putra Malaysia", country: "Malaysia", role: "admin" as const },

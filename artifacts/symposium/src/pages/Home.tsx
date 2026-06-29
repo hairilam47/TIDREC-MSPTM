@@ -126,17 +126,17 @@ export default function Home() {
           <div className="max-w-6xl mx-auto px-4">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
 
-              {/* TIDREC@UM */}
+              {/* TIDREC */}
               <div className="flex flex-col items-center text-center rounded-xl border border-border shadow-sm bg-white p-6 gap-3">
                 <div className="h-20 flex items-center justify-center">
                   {cms?.co_organiser_tidrec_logo ? (
-                    <img src="/api/co-organiser-logo/tidrec" alt="TIDREC@UM" className="max-h-20 max-w-[140px] object-contain" />
+                    <img src="/api/co-organiser-logo/tidrec" alt="TIDREC" className="max-h-20 max-w-[140px] object-contain" />
                   ) : (
-                    <span className="text-xl font-bold text-secondary tracking-tight">TIDREC@UM</span>
+                    <span className="text-xl font-bold text-secondary tracking-tight">TIDREC</span>
                   )}
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-secondary leading-tight">TIDREC@UM</p>
+                  <p className="text-sm font-bold text-secondary leading-tight">TIDREC</p>
                   <p className="text-xs text-muted-foreground mt-0.5">Co-Organiser</p>
                 </div>
                 <a

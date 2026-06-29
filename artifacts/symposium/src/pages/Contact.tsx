@@ -25,7 +25,7 @@ export default function ContactPage() {
   const city = (cms as Record<string, string> | undefined)?.event_city ?? "Kuala Lumpur, Malaysia";
   const mapsUrl = (cms as Record<string, string> | undefined)?.contact_maps_url ?? "https://maps.google.com/?q=Sunway+Putra+Hotel+Kuala+Lumpur";
   const organiserPrimary = (cms as Record<string, string> | undefined)?.organiser_full_primary ?? "Malaysian Society of Parasitology and Tropical Medicine (MSPTM)";
-  const organiserSecondary = (cms as Record<string, string> | undefined)?.organiser_full_secondary ?? "Tropical Infectious Diseases Research & Education Centre (TIDREC@UM)";
+  const organiserSecondary = (cms as Record<string, string> | undefined)?.organiser_full_secondary ?? "Tropical Infectious Diseases Research & Education Centre (TIDREC)";
   const eventName = (cms as Record<string, string> | undefined)?.event_name ?? "3rd Southeast Asia Ticks and Tick-borne Diseases Symposium";
 
   return (

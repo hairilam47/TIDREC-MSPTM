@@ -235,7 +235,7 @@ const CONTACT_FIELDS = [
   { key: "contact_maps_url", label: "Google Maps URL", placeholder: "https://maps.google.com/?q=…", type: "url" },
   { key: "venue_website_url", label: "Venue Website URL", placeholder: "https://www.sunwayhotels.com/sunway-putra", type: "url" },
   { key: "organiser_full_primary", label: "Organiser (Primary)", placeholder: "e.g. Malaysian Society of Parasitology…", type: "text" },
-  { key: "organiser_full_secondary", label: "Organiser (Secondary)", placeholder: "e.g. TIDREC@UM…", type: "text" },
+  { key: "organiser_full_secondary", label: "Organiser (Secondary)", placeholder: "e.g. TIDREC…", type: "text" },
 ] as const;
 
 const GUIDELINE_FIELDS = [
@@ -590,7 +590,7 @@ export default function AdminSettings() {
                 <CardContent>
                   <LogoUploader
                     slug="tidrec"
-                    label="TIDREC@UM"
+                    label="TIDREC"
                     currentPath={settings?.co_organiser_tidrec_logo ?? ""}
                     onSave={(path) => handleSaveLogo("co_organiser_tidrec_logo", path)}
                     onClear={() => handleClearLogo("co_organiser_tidrec_logo")}

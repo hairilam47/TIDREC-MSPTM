@@ -557,7 +557,7 @@ export default function AdminSettings() {
 
             {(
               [
-                { key: "co_organiser_tidrec_logo", slug: "tidrec", label: "TIDREC@UM", desc: "Tropical Infectious Diseases Research & Education Centre" },
+                { key: "co_organiser_tidrec_logo", slug: "tidrec", label: "TIDREC", desc: "Tropical Infectious Diseases Research & Education Centre" },
                 { key: "co_organiser_msptm_logo", slug: "msptm", label: "MSPTM", desc: "Malaysian Society of Parasitology and Tropical Medicine" },
                 { key: "venue_logo", slug: "venue", label: "Venue — Sunway Putra Hotel", desc: "Hotel / venue logo" },
               ] as const
