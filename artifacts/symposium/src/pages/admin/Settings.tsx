@@ -3,10 +3,7 @@ import AdminLayout from "@/components/AdminLayout";
 import { Save, Info, FileText, Upload, X, ImageIcon, Loader2, Plus, Trash2, ArrowUp, ArrowDown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-const LOGO_API = "/api";
-
-const BASE_URL = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
-const API = `${BASE_URL}/api`;
+const API = "/api";
 
 type Field = { key: string; label: string; type: string; placeholder?: string };
 type FieldGroup = { label: string; hint?: string; fields: Field[] };
@@ -212,7 +209,7 @@ export default function AdminSettings() {
     try {
       const token = localStorage.getItem("satbds_token");
       const contentType = file.type || "application/octet-stream";
-      const urlRes = await fetch(`${LOGO_API}/storage/uploads/request-url`, {
+      const urlRes = await fetch(`${API}/storage/uploads/request-url`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ name: file.name, size: file.size, contentType }),
@@ -224,7 +221,7 @@ export default function AdminSettings() {
       const { uploadURL, objectPath } = await urlRes.json();
       const putRes = await fetch(uploadURL, { method: "PUT", body: file, headers: { "Content-Type": contentType } });
       if (!putRes.ok) throw new Error(`Upload to storage failed (HTTP ${putRes.status})`);
-      const saveRes = await fetch(`${LOGO_API}/settings`, {
+      const saveRes = await fetch(`${API}/settings`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ [key]: objectPath }),
@@ -246,7 +243,7 @@ export default function AdminSettings() {
     setLogoError(null);
     try {
       const token = localStorage.getItem("satbds_token");
-      const saveRes = await fetch(`${LOGO_API}/settings`, {
+      const saveRes = await fetch(`${API}/settings`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ [key]: "" }),
