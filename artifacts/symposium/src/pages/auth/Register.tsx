@@ -15,6 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, CheckCircle2, User, Building, CreditCard, ClipboardList } from "lucide-react";
 import { Link } from "wouter";
+import logoImg from "@assets/[WEBSITE LOGO] SEAT-MSPTM.png";
 
 type Step = 1 | 2 | 3 | 4;
 
@@ -160,9 +161,9 @@ export default function Register() {
         {/* Branding */}
         <div className="text-center mb-8">
           <Link href="/">
-            <h1 className="font-sans text-3xl font-bold text-accent cursor-pointer">SEAT-MSPTM 2027</h1>
+            <img src={logoImg} alt="SEAT-MSPTM 2027" className="h-24 w-auto object-contain mx-auto cursor-pointer" />
           </Link>
-          <p className="text-white/60 mt-1 text-sm">22–23 March 2027 · Sunway Putra Hotel, Kuala Lumpur</p>
+          <p className="text-white/60 mt-2 text-sm">22–23 March 2027 · Sunway Putra Hotel, Kuala Lumpur</p>
         </div>
 
         {/* Step indicators */}
