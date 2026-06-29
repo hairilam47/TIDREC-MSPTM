@@ -45,6 +45,7 @@ async function formatRegistration(r: typeof registrationsTable.$inferSelect) {
     paymentStatus: r.paymentStatus,
     paymentAmount: r.paymentAmount ? parseFloat(r.paymentAmount) : null,
     paymentMethod: r.paymentMethod ?? null,
+    receiptUrl: r.receiptUrl ?? null,
     registrationCode: r.registrationCode,
     createdAt: r.createdAt.toISOString(),
   };
@@ -169,6 +170,38 @@ router.get("/registrations", requireAdmin, async (_req, res) => {
   }
 });
 
+router.post("/registrations/me/receipt", requireAuth, async (req: AuthRequest, res) => {
+  try {
+    const userId = req.user!.userId;
+    const { receiptUrl } = req.body;
+    if (!receiptUrl) {
+      res.status(400).json({ error: "receiptUrl is required" });
+      return;
+    }
+    const [reg] = await db.select().from(registrationsTable).where(eq(registrationsTable.userId, userId)).limit(1);
+    if (!reg) {
+      res.status(404).json({ error: "No registration found" });
+      return;
+    }
+    if (reg.paymentStatus === "paid" || reg.paymentStatus === "waived") {
+      res.status(400).json({ error: "Payment already confirmed" });
+      return;
+    }
+    const [updated] = await db.update(registrationsTable)
+      .set({
+        receiptUrl,
+        paymentStatus: "pending_confirmation",
+        updatedAt: new Date(),
+      })
+      .where(eq(registrationsTable.userId, userId))
+      .returning();
+    res.json(await formatRegistration(updated));
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 router.get("/registrations/me", requireAuth, async (req: AuthRequest, res) => {
   try {
     const userId = req.user!.userId;
@@ -249,6 +282,7 @@ router.patch("/registrations/:id", requireAdmin, async (req, res) => {
         paymentStatus: paymentStatus || undefined,
         paymentAmount: paymentAmount !== undefined ? String(paymentAmount) : undefined,
         paymentMethod: paymentMethod !== undefined ? (paymentMethod || null) : undefined,
+        receiptUrl: req.body.receiptUrl !== undefined ? (req.body.receiptUrl || null) : undefined,
         updatedAt: new Date(),
       })
       .where(eq(registrationsTable.id, id))

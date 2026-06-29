@@ -137,8 +137,30 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {/* ── Receipt under review alert ── */}
+      {registration && paymentStatus === "pending_confirmation" && (
+        <div className="card mb-4" style={{ borderLeft: "4px solid var(--teal, #0e6e74)", background: "rgba(14,110,116,0.07)" }}>
+          <div className="card-body" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
+            <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+              <CheckCircle style={{ width: 18, height: 18, color: "var(--teal, #0e6e74)", flexShrink: 0 }} />
+              <div>
+                <div style={{ fontWeight: 600, fontSize: 13, color: "var(--text)" }}>
+                  Receipt submitted — pending confirmation
+                </div>
+                <div style={{ fontSize: 12, color: "var(--text-secondary)", marginTop: 2 }}>
+                  Our team is reviewing your payment proof. We will update your status shortly.
+                </div>
+              </div>
+            </div>
+            <Link href="/portal/registration">
+              <button className="btn btn-sm btn-outline" style={{ flexShrink: 0 }}>View</button>
+            </Link>
+          </div>
+        </div>
+      )}
+
       {/* ── Payment pending alert ── */}
-      {registration && paymentStatus !== "paid" && paymentStatus !== "waived" && (
+      {registration && paymentStatus !== "paid" && paymentStatus !== "waived" && paymentStatus !== "pending_confirmation" && (
         <div className="card mb-4" style={{ borderLeft: "4px solid var(--primary)", background: "var(--primary-lt)" }}>
           <div className="card-body" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
             <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
@@ -148,7 +170,7 @@ export default function Dashboard() {
                   Payment pending{paymentAmount ? ` — MYR ${paymentAmount.toLocaleString("en-MY", { minimumFractionDigits: 2 })} due` : ""}
                 </div>
                 <div style={{ fontSize: 12, color: "var(--text-secondary)", marginTop: 2 }}>
-                  Complete payment to confirm your delegate spot at SEAT-MSPTM 2027.
+                  Complete payment and upload your receipt to confirm your delegate spot.
                 </div>
               </div>
             </div>

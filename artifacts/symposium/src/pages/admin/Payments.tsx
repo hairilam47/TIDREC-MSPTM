@@ -1,15 +1,16 @@
 import React from "react";
 import AdminLayout from "@/components/AdminLayout";
 import { useGetRegistrations, useUpdateRegistration, useSendPaymentReminder, useGetRegistrationCategories } from "@workspace/api-client-react";
-import { Search, Bell, ChevronDown } from "lucide-react";
+import { Search, Bell, ChevronDown, FileCheck, ExternalLink } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { INPUT_BASE } from "@/components/ui/form-primitives";
 
 const PAYMENT_STYLES: Record<string, { bg: string; color: string; border?: string }> = {
-  paid:    { bg: "var(--status-success-bg)", color: "var(--status-success-text)", border: "var(--status-success-text)" },
-  pending: { bg: "var(--status-warning-bg)", color: "var(--status-warning-text)", border: "var(--status-warning-text)" },
-  overdue: { bg: "var(--status-danger-bg)",  color: "var(--status-danger-text)",  border: "var(--status-danger-border)" },
-  waived:  { bg: "var(--primary-lt)",        color: "var(--primary)",             border: "var(--primary)" },
+  paid:                 { bg: "var(--status-success-bg)",    color: "var(--status-success-text)", border: "var(--status-success-text)" },
+  pending:              { bg: "var(--status-warning-bg)",    color: "var(--status-warning-text)", border: "var(--status-warning-text)" },
+  overdue:              { bg: "var(--status-danger-bg)",     color: "var(--status-danger-text)",  border: "var(--status-danger-border)" },
+  waived:               { bg: "var(--primary-lt)",           color: "var(--primary)",             border: "var(--primary)" },
+  pending_confirmation: { bg: "rgba(14,110,116,0.10)",       color: "var(--teal, #0e6e74)",       border: "var(--teal, #0e6e74)" },
 };
 
 const PAYMENT_METHOD_LABELS: Record<string, string> = {
@@ -27,6 +28,14 @@ const PAYMENT_METHOD_OPTIONS = [
   { value: "e_perolehan", label: "ePerolehan" },
 ];
 
+const PAYMENT_STATUS_LABELS: Record<string, string> = {
+  paid: "Paid",
+  pending: "Pending",
+  overdue: "Overdue",
+  waived: "Waived",
+  pending_confirmation: "Pending Confirmation",
+};
+
 interface RegistrationWithMethod {
   id: number;
   firstName?: string;
@@ -36,6 +45,7 @@ interface RegistrationWithMethod {
   paymentStatus: string;
   paymentAmount?: number | null;
   paymentMethod?: string | null;
+  receiptUrl?: string | null;
   registrationCode?: string;
 }
 
@@ -143,13 +153,20 @@ export default function AdminPayments() {
           />
         </div>
         <div className="flex gap-2 flex-wrap">
-          {["all", "pending", "paid", "overdue", "waived"].map((s) => (
+          {[
+            { key: "all", label: "All" },
+            { key: "pending", label: "Pending" },
+            { key: "pending_confirmation", label: "Pending Confirmation" },
+            { key: "paid", label: "Paid" },
+            { key: "overdue", label: "Overdue" },
+            { key: "waived", label: "Waived" },
+          ].map(({ key, label }) => (
             <button
-              key={s}
-              onClick={() => setStatusFilter(s)}
-              className={`btn btn-sm capitalize ${statusFilter === s ? "btn-primary" : "btn-outline"}`}
+              key={key}
+              onClick={() => setStatusFilter(key)}
+              className={`btn btn-sm ${statusFilter === key ? "btn-primary" : "btn-outline"}`}
             >
-              {s === "all" ? "All" : s}
+              {label}
             </button>
           ))}
         </div>
@@ -236,11 +253,51 @@ export default function AdminPayments() {
                         {r.paymentAmount == null && <span className="text-[11px] ml-1" style={{ color: "var(--text-disabled)" }}>(suggested)</span>}
                       </td>
                       <td>
-                        <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full capitalize" style={{ background: ps.bg, color: ps.color }}>{r.paymentStatus}</span>
+                        <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full" style={{ background: ps.bg, color: ps.color }}>
+                          {PAYMENT_STATUS_LABELS[r.paymentStatus] ?? r.paymentStatus}
+                        </span>
                       </td>
                       <td>
-                        <div className="flex gap-1.5 flex-wrap">
-                          {r.paymentStatus !== "paid" && (
+                        <div className="flex gap-1.5 flex-wrap items-center">
+
+                          {/* Receipt link — shown when receipt exists */}
+                          {(r as RegistrationWithMethod).receiptUrl && (
+                            <a
+                              href={(r as RegistrationWithMethod).receiptUrl!.replace(/^\/objects/, "/api/storage/objects")}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="btn btn-sm btn-outline"
+                              style={{ display: "inline-flex", alignItems: "center", gap: 4 }}
+                              title="View submitted receipt"
+                            >
+                              <FileCheck className="w-3 h-3" style={{ color: "var(--teal, #0e6e74)" }} />
+                              Receipt
+                              <ExternalLink className="w-3 h-3" style={{ color: "var(--text-disabled)" }} />
+                            </a>
+                          )}
+
+                          {/* Confirm + Reject — only for pending_confirmation */}
+                          {r.paymentStatus === "pending_confirmation" && (
+                            <>
+                              <button
+                                onClick={() => updateStatus(r.id, "paid", r.category)}
+                                className="btn btn-sm"
+                                style={{ background: "var(--status-success-bg)", color: "var(--status-success-text)", borderColor: "var(--status-success-text)" }}
+                              >
+                                ✓ Confirm
+                              </button>
+                              <button
+                                onClick={() => updateStatus(r.id, "pending", r.category)}
+                                className="btn btn-sm btn-outline"
+                                style={{ color: "var(--status-danger-text)" }}
+                              >
+                                ✕ Reject
+                              </button>
+                            </>
+                          )}
+
+                          {/* Standard actions for other statuses */}
+                          {r.paymentStatus !== "paid" && r.paymentStatus !== "pending_confirmation" && (
                             <button
                               onClick={() => updateStatus(r.id, "paid", r.category)}
                               className="btn btn-sm"
@@ -249,7 +306,7 @@ export default function AdminPayments() {
                               Mark Paid
                             </button>
                           )}
-                          {r.paymentStatus !== "overdue" && r.paymentStatus !== "paid" && r.paymentStatus !== "waived" && (
+                          {r.paymentStatus !== "overdue" && r.paymentStatus !== "paid" && r.paymentStatus !== "waived" && r.paymentStatus !== "pending_confirmation" && (
                             <button
                               onClick={() => updateStatus(r.id, "overdue", r.category)}
                               className="btn btn-sm"
@@ -258,7 +315,7 @@ export default function AdminPayments() {
                               Overdue
                             </button>
                           )}
-                          {(r.paymentStatus === "pending" || r.paymentStatus === "overdue") ? (
+                          {(r.paymentStatus === "pending" || r.paymentStatus === "overdue") && (
                             <button
                               onClick={() => sendReminder(r)}
                               disabled={reminderMutation.isPending}
@@ -267,8 +324,8 @@ export default function AdminPayments() {
                             >
                               <Bell className="w-3 h-3" /> Remind
                             </button>
-                          ) : null}
-                          {r.paymentStatus !== "waived" && (
+                          )}
+                          {r.paymentStatus !== "waived" && r.paymentStatus !== "pending_confirmation" && (
                             <button
                               onClick={() => updateStatus(r.id, "waived", r.category)}
                               className="btn btn-sm btn-outline"

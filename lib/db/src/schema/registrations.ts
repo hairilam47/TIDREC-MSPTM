@@ -8,6 +8,7 @@ export const paymentStatusEnum = pgEnum("payment_status", [
   "paid",
   "overdue",
   "waived",
+  "pending_confirmation",
 ]);
 
 export const registrationsTable = pgTable("registrations", {
@@ -17,6 +18,7 @@ export const registrationsTable = pgTable("registrations", {
   paymentStatus: paymentStatusEnum("payment_status").notNull().default("pending"),
   paymentAmount: numeric("payment_amount", { precision: 10, scale: 2 }),
   paymentMethod: text("payment_method"),
+  receiptUrl: text("receipt_url"),
   registrationCode: text("registration_code").notNull().unique(),
   dietaryRequirements: text("dietary_requirements"),
   specialNeeds: text("special_needs"),
