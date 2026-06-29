@@ -295,6 +295,7 @@ const SETTINGS_SEED: Record<string, string> = {
     { label: "Regular Submission Closes",        date: "10 Feb 2027" },
     { label: "Conference Dates",                 date: "22–23 Mar 2027" },
   ]),
+  register_logo_size: "md",
   sponsor_prospectus_url: "",
   first_announcement_url: "",
   co_organiser_tidrec_logo: "https://tidrec.um.edu.my/images/Beige%20Pastel%20Minimalist%20Thesis%20Defense%20Presentation%20(400%20x%2070%20px)%20(1).png",

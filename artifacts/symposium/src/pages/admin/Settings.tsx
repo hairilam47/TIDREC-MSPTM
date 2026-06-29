@@ -1,7 +1,16 @@
 import React from "react";
 import AdminLayout from "@/components/AdminLayout";
-import { Save, Info, FileText, Upload, X, ImageIcon, Loader2, Plus, Trash2, ArrowUp, ArrowDown } from "lucide-react";
+import { Save, Info, FileText, Upload, X, ImageIcon, Loader2, Plus, Trash2, ArrowUp, ArrowDown, CheckCircle2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import logoImg from "@assets/[WEBSITE LOGO] SEAT-MSPTM.png";
+
+const LOGO_SIZES: { key: string; label: string; heightPx: number; tailwind: string }[] = [
+  { key: "xs", label: "Extra Small", heightPx: 48,  tailwind: "h-12" },
+  { key: "sm", label: "Small",       heightPx: 64,  tailwind: "h-16" },
+  { key: "md", label: "Medium",      heightPx: 96,  tailwind: "h-24" },
+  { key: "lg", label: "Large",       heightPx: 128, tailwind: "h-32" },
+  { key: "xl", label: "Extra Large", heightPx: 160, tailwind: "h-40" },
+];
 
 const API = "/api";
 
@@ -354,6 +363,54 @@ export default function AdminSettings() {
             </div>
           </div>
         ))}
+
+        {/* ── Registration Page Branding ── */}
+        <div className="card">
+          <div className="card-body">
+            <h3 className="text-[14px] font-semibold mb-1" style={{ color: "var(--text)" }}>Registration Page</h3>
+            <p className="text-[12px] mb-5" style={{ color: "var(--text-muted)" }}>
+              Appears on: Registration page — logo size above the form
+            </p>
+
+            <p className="text-[13px] font-semibold mb-3" style={{ color: "var(--text-secondary)" }}>Logo Size</p>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 12 }}>
+              {LOGO_SIZES.map(s => {
+                const selected = (values.register_logo_size ?? "md") === s.key;
+                return (
+                  <button
+                    key={s.key}
+                    type="button"
+                    onClick={() => set("register_logo_size", s.key)}
+                    style={{
+                      border: selected ? "2px solid var(--primary)" : "1px solid var(--border-color)",
+                      borderRadius: 10,
+                      padding: "12px 8px",
+                      background: selected ? "var(--primary-lt)" : "var(--bg-surface)",
+                      cursor: "pointer",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      gap: 8,
+                      position: "relative",
+                      transition: "border 0.12s, background 0.12s",
+                    }}
+                  >
+                    {selected && (
+                      <CheckCircle2 style={{ position: "absolute", top: 6, right: 6, width: 14, height: 14, color: "var(--primary)" }} />
+                    )}
+                    <div style={{ height: s.heightPx, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <img src={logoImg} alt="" style={{ height: s.heightPx, width: "auto", objectFit: "contain", maxWidth: 100 }} />
+                    </div>
+                    <div style={{ textAlign: "center" }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: selected ? "var(--primary)" : "var(--text)", lineHeight: 1.3 }}>{s.label}</div>
+                      <div style={{ fontSize: 10, color: "var(--text-muted)", marginTop: 2 }}>{s.heightPx}px</div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
 
         {/* ── Important Dates (dynamic) ── */}
         <div className="card">
