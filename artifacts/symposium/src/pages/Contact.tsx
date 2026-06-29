@@ -26,6 +26,7 @@ export default function ContactPage() {
   const mapsUrl = (cms as Record<string, string> | undefined)?.contact_maps_url ?? "https://maps.google.com/?q=Sunway+Putra+Hotel+Kuala+Lumpur";
   const organiserPrimary = (cms as Record<string, string> | undefined)?.organiser_full_primary ?? "Malaysian Society of Parasitology and Tropical Medicine (MSPTM)";
   const organiserSecondary = (cms as Record<string, string> | undefined)?.organiser_full_secondary ?? "Tropical Infectious Diseases Research & Education Centre (TIDREC)";
+  const organiserTertiary = (cms as Record<string, string> | undefined)?.organiser_full_tertiary ?? "Universiti Teknologi MARA (UiTM)";
   const eventName = (cms as Record<string, string> | undefined)?.event_name ?? "3rd Southeast Asia Ticks and Tick-borne Diseases Symposium";
 
   return (
@@ -84,7 +85,8 @@ export default function ContactPage() {
             <InfoSection heading="Organised By">
               <p className="text-sm leading-relaxed" style={{ color: "#374151" }}>
                 {organiserPrimary}<br />
-                {organiserSecondary}
+                {organiserSecondary}<br />
+                {organiserTertiary}
               </p>
             </InfoSection>
           </div>
