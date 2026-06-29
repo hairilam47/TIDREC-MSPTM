@@ -137,6 +137,41 @@ export default function AdminSettings() {
     setDates(next);
   };
 
+  const additionalFees = React.useMemo<{ category: string; fee: string }[]>(() => {
+    try { const p = JSON.parse(values.register_additional_fees_json ?? ""); if (Array.isArray(p)) return p; } catch { /* ignore */ }
+    return [];
+  }, [values.register_additional_fees_json]);
+  const setFees = (next: { category: string; fee: string }[]) => set("register_additional_fees_json", JSON.stringify(next));
+
+  const entitlementItems = React.useMemo<string[]>(() => {
+    try { const p = JSON.parse(values.register_entitlements_json ?? ""); if (Array.isArray(p)) return p; } catch { /* ignore */ }
+    return [];
+  }, [values.register_entitlements_json]);
+  const setEntitlements = (next: string[]) => set("register_entitlements_json", JSON.stringify(next));
+
+  const cancelBeforeItems = React.useMemo<string[]>(() => {
+    try { const p = JSON.parse(values.register_cancel_before_policy_json ?? ""); if (Array.isArray(p)) return p; } catch { /* ignore */ }
+    return [];
+  }, [values.register_cancel_before_policy_json]);
+  const setCancelBefore = (next: string[]) => set("register_cancel_before_policy_json", JSON.stringify(next));
+
+  const cancelAfterItems = React.useMemo<string[]>(() => {
+    try { const p = JSON.parse(values.register_cancel_after_policy_json ?? ""); if (Array.isArray(p)) return p; } catch { /* ignore */ }
+    return [];
+  }, [values.register_cancel_after_policy_json]);
+  const setCancelAfter = (next: string[]) => set("register_cancel_after_policy_json", JSON.stringify(next));
+
+  const cancelNoteItems = React.useMemo<string[]>(() => {
+    try { const p = JSON.parse(values.register_cancel_notes_json ?? ""); if (Array.isArray(p)) return p; } catch { /* ignore */ }
+    return [];
+  }, [values.register_cancel_notes_json]);
+  const setCancelNotes = (next: string[]) => set("register_cancel_notes_json", JSON.stringify(next));
+
+  const disclaimerItems = React.useMemo<string[]>(() => {
+    try { const p = JSON.parse(values.register_disclaimer_json ?? ""); if (Array.isArray(p)) return p; } catch { /* ignore */ }
+    return [];
+  }, [values.register_disclaimer_json]);
+
   const handleAnnouncementUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -408,6 +443,179 @@ export default function AdminSettings() {
                   </button>
                 );
               })}
+            </div>
+          </div>
+        </div>
+
+        {/* ── Registration Info Page ── */}
+        <div className="card">
+          <div className="card-body">
+            <h3 className="text-[14px] font-semibold mb-1" style={{ color: "var(--text)" }}>Registration Info Page</h3>
+            <p className="text-[12px] mb-5" style={{ color: "var(--text-muted)" }}>
+              Appears on: Marketing site — /registration page (fees, entitlements, cancellation policy, etc.)
+            </p>
+
+            {/* Intro */}
+            <p className="text-[12px] font-bold uppercase tracking-wide mb-3" style={{ color: "var(--text-secondary)" }}>Page Intro</p>
+            <div className="space-y-4 mb-6">
+              {[
+                { key: "register_page_hero_heading", label: "Hero Heading" },
+                { key: "register_page_intro_title", label: "Intro Title" },
+                { key: "register_page_status", label: "Status Line (shown under title)" },
+              ].map(f => (
+                <div key={f.key}>
+                  <label className="block text-[13px] font-semibold mb-1.5" style={{ color: "var(--text-secondary)" }}>{f.label}</label>
+                  <input type="text" value={values[f.key] ?? ""} onChange={e => set(f.key, e.target.value)} className={INPUT_CLS} style={{ border: "1px solid var(--border-color)" }} />
+                </div>
+              ))}
+            </div>
+
+            {/* Fee column labels */}
+            <p className="text-[12px] font-bold uppercase tracking-wide mb-3" style={{ color: "var(--text-secondary)" }}>Fee Table Column Labels</p>
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              {[
+                { key: "register_early_bird_label", label: "Early Bird Label" },
+                { key: "register_early_bird_deadline", label: "Early Bird Deadline (shown below header)" },
+                { key: "register_regular_label", label: "Regular Label" },
+                { key: "register_regular_deadline", label: "Regular Deadline (shown below header)" },
+              ].map(f => (
+                <div key={f.key}>
+                  <label className="block text-[13px] font-semibold mb-1.5" style={{ color: "var(--text-secondary)" }}>{f.label}</label>
+                  <input type="text" value={values[f.key] ?? ""} onChange={e => set(f.key, e.target.value)} className={INPUT_CLS} style={{ border: "1px solid var(--border-color)" }} />
+                </div>
+              ))}
+            </div>
+
+            {/* Additional Fees */}
+            <p className="text-[12px] font-bold uppercase tracking-wide mb-3" style={{ color: "var(--text-secondary)" }}>Additional Fees Table</p>
+            <div className="space-y-2 mb-2">
+              {additionalFees.length === 0 && (
+                <p className="text-[13px] italic py-2 text-center" style={{ color: "var(--text-disabled)" }}>No additional fees added yet.</p>
+              )}
+              {additionalFees.map((row, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <input type="text" value={row.category} onChange={e => setFees(additionalFees.map((r, j) => j === i ? { ...r, category: e.target.value } : r))} placeholder="Category (e.g. Gala Dinner)" className={INPUT_CLS} style={{ border: "1px solid var(--border-color)", flex: "1 1 0" }} />
+                  <input type="text" value={row.fee} onChange={e => setFees(additionalFees.map((r, j) => j === i ? { ...r, fee: e.target.value } : r))} placeholder="Fee (e.g. MYR 250)" className={INPUT_CLS} style={{ border: "1px solid var(--border-color)", flex: "0 0 160px" }} />
+                  <button type="button" onClick={() => setFees(additionalFees.filter((_, j) => j !== i))} className="btn btn-sm flex-shrink-0" style={{ background: "var(--status-danger-bg)", color: "var(--status-danger-text)", borderColor: "var(--status-danger-border)" }}><Trash2 className="w-3.5 h-3.5" /></button>
+                </div>
+              ))}
+            </div>
+            <button type="button" onClick={() => setFees([...additionalFees, { category: "", fee: "" }])} className="btn btn-sm flex items-center gap-1.5 mb-6" style={{ border: "1px dashed var(--border-color)", color: "var(--text-muted)" }}>
+              <Plus className="w-3.5 h-3.5" /> Add Row
+            </button>
+
+            {/* Fees Notes */}
+            <div className="mb-6">
+              <label className="block text-[13px] font-semibold mb-1.5" style={{ color: "var(--text-secondary)" }}>Fees Footnotes</label>
+              <textarea value={values.register_fees_notes ?? ""} onChange={e => set("register_fees_notes", e.target.value)} rows={5} className={`${INPUT_CLS} resize-none`} style={{ border: "1px solid var(--border-color)", lineHeight: 1.7 }} />
+            </div>
+
+            {/* Entitlements */}
+            <p className="text-[12px] font-bold uppercase tracking-wide mb-2" style={{ color: "var(--text-secondary)" }}>Conference Entitlements</p>
+            <div className="mb-2">
+              <label className="block text-[13px] font-semibold mb-1.5" style={{ color: "var(--text-secondary)" }}>Section Heading</label>
+              <input type="text" value={values.register_entitlements_heading ?? ""} onChange={e => set("register_entitlements_heading", e.target.value)} className={INPUT_CLS} style={{ border: "1px solid var(--border-color)" }} />
+            </div>
+            <div className="space-y-2 mb-2">
+              {entitlementItems.map((item, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <input type="text" value={item} onChange={e => setEntitlements(entitlementItems.map((v, j) => j === i ? e.target.value : v))} placeholder="Entitlement item" className={INPUT_CLS} style={{ border: "1px solid var(--border-color)", flex: 1 }} />
+                  <button type="button" onClick={() => setEntitlements(entitlementItems.filter((_, j) => j !== i))} className="btn btn-sm flex-shrink-0" style={{ background: "var(--status-danger-bg)", color: "var(--status-danger-text)", borderColor: "var(--status-danger-border)" }}><Trash2 className="w-3.5 h-3.5" /></button>
+                </div>
+              ))}
+            </div>
+            <button type="button" onClick={() => setEntitlements([...entitlementItems, ""])} className="btn btn-sm flex items-center gap-1.5 mb-6" style={{ border: "1px dashed var(--border-color)", color: "var(--text-muted)" }}>
+              <Plus className="w-3.5 h-3.5" /> Add Entitlement
+            </button>
+
+            {/* Cancellation Policy */}
+            <p className="text-[12px] font-bold uppercase tracking-wide mb-2" style={{ color: "var(--text-secondary)" }}>Cancellation &amp; Refund Policy</p>
+            <div className="mb-4">
+              <label className="block text-[13px] font-semibold mb-1.5" style={{ color: "var(--text-secondary)" }}>Section Heading</label>
+              <input type="text" value={values.register_cancel_heading ?? ""} onChange={e => set("register_cancel_heading", e.target.value)} className={INPUT_CLS} style={{ border: "1px solid var(--border-color)" }} />
+            </div>
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div>
+                <label className="block text-[13px] font-semibold mb-1.5" style={{ color: "var(--text-secondary)" }}>Before-deadline Label</label>
+                <input type="text" value={values.register_cancel_before_label ?? ""} onChange={e => set("register_cancel_before_label", e.target.value)} className={INPUT_CLS} style={{ border: "1px solid var(--border-color)" }} />
+              </div>
+              <div>
+                <label className="block text-[13px] font-semibold mb-1.5" style={{ color: "var(--text-secondary)" }}>Before-deadline Date</label>
+                <input type="text" value={values.register_cancel_before_date ?? ""} onChange={e => set("register_cancel_before_date", e.target.value)} className={INPUT_CLS} style={{ border: "1px solid var(--border-color)" }} />
+              </div>
+            </div>
+            <div className="mb-2">
+              <label className="block text-[13px] font-semibold mb-1.5" style={{ color: "var(--text-secondary)" }}>Before-deadline Policy Items</label>
+              <div className="space-y-2 mb-1">
+                {cancelBeforeItems.map((item, i) => (
+                  <div key={i} className="flex gap-2">
+                    <input type="text" value={item} onChange={e => setCancelBefore(cancelBeforeItems.map((v, j) => j === i ? e.target.value : v))} className={INPUT_CLS} style={{ border: "1px solid var(--border-color)", flex: 1 }} />
+                    <button type="button" onClick={() => setCancelBefore(cancelBeforeItems.filter((_, j) => j !== i))} className="btn btn-sm flex-shrink-0" style={{ background: "var(--status-danger-bg)", color: "var(--status-danger-text)", borderColor: "var(--status-danger-border)" }}><Trash2 className="w-3.5 h-3.5" /></button>
+                  </div>
+                ))}
+              </div>
+              <button type="button" onClick={() => setCancelBefore([...cancelBeforeItems, ""])} className="btn btn-sm flex items-center gap-1.5" style={{ border: "1px dashed var(--border-color)", color: "var(--text-muted)" }}><Plus className="w-3.5 h-3.5" /> Add</button>
+            </div>
+            <div className="grid grid-cols-2 gap-4 mt-4 mb-4">
+              <div>
+                <label className="block text-[13px] font-semibold mb-1.5" style={{ color: "var(--text-secondary)" }}>After-deadline Label</label>
+                <input type="text" value={values.register_cancel_after_label ?? ""} onChange={e => set("register_cancel_after_label", e.target.value)} className={INPUT_CLS} style={{ border: "1px solid var(--border-color)" }} />
+              </div>
+              <div>
+                <label className="block text-[13px] font-semibold mb-1.5" style={{ color: "var(--text-secondary)" }}>After-deadline Date</label>
+                <input type="text" value={values.register_cancel_after_date ?? ""} onChange={e => set("register_cancel_after_date", e.target.value)} className={INPUT_CLS} style={{ border: "1px solid var(--border-color)" }} />
+              </div>
+            </div>
+            <div className="mb-4">
+              <label className="block text-[13px] font-semibold mb-1.5" style={{ color: "var(--text-secondary)" }}>After-deadline Policy Items</label>
+              <div className="space-y-2 mb-1">
+                {cancelAfterItems.map((item, i) => (
+                  <div key={i} className="flex gap-2">
+                    <input type="text" value={item} onChange={e => setCancelAfter(cancelAfterItems.map((v, j) => j === i ? e.target.value : v))} className={INPUT_CLS} style={{ border: "1px solid var(--border-color)", flex: 1 }} />
+                    <button type="button" onClick={() => setCancelAfter(cancelAfterItems.filter((_, j) => j !== i))} className="btn btn-sm flex-shrink-0" style={{ background: "var(--status-danger-bg)", color: "var(--status-danger-text)", borderColor: "var(--status-danger-border)" }}><Trash2 className="w-3.5 h-3.5" /></button>
+                  </div>
+                ))}
+              </div>
+              <button type="button" onClick={() => setCancelAfter([...cancelAfterItems, ""])} className="btn btn-sm flex items-center gap-1.5" style={{ border: "1px dashed var(--border-color)", color: "var(--text-muted)" }}><Plus className="w-3.5 h-3.5" /> Add</button>
+            </div>
+            <div className="mb-6">
+              <label className="block text-[13px] font-semibold mb-1.5" style={{ color: "var(--text-secondary)" }}>Cancellation Notes (shown below policy cards)</label>
+              <div className="space-y-2 mb-1">
+                {cancelNoteItems.map((item, i) => (
+                  <div key={i} className="flex gap-2">
+                    <input type="text" value={item} onChange={e => setCancelNotes(cancelNoteItems.map((v, j) => j === i ? e.target.value : v))} className={INPUT_CLS} style={{ border: "1px solid var(--border-color)", flex: 1 }} />
+                    <button type="button" onClick={() => setCancelNotes(cancelNoteItems.filter((_, j) => j !== i))} className="btn btn-sm flex-shrink-0" style={{ background: "var(--status-danger-bg)", color: "var(--status-danger-text)", borderColor: "var(--status-danger-border)" }}><Trash2 className="w-3.5 h-3.5" /></button>
+                  </div>
+                ))}
+              </div>
+              <button type="button" onClick={() => setCancelNotes([...cancelNoteItems, ""])} className="btn btn-sm flex items-center gap-1.5" style={{ border: "1px dashed var(--border-color)", color: "var(--text-muted)" }}><Plus className="w-3.5 h-3.5" /> Add Note</button>
+            </div>
+
+            {/* Disclaimer */}
+            <p className="text-[12px] font-bold uppercase tracking-wide mb-2" style={{ color: "var(--text-secondary)" }}>Disclaimer</p>
+            <div className="mb-2">
+              <label className="block text-[13px] font-semibold mb-1.5" style={{ color: "var(--text-secondary)" }}>Section Heading</label>
+              <input type="text" value={values.register_disclaimer_heading ?? ""} onChange={e => set("register_disclaimer_heading", e.target.value)} className={INPUT_CLS} style={{ border: "1px solid var(--border-color)" }} />
+            </div>
+            <div className="space-y-2 mb-1">
+              {disclaimerItems.map((item, i) => (
+                <div key={i} className="flex gap-2">
+                  <input type="text" value={item} onChange={e => set("register_disclaimer_json", JSON.stringify(disclaimerItems.map((v, j) => j === i ? e.target.value : v)))} className={INPUT_CLS} style={{ border: "1px solid var(--border-color)", flex: 1 }} />
+                  <button type="button" onClick={() => set("register_disclaimer_json", JSON.stringify(disclaimerItems.filter((_, j) => j !== i)))} className="btn btn-sm flex-shrink-0" style={{ background: "var(--status-danger-bg)", color: "var(--status-danger-text)", borderColor: "var(--status-danger-border)" }}><Trash2 className="w-3.5 h-3.5" /></button>
+                </div>
+              ))}
+            </div>
+            <button type="button" onClick={() => set("register_disclaimer_json", JSON.stringify([...disclaimerItems, ""]))} className="btn btn-sm flex items-center gap-1.5 mb-6" style={{ border: "1px dashed var(--border-color)", color: "var(--text-muted)" }}><Plus className="w-3.5 h-3.5" /> Add Item</button>
+
+            {/* Photo Release */}
+            <p className="text-[12px] font-bold uppercase tracking-wide mb-2" style={{ color: "var(--text-secondary)" }}>Photo Release Policy</p>
+            <div className="mb-2">
+              <label className="block text-[13px] font-semibold mb-1.5" style={{ color: "var(--text-secondary)" }}>Section Heading</label>
+              <input type="text" value={values.register_photo_heading ?? ""} onChange={e => set("register_photo_heading", e.target.value)} className={INPUT_CLS} style={{ border: "1px solid var(--border-color)" }} />
+            </div>
+            <div>
+              <label className="block text-[13px] font-semibold mb-1.5" style={{ color: "var(--text-secondary)" }}>Policy Text</label>
+              <textarea value={values.register_photo_policy ?? ""} onChange={e => set("register_photo_policy", e.target.value)} rows={3} className={`${INPUT_CLS} resize-none`} style={{ border: "1px solid var(--border-color)", lineHeight: 1.7 }} />
             </div>
           </div>
         </div>

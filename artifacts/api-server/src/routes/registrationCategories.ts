@@ -11,6 +11,7 @@ function fmt(c: typeof registrationCategoriesTable.$inferSelect) {
     slug: c.slug,
     label: c.label,
     priceMyr: c.priceMyr ? parseFloat(c.priceMyr) : 0,
+    earlyBirdPriceMyr: c.earlyBirdPriceMyr != null ? parseFloat(c.earlyBirdPriceMyr) : null,
     description: c.description ?? null,
     sortOrder: c.sortOrder,
     isActive: c.isActive,
@@ -81,6 +82,8 @@ router.put("/registration-categories/:id", requireAdmin, async (req, res) => {
     if (slug !== undefined) updates.slug = slug.trim();
     if (label !== undefined) updates.label = label.trim();
     if (priceMyr !== undefined) updates.priceMyr = String(priceMyr);
+    const { earlyBirdPriceMyr } = req.body;
+    if (earlyBirdPriceMyr !== undefined) updates.earlyBirdPriceMyr = earlyBirdPriceMyr != null && earlyBirdPriceMyr !== "" ? String(earlyBirdPriceMyr) : null;
     if (description !== undefined) updates.description = description?.trim() || null;
     if (sortOrder !== undefined) updates.sortOrder = sortOrder;
     if (isActive !== undefined) updates.isActive = isActive;

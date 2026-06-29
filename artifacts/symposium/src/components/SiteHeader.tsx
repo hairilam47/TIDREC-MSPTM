@@ -175,7 +175,7 @@ export function SiteHeader() {
           )}
           <Link href="/login" className="hover:text-accent transition-colors text-[var(--navy)] font-semibold text-sm">Login</Link>
           <Button asChild className="bg-accent text-accent-foreground hover:bg-accent/90 text-sm px-5">
-            <Link href="/register">Registration</Link>
+            <Link href="/registration">Registration</Link>
           </Button>
         </nav>
 
