@@ -3741,6 +3741,25 @@ export function useReorderCommitteeMembers<TError = ErrorType<unknown>, TContext
   return useMutation(mutationOptions);
 }
 
+export const reorderSpeakers = async (items: { id: number; sortOrder: number }[], options?: RequestInit): Promise<{ ok: boolean }> => {
+  return customFetch<{ ok: boolean }>(`/api/speakers/reorder`, { ...options, method: 'PATCH', headers: { 'Content-Type': 'application/json', ...options?.headers }, body: JSON.stringify(items) });
+};
+
+export const getReorderSpeakersMutationOptions = <TError = ErrorType<unknown>, TContext = unknown>(
+  options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof reorderSpeakers>>, TError, { items: { id: number; sortOrder: number }[] }, TContext>, request?: SecondParameter<typeof customFetch> }
+): UseMutationOptions<Awaited<ReturnType<typeof reorderSpeakers>>, TError, { items: { id: number; sortOrder: number }[] }, TContext> => {
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof reorderSpeakers>>, { items: { id: number; sortOrder: number }[] }> = ({ items }) => reorderSpeakers(items, requestOptions);
+  return { mutationFn, ...mutationOptions };
+};
+
+export function useReorderSpeakers<TError = ErrorType<unknown>, TContext = unknown>(
+  options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof reorderSpeakers>>, TError, { items: { id: number; sortOrder: number }[] }, TContext>, request?: SecondParameter<typeof customFetch> }
+): UseMutationResult<Awaited<ReturnType<typeof reorderSpeakers>>, TError, { items: { id: number; sortOrder: number }[] }, TContext> {
+  const mutationOptions = getReorderSpeakersMutationOptions(options);
+  return useMutation(mutationOptions);
+}
+
 export const getListProgrammeSessionsUrl = () => `/api/programme-sessions`;
 
 export const listProgrammeSessions = async (options?: RequestInit): Promise<ProgrammeSession[]> => {

@@ -1,9 +1,13 @@
 import React from "react";
 import AdminLayout from "@/components/AdminLayout";
-import { useGetSpeakers, useCreateSpeaker, useUpdateSpeaker, useDeleteSpeaker, SpeakerTier } from "@workspace/api-client-react";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import {
+  useGetSpeakers, useCreateSpeaker, useUpdateSpeaker, useDeleteSpeaker,
+  useReorderSpeakers, SpeakerTier,
+} from "@workspace/api-client-react";
+import type { Speaker, SpeakerInput } from "@workspace/api-client-react";
+import { Plus, Pencil, Trash2, GripVertical } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import type { SpeakerInput } from "@workspace/api-client-react";
+import { resolveImageUrl } from "@/lib/resolveImageUrl";
 import { FormField, ModalShell, ConfirmDialog, INPUT_BASE, TEXTAREA_BASE, inputBorder } from "@/components/ui/form-primitives";
 import { ImageUploadField } from "@/components/ui/ImageUploadField";
 
@@ -16,18 +20,166 @@ const TIER_OPTIONS: { value: SpeakerTier | ""; label: string }[] = [
   { value: SpeakerTier.invited, label: "Invited Speaker" },
 ];
 
-const TIER_LABELS: Record<string, { label: string; bg: string; color: string }> = {
-  keynote: { label: "Keynote", bg: "var(--gold-lt)",  color: "var(--gold-dk)" },
-  plenary: { label: "Plenary", bg: "var(--cyan-lt)",  color: "var(--cyan)" },
-  invited: { label: "Invited", bg: "var(--green-lt)", color: "var(--green)" },
-};
+const TIER_GROUPS: { key: SpeakerTier | null; label: string; bg: string; color: string }[] = [
+  { key: SpeakerTier.keynote, label: "Keynote Speakers",  bg: "var(--gold-lt)",  color: "var(--gold-dk)" },
+  { key: SpeakerTier.plenary, label: "Plenary Speakers",  bg: "var(--cyan-lt)",  color: "var(--cyan)" },
+  { key: SpeakerTier.invited, label: "Invited Speakers",  bg: "var(--green-lt)", color: "var(--green)" },
+  { key: null,                label: "Other / Unassigned", bg: "var(--border-color)", color: "var(--text-secondary)" },
+];
+
+function SpeakerRow({
+  speaker, isDragging, isDragOver,
+  onDragStart, onDragEnter, onDragEnd, onDragOver, onDrop,
+  onEdit, onDelete,
+}: {
+  speaker: Speaker;
+  isDragging: boolean;
+  isDragOver: boolean;
+  onDragStart: () => void;
+  onDragEnter: () => void;
+  onDragEnd: () => void;
+  onDragOver: (e: React.DragEvent) => void;
+  onDrop: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
+}) {
+  const photoSrc = resolveImageUrl(speaker.photoUrl);
+
+  return (
+    <div
+      draggable
+      onDragStart={onDragStart}
+      onDragEnter={onDragEnter}
+      onDragEnd={onDragEnd}
+      onDragOver={onDragOver}
+      onDrop={onDrop}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 10,
+        padding: "8px 12px",
+        borderRadius: 8,
+        border: isDragOver ? "2px dashed var(--primary)" : "1px solid var(--border)",
+        background: isDragging ? "var(--bg-surface-secondary)" : isDragOver ? "var(--primary-lt)" : "var(--bg-surface)",
+        opacity: isDragging ? 0.4 : 1,
+        cursor: "grab",
+        transition: "background 0.12s, border 0.12s, opacity 0.12s",
+        userSelect: "none",
+      }}
+    >
+      <GripVertical style={{ width: 16, height: 16, color: "var(--text-muted)", flexShrink: 0 }} />
+
+      <div style={{ width: 40, height: 40, borderRadius: 8, overflow: "hidden", flexShrink: 0, background: "linear-gradient(135deg, var(--primary-lt), var(--bg-surface-secondary))", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        {photoSrc ? (
+          <img src={photoSrc} alt={speaker.name} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "top" }} />
+        ) : (
+          <span style={{ fontSize: 13, fontWeight: 700, color: "var(--primary)" }}>{speaker.initials}</span>
+        )}
+      </div>
+
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text)", lineHeight: 1.3, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+          {speaker.name}
+        </div>
+        <div style={{ fontSize: 11, color: "var(--text-muted)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+          {speaker.topic}{speaker.institution ? ` · ${speaker.institution}` : ""}{speaker.country ? `, ${speaker.country}` : ""}
+        </div>
+      </div>
+
+      <div style={{ display: "flex", gap: 4, flexShrink: 0 }}>
+        <button className="btn btn-outline btn-sm" onClick={(e) => { e.stopPropagation(); onEdit(); }} title="Edit">
+          <Pencil style={{ width: 12, height: 12 }} />
+        </button>
+        <button
+          className="btn btn-sm"
+          style={{ background: "var(--status-danger-bg)", color: "var(--status-danger-text)", borderColor: "var(--status-danger-border)" }}
+          onClick={(e) => { e.stopPropagation(); onDelete(); }}
+          title="Delete"
+        >
+          <Trash2 style={{ width: 12, height: 12 }} />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function DraggableGroup({
+  group, speakers, onEdit, onDelete, onReorder,
+}: {
+  group: typeof TIER_GROUPS[0];
+  speakers: Speaker[];
+  onEdit: (s: Speaker) => void;
+  onDelete: (id: number) => void;
+  onReorder: (reordered: Speaker[]) => void;
+}) {
+  const [local, setLocal] = React.useState(speakers);
+  const [dragIdx, setDragIdx] = React.useState<number | null>(null);
+  const [overIdx, setOverIdx] = React.useState<number | null>(null);
+
+  React.useEffect(() => { setLocal(speakers); }, [speakers]);
+
+  const handleDragStart = (idx: number) => { setDragIdx(idx); setOverIdx(null); };
+
+  const handleDragEnter = (idx: number) => {
+    if (dragIdx === null || idx === dragIdx) return;
+    setOverIdx(idx);
+    const reordered = [...local];
+    const [dragged] = reordered.splice(dragIdx, 1);
+    reordered.splice(idx, 0, dragged);
+    setLocal(reordered);
+    setDragIdx(idx);
+  };
+
+  const handleDragEnd = () => {
+    setDragIdx(null);
+    setOverIdx(null);
+    onReorder(local);
+  };
+
+  if (local.length === 0) return null;
+
+  return (
+    <div style={{ marginBottom: 24 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+        <span style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", padding: "3px 10px", borderRadius: 20, background: group.bg, color: group.color, flexShrink: 0 }}>
+          {group.label}
+        </span>
+        <span style={{ fontSize: 12, color: "var(--text-muted)" }}>
+          {local.length} {local.length === 1 ? "speaker" : "speakers"}
+        </span>
+        <span style={{ fontSize: 11, color: "var(--text-muted)", marginLeft: "auto", display: "flex", alignItems: "center", gap: 4, opacity: 0.7 }}>
+          <GripVertical style={{ width: 12, height: 12 }} /> drag to reorder
+        </span>
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+        {local.map((s, idx) => (
+          <SpeakerRow
+            key={s.id}
+            speaker={s}
+            isDragging={dragIdx === idx}
+            isDragOver={overIdx === idx && dragIdx !== idx}
+            onDragStart={() => handleDragStart(idx)}
+            onDragEnter={() => handleDragEnter(idx)}
+            onDragEnd={handleDragEnd}
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={() => { setDragIdx(null); setOverIdx(null); }}
+            onEdit={() => onEdit(s)}
+            onDelete={() => onDelete(s.id)}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function AdminSpeakers() {
   const { data: speakers, refetch } = useGetSpeakers();
   const createMutation = useCreateSpeaker();
   const updateMutation = useUpdateSpeaker();
   const deleteMutation = useDeleteSpeaker();
+  const reorderMutation = useReorderSpeakers();
   const { toast } = useToast();
+
   const [showModal, setShowModal] = React.useState(false);
   const [editId, setEditId] = React.useState<number | null>(null);
   const [form, setForm] = React.useState<SpeakerInput>({ ...BLANK });
@@ -40,7 +192,7 @@ export default function AdminSpeakers() {
   };
 
   const openCreate = () => { setEditId(null); setForm({ ...BLANK }); setErrors({}); setShowModal(true); };
-  const openEdit = (s: NonNullable<typeof speakers>[0]) => {
+  const openEdit = (s: Speaker) => {
     setEditId(s.id);
     setForm({
       name: s.name,
@@ -92,58 +244,48 @@ export default function AdminSpeakers() {
     });
   };
 
+  const handleReorder = (reordered: Speaker[]) => {
+    const items = reordered.map((s, idx) => ({ id: s.id, sortOrder: idx + 1 }));
+    reorderMutation.mutate({ items }, {
+      onSuccess: () => refetch(),
+      onError: () => toast({ title: "Failed to save order", variant: "destructive" }),
+    });
+  };
+
+  const grouped = TIER_GROUPS.map((g) => ({
+    ...g,
+    speakers: (speakers ?? []).filter((s) =>
+      g.key === null ? !s.speakerTier : s.speakerTier === g.key
+    ),
+  }));
+
   return (
     <AdminLayout title="Speakers">
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-        <span style={{ fontSize: 13, color: "var(--text-muted)" }}>{speakers?.length ?? 0} speakers</span>
+        <span style={{ fontSize: 13, color: "var(--text-muted)" }}>
+          {speakers?.length ?? 0} speakers across {grouped.filter(g => g.speakers.length > 0).length} groups
+        </span>
         <button className="btn btn-primary" onClick={openCreate}>
           <Plus style={{ width: 14, height: 14 }} /> Add Speaker
         </button>
       </div>
 
-      <div className="row col-3">
-        {(speakers ?? []).map((s) => {
-          const tierMeta = s.speakerTier ? TIER_LABELS[s.speakerTier] : null;
-          return (
-            <div key={s.id} className="card" style={{ overflow: "hidden" }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 80, background: "linear-gradient(135deg, var(--primary-lt), var(--bg-surface-secondary))" }}>
-                <span className="font-sans" style={{ fontSize: 28, fontWeight: 700, color: "var(--primary)" }}>
-                  {s.initials}
-                </span>
-              </div>
-              <div className="card-body" style={{ paddingTop: 12, paddingBottom: 8 }}>
-                {tierMeta && (
-                  <span style={{ display: "inline-block", fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", padding: "2px 8px", borderRadius: 20, background: tierMeta.bg, color: tierMeta.color, marginBottom: 6 }}>
-                    {tierMeta.label}
-                  </span>
-                )}
-                <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text)", marginBottom: 2 }}>{s.name}</div>
-                <div style={{ fontSize: 12, color: "var(--primary)", marginBottom: 2 }}>{s.topic}</div>
-                <div style={{ fontSize: 11, color: "var(--text-muted)" }}>
-                  {s.institution ? `${s.institution}, ` : ""}{s.country}
-                </div>
-              </div>
-              <div className="card-footer" style={{ display: "flex", gap: 6 }}>
-                <button className="btn btn-outline btn-sm" style={{ flex: 1 }} onClick={() => openEdit(s)}>
-                  <Pencil style={{ width: 13, height: 13 }} /> Edit
-                </button>
-                <button
-                  className="btn btn-sm"
-                  style={{ background: "var(--status-danger-bg)", color: "var(--status-danger-text)", borderColor: "var(--status-danger-border)" }}
-                  onClick={() => setDeleteId(s.id)}
-                >
-                  <Trash2 style={{ width: 13, height: 13 }} />
-                </button>
-              </div>
-            </div>
-          );
-        })}
-        {(speakers ?? []).length === 0 && (
-          <div style={{ gridColumn: "1 / -1", textAlign: "center", padding: "48px 0", fontSize: 14, color: "var(--text-muted)" }}>
-            No speakers yet. Add the first one.
-          </div>
-        )}
-      </div>
+      {grouped.every(g => g.speakers.length === 0) && (
+        <div style={{ textAlign: "center", padding: "48px 0", fontSize: 14, color: "var(--text-muted)" }}>
+          No speakers yet. Add the first one.
+        </div>
+      )}
+
+      {grouped.map((group) => (
+        <DraggableGroup
+          key={group.key ?? "__unassigned__"}
+          group={group}
+          speakers={group.speakers}
+          onEdit={openEdit}
+          onDelete={(id) => setDeleteId(id)}
+          onReorder={handleReorder}
+        />
+      ))}
 
       {showModal && (
         <ModalShell
@@ -164,43 +306,20 @@ export default function AdminSpeakers() {
           }
         >
           <FormField label="Full Name" required error={errors.name}>
-            <input
-              value={form.name}
-              onChange={(e) => set("name", e.target.value)}
-              placeholder="e.g. Prof. Janet Cox-Singh"
-              className={INPUT_BASE}
-              style={inputBorder(errors.name)}
-            />
+            <input value={form.name} onChange={(e) => set("name", e.target.value)} placeholder="e.g. Prof. Janet Cox-Singh" className={INPUT_BASE} style={inputBorder(errors.name)} />
           </FormField>
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
             <FormField label="Country" required error={errors.country}>
-              <input
-                value={form.country}
-                onChange={(e) => set("country", e.target.value)}
-                placeholder="e.g. United Kingdom"
-                className={INPUT_BASE}
-                style={inputBorder(errors.country)}
-              />
+              <input value={form.country} onChange={(e) => set("country", e.target.value)} placeholder="e.g. United Kingdom" className={INPUT_BASE} style={inputBorder(errors.country)} />
             </FormField>
             <FormField label="Institution" hint="Optional">
-              <input
-                value={form.institution ?? ""}
-                onChange={(e) => set("institution", e.target.value)}
-                placeholder="e.g. University of St Andrews"
-                className={INPUT_BASE}
-                style={inputBorder()}
-              />
+              <input value={form.institution ?? ""} onChange={(e) => set("institution", e.target.value)} placeholder="e.g. University of St Andrews" className={INPUT_BASE} style={inputBorder()} />
             </FormField>
           </div>
 
           <FormField label="Speaker Tier" hint="Controls how the speaker is grouped on the public Speakers page">
-            <select
-              value={form.speakerTier ?? ""}
-              onChange={(e) => set("speakerTier", e.target.value || null)}
-              className={INPUT_BASE}
-              style={inputBorder()}
-            >
+            <select value={form.speakerTier ?? ""} onChange={(e) => set("speakerTier", e.target.value || null)} className={INPUT_BASE} style={inputBorder()}>
               {TIER_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
               ))}
@@ -208,32 +327,15 @@ export default function AdminSpeakers() {
           </FormField>
 
           <FormField label="Research Topic / Talk Title" required error={errors.topic}>
-            <input
-              value={form.topic}
-              onChange={(e) => set("topic", e.target.value)}
-              placeholder="e.g. Tick-borne Disease Transmission Dynamics"
-              className={INPUT_BASE}
-              style={inputBorder(errors.topic)}
-            />
+            <input value={form.topic} onChange={(e) => set("topic", e.target.value)} placeholder="e.g. Tick-borne Disease Transmission Dynamics" className={INPUT_BASE} style={inputBorder(errors.topic)} />
           </FormField>
 
           <FormField label="Biography" hint="Optional — brief overview of research focus">
-            <textarea
-              value={form.bio ?? ""}
-              onChange={(e) => set("bio", e.target.value)}
-              rows={3}
-              placeholder="Short professional biography…"
-              className={TEXTAREA_BASE}
-              style={inputBorder()}
-            />
+            <textarea value={form.bio ?? ""} onChange={(e) => set("bio", e.target.value)} rows={3} placeholder="Short professional biography…" className={TEXTAREA_BASE} style={inputBorder()} />
           </FormField>
 
           <FormField label="Speaker Photo" hint="Optional — PNG, JPG, or WebP portrait image">
-            <ImageUploadField
-              value={form.photoUrl ?? ""}
-              onChange={(path) => set("photoUrl", path)}
-              accept="image/png,image/jpeg,image/webp"
-            />
+            <ImageUploadField value={form.photoUrl ?? ""} onChange={(path) => set("photoUrl", path)} accept="image/png,image/jpeg,image/webp" />
           </FormField>
         </ModalShell>
       )}

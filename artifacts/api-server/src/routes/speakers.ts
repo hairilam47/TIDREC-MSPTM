@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { db, speakersTable } from "@workspace/db";
-import { eq } from "drizzle-orm";
+import { asc, eq } from "drizzle-orm";
 import { requireAdmin } from "../lib/auth";
 
 const router = Router();
@@ -25,12 +25,16 @@ function formatSpeaker(s: typeof speakersTable.$inferSelect) {
     photoUrl: s.photoUrl,
     initials: s.initials,
     speakerTier: s.speakerTier,
+    sortOrder: s.sortOrder,
   };
 }
 
 router.get("/speakers", async (_req, res) => {
   try {
-    const speakers = await db.select().from(speakersTable).orderBy(speakersTable.name);
+    const speakers = await db
+      .select()
+      .from(speakersTable)
+      .orderBy(asc(speakersTable.sortOrder), asc(speakersTable.name));
     res.json(speakers.map(formatSpeaker));
   } catch (err) {
     console.error(err);
@@ -56,6 +60,27 @@ router.post("/speakers", requireAdmin, async (req, res) => {
       speakerTier: speakerTier || null,
     }).returning();
     res.status(201).json(formatSpeaker(speaker));
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.patch("/speakers/reorder", requireAdmin, async (req, res) => {
+  try {
+    const items: { id: number; sortOrder: number }[] = req.body;
+    if (!Array.isArray(items)) {
+      res.status(400).json({ error: "Expected array of { id, sortOrder }" });
+      return;
+    }
+    await Promise.all(
+      items.map(({ id, sortOrder }) =>
+        db.update(speakersTable)
+          .set({ sortOrder, updatedAt: new Date() })
+          .where(eq(speakersTable.id, id))
+      )
+    );
+    res.json({ ok: true });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal server error" });
