@@ -9,14 +9,16 @@ export function RequireAuth({ children }: { children: React.ReactNode }) {
   React.useEffect(() => {
     if (isError) {
       window.location.href = "/login";
+    } else if (user && (user.role === "admin" || user.role === "super_admin")) {
+      window.location.href = "/admin/";
     }
-  }, [isError]);
+  }, [isError, user]);
 
   if (isLoading) {
     return <div className="min-h-screen flex items-center justify-center">Loading…</div>;
   }
 
-  if (!user) return null;
+  if (!user || user.role === "admin" || user.role === "super_admin") return null;
   return <>{children}</>;
 }
 

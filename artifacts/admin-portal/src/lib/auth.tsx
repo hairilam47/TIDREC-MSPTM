@@ -9,14 +9,16 @@ export function RequireAuth({ children }: { children: React.ReactNode }) {
   React.useEffect(() => {
     if (isError) {
       window.location.href = "/login";
+    } else if (user && user.role !== "admin" && user.role !== "super_admin") {
+      window.location.href = "/portal/";
     }
-  }, [isError]);
+  }, [isError, user]);
 
   if (isLoading) {
     return <div className="min-h-screen flex items-center justify-center">Loading…</div>;
   }
 
-  if (!user) return null;
+  if (!user || (user.role !== "admin" && user.role !== "super_admin")) return null;
   return <>{children}</>;
 }
 
@@ -29,7 +31,6 @@ export function RequireAdmin({ children }: { children: React.ReactNode }) {
     if (isError) {
       window.location.href = "/login";
     } else if (user && user.role !== "admin" && user.role !== "super_admin") {
-      // Non-admin authenticated users → redirect to customer portal
       window.location.href = "/portal/";
     }
   }, [isError, user]);

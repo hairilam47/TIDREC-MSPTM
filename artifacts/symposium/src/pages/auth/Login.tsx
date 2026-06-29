@@ -29,7 +29,7 @@ export default function Login() {
       {
         onSuccess: (res) => {
           localStorage.setItem("satbds_token", res.token);
-          window.location.href = res.user.role === "admin" ? "/admin/" : "/portal/";
+          window.location.href = (res.user.role === "admin" || res.user.role === "super_admin") ? "/admin/" : "/portal/";
         },
         onError: () => {
           setErrors({ general: "Invalid email or password. Please try again." });
