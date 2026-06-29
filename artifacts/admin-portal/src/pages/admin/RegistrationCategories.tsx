@@ -100,13 +100,19 @@ export default function AdminRegistrationCategories() {
     setFormError(null);
     if (!form.slug.trim()) { setFormError("Slug is required."); return; }
     if (!form.label.trim()) { setFormError("Label is required."); return; }
+    const regularPrice = Number(form.priceMyr) || 0;
+    const earlyBirdRaw = form.earlyBirdPriceMyr != null && String(form.earlyBirdPriceMyr).trim() !== "" ? Number(form.earlyBirdPriceMyr) : null;
+    if (earlyBirdRaw != null && earlyBirdRaw >= regularPrice) {
+      setFormError("Early bird price must be less than the regular price.");
+      return;
+    }
     setSaving(true);
     try {
       const body = {
         slug: form.slug.trim(),
         label: form.label.trim(),
-        priceMyr: Number(form.priceMyr) || 0,
-        earlyBirdPriceMyr: form.earlyBirdPriceMyr !== null && form.earlyBirdPriceMyr !== (null as unknown) && String(form.earlyBirdPriceMyr).trim() !== "" ? Number(form.earlyBirdPriceMyr) : null,
+        priceMyr: regularPrice,
+        earlyBirdPriceMyr: earlyBirdRaw,
         description: (form.description as string)?.trim() || null,
         sortOrder: Number(form.sortOrder) || 0,
         isActive: form.isActive,
@@ -301,6 +307,7 @@ function EditForm({
             className={INPUT}
             style={INPUT_STYLE}
           />
+          <p className="text-xs mt-1" style={{ color: "var(--text-muted, #94a3b8)" }}>Must be less than the regular price. Leave blank to hide the Early Bird column on the registration page.</p>
         </div>
         <div>
           <label className="block text-xs font-semibold mb-1" style={{ color: "var(--text-secondary)" }}>Sort Order</label>

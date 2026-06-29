@@ -72,6 +72,8 @@ export default function RegistrationInfo() {
 
   const contactEmail = s("contact_email", "events@msptm.network");
 
+  const hasEarlyBird = categories.some(c => c.earlyBirdPriceMyr != null);
+
   return (
     <div className="min-h-screen" style={{ background: "var(--bg-surface, #f5f6f8)" }}>
       <SiteHeader />
@@ -129,13 +131,15 @@ export default function RegistrationInfo() {
               <thead>
                 <tr style={{ background: "var(--navy)" }}>
                   <th className="text-left px-5 py-4 text-white font-semibold text-sm">Category</th>
-                  <th className="text-right px-5 py-4 text-white font-semibold whitespace-nowrap text-sm">
-                    {s("register_early_bird_label", "Early Bird")}
-                    <br />
-                    <span className="text-white/60 text-xs font-normal">
-                      {s("register_early_bird_deadline", "Until 31 Dec 2026")}
-                    </span>
-                  </th>
+                  {hasEarlyBird && (
+                    <th className="text-right px-5 py-4 text-white font-semibold whitespace-nowrap text-sm">
+                      {s("register_early_bird_label", "Early Bird")}
+                      <br />
+                      <span className="text-white/60 text-xs font-normal">
+                        {s("register_early_bird_deadline", "Until 31 Dec 2026")}
+                      </span>
+                    </th>
+                  )}
                   <th className="text-right px-5 py-4 text-white font-semibold whitespace-nowrap text-sm">
                     {s("register_regular_label", "Regular")}
                     <br />
@@ -149,11 +153,13 @@ export default function RegistrationInfo() {
                 {categories.map((cat) => (
                   <tr key={cat.id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-5 py-3.5 font-medium" style={{ color: "var(--navy)" }}>{cat.label}</td>
-                    <td className="px-5 py-3.5 text-right font-semibold" style={{ color: "var(--teal)" }}>
-                      {cat.earlyBirdPriceMyr != null
-                        ? `MYR ${cat.earlyBirdPriceMyr.toLocaleString()}`
-                        : <span className="text-muted-foreground">—</span>}
-                    </td>
+                    {hasEarlyBird && (
+                      <td className="px-5 py-3.5 text-right font-semibold" style={{ color: "var(--teal)" }}>
+                        {cat.earlyBirdPriceMyr != null
+                          ? `MYR ${cat.earlyBirdPriceMyr.toLocaleString()}`
+                          : <span className="text-muted-foreground">—</span>}
+                      </td>
+                    )}
                     <td className="px-5 py-3.5 text-right font-bold" style={{ color: "var(--navy)" }}>
                       MYR {cat.priceMyr.toLocaleString()}
                     </td>
