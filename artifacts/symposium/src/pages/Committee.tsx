@@ -94,10 +94,13 @@ export default function CommitteePage() {
   const subcommittees = (members ?? []).filter((m) => m.committeeLevel === "subcommittee");
 
   const subcommitteeMap: Record<string, string> = {};
+  const subcommitteeNames: string[] = [];
   for (const m of subcommittees) {
+    if (m.subcommitteeName && !(m.subcommitteeName in subcommitteeMap)) {
+      subcommitteeNames.push(m.subcommitteeName);
+    }
     if (m.subcommitteeName) subcommitteeMap[m.subcommitteeName] = m.name;
   }
-  const subcommitteeNames = Object.keys(subcommitteeMap);
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
