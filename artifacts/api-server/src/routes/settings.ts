@@ -24,6 +24,7 @@ const DEFAULT_SETTINGS: Record<string, string> = {
   contact_maps_url: "https://maps.google.com/?q=Sunway+Putra+Hotel+Kuala+Lumpur",
   organiser_full_primary: "Malaysian Society of Parasitology and Tropical Medicine (MSPTM)",
   organiser_full_secondary: "Tropical Infectious Diseases Research & Education Centre (TIDREC)",
+  organiser_full_tertiary: "Universiti Teknologi MARA (UiTM)",
   sponsor_prospectus_url: "",
   first_announcement_url: "",
   co_organiser_tidrec_logo: "https://tidrec.um.edu.my/images/Beige%20Pastel%20Minimalist%20Thesis%20Defense%20Presentation%20(400%20x%2070%20px)%20(1).png",
