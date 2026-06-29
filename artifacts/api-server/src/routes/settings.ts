@@ -60,13 +60,14 @@ const objectStorageService = new ObjectStorageService();
 router.get("/co-organiser-logo/:slug", async (req, res) => {
   try {
     const { slug } = req.params;
-    if (slug !== "tidrec" && slug !== "msptm" && slug !== "venue") {
+    if (slug !== "tidrec" && slug !== "msptm" && slug !== "uitm" && slug !== "venue") {
       res.status(404).json({ error: "Unknown co-organiser slug" });
       return;
     }
     const keyMap: Record<string, string> = {
       tidrec: "co_organiser_tidrec_logo",
       msptm: "co_organiser_msptm_logo",
+      uitm: "co_organiser_uitm_logo",
       venue: "venue_logo",
     };
     const key = keyMap[slug];

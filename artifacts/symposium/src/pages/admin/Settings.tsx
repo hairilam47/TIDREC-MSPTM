@@ -48,6 +48,7 @@ const FIELD_GROUPS: FieldGroup[] = [
       { key: "organiser_secondary", label: "Co-Organiser (short name)", type: "text" },
       { key: "organiser_full_primary", label: "Primary Organiser (full name)", type: "text" },
       { key: "organiser_full_secondary", label: "Co-Organiser (full name)", type: "text" },
+      { key: "co_organiser_uitm_website_url", label: "UiTM Website URL", type: "text", placeholder: "https://www.uitm.edu.my" },
     ],
   },
   {
