@@ -3722,6 +3722,25 @@ export function useDeleteCommitteeMember<TError = ErrorType<unknown>, TContext =
   return useMutation(mutationOptions);
 }
 
+export const reorderCommitteeMembers = async (items: { id: number; sortOrder: number }[], options?: RequestInit): Promise<{ ok: boolean }> => {
+  return customFetch<{ ok: boolean }>(`/api/committee-members/reorder`, { ...options, method: 'PATCH', headers: { 'Content-Type': 'application/json', ...options?.headers }, body: JSON.stringify(items) });
+};
+
+export const getReorderCommitteeMembersMutationOptions = <TError = ErrorType<unknown>, TContext = unknown>(
+  options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof reorderCommitteeMembers>>, TError, { items: { id: number; sortOrder: number }[] }, TContext>, request?: SecondParameter<typeof customFetch> }
+): UseMutationOptions<Awaited<ReturnType<typeof reorderCommitteeMembers>>, TError, { items: { id: number; sortOrder: number }[] }, TContext> => {
+  const { mutation: mutationOptions, request: requestOptions } = options ?? {};
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof reorderCommitteeMembers>>, { items: { id: number; sortOrder: number }[] }> = ({ items }) => reorderCommitteeMembers(items, requestOptions);
+  return { mutationFn, ...mutationOptions };
+};
+
+export function useReorderCommitteeMembers<TError = ErrorType<unknown>, TContext = unknown>(
+  options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof reorderCommitteeMembers>>, TError, { items: { id: number; sortOrder: number }[] }, TContext>, request?: SecondParameter<typeof customFetch> }
+): UseMutationResult<Awaited<ReturnType<typeof reorderCommitteeMembers>>, TError, { items: { id: number; sortOrder: number }[] }, TContext> {
+  const mutationOptions = getReorderCommitteeMembersMutationOptions(options);
+  return useMutation(mutationOptions);
+}
+
 export const getListProgrammeSessionsUrl = () => `/api/programme-sessions`;
 
 export const listProgrammeSessions = async (options?: RequestInit): Promise<ProgrammeSession[]> => {

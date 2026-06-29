@@ -73,6 +73,27 @@ router.post("/committee-members", requireAdmin, async (req, res) => {
   }
 });
 
+router.patch("/committee-members/reorder", requireAdmin, async (req, res) => {
+  try {
+    const items: { id: number; sortOrder: number }[] = req.body;
+    if (!Array.isArray(items)) {
+      res.status(400).json({ error: "Expected array of { id, sortOrder }" });
+      return;
+    }
+    await Promise.all(
+      items.map(({ id, sortOrder }) =>
+        db.update(committeeMembersTable)
+          .set({ sortOrder, updatedAt: new Date() })
+          .where(eq(committeeMembersTable.id, id))
+      )
+    );
+    res.json({ ok: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 router.put("/committee-members/:id", requireAdmin, async (req, res) => {
   try {
     const id = parseInt(String(req.params.id));
