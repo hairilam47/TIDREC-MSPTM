@@ -52,12 +52,14 @@ router.post("/registration-categories", requireAdmin, async (req, res) => {
       res.status(400).json({ error: "slug and label are required" });
       return;
     }
+    const { earlyBirdPriceMyr } = req.body;
     const [cat] = await db
       .insert(registrationCategoriesTable)
       .values({
         slug: slug.trim(),
         label: label.trim(),
         priceMyr: String(priceMyr ?? 0),
+        earlyBirdPriceMyr: earlyBirdPriceMyr != null && earlyBirdPriceMyr !== "" ? String(earlyBirdPriceMyr) : null,
         description: description?.trim() || null,
         sortOrder: sortOrder ?? 0,
         isActive: isActive !== false,

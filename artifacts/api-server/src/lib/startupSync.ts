@@ -362,7 +362,16 @@ async function seedAdminUsers() {
   }
 }
 
+async function ensureSchemaColumns() {
+  try {
+    await db.execute(sql`ALTER TABLE registration_categories ADD COLUMN IF NOT EXISTS early_bird_price_myr NUMERIC`);
+  } catch (err) {
+    console.error("[startup-sync] Schema migration failed:", err);
+  }
+}
+
 export async function runStartupSync() {
+  await ensureSchemaColumns();
   // Speakers must run first — sessions reference speaker IDs
   await syncSpeakers();
   await Promise.all([
