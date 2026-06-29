@@ -1,6 +1,6 @@
 import React from "react";
 import AdminLayout from "@/components/AdminLayout";
-import { Save, Info, FileText, Upload, X, ImageIcon, Loader2 } from "lucide-react";
+import { Save, Info, FileText, Upload, X, ImageIcon, Loader2, Plus, Trash2, ArrowUp, ArrowDown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const LOGO_API = "/api";
@@ -8,9 +8,13 @@ const LOGO_API = "/api";
 const BASE_URL = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
 const API = `${BASE_URL}/api`;
 
-const FIELD_GROUPS = [
+type Field = { key: string; label: string; type: string; placeholder?: string };
+type FieldGroup = { label: string; hint?: string; fields: Field[] };
+
+const FIELD_GROUPS: FieldGroup[] = [
   {
     label: "Event Details",
+    hint: "Appears on: all pages — header, banner alt text, footer",
     fields: [
       { key: "event_name", label: "Full Event Name", type: "text" },
       { key: "event_short_name", label: "Short Name", type: "text" },
@@ -21,23 +25,34 @@ const FIELD_GROUPS = [
   },
   {
     label: "Marketing Site Content",
+    hint: "Appears on: Home page — About section",
     fields: [
-      { key: "hero_subtitle", label: "Hero Subtitle", type: "textarea" },
-      { key: "about_text", label: "About Section", type: "textarea" },
+      { key: "hero_subtitle", label: "Hero Subtitle (second paragraph)", type: "textarea" },
+      { key: "about_text", label: "About Section (main paragraph)", type: "textarea" },
     ],
   },
   {
-    label: "Important Dates",
+    label: "Contact & Venue",
+    hint: "Appears on: Contact page, Home page venue strip",
     fields: [
-      { key: "date_registration_opens", label: "Registration Opens", type: "text", placeholder: "10 Aug 2026" },
-      { key: "date_early_bird_closes", label: "Early Bird Registration Closes", type: "text", placeholder: "05 Oct 2026" },
-      { key: "date_abstract_submission_closes", label: "Abstract Submission Closes", type: "text", placeholder: "31 Jan 2027" },
-      { key: "date_regular_submission_closes", label: "Regular Submission Closes", type: "text", placeholder: "10 Feb 2027" },
-      { key: "date_conference", label: "Conference Dates", type: "text", placeholder: "22–23 Mar 2027" },
+      { key: "contact_email", label: "Contact Email", type: "text" },
+      { key: "contact_maps_url", label: "Google Maps URL", type: "text" },
+      { key: "venue_website_url", label: "Venue Website URL", type: "text" },
+    ],
+  },
+  {
+    label: "Organisers",
+    hint: "Short names used in admin; full names appear on the Contact page",
+    fields: [
+      { key: "organiser_primary", label: "Primary Organiser (short name)", type: "text" },
+      { key: "organiser_secondary", label: "Co-Organiser (short name)", type: "text" },
+      { key: "organiser_full_primary", label: "Primary Organiser (full name)", type: "text" },
+      { key: "organiser_full_secondary", label: "Co-Organiser (full name)", type: "text" },
     ],
   },
   {
     label: "Abstract Key Dates",
+    hint: "Appears on: Portal — Call for Abstracts page",
     fields: [
       { key: "date_call_for_abstract_opens", label: "Call for Abstract Opens", type: "text", placeholder: "1 August 2026" },
       { key: "date_abstract_submission_deadline", label: "Abstract Submission Deadline", type: "text", placeholder: "30 December 2026" },
@@ -46,6 +61,7 @@ const FIELD_GROUPS = [
   },
   {
     label: "Registration Settings",
+    hint: "Used in the admin dashboard and registration reports",
     fields: [
       { key: "registration_target", label: "Registration Target (delegates)", type: "text" },
       { key: "abstract_deadline", label: "Abstract Submission Deadline", type: "text" },
@@ -53,10 +69,15 @@ const FIELD_GROUPS = [
     ],
   },
   {
-    label: "Organisers",
+    label: "Abstract Guidelines",
+    hint: "Appears on: Portal — Call for Abstracts page",
     fields: [
-      { key: "organiser_primary", label: "Primary Organiser", type: "text" },
-      { key: "organiser_secondary", label: "Co-Organiser", type: "text" },
+      { key: "guideline_submission", label: "General Submission Guidelines", type: "textarea" },
+      { key: "guideline_mode", label: "Presentation Mode", type: "textarea" },
+      { key: "guideline_oral", label: "Oral Presentation", type: "textarea" },
+      { key: "guideline_poster", label: "Poster Presentation", type: "textarea" },
+      { key: "guideline_competition", label: "Student Competition", type: "textarea" },
+      { key: "guideline_consent", label: "Author Consent Statement", type: "textarea" },
     ],
   },
 ];
@@ -75,6 +96,38 @@ export default function AdminSettings() {
   const [announcementError, setAnnouncementError] = React.useState<string | null>(null);
   const [uploadingLogoKey, setUploadingLogoKey] = React.useState<string | null>(null);
   const [logoError, setLogoError] = React.useState<string | null>(null);
+
+  const importantDates = React.useMemo<{ label: string; date: string }[]>(() => {
+    try {
+      const raw = values.important_dates_json;
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) return parsed;
+      }
+    } catch { /* ignore */ }
+    return [];
+  }, [values.important_dates_json]);
+
+  const setDates = (next: { label: string; date: string }[]) => {
+    set("important_dates_json", JSON.stringify(next));
+  };
+
+  const updateDate = (i: number, field: "label" | "date", val: string) =>
+    setDates(importantDates.map((d, idx) => idx === i ? { ...d, [field]: val } : d));
+
+  const addDate = () =>
+    setDates([...importantDates, { label: "", date: "" }]);
+
+  const removeDate = (i: number) =>
+    setDates(importantDates.filter((_, idx) => idx !== i));
+
+  const moveDate = (i: number, dir: -1 | 1) => {
+    const j = i + dir;
+    if (j < 0 || j >= importantDates.length) return;
+    const next = [...importantDates];
+    [next[i], next[j]] = [next[j], next[i]];
+    setDates(next);
+  };
 
   const handleAnnouncementUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -262,10 +315,16 @@ export default function AdminSettings() {
       </div>
 
       <div className="space-y-6">
+
+        {/* ── Standard field groups ── */}
         {FIELD_GROUPS.map((group) => (
           <div key={group.label} className="card">
             <div className="card-body">
-              <h3 className="text-[14px] font-semibold mb-5" style={{ color: "var(--text)" }}>{group.label}</h3>
+              <h3 className="text-[14px] font-semibold mb-1" style={{ color: "var(--text)" }}>{group.label}</h3>
+              {group.hint && (
+                <p className="text-[12px] mb-5" style={{ color: "var(--text-muted)" }}>{group.hint}</p>
+              )}
+              {!group.hint && <div className="mb-5" />}
               <div className="space-y-4">
                 {group.fields.map((f) => (
                   <div key={f.key}>
@@ -285,7 +344,7 @@ export default function AdminSettings() {
                         type="text"
                         value={values[f.key] ?? ""}
                         onChange={(e) => set(f.key, e.target.value)}
-                        placeholder={(f as { placeholder?: string }).placeholder}
+                        placeholder={f.placeholder}
                         className={INPUT_CLS}
                         style={{ border: "1px solid var(--border-color)" }}
                       />
@@ -297,7 +356,92 @@ export default function AdminSettings() {
           </div>
         ))}
 
-        {/* First Announcement */}
+        {/* ── Important Dates (dynamic) ── */}
+        <div className="card">
+          <div className="card-body">
+            <h3 className="text-[14px] font-semibold mb-1" style={{ color: "var(--text)" }}>Important Dates</h3>
+            <p className="text-[12px] mb-5" style={{ color: "var(--text-muted)" }}>
+              Appears on: Home page — Important Dates panel. Add, edit, reorder, or remove rows freely.
+            </p>
+
+            <div className="space-y-2 mb-4">
+              {importantDates.length === 0 && (
+                <p className="text-[13px] italic py-3 text-center" style={{ color: "var(--text-disabled)" }}>
+                  No dates added yet. Click "Add Date" to get started.
+                </p>
+              )}
+              {importantDates.map((row, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  {/* Up / Down */}
+                  <div className="flex flex-col gap-0.5 flex-shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => moveDate(i, -1)}
+                      disabled={i === 0}
+                      className="btn btn-sm flex items-center justify-center disabled:opacity-30"
+                      style={{ width: 24, height: 22, padding: 0, border: "1px solid var(--border-color)" }}
+                      title="Move up"
+                    >
+                      <ArrowUp className="w-3 h-3" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => moveDate(i, 1)}
+                      disabled={i === importantDates.length - 1}
+                      className="btn btn-sm flex items-center justify-center disabled:opacity-30"
+                      style={{ width: 24, height: 22, padding: 0, border: "1px solid var(--border-color)" }}
+                      title="Move down"
+                    >
+                      <ArrowDown className="w-3 h-3" />
+                    </button>
+                  </div>
+
+                  {/* Label */}
+                  <input
+                    type="text"
+                    value={row.label}
+                    onChange={(e) => updateDate(i, "label", e.target.value)}
+                    placeholder="Label (e.g. Registration Opens)"
+                    className={INPUT_CLS}
+                    style={{ border: "1px solid var(--border-color)", flex: "1 1 0" }}
+                  />
+
+                  {/* Date */}
+                  <input
+                    type="text"
+                    value={row.date}
+                    onChange={(e) => updateDate(i, "date", e.target.value)}
+                    placeholder="Date (e.g. 10 Aug 2026)"
+                    className={INPUT_CLS}
+                    style={{ border: "1px solid var(--border-color)", flex: "0 0 180px" }}
+                  />
+
+                  {/* Delete */}
+                  <button
+                    type="button"
+                    onClick={() => removeDate(i)}
+                    className="btn btn-sm flex-shrink-0 flex items-center gap-1"
+                    style={{ background: "var(--status-danger-bg)", color: "var(--status-danger-text)", borderColor: "var(--status-danger-border)" }}
+                    title="Remove row"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            <button
+              type="button"
+              onClick={addDate}
+              className="btn btn-sm flex items-center gap-1.5"
+              style={{ border: "1px dashed var(--border-color)", color: "var(--text-muted)" }}
+            >
+              <Plus className="w-3.5 h-3.5" /> Add Date
+            </button>
+          </div>
+        </div>
+
+        {/* ── First Announcement ── */}
         <div className="card">
           <div className="card-body">
             <h3 className="text-[14px] font-semibold mb-1" style={{ color: "var(--text)" }}>First Announcement</h3>
@@ -350,7 +494,7 @@ export default function AdminSettings() {
           </div>
         </div>
 
-        {/* Sponsor Prospectus */}
+        {/* ── Sponsor Prospectus ── */}
         <div className="card">
           <div className="card-body">
             <h3 className="text-[14px] font-semibold mb-1" style={{ color: "var(--text)" }}>Sponsor Prospectus</h3>
@@ -403,7 +547,7 @@ export default function AdminSettings() {
           </div>
         </div>
 
-        {/* Co-organiser & Venue Logos */}
+        {/* ── Co-organiser & Venue Logos ── */}
         <div className="card">
           <div className="card-body">
             <h3 className="text-[14px] font-semibold mb-1" style={{ color: "var(--text)" }}>Co-organiser &amp; Venue Logos</h3>
@@ -422,7 +566,6 @@ export default function AdminSettings() {
               const isBusy = uploadingLogoKey === key;
               return (
                 <div key={key} className="flex items-start gap-4 py-4 border-b last:border-0" style={{ borderColor: "var(--border-color)" }}>
-                  {/* Preview */}
                   <div
                     className="flex-shrink-0 w-28 h-20 rounded-lg flex items-center justify-center overflow-hidden"
                     style={{ border: "1px solid var(--border-color)", background: "var(--bg-subtle, #f8f9fa)" }}
@@ -438,7 +581,6 @@ export default function AdminSettings() {
                     )}
                   </div>
 
-                  {/* Info + buttons */}
                   <div className="flex-1 min-w-0">
                     <p className="text-[13px] font-semibold" style={{ color: "var(--text)" }}>{label}</p>
                     <p className="text-[12px] mb-3" style={{ color: "var(--text-muted)" }}>{hasLogo ? "Logo uploaded" : desc}</p>
@@ -478,6 +620,7 @@ export default function AdminSettings() {
             )}
           </div>
         </div>
+
       </div>
 
       {/* Sticky bottom save bar */}
@@ -502,7 +645,6 @@ export default function AdminSettings() {
         </button>
       </div>
 
-      {/* Spacer so last card isn't hidden behind sticky bar */}
       <div className="h-20" />
     </AdminLayout>
   );

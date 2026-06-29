@@ -84,25 +84,37 @@ export default function Home() {
                   Important Dates
                 </div>
                 <div className="divide-y divide-border">
-                  {[
-                    { key: "date_registration_opens", label: "Registration Opens" },
-                    { key: "date_early_bird_closes", label: "Early Bird Registration Closes" },
-                    { key: "date_abstract_submission_closes", label: "Abstract Submission Closes" },
-                    { key: "date_regular_submission_closes", label: "Regular Submission Closes" },
-                    { key: "date_conference", label: "Conference Dates" },
-                  ].map(({ key, label }) => {
-                    const date = cms?.[key as keyof typeof cms] as string | undefined;
-                    if (!date) return null;
-                    return (
-                      <div key={key} className="flex items-start gap-3 px-5 py-3">
+                  {(() => {
+                    let dates: { label: string; date: string }[] = [];
+                    try {
+                      const raw = (cms as Record<string, string> | undefined)?.important_dates_json;
+                      if (raw) {
+                        const parsed = JSON.parse(raw);
+                        if (Array.isArray(parsed)) dates = parsed;
+                      }
+                    } catch { /* ignore */ }
+                    if (dates.length === 0) {
+                      const FALLBACK = [
+                        { key: "date_registration_opens", label: "Registration Opens" },
+                        { key: "date_early_bird_closes", label: "Early Bird Registration Closes" },
+                        { key: "date_abstract_submission_closes", label: "Abstract Submission Closes" },
+                        { key: "date_regular_submission_closes", label: "Regular Submission Closes" },
+                        { key: "date_conference", label: "Conference Dates" },
+                      ];
+                      dates = FALLBACK
+                        .map(({ key, label }) => ({ label, date: (cms as Record<string, string> | undefined)?.[key] ?? "" }))
+                        .filter(d => d.date);
+                    }
+                    return dates.map(({ label, date }, i) => (
+                      <div key={i} className="flex items-start gap-3 px-5 py-3">
                         <CalendarDays className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
                         <div className="flex-1 min-w-0">
                           <span className="font-semibold text-secondary text-sm">{date}</span>
                           <span className="text-muted-foreground text-sm"> — {label}</span>
                         </div>
                       </div>
-                    );
-                  })}
+                    ));
+                  })()}
                 </div>
               </div>
             </div>

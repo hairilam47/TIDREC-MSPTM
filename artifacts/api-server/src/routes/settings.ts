@@ -44,6 +44,13 @@ const DEFAULT_SETTINGS: Record<string, string> = {
   guideline_poster: "Posters should be prepared in portrait orientation (A0 size: 841 mm × 1189 mm). Presenters must be available at their poster during the designated poster viewing sessions. Posters must be mounted and removed within the stipulated times. The organisers will not be responsible for posters left after the event.",
   guideline_competition: "This competition is open to students (undergraduate and postgraduate) presenting under the MSPTM Scientific Conference track. Each participant will have 5 minutes to present followed by 2 minutes of Q&A. Participants must indicate their intention to compete during abstract submission. Judging criteria include scientific content, clarity of presentation, and ability to answer questions.",
   guideline_consent: "By submitting an abstract, authors confirm that the work is original and has not been published or presented elsewhere. Authors grant the organisers permission to publish the accepted abstracts in the conference proceedings and digital platforms. All co-authors have given their consent for the submission. Authors are responsible for obtaining necessary ethics approvals and institutional permissions prior to submission.",
+  important_dates_json: JSON.stringify([
+    { label: "Registration Opens", date: "10 Aug 2026" },
+    { label: "Early Bird Registration Closes", date: "05 Oct 2026" },
+    { label: "Abstract Submission Closes", date: "31 Jan 2027" },
+    { label: "Regular Submission Closes", date: "10 Feb 2027" },
+    { label: "Conference Dates", date: "22–23 Mar 2027" },
+  ]),
 };
 
 const objectStorageService = new ObjectStorageService();
