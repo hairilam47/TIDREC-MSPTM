@@ -2,6 +2,7 @@ import React from "react";
 import { Link, useLocation } from "wouter";
 import { AnimatePresence, motion } from "framer-motion";
 import { useGetMe, useLogout } from "@workspace/api-client-react";
+import { CountdownBadge } from "@/components/ui/CountdownBadge";
 
 /* ── Nav structure — includes group: true collapsibles ── */
 type NavChild = { key: string; href: string; label: string };
@@ -216,6 +217,7 @@ export default function AdminLayout({ children, title }: { children: React.React
         </div>
 
         <div className="topbar-right">
+          <CountdownBadge />
           {/* Link to Delegate Portal */}
           <a href="/portal/" className="tb-btn tb-docs" title="Delegate Portal" style={{ textDecoration: "none" }}>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">

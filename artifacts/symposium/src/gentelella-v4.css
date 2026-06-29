@@ -288,7 +288,7 @@ body[data-shell="portal"] {
    TOPBAR  (_layout.scss)
 ────────────────────────────────────────────── */
 .topbar {
-  position: fixed; top: 0; left: var(--sidebar-w); right: 0; height: 56px;
+  position: fixed; top: 0; left: var(--sidebar-w); right: 0; height: 72px;
   background: rgba(255,255,255,0.92);
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border-color);
@@ -388,7 +388,7 @@ body[data-shell="portal"] .tb-btn.tb-docs:hover { background: rgba(14,110,116,0.
 ────────────────────────────────────────────── */
 .main {
   margin-left: var(--sidebar-w);
-  padding-top: 56px;
+  padding-top: 72px;
   min-height: 100vh;
   transition: margin-left 220ms cubic-bezier(0.2,0,0,1);
   background: var(--body-bg);

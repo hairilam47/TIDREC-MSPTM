@@ -16,6 +16,7 @@ import {
   ArrowUp, ArrowDown, BarChart2, ClipboardList, Edit3, CheckCircle, XCircle,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { CountdownBadge } from "@/components/ui/CountdownBadge";
 import {
   AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
@@ -235,11 +236,8 @@ export default function AdminDashboard() {
           </h2>
           <p style={{ fontSize: 13, color: "var(--text-muted)" }}>{todayStr}</p>
         </div>
-        <div className="hidden sm:flex flex-col items-center justify-center rounded-lg px-5 py-3 flex-shrink-0"
-          style={{ border: "1.5px solid var(--primary)", background: "var(--primary-lt)" }}>
-          <span style={{ fontSize: 28, fontWeight: 700, color: "var(--primary)", lineHeight: 1 }}>{daysToGo}</span>
-          <span style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--text-muted)", marginTop: 2 }}>days to go</span>
-          <span style={{ fontSize: 10, color: "var(--text-disabled)", marginTop: 2 }}>22 Mar 2027</span>
+        <div className="hidden sm:block flex-shrink-0">
+          <CountdownBadge />
         </div>
       </div>
 
