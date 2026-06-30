@@ -119,6 +119,79 @@ function LogoUploader({ slug, label, currentPath, onSave, onClear, saving }: Log
   );
 }
 
+interface BannerUploaderProps {
+  currentPath: string;
+  onSave: (objectPath: string) => Promise<void>;
+  onClear: () => Promise<void>;
+  saving: boolean;
+}
+
+function BannerUploader({ currentPath, onSave, onClear, saving }: BannerUploaderProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+  const { mutateAsync: requestUploadUrl } = useRequestUploadUrl();
+  const { toast } = useToast();
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast({ title: "Invalid file type", description: "Please upload an image file (PNG, JPG, or WebP).", variant: "destructive" });
+      return;
+    }
+    setUploading(true);
+    try {
+      const { uploadURL, objectPath } = await requestUploadUrl({
+        data: { name: file.name, size: file.size, contentType: file.type },
+      });
+      await fetch(uploadURL, { method: "PUT", headers: { "Content-Type": file.type }, body: file });
+      await onSave(objectPath);
+      toast({ title: "Banner uploaded", description: "The home page banner has been updated." });
+    } catch {
+      toast({ title: "Upload failed", description: "Something went wrong. Please try again.", variant: "destructive" });
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
+  const hasBanner = Boolean(currentPath);
+
+  return (
+    <div className="space-y-3">
+      {hasBanner && (
+        <div className="rounded-lg border overflow-hidden bg-gray-50">
+          <img
+            src="/api/banner"
+            alt="Current hero banner"
+            className="w-full h-auto max-h-48 object-cover object-center"
+          />
+        </div>
+      )}
+      {!hasBanner && (
+        <div className="rounded-lg border bg-gray-50 flex items-center justify-center h-24 text-gray-400 text-sm">
+          No banner uploaded — default built-in banner is in use
+        </div>
+      )}
+      <div className="flex gap-2">
+        <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
+        <Button size="sm" variant="outline" onClick={() => fileInputRef.current?.click()} disabled={uploading || saving}>
+          {uploading ? (
+            <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> Uploading…</>
+          ) : (
+            <><Upload className="w-3.5 h-3.5 mr-1.5" /> {hasBanner ? "Replace Banner" : "Upload Banner"}</>
+          )}
+        </Button>
+        {hasBanner && (
+          <Button size="sm" variant="ghost" className="text-destructive hover:text-destructive" onClick={onClear} disabled={uploading || saving}>
+            <Trash2 className="w-3.5 h-3.5 mr-1.5" /> Remove
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+}
+
 interface ProspectusUploaderProps {
   currentPath: string;
   onSave: (objectPath: string) => Promise<void>;
@@ -666,6 +739,26 @@ export default function AdminSettings() {
                       </Button>
                     </div>
                   </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <ImageIcon className="w-4 h-4 text-amber-500" />
+                    Hero Banner
+                  </CardTitle>
+                  <p className="text-sm text-gray-500">
+                    Upload the full-width banner image shown at the top of the marketing site home page. Accepts PNG, JPG, or WebP. Leave empty to use the default built-in banner.
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <BannerUploader
+                    currentPath={(settings as Record<string, string> | undefined)?.hero_banner_url ?? ""}
+                    onSave={(path) => handleSaveLogo("hero_banner_url", path)}
+                    onClear={() => handleClearLogo("hero_banner_url")}
+                    saving={savingKey === "hero_banner_url"}
+                  />
                 </CardContent>
               </Card>
 

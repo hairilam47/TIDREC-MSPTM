@@ -49,6 +49,7 @@ const DEFAULT_SETTINGS: Record<string, string> = {
   register_disclaimer_json: JSON.stringify(["The Organising Committee reserves the right to change programme details, dates, or speakers without prior notice.", "The Committee reserves the right to postpone or cancel the conference if necessary.", "The Organisers shall not be responsible for losses resulting from programme changes, postponement, or cancellation."]),
   register_photo_heading: "Photo Release Policy",
   register_photo_policy: "By registering for SEAT-MSPTM 2027, participants consent to photography, videography, and recording during the conference. Images and recordings may be used in future promotional, educational, and archival materials related to the symposium.",
+  hero_banner_url: "",
   sponsor_prospectus_url: "",
   first_announcement_url: "",
   co_organiser_tidrec_logo: "https://tidrec.um.edu.my/images/Beige%20Pastel%20Minimalist%20Thesis%20Defense%20Presentation%20(400%20x%2070%20px)%20(1).png",
@@ -166,6 +167,40 @@ router.get("/co-organiser-logo/:slug", async (req, res) => {
   } catch (err) {
     if (err instanceof ObjectNotFoundError) {
       res.status(404).json({ error: "Logo file not found" });
+      return;
+    }
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.get("/banner", async (_req, res) => {
+  try {
+    const rows = await db.select().from(settingsTable);
+    const settings: Record<string, string> = { ...DEFAULT_SETTINGS };
+    for (const row of rows) settings[row.key] = row.value;
+    const url = settings.hero_banner_url;
+    if (!url) {
+      res.status(404).json({ error: "Hero banner not available" });
+      return;
+    }
+    if (url.startsWith("http://") || url.startsWith("https://")) {
+      res.redirect(url);
+      return;
+    }
+    const objectFile = await objectStorageService.getObjectEntityFile(url);
+    const response = await objectStorageService.downloadObject(objectFile);
+    res.status(response.status);
+    response.headers.forEach((value, key) => res.setHeader(key, value));
+    if (response.body) {
+      const nodeStream = Readable.fromWeb(response.body as ReadableStream<Uint8Array>);
+      nodeStream.pipe(res);
+    } else {
+      res.end();
+    }
+  } catch (err) {
+    if (err instanceof ObjectNotFoundError) {
+      res.status(404).json({ error: "Banner file not found" });
       return;
     }
     console.error(err);

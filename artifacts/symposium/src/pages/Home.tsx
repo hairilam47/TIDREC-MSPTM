@@ -7,7 +7,7 @@ import { resolveImageUrl } from "@/lib/resolveImageUrl";
 import { useGetSpeakers, useGetSponsors, useGetSettings } from "@workspace/api-client-react";
 import { SiteHeader } from "@/components/SiteHeader";
 
-import bannerImg from "@assets/Banner for website.png";
+import bannerImgFallback from "@assets/Banner for website.png";
 
 /* Tailwind safelist (do not remove): grid-cols-1 grid-cols-2 grid-cols-3 grid-cols-4 grid-cols-5 grid-cols-6 */
 const MD_GRID_COLS: Record<number, string> = {
@@ -84,7 +84,7 @@ export default function Home() {
         <section style={{ background: "var(--navy)" }} className="relative">
           <div className="relative w-full">
             <img
-              src={bannerImg}
+              src={cmsRecord?.hero_banner_url ? "/api/banner" : bannerImgFallback}
               alt={`${cms?.event_name ?? "3rd Southeast Asia Ticks and Tick-borne Diseases Symposium"} — ${cms?.event_dates ?? "22–23 March 2027"}, ${cms?.event_venue ?? "Sunway Putra Hotel"}, ${cms?.event_city ?? "Kuala Lumpur, Malaysia"}`}
               className="w-full h-auto block"
             />
