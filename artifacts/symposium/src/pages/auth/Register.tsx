@@ -172,9 +172,9 @@ export default function Register() {
       if (!formData.password || formData.password.length < 8)
         return "Password must be at least 8 characters";
       if (formData.password !== formData.confirmPassword) return "Passwords do not match";
-      if (!formData.fullName.trim()) return "Full name is required";
     }
     if (step === 2) {
+      if (!formData.fullName.trim()) return "Full name is required";
       if (!formData.salutation) return "Salutation is required";
       if (formData.salutation === "Other" && !formData.salutationOther.trim())
         return "Please specify your salutation";
@@ -196,6 +196,21 @@ export default function Register() {
       if (!formData.paymentType) return "Please select a payment method";
     }
     return null;
+  };
+
+  const isStepValid = (): boolean => {
+    if (step === 1) {
+      return !!formData.email && formData.password.length >= 8 && formData.password === formData.confirmPassword;
+    }
+    if (step === 2) {
+      if (!formData.fullName.trim() || !formData.salutation || !formData.mobileCountryCode || !formData.mobileNumber.trim() || !formData.nationality || !formData.gender || !formData.dateOfBirth || !formData.isMmaMember || !formData.institution.trim() || !formData.country) return false;
+      if (formData.salutation === "Other" && !formData.salutationOther.trim()) return false;
+      if (formData.isMmaMember === "mma" && !formData.mmcNumber.trim()) return false;
+      return true;
+    }
+    if (step === 3) return !!formData.registrationType;
+    if (step === 4) return !!formData.paymentType;
+    return false;
   };
 
   const goNext = () => {
@@ -364,14 +379,6 @@ export default function Register() {
                       value={formData.confirmPassword} onChange={e => update("confirmPassword", e.target.value)} className="mt-1" />
                   </div>
                 </div>
-                <div>
-                  <Label htmlFor="fullName">Full Name as in IC / Passport *</Label>
-                  <Input id="fullName" data-testid="input-full-name" placeholder="e.g. Ahmad bin Abdullah"
-                    value={formData.fullName} onChange={e => update("fullName", e.target.value)} className="mt-1" />
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Invoice, receipt, conference name badge and certificate will be produced based on full name provided.
-                  </p>
-                </div>
                 <p className="text-xs text-muted-foreground">
                   Already have an account?{" "}
                   <Link href="/login" className="text-primary hover:underline">Sign in</Link>
@@ -388,6 +395,16 @@ export default function Register() {
                 <CardDescription>All fields are required</CardDescription>
               </CardHeader>
               <CardContent className="space-y-5">
+
+                {/* Full Name */}
+                <div>
+                  <Label htmlFor="fullName">Full Name as in IC / Passport *</Label>
+                  <Input id="fullName" data-testid="input-full-name" placeholder="e.g. Ahmad bin Abdullah"
+                    value={formData.fullName} onChange={e => update("fullName", e.target.value)} className="mt-1" />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Invoice, receipt, conference name badge and certificate will be produced based on full name provided.
+                  </p>
+                </div>
 
                 {/* Salutation */}
                 <div>
@@ -689,7 +706,7 @@ export default function Register() {
               </Button>
             ) : <div />}
             {step < 4 ? (
-              <Button onClick={goNext} className="bg-accent hover:bg-accent/90 text-white" data-testid="button-next">
+              <Button onClick={goNext} disabled={!isStepValid()} className="bg-accent hover:bg-accent/90 text-white disabled:opacity-50 disabled:cursor-not-allowed" data-testid="button-next">
                 Continue
               </Button>
             ) : (

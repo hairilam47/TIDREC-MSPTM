@@ -471,7 +471,7 @@ export default function AdminRegistrations() {
             <table className="table">
               <thead>
                 <tr>
-                  {["Code", "Delegate", "Country", "Category", "Payment", "Amount (MYR)", "Date", "Actions"].map((h) => (
+                  {["Code", "Delegate", "Mobile", "Nationality", "Gender", "MMA", "Institution", "Category", "Payment", "Amount (MYR)", "Date", "Actions"].map((h) => (
                     <th key={h}>{h}</th>
                   ))}
                 </tr>
@@ -479,13 +479,18 @@ export default function AdminRegistrations() {
               <tbody>
                 {filtered.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="text-center py-10 text-[13px]" style={{ color: "var(--text-disabled)" }}>
+                    <td colSpan={12} className="text-center py-10 text-[13px]" style={{ color: "var(--text-disabled)" }}>
                       No registrations found
                     </td>
                   </tr>
                 ) : filtered.map((r) => {
                   const ps = PAYMENT_STYLES[r.paymentStatus] ?? PAYMENT_STYLES.pending;
                   const isEditing = editingId === r.id;
+                  const reg = r as Record<string, unknown>;
+                  const displayName = (reg.fullName as string) || `${r.firstName ?? ""} ${r.lastName ?? ""}`.trim() || "—";
+                  const salutation = reg.salutation as string | null;
+                  const salutationOther = reg.salutationOther as string | null;
+                  const salutationDisplay = salutation === "Other" ? (salutationOther ?? "") : (salutation ?? "");
                   return (
                     <tr key={r.id}>
                       <td>
@@ -494,9 +499,20 @@ export default function AdminRegistrations() {
                         </code>
                       </td>
                       <td>
-                        <div className="text-[13px] font-medium" style={{ color: "var(--text)" }}>{r.firstName} {r.lastName}</div>
+                        <div className="text-[13px] font-medium" style={{ color: "var(--text)" }}>
+                          {salutationDisplay ? `${salutationDisplay} ` : ""}{displayName}
+                        </div>
                         <div className="text-[11px]" style={{ color: "var(--text-disabled)" }}>{r.email}</div>
                       </td>
+                      <td className="text-[12px]" style={{ color: "var(--text-secondary)", whiteSpace: "nowrap" }}>
+                        {reg.mobileCountryCode && reg.mobileNumber ? `${reg.mobileCountryCode} ${reg.mobileNumber}` : "—"}
+                      </td>
+                      <td className="text-[12px]" style={{ color: "var(--text-secondary)" }}>{(reg.nationality as string) ?? "—"}</td>
+                      <td className="text-[12px]" style={{ color: "var(--text-secondary)" }}>{(reg.gender as string) ?? "—"}</td>
+                      <td className="text-[12px]" style={{ color: "var(--text-secondary)" }}>
+                        {reg.isMmaMember === true ? <span style={{ color: "var(--green, #16a34a)", fontWeight: 600 }}>Yes</span> : reg.isMmaMember === false ? "No" : "—"}
+                      </td>
+                      <td className="text-[12px]" style={{ color: "var(--text-secondary)" }}>{r.institution ?? "—"}</td>
                       <td className="text-[13px]" style={{ color: "var(--text-secondary)" }}>{r.country ?? "—"}</td>
                       <td className="text-[12px] capitalize" style={{ color: "var(--text-secondary)" }}>
                         {r.category?.replace(/_/g, " ")}
