@@ -302,7 +302,6 @@ export default function Home() {
           <div className="max-w-5xl mx-auto px-4">
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold" style={{ color: "var(--navy)" }}>Our Sponsors</h2>
-              <div className="mx-auto mt-2 h-0.5 w-12 rounded-full" style={{ background: "var(--gold)" }} />
             </div>
 
             {(() => {
