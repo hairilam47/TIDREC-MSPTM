@@ -70,6 +70,15 @@ const FIELD_GROUPS: FieldGroup[] = [
     ],
   },
   {
+    label: "Abstract Page Content",
+    hint: "Appears on: Marketing site — /abstract page",
+    fields: [
+      { key: "abstract_conference_theme", label: "Conference Theme", type: "textarea", placeholder: "Theme of the conference…" },
+      { key: "abstract_seat_topics", label: "SEAT Topics (one per line)", type: "textarea", placeholder: "Topic 1\nTopic 2\nTopic 3" },
+      { key: "abstract_msptm_topics", label: "MSPTM Topics (one per line)", type: "textarea", placeholder: "Topic 1\nTopic 2\nTopic 3" },
+    ],
+  },
+  {
     label: "Registration Settings",
     hint: "Used in the admin dashboard and registration reports",
     fields: [
@@ -913,6 +922,61 @@ export default function AdminSettings() {
 
             {prospectusError && (
               <p className="text-[12px] mt-2" style={{ color: "var(--status-danger-text)" }}>{prospectusError}</p>
+            )}
+          </div>
+        </div>
+
+        {/* ── Hero Banner ── */}
+        <div className="card">
+          <div className="card-body">
+            <h3 className="text-[14px] font-semibold mb-1" style={{ color: "var(--text)" }}>Hero Banner</h3>
+            <p className="text-[13px] mb-5" style={{ color: "var(--text-muted)" }}>
+              Upload an image to replace the default hero banner on the marketing site home page. Saves immediately — no need to click Save Changes.
+            </p>
+
+            {values.hero_banner_url ? (
+              <div className="mb-4 rounded-lg overflow-hidden" style={{ border: "1px solid var(--border-color)", maxHeight: 200 }}>
+                <img src={`${API}/banner`} alt="Current hero banner" className="w-full object-cover" style={{ maxHeight: 200 }} />
+              </div>
+            ) : (
+              <p className="text-[13px] mb-4 italic" style={{ color: "var(--text-disabled)" }}>
+                No banner uploaded yet — the default bundled image is shown on the site.
+              </p>
+            )}
+
+            <div className="flex flex-wrap gap-2">
+              <label
+                className="btn btn-primary flex items-center gap-1.5"
+                style={{
+                  opacity: uploadingLogoKey === "hero_banner_url" ? 0.6 : 1,
+                  pointerEvents: uploadingLogoKey === "hero_banner_url" ? "none" : "auto",
+                  cursor: uploadingLogoKey === "hero_banner_url" ? "default" : "pointer",
+                }}
+              >
+                {uploadingLogoKey === "hero_banner_url" ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                {uploadingLogoKey === "hero_banner_url" ? "Uploading…" : values.hero_banner_url ? "Replace Banner" : "Upload Banner"}
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  disabled={uploadingLogoKey === "hero_banner_url"}
+                  onChange={(e) => handleLogoUpload("hero_banner_url", e)}
+                />
+              </label>
+              {values.hero_banner_url && (
+                <button
+                  className="btn flex items-center gap-1.5"
+                  disabled={uploadingLogoKey === "hero_banner_url"}
+                  onClick={() => handleLogoRemove("hero_banner_url")}
+                  style={{ background: "var(--status-danger-bg)", color: "var(--status-danger-text)", borderColor: "var(--status-danger-border)" }}
+                >
+                  <X className="w-4 h-4" /> Remove
+                </button>
+              )}
+            </div>
+
+            {logoError && uploadingLogoKey === null && (
+              <p className="text-[12px] mt-2" style={{ color: "var(--status-danger-text)" }}>{logoError}</p>
             )}
           </div>
         </div>
