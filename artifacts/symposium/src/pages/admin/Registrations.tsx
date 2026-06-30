@@ -512,8 +512,10 @@ export default function AdminRegistrations() {
                       <td className="text-[12px]" style={{ color: "var(--text-secondary)" }}>
                         {reg.isMmaMember === true ? <span style={{ color: "var(--green, #16a34a)", fontWeight: 600 }}>Yes</span> : reg.isMmaMember === false ? "No" : "—"}
                       </td>
-                      <td className="text-[12px]" style={{ color: "var(--text-secondary)" }}>{r.institution ?? "—"}</td>
-                      <td className="text-[13px]" style={{ color: "var(--text-secondary)" }}>{r.country ?? "—"}</td>
+                      <td className="text-[12px]" style={{ color: "var(--text-secondary)" }}>
+                        <div>{r.institution ?? "—"}</div>
+                        {r.country && <div className="text-[11px]" style={{ color: "var(--text-disabled)" }}>{r.country}</div>}
+                      </td>
                       <td className="text-[12px] capitalize" style={{ color: "var(--text-secondary)" }}>
                         {r.category?.replace(/_/g, " ")}
                       </td>

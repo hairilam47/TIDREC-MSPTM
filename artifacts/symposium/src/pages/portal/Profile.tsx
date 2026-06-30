@@ -67,6 +67,41 @@ export default function Profile() {
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!form.fullName.trim()) {
+      toast({ title: "Full name is required", variant: "destructive" }); return;
+    }
+    if (!form.salutation) {
+      toast({ title: "Salutation is required", variant: "destructive" }); return;
+    }
+    if (form.salutation === "Other" && !form.salutationOther.trim()) {
+      toast({ title: "Please specify your salutation", variant: "destructive" }); return;
+    }
+    if (!form.mobileCountryCode || !form.mobileNumber.trim()) {
+      toast({ title: "Mobile number is required", variant: "destructive" }); return;
+    }
+    if (!form.nationality) {
+      toast({ title: "Nationality is required", variant: "destructive" }); return;
+    }
+    if (!form.gender) {
+      toast({ title: "Gender is required", variant: "destructive" }); return;
+    }
+    if (!form.dateOfBirth) {
+      toast({ title: "Date of birth is required", variant: "destructive" }); return;
+    }
+    if (!form.isMmaMember) {
+      toast({ title: "Please indicate your MMA membership status", variant: "destructive" }); return;
+    }
+    if (form.isMmaMember === "mma" && !form.mmcNumber.trim()) {
+      toast({ title: "MMC number is required for MMA members", variant: "destructive" }); return;
+    }
+    if (!form.institution.trim()) {
+      toast({ title: "Institution / Organisation is required", variant: "destructive" }); return;
+    }
+    if (!form.country) {
+      toast({ title: "Country is required", variant: "destructive" }); return;
+    }
+
     const isMma = form.isMmaMember === "mma";
     updateMutation.mutate(
       {

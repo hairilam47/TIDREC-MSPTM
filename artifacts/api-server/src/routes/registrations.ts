@@ -51,6 +51,7 @@ async function formatRegistration(r: typeof registrationsTable.$inferSelect) {
     lastName: user?.lastName || "",
     fullName: user?.fullName || null,
     salutation: user?.salutation || null,
+    salutationOther: user?.salutationOther || null,
     email: user?.email || "",
     institution: user?.institution || null,
     country: user?.country || null,
