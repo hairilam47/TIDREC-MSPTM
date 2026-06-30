@@ -471,7 +471,7 @@ export default function AdminRegistrations() {
             <table className="table">
               <thead>
                 <tr>
-                  {["Code", "Delegate", "Mobile", "Nationality", "Gender", "MMA", "Institution", "Category", "Payment", "Amount (MYR)", "Date", "Actions"].map((h) => (
+                  {["Code", "Delegate", "Mobile", "Nationality", "Gender", "DOB / Age", "MMA / MMC", "Institution", "Category", "Payment", "Amount (MYR)", "Date", "Actions"].map((h) => (
                     <th key={h}>{h}</th>
                   ))}
                 </tr>
@@ -479,7 +479,7 @@ export default function AdminRegistrations() {
               <tbody>
                 {filtered.length === 0 ? (
                   <tr>
-                    <td colSpan={12} className="text-center py-10 text-[13px]" style={{ color: "var(--text-disabled)" }}>
+                    <td colSpan={13} className="text-center py-10 text-[13px]" style={{ color: "var(--text-disabled)" }}>
                       No registrations found
                     </td>
                   </tr>
@@ -509,8 +509,25 @@ export default function AdminRegistrations() {
                       </td>
                       <td className="text-[12px]" style={{ color: "var(--text-secondary)" }}>{(reg.nationality as string) ?? "—"}</td>
                       <td className="text-[12px]" style={{ color: "var(--text-secondary)" }}>{(reg.gender as string) ?? "—"}</td>
+                      <td className="text-[12px]" style={{ color: "var(--text-secondary)", whiteSpace: "nowrap" }}>
+                        {reg.dateOfBirth ? (
+                          <>
+                            <div>{String(reg.dateOfBirth).slice(0, 10)}</div>
+                            <div className="text-[11px]" style={{ color: "var(--text-disabled)" }}>
+                              {(() => { const d = new Date(String(reg.dateOfBirth)); const t = new Date(); let a = t.getFullYear() - d.getFullYear(); const m = t.getMonth() - d.getMonth(); if (m < 0 || (m === 0 && t.getDate() < d.getDate())) a--; return `Age ${a}`; })()}
+                            </div>
+                          </>
+                        ) : "—"}
+                      </td>
                       <td className="text-[12px]" style={{ color: "var(--text-secondary)" }}>
-                        {reg.isMmaMember === true ? <span style={{ color: "var(--green, #16a34a)", fontWeight: 600 }}>Yes</span> : reg.isMmaMember === false ? "No" : "—"}
+                        {reg.isMmaMember === true ? (
+                          <>
+                            <span style={{ color: "var(--green, #16a34a)", fontWeight: 600 }}>MMA</span>
+                            {reg.mmcNumber && reg.mmcNumber !== "000" && (
+                              <div className="text-[11px]" style={{ color: "var(--text-disabled)" }}>{String(reg.mmcNumber)}</div>
+                            )}
+                          </>
+                        ) : reg.isMmaMember === false ? "Non-MMA" : "—"}
                       </td>
                       <td className="text-[12px]" style={{ color: "var(--text-secondary)" }}>
                         <div>{r.institution ?? "—"}</div>
