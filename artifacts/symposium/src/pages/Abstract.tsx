@@ -84,6 +84,48 @@ function KeyDateCard({
   );
 }
 
+function renderRichBody(body: string): React.ReactNode {
+  const nodes: React.ReactNode[] = [];
+  body.split("\n").forEach((line, i) => {
+    if (!line.trim()) {
+      nodes.push(<div key={i} style={{ height: 4 }} />);
+    } else if (line.startsWith("• ")) {
+      nodes.push(
+        <div key={i} className="flex items-start gap-2">
+          <span className="mt-[6px] w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: "var(--navy, #0B2744)" }} />
+          <span>{line.slice(2)}</span>
+        </div>
+      );
+    } else if (line.startsWith("  ◦ ")) {
+      nodes.push(
+        <div key={i} className="flex items-start gap-2 ml-5">
+          <span className="mt-[6px] w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ border: "1.5px solid var(--text-muted, #6b7a8d)" }} />
+          <span style={{ color: "var(--text-secondary, #4a5568)" }}>{line.slice(4)}</span>
+        </div>
+      );
+    } else if (/^\d+\. /.test(line)) {
+      const m = line.match(/^(\d+)\. (.*)/);
+      nodes.push(
+        <div key={i} className="flex items-start gap-2">
+          <span className="flex-shrink-0 font-bold text-xs pt-[2px]" style={{ color: "var(--navy, #0B2744)", minWidth: 22 }}>{m?.[1]}.</span>
+          <span>{m?.[2]}</span>
+        </div>
+      );
+    } else if (/^  \d+\.\d+ /.test(line)) {
+      const m = line.match(/^  (\d+\.\d+) (.*)/);
+      nodes.push(
+        <div key={i} className="flex items-start gap-2 ml-5">
+          <span className="flex-shrink-0 font-bold text-xs pt-[2px]" style={{ color: "var(--navy, #0B2744)", minWidth: 28 }}>{m?.[1]}</span>
+          <span style={{ color: "var(--text-secondary, #4a5568)" }}>{m?.[2]}</span>
+        </div>
+      );
+    } else {
+      nodes.push(<p key={i}>{line}</p>);
+    }
+  });
+  return <div className="space-y-1.5 text-sm">{nodes}</div>;
+}
+
 function GuidelineItem({ title, body }: { title: string; body: string }) {
   const [open, setOpen] = React.useState(false);
   return (
@@ -116,10 +158,10 @@ function GuidelineItem({ title, body }: { title: string; body: string }) {
       </button>
       {open && (
         <div
-          className="px-5 pb-5 pt-1 text-sm leading-relaxed"
+          className="px-5 pb-5 pt-3 leading-relaxed"
           style={{ color: "var(--text-secondary, #4a5568)", background: "#f7f9fc", borderTop: "1px solid #e5e9ef" }}
         >
-          {body}
+          {renderRichBody(body)}
         </div>
       )}
     </div>

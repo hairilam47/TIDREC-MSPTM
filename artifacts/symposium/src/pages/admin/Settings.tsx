@@ -91,18 +91,122 @@ const FIELD_GROUPS: FieldGroup[] = [
     label: "Abstract Guidelines",
     hint: "Appears on: Portal — Call for Abstracts page",
     fields: [
-      { key: "guideline_submission", label: "General Submission Guidelines", type: "textarea" },
-      { key: "guideline_mode", label: "Presentation Mode", type: "textarea" },
-      { key: "guideline_oral", label: "Oral Presentation", type: "textarea" },
-      { key: "guideline_poster", label: "Poster Presentation", type: "textarea" },
-      { key: "guideline_competition", label: "Student Competition", type: "textarea" },
-      { key: "guideline_consent", label: "Author Consent Statement", type: "textarea" },
+      { key: "guideline_submission", label: "General Submission Guidelines", type: "richtext" },
+      { key: "guideline_mode", label: "Presentation Mode", type: "richtext" },
+      { key: "guideline_oral", label: "Oral Presentation", type: "richtext" },
+      { key: "guideline_poster", label: "Poster Presentation", type: "richtext" },
+      { key: "guideline_competition", label: "Student Competition", type: "richtext" },
+      { key: "guideline_consent", label: "Author Consent Statement", type: "richtext" },
     ],
   },
 ];
 
 const INPUT_CLS =
   "w-full px-3.5 py-3 rounded-lg text-[14px] outline-none transition-colors focus:ring-2 focus:ring-[var(--teal-focus)] focus:border-[var(--primary)]";
+
+function RichTextarea({ value, onChange, rows = 7 }: {
+  value: string;
+  onChange: (v: string) => void;
+  rows?: number;
+}) {
+  const ref = React.useRef<HTMLTextAreaElement>(null);
+
+  const applyPrefix = (getPrefix: (linesBefore: string[], lineIdx: number) => string) => {
+    const el = ref.current;
+    if (!el) return;
+    const { selectionStart, selectionEnd, value: v } = el;
+
+    const lineStart = v.lastIndexOf("\n", selectionStart - 1) + 1;
+    const rawEnd = v.indexOf("\n", selectionEnd);
+    const lineEnd = rawEnd === -1 ? v.length : rawEnd;
+
+    const lines = v.slice(lineStart, lineEnd).split("\n");
+    const linesBefore = v.slice(0, lineStart).split("\n");
+
+    const newLines = lines.map((line, idx) => {
+      const stripped = line
+        .replace(/^  ◦ /, "")
+        .replace(/^• /, "")
+        .replace(/^  \d+\.\d+ /, "")
+        .replace(/^\d+\. /, "");
+      return getPrefix(linesBefore, idx) + stripped;
+    });
+
+    const newText = v.slice(0, lineStart) + newLines.join("\n") + v.slice(lineEnd);
+    onChange(newText);
+    requestAnimationFrame(() => {
+      el.focus();
+      const pos = lineStart + newLines.join("\n").length;
+      el.setSelectionRange(pos, pos);
+    });
+  };
+
+  const handleBullet    = () => applyPrefix(() => "• ");
+  const handleSubBullet = () => applyPrefix(() => "  ◦ ");
+  const handlePlain     = () => applyPrefix(() => "");
+
+  const handleNumbered = () =>
+    applyPrefix((linesBefore, idx) => {
+      let last = 0;
+      for (const l of linesBefore) { const m = l.match(/^(\d+)\. /); if (m) last = parseInt(m[1]); }
+      return `${last + 1 + idx}. `;
+    });
+
+  const handleSubNumbered = () =>
+    applyPrefix((linesBefore, idx) => {
+      let parent = 1, lastSub = 0;
+      for (const l of linesBefore) {
+        const pm = l.match(/^(\d+)\. /);      if (pm) { parent = parseInt(pm[1]); lastSub = 0; }
+        const sm = l.match(/^  (\d+)\.(\d+) /); if (sm && parseInt(sm[1]) === parent) lastSub = parseInt(sm[2]);
+      }
+      return `  ${parent}.${lastSub + 1 + idx} `;
+    });
+
+  const TOOLS = [
+    { label: "• Bullet",      fn: handleBullet },
+    { label: "◦ Sub-bullet",  fn: handleSubBullet },
+    { label: "1. Numbered",   fn: handleNumbered },
+    { label: "1.1 Sub-num",   fn: handleSubNumbered },
+    { label: "⌫ Plain text",  fn: handlePlain },
+  ];
+
+  return (
+    <div>
+      <div
+        className="flex flex-wrap gap-1 px-2 py-1.5 rounded-t-lg"
+        style={{ background: "var(--bg-subtle, #f8f9fa)", border: "1px solid var(--border-color)", borderBottom: "none" }}
+      >
+        {TOOLS.map((t) => (
+          <button
+            key={t.label}
+            type="button"
+            onMouseDown={(e) => { e.preventDefault(); t.fn(); }}
+            style={{
+              fontSize: 11, padding: "1px 8px", borderRadius: 5, cursor: "pointer", lineHeight: 1.8,
+              border: "1px solid var(--border-color)", background: "var(--bg-surface)", color: "var(--text-secondary)",
+            }}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+      <textarea
+        ref={ref}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        rows={rows}
+        className={`${INPUT_CLS} resize-y`}
+        style={{
+          border: "1px solid var(--border-color)", borderTopLeftRadius: 0, borderTopRightRadius: 0,
+          lineHeight: 1.85, fontFamily: "ui-monospace, SFMono-Regular, monospace", fontSize: 12,
+        }}
+      />
+      <p className="text-[11px] mt-1" style={{ color: "var(--text-disabled)" }}>
+        Place cursor on a line, then click a toolbar button. Select multiple lines to bulk-format.
+      </p>
+    </div>
+  );
+}
 
 interface OrgCard {
   id: string;
@@ -489,7 +593,13 @@ export default function AdminSettings() {
                     <label className="block text-[13px] font-semibold mb-1.5" style={{ color: "var(--text-secondary)" }}>
                       {f.label}
                     </label>
-                    {f.type === "textarea" ? (
+                    {f.type === "richtext" ? (
+                      <RichTextarea
+                        value={values[f.key] ?? ""}
+                        onChange={(v) => set(f.key, v)}
+                        rows={7}
+                      />
+                    ) : f.type === "textarea" ? (
                       <textarea
                         value={values[f.key] ?? ""}
                         onChange={(e) => set(f.key, e.target.value)}
