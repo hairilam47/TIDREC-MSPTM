@@ -341,20 +341,46 @@ export default function AdminRegistrations() {
   });
 
   const exportCSV = () => {
-    const headers = ["Code", "First Name", "Last Name", "Email", "Country", "Category", "Payment Status", "Amount", "Registered"];
+    const headers = [
+      "Code", "Salutation", "Full Name", "Email",
+      "Mobile Country Code", "Mobile Number", "Nationality",
+      "Gender", "Date of Birth", "Age",
+      "MMA Member", "MMC Number",
+      "Institution", "Country", "Category",
+      "Payment Status", "Amount (MYR)", "Registered",
+    ];
+    const computeAge = (dob: string | null | undefined): string => {
+      if (!dob) return "";
+      const d = new Date(dob);
+      if (isNaN(d.getTime())) return "";
+      const today = new Date();
+      let age = today.getFullYear() - d.getFullYear();
+      const m = today.getMonth() - d.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < d.getDate())) age--;
+      return String(age);
+    };
     const rows = filtered.map((r) => [
       r.registrationCode ?? "",
-      r.firstName ?? "",
-      r.lastName ?? "",
+      (r as Record<string, unknown>).salutation as string ?? "",
+      (r as Record<string, unknown>).fullName as string ?? `${r.firstName ?? ""} ${r.lastName ?? ""}`.trim(),
       r.email ?? "",
+      (r as Record<string, unknown>).mobileCountryCode as string ?? "",
+      (r as Record<string, unknown>).mobileNumber as string ?? "",
+      (r as Record<string, unknown>).nationality as string ?? "",
+      (r as Record<string, unknown>).gender as string ?? "",
+      (r as Record<string, unknown>).dateOfBirth as string ?? "",
+      computeAge((r as Record<string, unknown>).dateOfBirth as string),
+      (r as Record<string, unknown>).isMmaMember === true ? "Yes" : (r as Record<string, unknown>).isMmaMember === false ? "No" : "",
+      (r as Record<string, unknown>).mmcNumber as string ?? "",
+      r.institution ?? "",
       r.country ?? "",
       r.category ?? "",
       r.paymentStatus,
       r.paymentAmount != null ? String(r.paymentAmount) : "",
       new Date(r.createdAt).toLocaleDateString("en-GB"),
     ]);
-    const csv = [headers, ...rows].map((row) => row.map((v) => `"${v}"`).join(",")).join("\n");
-    const blob = new Blob([csv], { type: "text/csv" });
+    const csv = [headers, ...rows].map((row) => row.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(",")).join("\n");
+    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;

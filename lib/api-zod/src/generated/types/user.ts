@@ -10,8 +10,32 @@ import type { UserRole } from './userRole';
 export interface User {
   id: number;
   email: string;
-  firstName: string;
-  lastName: string;
+  /** @nullable */
+  firstName?: string | null;
+  /** @nullable */
+  lastName?: string | null;
+  /** @nullable */
+  fullName?: string | null;
+  /** @nullable */
+  salutation?: string | null;
+  /** @nullable */
+  salutationOther?: string | null;
+  /** @nullable */
+  mobileCountryCode?: string | null;
+  /** @nullable */
+  mobileNumber?: string | null;
+  /** @nullable */
+  nationality?: string | null;
+  /** @nullable */
+  gender?: string | null;
+  /** @nullable */
+  dateOfBirth?: string | null;
+  /** @nullable */
+  age?: number | null;
+  /** @nullable */
+  isMmaMember?: boolean | null;
+  /** @nullable */
+  mmcNumber?: string | null;
   /** @nullable */
   institution?: string | null;
   /** @nullable */

@@ -10,13 +10,35 @@ import type { RegistrationPaymentStatus } from './registrationPaymentStatus';
 export interface Registration {
   id: number;
   userId: number;
-  firstName?: string;
-  lastName?: string;
+  /** @nullable */
+  firstName?: string | null;
+  /** @nullable */
+  lastName?: string | null;
+  /** @nullable */
+  fullName?: string | null;
+  /** @nullable */
+  salutation?: string | null;
   email?: string;
   /** @nullable */
   institution?: string | null;
   /** @nullable */
   country?: string | null;
+  /** @nullable */
+  mobileCountryCode?: string | null;
+  /** @nullable */
+  mobileNumber?: string | null;
+  /** @nullable */
+  nationality?: string | null;
+  /** @nullable */
+  gender?: string | null;
+  /** @nullable */
+  dateOfBirth?: string | null;
+  /** @nullable */
+  age?: number | null;
+  /** @nullable */
+  isMmaMember?: boolean | null;
+  /** @nullable */
+  mmcNumber?: string | null;
   category: string;
   paymentStatus: RegistrationPaymentStatus;
   /** @nullable */

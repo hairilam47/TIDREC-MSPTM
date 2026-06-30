@@ -874,15 +874,33 @@ components:
 
     RegisterInput:
       type: object
-      required: [email, password, firstName, lastName, institution, country, category]
+      required: [email, password, fullName, salutation, mobileCountryCode, mobileNumber, nationality, gender, dateOfBirth, isMmaMember, mmcNumber, institution, country, category]
       properties:
         email:
           type: string
         password:
           type: string
-        firstName:
+        fullName:
           type: string
-        lastName:
+        salutation:
+          type: string
+        salutationOther:
+          type: string
+        mobileCountryCode:
+          type: string
+        mobileNumber:
+          type: string
+        nationality:
+          type: string
+        gender:
+          type: string
+          enum: [Male, Female]
+        dateOfBirth:
+          type: string
+          format: date
+        isMmaMember:
+          type: boolean
+        mmcNumber:
           type: string
         institution:
           type: string
@@ -912,16 +930,38 @@ components:
 
     User:
       type: object
-      required: [id, email, firstName, lastName, role, createdAt]
+      required: [id, email, role, createdAt]
       properties:
         id:
           type: integer
         email:
           type: string
         firstName:
-          type: string
+          type: ["string", "null"]
         lastName:
-          type: string
+          type: ["string", "null"]
+        fullName:
+          type: ["string", "null"]
+        salutation:
+          type: ["string", "null"]
+        salutationOther:
+          type: ["string", "null"]
+        mobileCountryCode:
+          type: ["string", "null"]
+        mobileNumber:
+          type: ["string", "null"]
+        nationality:
+          type: ["string", "null"]
+        gender:
+          type: ["string", "null"]
+        dateOfBirth:
+          type: ["string", "null"]
+        age:
+          type: ["integer", "null"]
+        isMmaMember:
+          type: ["boolean", "null"]
+        mmcNumber:
+          type: ["string", "null"]
         institution:
           type: ["string", "null"]
         country:
@@ -937,9 +977,25 @@ components:
     ProfileUpdate:
       type: object
       properties:
-        firstName:
+        fullName:
           type: string
-        lastName:
+        salutation:
+          type: string
+        salutationOther:
+          type: string
+        mobileCountryCode:
+          type: string
+        mobileNumber:
+          type: string
+        nationality:
+          type: string
+        gender:
+          type: string
+        dateOfBirth:
+          type: string
+        isMmaMember:
+          type: boolean
+        mmcNumber:
           type: string
         institution:
           type: string
@@ -1071,14 +1127,34 @@ components:
         userId:
           type: integer
         firstName:
-          type: string
+          type: ["string", "null"]
         lastName:
-          type: string
+          type: ["string", "null"]
+        fullName:
+          type: ["string", "null"]
+        salutation:
+          type: ["string", "null"]
         email:
           type: string
         institution:
           type: ["string", "null"]
         country:
+          type: ["string", "null"]
+        mobileCountryCode:
+          type: ["string", "null"]
+        mobileNumber:
+          type: ["string", "null"]
+        nationality:
+          type: ["string", "null"]
+        gender:
+          type: ["string", "null"]
+        dateOfBirth:
+          type: ["string", "null"]
+        age:
+          type: ["integer", "null"]
+        isMmaMember:
+          type: ["boolean", "null"]
+        mmcNumber:
           type: ["string", "null"]
         category:
           type: string

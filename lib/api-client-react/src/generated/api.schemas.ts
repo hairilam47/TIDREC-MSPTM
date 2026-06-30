@@ -23,8 +23,16 @@ export const RegisterInputCategory = {
 export interface RegisterInput {
   email: string;
   password: string;
-  firstName: string;
-  lastName: string;
+  fullName: string;
+  salutation: string;
+  salutationOther?: string;
+  mobileCountryCode: string;
+  mobileNumber: string;
+  nationality: string;
+  gender: 'Male' | 'Female';
+  dateOfBirth: string;
+  isMmaMember: boolean;
+  mmcNumber: string;
   institution: string;
   country: string;
   category: string;
@@ -47,8 +55,32 @@ export const UserRole = {
 export interface User {
   id: number;
   email: string;
-  firstName: string;
-  lastName: string;
+  /** @nullable */
+  firstName?: string | null;
+  /** @nullable */
+  lastName?: string | null;
+  /** @nullable */
+  fullName?: string | null;
+  /** @nullable */
+  salutation?: string | null;
+  /** @nullable */
+  salutationOther?: string | null;
+  /** @nullable */
+  mobileCountryCode?: string | null;
+  /** @nullable */
+  mobileNumber?: string | null;
+  /** @nullable */
+  nationality?: string | null;
+  /** @nullable */
+  gender?: string | null;
+  /** @nullable */
+  dateOfBirth?: string | null;
+  /** @nullable */
+  age?: number | null;
+  /** @nullable */
+  isMmaMember?: boolean | null;
+  /** @nullable */
+  mmcNumber?: string | null;
   /** @nullable */
   institution?: string | null;
   /** @nullable */
@@ -65,8 +97,16 @@ export interface AuthResponse {
 }
 
 export interface ProfileUpdate {
-  firstName?: string;
-  lastName?: string;
+  fullName?: string;
+  salutation?: string;
+  salutationOther?: string;
+  mobileCountryCode?: string;
+  mobileNumber?: string;
+  nationality?: string;
+  gender?: string;
+  dateOfBirth?: string;
+  isMmaMember?: boolean;
+  mmcNumber?: string;
   institution?: string;
   country?: string;
 }
@@ -210,13 +250,35 @@ export const RegistrationPaymentStatus = {
 export interface Registration {
   id: number;
   userId: number;
-  firstName?: string;
-  lastName?: string;
+  /** @nullable */
+  firstName?: string | null;
+  /** @nullable */
+  lastName?: string | null;
+  /** @nullable */
+  fullName?: string | null;
+  /** @nullable */
+  salutation?: string | null;
   email?: string;
   /** @nullable */
   institution?: string | null;
   /** @nullable */
   country?: string | null;
+  /** @nullable */
+  mobileCountryCode?: string | null;
+  /** @nullable */
+  mobileNumber?: string | null;
+  /** @nullable */
+  nationality?: string | null;
+  /** @nullable */
+  gender?: string | null;
+  /** @nullable */
+  dateOfBirth?: string | null;
+  /** @nullable */
+  age?: number | null;
+  /** @nullable */
+  isMmaMember?: boolean | null;
+  /** @nullable */
+  mmcNumber?: string | null;
   category: string;
   paymentStatus: RegistrationPaymentStatus;
   /** @nullable */

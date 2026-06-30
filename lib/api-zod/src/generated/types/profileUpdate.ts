@@ -7,8 +7,16 @@
  */
 
 export interface ProfileUpdate {
-  firstName?: string;
-  lastName?: string;
+  fullName?: string;
+  salutation?: string;
+  salutationOther?: string;
+  mobileCountryCode?: string;
+  mobileNumber?: string;
+  nationality?: string;
+  gender?: string;
+  dateOfBirth?: string;
+  isMmaMember?: boolean;
+  mmcNumber?: string;
   institution?: string;
   country?: string;
 }

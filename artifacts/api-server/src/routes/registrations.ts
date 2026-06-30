@@ -31,6 +31,17 @@ function resolveBasePrice(catRow: { priceMyr: string; earlyBirdPriceMyr: string 
   return parseFloat(catRow.priceMyr);
 }
 
+function computeAge(dateOfBirth: string | null | undefined): number | null {
+  if (!dateOfBirth) return null;
+  const dob = new Date(dateOfBirth);
+  if (isNaN(dob.getTime())) return null;
+  const today = new Date();
+  let age = today.getFullYear() - dob.getFullYear();
+  const m = today.getMonth() - dob.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) age--;
+  return age;
+}
+
 async function formatRegistration(r: typeof registrationsTable.$inferSelect) {
   const [user] = await db.select().from(usersTable).where(eq(usersTable.id, r.userId)).limit(1);
   return {
@@ -38,9 +49,19 @@ async function formatRegistration(r: typeof registrationsTable.$inferSelect) {
     userId: r.userId,
     firstName: user?.firstName || "",
     lastName: user?.lastName || "",
+    fullName: user?.fullName || null,
+    salutation: user?.salutation || null,
     email: user?.email || "",
-    institution: user?.institution,
-    country: user?.country,
+    institution: user?.institution || null,
+    country: user?.country || null,
+    mobileCountryCode: user?.mobileCountryCode || null,
+    mobileNumber: user?.mobileNumber || null,
+    nationality: user?.nationality || null,
+    gender: user?.gender || null,
+    dateOfBirth: user?.dateOfBirth || null,
+    age: computeAge(user?.dateOfBirth),
+    isMmaMember: user?.isMmaMember ?? null,
+    mmcNumber: user?.mmcNumber || null,
     category: r.category,
     paymentStatus: r.paymentStatus,
     paymentAmount: r.paymentAmount ? parseFloat(r.paymentAmount) : null,

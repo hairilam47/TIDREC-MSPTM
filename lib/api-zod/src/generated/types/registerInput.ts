@@ -5,14 +5,23 @@
  * SEAT-MSPTM 2027 Symposium API
  * OpenAPI spec version: 0.1.0
  */
-import type { RegisterInputCategory } from './registerInputCategory';
+import type { RegisterInputGender } from './registerInputGender';
 
 export interface RegisterInput {
   email: string;
   password: string;
-  firstName: string;
-  lastName: string;
+  fullName: string;
+  salutation: string;
+  salutationOther?: string;
+  mobileCountryCode: string;
+  mobileNumber: string;
+  nationality: string;
+  gender: RegisterInputGender;
+  dateOfBirth: Date;
+  isMmaMember: boolean;
+  mmcNumber: string;
   institution: string;
   country: string;
-  category: RegisterInputCategory;
+  /** Slug of the registration category (from /registration-categories) */
+  category: string;
 }
