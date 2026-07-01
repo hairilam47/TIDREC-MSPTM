@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { db, sponsorsTable } from "@workspace/db";
-import { eq } from "drizzle-orm";
+import { eq, asc } from "drizzle-orm";
 import { requireAdmin } from "../lib/auth";
 
 const router = Router();
@@ -12,12 +12,16 @@ function formatSponsor(s: typeof sponsorsTable.$inferSelect) {
     tier: s.tier,
     logoUrl: s.logoUrl,
     website: s.website,
+    sortOrder: s.sortOrder,
   };
 }
 
 router.get("/sponsors", async (_req, res) => {
   try {
-    const sponsors = await db.select().from(sponsorsTable).orderBy(sponsorsTable.tier, sponsorsTable.name);
+    const sponsors = await db
+      .select()
+      .from(sponsorsTable)
+      .orderBy(sponsorsTable.tier, asc(sponsorsTable.sortOrder), asc(sponsorsTable.name));
     res.json(sponsors.map(formatSponsor));
   } catch (err) {
     console.error(err);
@@ -58,6 +62,27 @@ router.put("/sponsors/:id", requireAdmin, async (req, res) => {
       return;
     }
     res.json(formatSponsor(sponsor));
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.patch("/sponsors/reorder", requireAdmin, async (req, res) => {
+  try {
+    const updates: Array<{ id: number; sortOrder: number }> = req.body;
+    if (!Array.isArray(updates) || updates.length === 0) {
+      res.status(400).json({ error: "Body must be an array of {id, sortOrder}" });
+      return;
+    }
+    await Promise.all(
+      updates.map(({ id, sortOrder }) =>
+        db.update(sponsorsTable)
+          .set({ sortOrder, updatedAt: new Date() })
+          .where(eq(sponsorsTable.id, id))
+      )
+    );
+    res.json({ ok: true });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal server error" });

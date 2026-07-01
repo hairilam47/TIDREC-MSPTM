@@ -64,6 +64,7 @@ function formatSession(s: typeof programmeSessionsTable.$inferSelect) {
     trackALocation: s.trackALocation,
     trackBTitle: s.trackBTitle,
     trackBLocation: s.trackBLocation,
+    speakerId: s.speakerId ?? null,
     sortOrder: s.sortOrder,
   };
 }
@@ -83,7 +84,7 @@ router.get("/programme-sessions", async (_req, res) => {
 
 router.post("/programme-sessions", requireAdmin, async (req, res) => {
   try {
-    const { day, dayLabel, timeSlot, kind, sessionType, title, location, trackATitle, trackALocation, trackBTitle, trackBLocation, sortOrder } = req.body;
+    const { day, dayLabel, timeSlot, kind, sessionType, title, location, trackATitle, trackALocation, trackBTitle, trackBLocation, speakerId, sortOrder } = req.body;
     if (!day || !dayLabel || !timeSlot || !kind || !sessionType) {
       res.status(400).json({ error: "Missing required fields: day, dayLabel, timeSlot, kind, sessionType" });
       return;
@@ -100,6 +101,7 @@ router.post("/programme-sessions", requireAdmin, async (req, res) => {
       trackALocation: trackALocation || null,
       trackBTitle: trackBTitle || null,
       trackBLocation: trackBLocation || null,
+      speakerId: speakerId ? Number(speakerId) : null,
       sortOrder: sortOrder ?? 0,
     }).returning();
     res.status(201).json(formatSession(session));
@@ -133,7 +135,7 @@ router.put("/programme-sessions/reorder", requireAdmin, async (req, res) => {
 router.put("/programme-sessions/:id", requireAdmin, async (req, res) => {
   try {
     const id = parseInt(String(req.params.id));
-    const { day, dayLabel, timeSlot, kind, sessionType, title, location, trackATitle, trackALocation, trackBTitle, trackBLocation, sortOrder } = req.body;
+    const { day, dayLabel, timeSlot, kind, sessionType, title, location, trackATitle, trackALocation, trackBTitle, trackBLocation, speakerId, sortOrder } = req.body;
     const [session] = await db.update(programmeSessionsTable)
       .set({
         day: day !== undefined ? Number(day) : undefined,
@@ -147,6 +149,7 @@ router.put("/programme-sessions/:id", requireAdmin, async (req, res) => {
         trackALocation: trackALocation ?? null,
         trackBTitle: trackBTitle ?? null,
         trackBLocation: trackBLocation ?? null,
+        speakerId: speakerId !== undefined ? (speakerId ? Number(speakerId) : null) : undefined,
         sortOrder: sortOrder ?? undefined,
         updatedAt: new Date(),
       })

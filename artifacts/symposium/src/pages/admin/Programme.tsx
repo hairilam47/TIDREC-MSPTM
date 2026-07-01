@@ -7,6 +7,7 @@ import {
   useDeleteProgrammeSession,
   useReorderProgrammeSessions,
   getListProgrammeSessionsQueryKey,
+  useGetSpeakers,
 } from "@workspace/api-client-react";
 import type { ProgrammeSession, ProgrammeSessionInput } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -27,7 +28,9 @@ const SESSION_TYPE_COLORS: Record<string, { bg: string; color: string }> = {
   session:      { bg: "var(--teal-lt, rgba(14,110,116,0.12))", color: "var(--teal, #0E6E74)" },
 };
 
-const EMPTY_FORM: ProgrammeSessionInput = {
+type SessionFormData = ProgrammeSessionInput & { speakerId?: number | null };
+
+const EMPTY_FORM: SessionFormData = {
   day: 1,
   dayLabel: "22 March 2027",
   timeSlot: "",
@@ -39,6 +42,7 @@ const EMPTY_FORM: ProgrammeSessionInput = {
   trackALocation: "",
   trackBTitle: "",
   trackBLocation: "",
+  speakerId: null,
   sortOrder: 0,
 };
 
@@ -138,14 +142,15 @@ function SessionRow({
 }
 
 interface SessionFormProps {
-  initial: ProgrammeSessionInput & { id?: number };
+  initial: SessionFormData & { id?: number };
   onClose: () => void;
-  onSave: (data: ProgrammeSessionInput) => void;
+  onSave: (data: SessionFormData) => void;
   saving: boolean;
 }
 
 function SessionForm({ initial, onClose, onSave, saving }: SessionFormProps) {
-  const [form, setForm] = React.useState<ProgrammeSessionInput>({
+  const { data: speakers = [] } = useGetSpeakers();
+  const [form, setForm] = React.useState<SessionFormData>({
     day: initial.day,
     dayLabel: initial.dayLabel,
     timeSlot: initial.timeSlot,
@@ -157,11 +162,12 @@ function SessionForm({ initial, onClose, onSave, saving }: SessionFormProps) {
     trackALocation: initial.trackALocation ?? "",
     trackBTitle: initial.trackBTitle ?? "",
     trackBLocation: initial.trackBLocation ?? "",
+    speakerId: initial.speakerId ?? null,
     sortOrder: initial.sortOrder ?? 0,
   });
   const [errors, setErrors] = React.useState<Record<string, string>>({});
 
-  const set = (k: keyof ProgrammeSessionInput, v: string | number) =>
+  const set = (k: keyof SessionFormData, v: string | number | null) =>
     setForm((f) => ({ ...f, [k]: v }));
 
   const validate = () => {
@@ -269,6 +275,22 @@ function SessionForm({ initial, onClose, onSave, saving }: SessionFormProps) {
         />
       </FormField>
 
+      <FormField label="Speaker" hint="Optional — assign a speaker to this session">
+        <select
+          className={SELECT_BASE}
+          style={inputBorder()}
+          value={form.speakerId ?? ""}
+          onChange={(e) => set("speakerId", e.target.value ? Number(e.target.value) : null)}
+        >
+          <option value="">— No speaker assigned —</option>
+          {speakers.map((sp) => (
+            <option key={sp.id} value={sp.id}>
+              {sp.name}{sp.title ? ` — ${sp.title}` : ""}
+            </option>
+          ))}
+        </select>
+      </FormField>
+
       {!isDual && (
         <>
           <FormField label="Title" required={form.sessionType !== "break" && form.sessionType !== "registration"} error={errors.title}>
@@ -363,9 +385,9 @@ export default function AdminProgramme() {
   const day1 = sessions.filter((s) => s.day === 1).sort((a, b) => a.sortOrder - b.sortOrder);
   const day2 = sessions.filter((s) => s.day === 2).sort((a, b) => a.sortOrder - b.sortOrder);
 
-  function handleSave(data: ProgrammeSessionInput) {
+  function handleSave(data: SessionFormData) {
     if (modal?.mode === "edit") {
-      updateMut.mutate({ id: modal.session.id, data }, {
+      updateMut.mutate({ id: modal.session.id, data: data as ProgrammeSessionInput }, {
         onSuccess: () => {
           invalidate();
           setModal(null);
@@ -377,7 +399,7 @@ export default function AdminProgramme() {
       const dayLabel = modal.day === 1 ? "22 March 2027" : "23 March 2027";
       const sameDaySessions = sessions.filter((s) => s.day === modal.day);
       const maxSort = sameDaySessions.length > 0 ? Math.max(...sameDaySessions.map((s) => s.sortOrder)) : 0;
-      createMut.mutate({ data: { ...data, day: modal.day, dayLabel, sortOrder: maxSort + 1 } }, {
+      createMut.mutate({ data: { ...data, day: modal.day, dayLabel, sortOrder: maxSort + 1 } as ProgrammeSessionInput }, {
         onSuccess: () => {
           invalidate();
           setModal(null);
@@ -487,7 +509,7 @@ export default function AdminProgramme() {
 
       {modal !== null && (
         <SessionForm
-          initial={modal.mode === "edit" ? { ...modal.session } : { ...EMPTY_FORM, day: modal.day }}
+          initial={modal.mode === "edit" ? { ...modal.session, speakerId: (modal.session as SessionFormData).speakerId ?? null } : { ...EMPTY_FORM, day: modal.day }}
           onClose={() => setModal(null)}
           onSave={handleSave}
           saving={isSaving}

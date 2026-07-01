@@ -1,15 +1,24 @@
 import React from "react";
 import AdminLayout from "@/components/AdminLayout";
-import { useGetRegistrations, useUpdateRegistration, useAdminCreateRegistration, useGetRegistrationCategories } from "@workspace/api-client-react";
-import { Search, Download, ChevronDown, Pencil, UserPlus, Loader2, X, ChevronRight } from "lucide-react";
+import {
+  useGetRegistrations,
+  useUpdateRegistration,
+  useAdminCreateRegistration,
+  useGetRegistrationCategories,
+  useDeleteRegistration,
+  useSendPaymentReminder,
+  useBulkRemindRegistrations,
+} from "@workspace/api-client-react";
+import { Search, Download, ChevronDown, Pencil, UserPlus, Loader2, X, ChevronRight, Trash2, Bell, BellRing } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { ModalShell, FormField, INPUT_BASE, SELECT_BASE, TEXTAREA_BASE, inputBorder } from "@/components/ui/form-primitives";
+import { ModalShell, FormField, INPUT_BASE, SELECT_BASE, TEXTAREA_BASE, inputBorder, ConfirmDialog } from "@/components/ui/form-primitives";
 
 const PAYMENT_STYLES: Record<string, { bg: string; color: string }> = {
   paid:    { bg: "var(--status-success-bg)", color: "var(--status-success-text)" },
   pending: { bg: "var(--status-warning-bg)", color: "var(--status-warning-text)" },
   overdue: { bg: "var(--status-danger-bg)",  color: "var(--status-danger-text)" },
   waived:  { bg: "var(--primary-lt)",        color: "var(--primary)" },
+  pending_confirmation: { bg: "var(--status-warning-bg)", color: "var(--status-warning-text)" },
 };
 
 interface AddRegistrationForm {
@@ -83,7 +92,6 @@ function AddRegistrationModal({ onClose, onSuccess }: { onClose: () => void; onS
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
-
     createMutation.mutate(
       {
         data: {
@@ -118,13 +126,7 @@ function AddRegistrationModal({ onClose, onSuccess }: { onClose: () => void; onS
       size="xl"
       footer={
         <div className="flex justify-end gap-3">
-          <button
-            type="button"
-            onClick={onClose}
-            className="btn btn-outline"
-          >
-            Cancel
-          </button>
+          <button type="button" onClick={onClose} className="btn btn-outline">Cancel</button>
           <button
             type="submit"
             form="add-registration-form"
@@ -183,22 +185,10 @@ function AddRegistrationModal({ onClose, onSuccess }: { onClose: () => void; onS
           </h3>
           <div className="grid grid-cols-2 gap-4">
             <FormField label="Institution">
-              <input
-                value={form.institution}
-                onChange={set("institution")}
-                placeholder="e.g. University of Malaya"
-                className={INPUT_BASE}
-                style={inputBorder()}
-              />
+              <input value={form.institution} onChange={set("institution")} placeholder="e.g. University of Malaya" className={INPUT_BASE} style={inputBorder()} />
             </FormField>
             <FormField label="Country">
-              <input
-                value={form.country}
-                onChange={set("country")}
-                placeholder="e.g. Malaysia"
-                className={INPUT_BASE}
-                style={inputBorder()}
-              />
+              <input value={form.country} onChange={set("country")} placeholder="e.g. Malaysia" className={INPUT_BASE} style={inputBorder()} />
             </FormField>
           </div>
         </div>
@@ -255,56 +245,25 @@ function AddRegistrationModal({ onClose, onSuccess }: { onClose: () => void; onS
           <div className="grid grid-cols-2 gap-4">
             <FormField label="Payment Status">
               <div className="relative">
-                <select
-                  value={form.paymentStatus}
-                  onChange={set("paymentStatus")}
-                  className={SELECT_BASE}
-                  style={inputBorder()}
-                >
+                <select value={form.paymentStatus} onChange={set("paymentStatus")} className={SELECT_BASE} style={inputBorder()}>
                   <option value="pending">Pending</option>
                   <option value="paid">Paid</option>
                   <option value="waived">Waived</option>
                   <option value="overdue">Overdue</option>
                 </select>
-                <ChevronDown
-                  className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none"
-                  style={{ color: "var(--text-muted)" }}
-                />
+                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: "var(--text-muted)" }} />
               </div>
             </FormField>
             <FormField label="Amount (MYR)" hint="Leave blank to set later">
-              <input
-                type="number"
-                value={form.paymentAmount}
-                onChange={set("paymentAmount")}
-                placeholder="0.00"
-                min="0"
-                step="0.01"
-                className={INPUT_BASE}
-                style={inputBorder()}
-              />
+              <input type="number" value={form.paymentAmount} onChange={set("paymentAmount")} placeholder="0.00" min="0" step="0.01" className={INPUT_BASE} style={inputBorder()} />
             </FormField>
           </div>
           <div className="mt-4 space-y-4">
             <FormField label="Dietary Requirements">
-              <textarea
-                value={form.dietaryRequirements}
-                onChange={set("dietaryRequirements")}
-                placeholder="e.g. Vegetarian, Halal, no nuts…"
-                rows={2}
-                className={TEXTAREA_BASE}
-                style={inputBorder()}
-              />
+              <textarea value={form.dietaryRequirements} onChange={set("dietaryRequirements")} placeholder="e.g. Vegetarian, Halal, no nuts…" rows={2} className={TEXTAREA_BASE} style={inputBorder()} />
             </FormField>
             <FormField label="Special Needs / Accessibility">
-              <textarea
-                value={form.specialNeeds}
-                onChange={set("specialNeeds")}
-                placeholder="e.g. Wheelchair access…"
-                rows={2}
-                className={TEXTAREA_BASE}
-                style={inputBorder()}
-              />
+              <textarea value={form.specialNeeds} onChange={set("specialNeeds")} placeholder="e.g. Wheelchair access…" rows={2} className={TEXTAREA_BASE} style={inputBorder()} />
             </FormField>
           </div>
         </div>
@@ -347,45 +306,26 @@ function DetailDrawer({ reg, onClose }: { reg: AnyReg; onClose: () => void }) {
 
   return (
     <>
-      <div
-        className="fixed inset-0 z-40"
-        style={{ background: "rgba(0,0,0,0.25)" }}
-        onClick={onClose}
-      />
+      <div className="fixed inset-0 z-40" style={{ background: "rgba(0,0,0,0.25)" }} onClick={onClose} />
       <div
         className="fixed top-0 right-0 bottom-0 z-50 flex flex-col overflow-hidden"
-        style={{
-          width: "min(480px, 100vw)",
-          background: "var(--bg-surface)",
-          boxShadow: "-4px 0 32px rgba(0,0,0,0.18)",
-        }}
+        style={{ width: "min(480px, 100vw)", background: "var(--bg-surface)", boxShadow: "-4px 0 32px rgba(0,0,0,0.18)" }}
       >
-        <div
-          className="flex items-center justify-between px-5 py-4 flex-shrink-0"
-          style={{ borderBottom: "1px solid var(--border-color)" }}
-        >
+        <div className="flex items-center justify-between px-5 py-4 flex-shrink-0" style={{ borderBottom: "1px solid var(--border-color)" }}>
           <div>
             <div className="text-[15px] font-semibold" style={{ color: "var(--text)" }}>
               {salutationDisplay ? `${salutationDisplay} ` : ""}{displayName}
             </div>
-            <div className="text-[12px] mt-0.5" style={{ color: "var(--text-muted)" }}>
-              {reg.registrationCode as string}
-            </div>
+            <div className="text-[12px] mt-0.5" style={{ color: "var(--text-muted)" }}>{reg.registrationCode as string}</div>
           </div>
-          <button
-            onClick={onClose}
-            className="p-1.5 rounded-lg transition-colors"
-            style={{ color: "var(--text-muted)" }}
-          >
+          <button onClick={onClose} className="p-1.5 rounded-lg transition-colors" style={{ color: "var(--text-muted)" }}>
             <X className="w-5 h-5" />
           </button>
         </div>
 
         <div className="flex-1 overflow-y-auto px-5 py-4 space-y-5">
           <section>
-            <h3 className="text-[11px] font-bold uppercase tracking-wider mb-1" style={{ color: "var(--text-muted)" }}>
-              Identity
-            </h3>
+            <h3 className="text-[11px] font-bold uppercase tracking-wider mb-1" style={{ color: "var(--text-muted)" }}>Identity</h3>
             <Row label="Salutation" value={salutationDisplay || null} />
             <Row label="Full Name" value={displayName} />
             <Row label="Email" value={reg.email as string} />
@@ -399,9 +339,7 @@ function DetailDrawer({ reg, onClose }: { reg: AnyReg; onClose: () => void }) {
           </section>
 
           <section>
-            <h3 className="text-[11px] font-bold uppercase tracking-wider mb-1" style={{ color: "var(--text-muted)" }}>
-              Contact
-            </h3>
+            <h3 className="text-[11px] font-bold uppercase tracking-wider mb-1" style={{ color: "var(--text-muted)" }}>Contact</h3>
             <Row label="Mobile" value={
               reg.mobileCountryCode && reg.mobileNumber
                 ? `${reg.mobileCountryCode} ${reg.mobileNumber}`
@@ -412,13 +350,9 @@ function DetailDrawer({ reg, onClose }: { reg: AnyReg; onClose: () => void }) {
           </section>
 
           <section>
-            <h3 className="text-[11px] font-bold uppercase tracking-wider mb-1" style={{ color: "var(--text-muted)" }}>
-              Membership
-            </h3>
+            <h3 className="text-[11px] font-bold uppercase tracking-wider mb-1" style={{ color: "var(--text-muted)" }}>Membership</h3>
             <div className="flex gap-3 py-2.5" style={{ borderBottom: "1px solid var(--border-color)" }}>
-              <span className="text-[11px] font-semibold uppercase tracking-wider w-36 flex-shrink-0 pt-0.5" style={{ color: "var(--text-muted)" }}>
-                MMA Member
-              </span>
+              <span className="text-[11px] font-semibold uppercase tracking-wider w-36 flex-shrink-0 pt-0.5" style={{ color: "var(--text-muted)" }}>MMA Member</span>
               <span className="text-[13px] flex-1">
                 {isMma === true ? (
                   <span style={{ color: "var(--green, #16a34a)", fontWeight: 600 }}>Yes — MMA Member</span>
@@ -430,26 +364,17 @@ function DetailDrawer({ reg, onClose }: { reg: AnyReg; onClose: () => void }) {
               </span>
             </div>
             {isMma === true && (
-              <Row label="MMC Number" value={
-                reg.mmcNumber && reg.mmcNumber !== "000" ? reg.mmcNumber as string : null
-              } />
+              <Row label="MMC Number" value={reg.mmcNumber && reg.mmcNumber !== "000" ? reg.mmcNumber as string : null} />
             )}
           </section>
 
           <section>
-            <h3 className="text-[11px] font-bold uppercase tracking-wider mb-1" style={{ color: "var(--text-muted)" }}>
-              Registration
-            </h3>
+            <h3 className="text-[11px] font-bold uppercase tracking-wider mb-1" style={{ color: "var(--text-muted)" }}>Registration</h3>
             <Row label="Category" value={(reg.category as string)?.replace(/_/g, " ")} />
             <div className="flex gap-3 py-2.5" style={{ borderBottom: "1px solid var(--border-color)" }}>
-              <span className="text-[11px] font-semibold uppercase tracking-wider w-36 flex-shrink-0 pt-0.5" style={{ color: "var(--text-muted)" }}>
-                Payment Status
-              </span>
+              <span className="text-[11px] font-semibold uppercase tracking-wider w-36 flex-shrink-0 pt-0.5" style={{ color: "var(--text-muted)" }}>Payment Status</span>
               <span>
-                <span
-                  className="text-[11px] font-semibold px-2 py-0.5 rounded-full capitalize"
-                  style={{ background: ps.bg, color: ps.color }}
-                >
+                <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full capitalize" style={{ background: ps.bg, color: ps.color }}>
                   {reg.paymentStatus as string}
                 </span>
               </span>
@@ -468,15 +393,9 @@ function DetailDrawer({ reg, onClose }: { reg: AnyReg; onClose: () => void }) {
 
           {(reg.dietaryRequirements || reg.specialNeeds) && (
             <section>
-              <h3 className="text-[11px] font-bold uppercase tracking-wider mb-1" style={{ color: "var(--text-muted)" }}>
-                Additional Info
-              </h3>
-              {reg.dietaryRequirements && (
-                <Row label="Dietary" value={reg.dietaryRequirements as string} />
-              )}
-              {reg.specialNeeds && (
-                <Row label="Special Needs" value={reg.specialNeeds as string} />
-              )}
+              <h3 className="text-[11px] font-bold uppercase tracking-wider mb-1" style={{ color: "var(--text-muted)" }}>Additional Info</h3>
+              {reg.dietaryRequirements && <Row label="Dietary" value={reg.dietaryRequirements as string} />}
+              {reg.specialNeeds && <Row label="Special Needs" value={reg.specialNeeds as string} />}
             </section>
           )}
         </div>
@@ -488,7 +407,11 @@ function DetailDrawer({ reg, onClose }: { reg: AnyReg; onClose: () => void }) {
 export default function AdminRegistrations() {
   const { data: registrations, refetch } = useGetRegistrations();
   const updateMutation = useUpdateRegistration();
+  const deleteMutation = useDeleteRegistration();
+  const remindMutation = useSendPaymentReminder();
+  const bulkRemindMutation = useBulkRemindRegistrations();
   const { toast } = useToast();
+
   const [search, setSearch] = React.useState("");
   const [statusFilter, setStatusFilter] = React.useState("all");
   const [mmaFilter, setMmaFilter] = React.useState("all");
@@ -498,6 +421,8 @@ export default function AdminRegistrations() {
   const [editAmount, setEditAmount] = React.useState<string>("");
   const [showAddModal, setShowAddModal] = React.useState(false);
   const [drawerReg, setDrawerReg] = React.useState<AnyReg | null>(null);
+  const [deleteTarget, setDeleteTarget] = React.useState<{ id: number; name: string } | null>(null);
+  const [selectedIds, setSelectedIds] = React.useState<Set<number>>(new Set());
 
   const allNationalities = React.useMemo(() => {
     const set = new Set<string>();
@@ -531,6 +456,27 @@ export default function AdminRegistrations() {
       (reg.nationality as string) === nationalityFilter;
     return matchSearch && matchStatus && matchMma && matchNationality;
   });
+
+  const pendingFiltered = filtered.filter((r) =>
+    r.paymentStatus === "pending" || r.paymentStatus === "overdue"
+  );
+
+  const toggleSelect = (id: number) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.size === filtered.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filtered.map((r) => r.id)));
+    }
+  };
 
   const exportCSV = () => {
     const headers = [
@@ -601,13 +547,57 @@ export default function AdminRegistrations() {
     );
   };
 
+  const handleDelete = () => {
+    if (!deleteTarget) return;
+    deleteMutation.mutate(
+      { id: deleteTarget.id },
+      {
+        onSuccess: () => {
+          refetch();
+          setDeleteTarget(null);
+          setSelectedIds((prev) => { const next = new Set(prev); next.delete(deleteTarget.id); return next; });
+          toast({ title: "Registration deleted" });
+        },
+        onError: () => toast({ title: "Delete failed", variant: "destructive" }),
+      }
+    );
+  };
+
+  const handleRemind = (id: number) => {
+    remindMutation.mutate(
+      { id },
+      {
+        onSuccess: () => toast({ title: "Payment reminder sent" }),
+        onError: () => toast({ title: "Remind failed", variant: "destructive" }),
+      }
+    );
+  };
+
+  const handleBulkRemind = () => {
+    const ids = Array.from(selectedIds).filter((id) => {
+      const r = (registrations ?? []).find((x) => x.id === id);
+      return r && (r.paymentStatus === "pending" || r.paymentStatus === "overdue");
+    });
+    if (ids.length === 0) {
+      toast({ title: "No pending/overdue registrations selected", variant: "destructive" });
+      return;
+    }
+    bulkRemindMutation.mutate(
+      { ids },
+      {
+        onSuccess: ({ sent }) => {
+          toast({ title: `Payment reminders sent to ${sent} delegate${sent !== 1 ? "s" : ""}` });
+          setSelectedIds(new Set());
+        },
+        onError: () => toast({ title: "Bulk remind failed", variant: "destructive" }),
+      }
+    );
+  };
+
   const handleAddSuccess = (code: string) => {
     setShowAddModal(false);
     refetch();
-    toast({
-      title: "Delegate registered",
-      description: `Registration code: ${code}`,
-    });
+    toast({ title: "Delegate registered", description: `Registration code: ${code}` });
   };
 
   const activeFilters = [statusFilter !== "all", mmaFilter !== "all", nationalityFilter !== "all"].filter(Boolean).length;
@@ -625,17 +615,11 @@ export default function AdminRegistrations() {
               className={`${INPUT_BASE} pl-9`}
             />
           </div>
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="btn btn-primary flex items-center gap-2"
-          >
+          <button onClick={() => setShowAddModal(true)} className="btn btn-primary flex items-center gap-2">
             <UserPlus className="w-4 h-4" />
             Register Delegate
           </button>
-          <button
-            onClick={exportCSV}
-            className="btn btn-outline flex items-center gap-2"
-          >
+          <button onClick={exportCSV} className="btn btn-outline flex items-center gap-2">
             <Download className="w-4 h-4" />
             Export CSV
           </button>
@@ -647,12 +631,7 @@ export default function AdminRegistrations() {
           </span>
 
           <div className="relative">
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className={`appearance-none ${SELECT_BASE} text-[12px] py-1.5 pl-3 pr-7`}
-              style={inputBorder()}
-            >
+            <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className={`appearance-none ${SELECT_BASE} text-[12px] py-1.5 pl-3 pr-7`} style={inputBorder()}>
               <option value="all">All Statuses</option>
               <option value="pending">Pending</option>
               <option value="paid">Paid</option>
@@ -663,12 +642,7 @@ export default function AdminRegistrations() {
           </div>
 
           <div className="relative">
-            <select
-              value={mmaFilter}
-              onChange={(e) => setMmaFilter(e.target.value)}
-              className={`appearance-none ${SELECT_BASE} text-[12px] py-1.5 pl-3 pr-7`}
-              style={inputBorder()}
-            >
+            <select value={mmaFilter} onChange={(e) => setMmaFilter(e.target.value)} className={`appearance-none ${SELECT_BASE} text-[12px] py-1.5 pl-3 pr-7`} style={inputBorder()}>
               <option value="all">All MMA Status</option>
               <option value="yes">MMA Member</option>
               <option value="no">Non-MMA</option>
@@ -678,12 +652,7 @@ export default function AdminRegistrations() {
           </div>
 
           <div className="relative">
-            <select
-              value={nationalityFilter}
-              onChange={(e) => setNationalityFilter(e.target.value)}
-              className={`appearance-none ${SELECT_BASE} text-[12px] py-1.5 pl-3 pr-7`}
-              style={inputBorder()}
-            >
+            <select value={nationalityFilter} onChange={(e) => setNationalityFilter(e.target.value)} className={`appearance-none ${SELECT_BASE} text-[12px] py-1.5 pl-3 pr-7`} style={inputBorder()}>
               <option value="all">All Nationalities</option>
               {allNationalities.map((n) => (
                 <option key={n} value={n}>{n}</option>
@@ -706,6 +675,32 @@ export default function AdminRegistrations() {
             {filtered.length} of {registrations?.length ?? 0}
           </span>
         </div>
+
+        {selectedIds.size > 0 && (
+          <div
+            className="flex flex-wrap items-center gap-3 px-4 py-2.5 rounded-xl"
+            style={{ background: "var(--primary-lt)", border: "1px solid var(--primary)" }}
+          >
+            <span className="text-[12px] font-semibold" style={{ color: "var(--primary)" }}>
+              {selectedIds.size} selected
+            </span>
+            <button
+              onClick={handleBulkRemind}
+              disabled={bulkRemindMutation.isPending}
+              className="btn btn-sm flex items-center gap-1.5 text-[12px]"
+              style={{ background: "var(--primary)", color: "white" }}
+            >
+              {bulkRemindMutation.isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <BellRing className="w-3.5 h-3.5" />}
+              Remind Selected ({pendingFiltered.filter(r => selectedIds.has(r.id)).length} pending/overdue)
+            </button>
+            <button
+              onClick={() => setSelectedIds(new Set())}
+              className="btn btn-sm btn-outline text-[12px]"
+            >
+              Clear selection
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="card">
@@ -714,6 +709,14 @@ export default function AdminRegistrations() {
             <table className="table">
               <thead>
                 <tr>
+                  <th style={{ width: 36 }}>
+                    <input
+                      type="checkbox"
+                      checked={filtered.length > 0 && selectedIds.size === filtered.length}
+                      onChange={toggleSelectAll}
+                      style={{ accentColor: "var(--primary)" }}
+                    />
+                  </th>
                   {["Code", "Delegate", "Mobile", "Nationality", "Gender", "DOB / Age", "MMA / MMC", "Institution", "Category", "Payment", "Amount (MYR)", "Date", "Actions"].map((h) => (
                     <th key={h}>{h}</th>
                   ))}
@@ -722,7 +725,7 @@ export default function AdminRegistrations() {
               <tbody>
                 {filtered.length === 0 ? (
                   <tr>
-                    <td colSpan={13} className="text-center py-10 text-[13px]" style={{ color: "var(--text-disabled)" }}>
+                    <td colSpan={14} className="text-center py-10 text-[13px]" style={{ color: "var(--text-disabled)" }}>
                       No registrations found
                     </td>
                   </tr>
@@ -734,14 +737,25 @@ export default function AdminRegistrations() {
                   const salutation = reg.salutation as string | null;
                   const salutationOther = reg.salutationOther as string | null;
                   const salutationDisplay = salutation === "Other" ? (salutationOther ?? "") : (salutation ?? "");
+                  const isPendingPayment = r.paymentStatus === "pending" || r.paymentStatus === "overdue";
+                  const isSelected = selectedIds.has(r.id);
+
                   return (
                     <tr
                       key={r.id}
                       className="cursor-pointer transition-colors"
-                      style={{ ["--row-hover" as string]: "var(--bg-surface-secondary)" }}
-                      onMouseEnter={(e) => (e.currentTarget.style.background = "var(--bg-surface-secondary)")}
-                      onMouseLeave={(e) => (e.currentTarget.style.background = "")}
+                      style={{ background: isSelected ? "var(--primary-lt)" : undefined }}
+                      onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.background = "var(--bg-surface-secondary)"; }}
+                      onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.background = ""; }}
                     >
+                      <td onClick={(e) => e.stopPropagation()}>
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => toggleSelect(r.id)}
+                          style={{ accentColor: "var(--primary)" }}
+                        />
+                      </td>
                       <td>
                         <code className="cell-mono" style={{ background: "var(--bg-surface-secondary)", padding: "2px 6px", borderRadius: 4 }}>
                           {r.registrationCode}
@@ -862,8 +876,31 @@ export default function AdminRegistrations() {
                                 setEditAmount(r.paymentAmount != null ? String(r.paymentAmount) : "");
                               }}
                               className="btn btn-outline btn-sm flex items-center gap-1.5 px-2.5 py-1.5 text-[12px]"
+                              title="Edit payment status"
                             >
                               <Pencil className="w-3.5 h-3.5" /> Edit
+                            </button>
+                            {isPendingPayment && (
+                              <button
+                                onClick={(e) => { e.stopPropagation(); handleRemind(r.id); }}
+                                disabled={remindMutation.isPending}
+                                className="btn btn-outline btn-sm flex items-center gap-1.5 px-2.5 py-1.5 text-[12px]"
+                                title="Send payment reminder"
+                                style={{ color: "var(--status-warning-text)" }}
+                              >
+                                <Bell className="w-3.5 h-3.5" />
+                              </button>
+                            )}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setDeleteTarget({ id: r.id, name: displayName });
+                              }}
+                              className="btn btn-sm flex items-center px-2.5 py-1.5"
+                              title="Delete registration"
+                              style={{ background: "var(--status-danger-bg)", color: "var(--status-danger-text)", borderColor: "var(--status-danger-border)" }}
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
                             </button>
                           </div>
                         )}
@@ -888,6 +925,17 @@ export default function AdminRegistrations() {
         <DetailDrawer
           reg={drawerReg}
           onClose={() => setDrawerReg(null)}
+        />
+      )}
+
+      {deleteTarget && (
+        <ConfirmDialog
+          title="Delete Registration?"
+          message={`This will permanently remove ${deleteTarget.name}'s registration and cannot be undone.`}
+          confirmLabel="Delete"
+          onConfirm={handleDelete}
+          onCancel={() => setDeleteTarget(null)}
+          loading={deleteMutation.isPending}
         />
       )}
     </AdminLayout>

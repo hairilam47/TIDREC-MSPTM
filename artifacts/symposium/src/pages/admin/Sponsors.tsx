@@ -1,7 +1,13 @@
 import React from "react";
 import AdminLayout from "@/components/AdminLayout";
-import { useGetSponsors, useCreateSponsor, useUpdateSponsor, useDeleteSponsor } from "@workspace/api-client-react";
-import { Plus, Pencil, Trash2, ExternalLink } from "lucide-react";
+import {
+  useGetSponsors,
+  useCreateSponsor,
+  useUpdateSponsor,
+  useDeleteSponsor,
+  useReorderSponsors,
+} from "@workspace/api-client-react";
+import { Plus, Pencil, Trash2, ExternalLink, ChevronUp, ChevronDown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { SponsorInput, SponsorInputTier } from "@workspace/api-client-react";
 import { FormField, ModalShell, ConfirmDialog, INPUT_BASE, SELECT_BASE, inputBorder } from "@/components/ui/form-primitives";
@@ -21,6 +27,7 @@ export default function AdminSponsors() {
   const createMutation = useCreateSponsor();
   const updateMutation = useUpdateSponsor();
   const deleteMutation = useDeleteSponsor();
+  const reorderMutation = useReorderSponsors();
   const { toast } = useToast();
   const [showModal, setShowModal] = React.useState(false);
   const [editId, setEditId] = React.useState<number | null>(null);
@@ -73,6 +80,29 @@ export default function AdminSponsors() {
     });
   };
 
+  const moveWithinTier = (tier: SponsorInputTier, id: number, dir: "up" | "down") => {
+    const tierItems = (sponsors ?? [])
+      .filter((s) => s.tier === tier)
+      .sort((a, b) => {
+        const aso = (a as { sortOrder?: number }).sortOrder ?? 0;
+        const bso = (b as { sortOrder?: number }).sortOrder ?? 0;
+        return aso - bso || a.name.localeCompare(b.name);
+      });
+    const idx = tierItems.findIndex((s) => s.id === id);
+    const swapIdx = dir === "up" ? idx - 1 : idx + 1;
+    if (swapIdx < 0 || swapIdx >= tierItems.length) return;
+
+    const a = tierItems[idx];
+    const b = tierItems[swapIdx];
+    const aso = (a as { sortOrder?: number }).sortOrder ?? idx;
+    const bso = (b as { sortOrder?: number }).sortOrder ?? swapIdx;
+
+    reorderMutation.mutate(
+      { items: [{ id: a.id, sortOrder: bso }, { id: b.id, sortOrder: aso }] },
+      { onSuccess: refetch, onError: () => toast({ title: "Reorder failed", variant: "destructive" }) }
+    );
+  };
+
   const tiers: SponsorInputTier[] = ["platinum", "gold", "silver", "bronze"];
 
   return (
@@ -87,12 +117,17 @@ export default function AdminSponsors() {
       </div>
 
       {tiers.map((tier) => {
-        const tierSponsors = (sponsors ?? []).filter((s) => s.tier === tier);
+        const tierSponsors = (sponsors ?? [])
+          .filter((s) => s.tier === tier)
+          .sort((a, b) => {
+            const aso = (a as { sortOrder?: number }).sortOrder ?? 0;
+            const bso = (b as { sortOrder?: number }).sortOrder ?? 0;
+            return aso - bso || a.name.localeCompare(b.name);
+          });
         if (tierSponsors.length === 0) return null;
         const ts = TIER_STYLES[tier];
         return (
           <div key={tier} style={{ marginBottom: 24 }}>
-            {/* Tier heading */}
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
               <span
                 style={{
@@ -109,7 +144,7 @@ export default function AdminSponsors() {
             </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 12 }}>
-              {tierSponsors.map((s) => (
+              {tierSponsors.map((s, idx) => (
                 <div key={s.id} className="card">
                   <div className="card-body" style={{ display: "flex", alignItems: "center", gap: 12 }}>
                     <div
@@ -137,6 +172,26 @@ export default function AdminSponsors() {
                           {s.website.replace(/^https?:\/\//, "").split("/")[0]}
                         </a>
                       )}
+                    </div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 2, marginRight: 2 }}>
+                      <button
+                        className="btn btn-ghost btn-sm"
+                        style={{ padding: "2px 4px", opacity: idx === 0 ? 0.25 : 1 }}
+                        disabled={idx === 0}
+                        onClick={() => moveWithinTier(tier, s.id, "up")}
+                        title="Move up within tier"
+                      >
+                        <ChevronUp style={{ width: 13, height: 13 }} />
+                      </button>
+                      <button
+                        className="btn btn-ghost btn-sm"
+                        style={{ padding: "2px 4px", opacity: idx === tierSponsors.length - 1 ? 0.25 : 1 }}
+                        disabled={idx === tierSponsors.length - 1}
+                        onClick={() => moveWithinTier(tier, s.id, "down")}
+                        title="Move down within tier"
+                      >
+                        <ChevronDown style={{ width: 13, height: 13 }} />
+                      </button>
                     </div>
                     <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
                       <button className="btn btn-outline btn-sm" onClick={() => openEdit(s)} title="Edit">
@@ -202,9 +257,7 @@ export default function AdminSponsors() {
               style={inputBorder()}
             >
               {tiers.map((t) => (
-                <option key={t} value={t}>
-                  {t.charAt(0).toUpperCase() + t.slice(1)}
-                </option>
+                <option key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>
               ))}
             </select>
           </FormField>

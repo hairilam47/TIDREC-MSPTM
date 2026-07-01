@@ -1,8 +1,9 @@
 import React from "react";
 import AdminLayout from "@/components/AdminLayout";
 import { useGetRegistrations } from "@workspace/api-client-react";
-import { Search, Download, FileText, ChevronDown } from "lucide-react";
+import { Search, Download, FileText, ChevronDown, Loader2 } from "lucide-react";
 import { INPUT_BASE, SELECT_BASE, inputBorder } from "@/components/ui/form-primitives";
+import { useToast } from "@/hooks/use-toast";
 
 const STATUS_STYLES: Record<string, { bg: string; color: string }> = {
   paid:    { bg: "var(--status-success-bg)", color: "var(--status-success-text)" },
@@ -15,10 +16,29 @@ function toInvoiceNumber(code: string) {
   return "INV-" + code.replace("REG-", "");
 }
 
+async function downloadInvoicePdf(id: number, invoiceNo: string) {
+  const token = localStorage.getItem("satbds_token");
+  const res = await fetch(`/api/registrations/${id}/invoice`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
+  if (!res.ok) throw new Error("Download failed");
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `${invoiceNo}.pdf`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
 export default function AdminInvoices() {
   const { data: registrations } = useGetRegistrations();
+  const { toast } = useToast();
   const [search, setSearch] = React.useState("");
   const [statusFilter, setStatusFilter] = React.useState("all");
+  const [downloadingId, setDownloadingId] = React.useState<number | null>(null);
 
   const filtered = (registrations ?? []).filter((r) => {
     const q = search.toLowerCase();
@@ -100,20 +120,21 @@ export default function AdminInvoices() {
             <table className="table">
               <thead>
                 <tr>
-                  {["Invoice", "Delegate", "Category", "Amount (MYR)", "Status", "Date Issued"].map((h) => (
+                  {["Invoice", "Delegate", "Category", "Amount (MYR)", "Status", "Date Issued", ""].map((h) => (
                     <th key={h}>{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {filtered.length === 0 ? (
-                  <tr><td colSpan={6} className="text-center py-10" style={{ color: "var(--text-disabled)" }}>
+                  <tr><td colSpan={7} className="text-center py-10" style={{ color: "var(--text-disabled)" }}>
                     <FileText className="w-8 h-8 mx-auto mb-2" style={{ color: "var(--border-color)" }} />
                     <div className="text-[13px]">No invoices found</div>
                   </td></tr>
                 ) : filtered.map((r) => {
                   const ps = STATUS_STYLES[r.paymentStatus] ?? STATUS_STYLES.pending;
                   const invoiceNo = toInvoiceNumber(r.registrationCode ?? "");
+                  const isDownloading = downloadingId === r.id;
                   return (
                     <tr key={r.id}>
                       <td>
@@ -134,6 +155,29 @@ export default function AdminInvoices() {
                         <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full capitalize" style={{ background: ps.bg, color: ps.color }}>{r.paymentStatus}</span>
                       </td>
                       <td className="text-[12px]" style={{ color: "var(--text-muted)" }}>{new Date(r.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}</td>
+                      <td>
+                        <button
+                          className="btn btn-outline btn-sm flex items-center gap-1.5 text-[12px]"
+                          disabled={isDownloading}
+                          style={{ opacity: isDownloading ? 0.6 : 1 }}
+                          title="Download PDF invoice"
+                          onClick={async () => {
+                            setDownloadingId(r.id);
+                            try {
+                              await downloadInvoicePdf(r.id, invoiceNo);
+                            } catch {
+                              toast({ title: "PDF download failed", variant: "destructive" });
+                            } finally {
+                              setDownloadingId(null);
+                            }
+                          }}
+                        >
+                          {isDownloading
+                            ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            : <Download className="w-3.5 h-3.5" />}
+                          PDF
+                        </button>
+                      </td>
                     </tr>
                   );
                 })}
