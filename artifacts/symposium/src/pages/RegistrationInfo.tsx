@@ -80,7 +80,7 @@ export default function RegistrationInfo() {
 
       {/* ── Hero banner ── */}
       <section
-        className="relative py-20 text-center"
+        className="relative py-12 sm:py-20 text-center"
         style={{ background: "linear-gradient(135deg, var(--navy) 0%, #163a60 60%, #0e6e74 100%)" }}
       >
         <div
@@ -107,7 +107,7 @@ export default function RegistrationInfo() {
       <div className="max-w-4xl mx-auto px-4 py-12">
 
         {/* ── Intro / CTA block ── */}
-        <div className="bg-white rounded-2xl border border-border shadow-sm p-8 text-center mb-10">
+        <div className="bg-white rounded-2xl border border-border shadow-sm p-5 sm:p-8 text-center mb-10">
           <div
             className="inline-flex items-center justify-center w-16 h-16 rounded-full mb-5"
             style={{ background: "rgba(14,110,116,0.08)", border: "2px solid rgba(14,110,116,0.25)" }}

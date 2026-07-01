@@ -218,9 +218,9 @@ export default function Profile() {
                 <div>
                   <p style={sectionTitle}>Contact</p>
                   <label style={labelStyle}>Mobile Number <span style={{ color: "var(--red)" }}>*</span></label>
-                  <div style={{ display: "flex", gap: 8 }}>
+                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                     <select value={form.mobileCountryCode} onChange={e => setField("mobileCountryCode", e.target.value)}
-                      className={SELECT_BASE} style={{ ...inputBorder(), width: 200, flexShrink: 0, appearance: "auto" }}>
+                      className={SELECT_BASE} style={{ ...inputBorder(), minWidth: 160, flex: "1 1 160px", appearance: "auto" }}>
                       {COUNTRIES_DATA.map(c => (
                         <option key={c.name} value={c.dialCode}>{c.name} ({c.dialCode})</option>
                       ))}
@@ -233,7 +233,7 @@ export default function Profile() {
                 {/* Demographics */}
                 <div>
                   <p style={sectionTitle}>Demographics</p>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 16 }}>
                     <div>
                       <label style={labelStyle}>Nationality <span style={{ color: "var(--red)" }}>*</span></label>
                       <select value={form.nationality} onChange={e => setField("nationality", e.target.value)}
@@ -294,7 +294,7 @@ export default function Profile() {
                 {/* Affiliation */}
                 <div>
                   <p style={sectionTitle}>Affiliation</p>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 16 }}>
                     <div>
                       <label style={labelStyle}>Institution / Organisation</label>
                       <input type="text" value={form.institution} onChange={e => setField("institution", e.target.value)}
@@ -331,7 +331,7 @@ export default function Profile() {
           <div className="card">
             <div className="card-header"><div className="card-title">Account Information</div></div>
             <div className="card-body">
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: 16 }}>
                 {[
                   { label: "Account Type", value: user?.role === "admin" ? "Administrator" : "Delegate" },
                   { label: "Member Since", value: user ? new Date(user.createdAt).toLocaleDateString("en-GB", { month: "long", year: "numeric" }) : "—" },
