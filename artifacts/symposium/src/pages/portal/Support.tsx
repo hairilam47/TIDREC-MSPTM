@@ -31,7 +31,7 @@ const CONTACT_TILES = [
     iconBg: "var(--primary-lt)",
     iconColor: "var(--primary)",
     label: "Email",
-    value: <a href="mailto:secretariat@seat-msptm2027.org" style={{ fontSize: 14, fontWeight: 500, color: "var(--primary)", textDecoration: "none" }}>secretariat@seat-msptm2027.org</a>,
+    value: <a href="mailto:secretariat@seat-msptm2027.org" style={{ fontSize: 14, fontWeight: 500, color: "var(--primary)", textDecoration: "none" }}>events@mstpm.network</a>,
     sub: "Usually responds within 2 business days",
   },
   {
