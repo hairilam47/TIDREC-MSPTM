@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "wouter";
 import { useLogin } from "@workspace/api-client-react";
+import logoImg from "@assets/[WEBSITE LOGO] SEAT-MSPTM.png";
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import { INPUT_BASE, inputBorder } from "@/components/ui/form-primitives";
@@ -46,9 +47,7 @@ export default function Login() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link href="/">
-            <h1 className="font-sans text-3xl font-bold cursor-pointer" style={{ color: "var(--gold)" }}>
-              SEAT-MSPTM 2027
-            </h1>
+            <img src={logoImg} alt="SEAT-MSPTM 2027" className="h-24 w-auto object-contain mx-auto cursor-pointer" />
           </Link>
           <p className="mt-1 text-sm" style={{ color: "rgba(255,255,255,0.6)" }}>
             22–23 March 2027 · Sunway Putra Hotel, Kuala Lumpur
