@@ -384,6 +384,48 @@ body[data-shell="portal"] .tb-btn.tb-docs:hover { background: rgba(14,110,116,0.
 .tb-avatar:hover { transform: scale(1.06); }
 
 /* ──────────────────────────────────────────────
+   AVATAR DROPDOWN MENU  (_layout.scss)
+────────────────────────────────────────────── */
+.menu-popover {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 16px rgba(15,23,42,0.12), 0 1px 4px rgba(15,23,42,0.06);
+  padding: 4px;
+  z-index: 200;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 7px 10px;
+  font: inherit;
+  font-size: 13px;
+  color: var(--text);
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-align: left;
+  text-decoration: none;
+  line-height: 1.4;
+  transition: background 100ms, color 100ms;
+  white-space: nowrap;
+}
+.menu-item:hover { background: var(--primary-lt); color: var(--text); }
+
+.menu-separator {
+  height: 1px;
+  background: var(--border-color-light);
+  margin: 4px 0;
+}
+
+[data-theme="dark"] .menu-popover {
+  box-shadow: 0 4px 20px rgba(0,0,0,0.35), 0 1px 4px rgba(0,0,0,0.2);
+}
+
+/* ──────────────────────────────────────────────
    MAIN CONTENT  (_layout.scss)
 ────────────────────────────────────────────── */
 .main {
