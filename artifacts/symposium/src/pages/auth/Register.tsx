@@ -610,11 +610,6 @@ export default function Register() {
                   <Textarea id="dietary" data-testid="input-dietary" placeholder="e.g. Halal, Vegetarian, Gluten-free"
                     value={formData.dietaryRequirements} onChange={e => update("dietaryRequirements", e.target.value)} className="mt-1" rows={2} />
                 </div>
-                <div>
-                  <Label htmlFor="specialNeeds">Accessibility / Special Needs (Optional)</Label>
-                  <Textarea id="specialNeeds" data-testid="input-special-needs" placeholder="Let us know if you require specific accommodations"
-                    value={formData.specialNeeds} onChange={e => update("specialNeeds", e.target.value)} className="mt-1" rows={2} />
-                </div>
               </CardContent>
             </>
           )}
