@@ -3,6 +3,7 @@ import { Link, useLocation } from "wouter";
 import { AnimatePresence, motion } from "framer-motion";
 import { useGetMe, useGetAnnouncements, useLogout } from "@workspace/api-client-react";
 import { CountdownBadge } from "@/components/ui/CountdownBadge";
+import brandIcon from "@assets/[LOGO]_SEAT-MSPTM_1782872088899.png";
 
 const NAV_GROUPS = [
   {
@@ -117,7 +118,7 @@ export default function PortalLayout({ children, title }: { children: React.Reac
       {/* ── Sidebar ── */}
       <aside className={mobileOpen ? "sidebar open" : "sidebar"} aria-label="Delegate Portal navigation">
         <div className="sidebar-brand">
-          <div className="brand-icon">S</div>
+          <img src={brandIcon} alt="SEAT-MSPTM" className="brand-icon" style={{ width: 32, height: 32, objectFit: "contain" }} />
           <div className="brand-name">Delegate <small>Portal</small></div>
         </div>
 
