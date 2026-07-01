@@ -1,6 +1,6 @@
 import React from "react";
 import PortalLayout from "@/components/PortalLayout";
-import { useCreateAbstract } from "@workspace/api-client-react";
+import { useCreateAbstract, useGetMyRegistration } from "@workspace/api-client-react";
 import { Link, useLocation } from "wouter";
 import { ArrowLeft, Loader2, CheckCircle, Upload, FileText, X, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -40,16 +40,27 @@ async function uploadToGCS(presignedUrl: string, file: File): Promise<void> {
   if (!res.ok) throw new Error("Failed to upload file");
 }
 
+const STUDENT_CATEGORY_SLUGS = ["student", "student_senior"];
+
+const ABSTRACT_TYPE_LABELS: Record<string, string> = {
+  oral: "Oral Presentation",
+  poster: "Poster Presentation",
+  rapid_oral: "Rapid Oral Presentation",
+};
+
 export default function NewAbstract() {
   const [, setLocation] = useLocation();
   const createMutation = useCreateAbstract();
   const { toast } = useToast();
+  const { data: registration } = useGetMyRegistration();
   const [step, setStep] = React.useState(0);
   const [submitted, setSubmitted] = React.useState<{ abstractCode: string } | null>(null);
 
+  const isStudent = STUDENT_CATEGORY_SLUGS.includes(registration?.category ?? "");
+
   const [form, setForm] = React.useState({
     title: "",
-    abstractType: "oral" as "oral" | "poster",
+    abstractType: "oral" as "oral" | "poster" | "rapid_oral",
     keywords: "",
     coAuthors: "",
     body: "",
@@ -239,14 +250,15 @@ export default function NewAbstract() {
                 <label className="block text-[13px] font-semibold mb-1.5" style={{ color: "var(--text-secondary)" }}>
                   Presentation Type <span style={{ color: "var(--red)" }}>*</span>
                 </label>
-                <div className="flex gap-3">
-                  {(["oral", "poster"] as const).map((t) => (
+                <div className="flex gap-3 flex-wrap">
+                  {(["oral", "poster", ...(isStudent ? ["rapid_oral"] : [])] as const).map((t) => (
                     <label
                       key={t}
                       className="flex items-center gap-2 px-4 py-3 rounded-lg cursor-pointer flex-1 justify-center transition-colors"
                       style={{
                         border: form.abstractType === t ? "2px solid var(--primary)" : "1px solid var(--border-color)",
                         background: form.abstractType === t ? "var(--primary-lt)" : "var(--bg-surface)",
+                        minWidth: "9rem",
                       }}
                     >
                       <input
@@ -258,10 +270,10 @@ export default function NewAbstract() {
                         className="sr-only"
                       />
                       <span
-                        className="text-[13px] font-medium"
+                        className="text-[13px] font-medium text-center"
                         style={{ color: form.abstractType === t ? "var(--primary)" : "var(--text-secondary)" }}
                       >
-                        {t === "oral" ? "Oral Presentation" : "Poster Presentation"}
+                        {ABSTRACT_TYPE_LABELS[t]}
                       </span>
                     </label>
                   ))}
@@ -437,7 +449,7 @@ export default function NewAbstract() {
             <div className="space-y-4">
               {[
                 { label: "Title", value: form.title },
-                { label: "Type", value: form.abstractType === "oral" ? "Oral Presentation" : "Poster Presentation" },
+                { label: "Type", value: ABSTRACT_TYPE_LABELS[form.abstractType] ?? form.abstractType },
                 { label: "Keywords", value: form.keywords },
                 { label: "Co-Authors", value: form.coAuthors || "—" },
                 {
@@ -487,7 +499,7 @@ export default function NewAbstract() {
               <div className="text-[13px] mb-1 font-semibold" style={{ color: "var(--primary)" }}>You are about to submit:</div>
               <div className="text-[15px] font-sans font-bold" style={{ color: "var(--navy)" }}>{form.title}</div>
               <div className="text-[13px] mt-1" style={{ color: "var(--text-secondary)" }}>
-                {form.abstractType === "oral" ? "Oral Presentation" : "Poster Presentation"} · {form.keywords}
+                {ABSTRACT_TYPE_LABELS[form.abstractType] ?? form.abstractType} · {form.keywords}
               </div>
               {uploadedObjectPath && (
                 <div className="flex items-center gap-1.5 mt-2 text-[12px]" style={{ color: "var(--status-success-text)" }}>
