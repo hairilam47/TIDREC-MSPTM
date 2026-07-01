@@ -194,7 +194,7 @@ export default function PortalLayout({ children, title }: { children: React.Reac
         </div>
 
         <div className="topbar-right">
-          <CountdownBadge />
+          <div className="tb-countdown"><CountdownBadge /></div>
           {/* Theme toggle */}
           <button className="tb-btn theme-toggle" type="button" title="Toggle theme" aria-label="Toggle theme" onClick={toggleTheme}>
             <svg className="theme-icon-dark" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">

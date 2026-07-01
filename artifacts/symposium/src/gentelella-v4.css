@@ -524,10 +524,9 @@ body[data-shell="portal"] .tb-btn.tb-docs:hover { background: rgba(14,110,116,0.
     will-change: transform; width: var(--sidebar-w) !important;
   }
   .sidebar.open { transform: translateX(0); }
-  .main { margin-left: 0 !important; }
-  .topbar { left: 0 !important; padding: 0 12px; }
-  .topbar .breadcrumb, .topbar .search-box,
-  .topbar .tb-notifications, .topbar .tb-messages { display: none; }
+  .main { margin-left: 0 !important; padding-top: 56px; }
+  .topbar { left: 0 !important; padding: 0 12px; height: 56px; }
+  .topbar .search-box, .topbar .tb-countdown, .topbar .tb-messages { display: none; }
   .col-4, .col-3, .col-2 { grid-template-columns: minmax(0,1fr); }
   .page-wrapper { padding: 12px; }
   body.sidebar-open { overflow: hidden; }

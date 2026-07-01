@@ -104,7 +104,7 @@ export default function SpeakersPage() {
       <SiteHeader />
 
       {/* Speaker tiers */}
-      <main style={{ maxWidth: 1200, margin: "0 auto", padding: "60px 24px" }}>
+      <main className="max-w-[1200px] mx-auto px-4 md:px-6 py-10 md:py-16">
         {isLoading ? (
           <div style={{ display: "flex", justifyContent: "center", padding: "80px 0" }}>
             <Loader2 style={{ width: 36, height: 36, color: "var(--teal)", animation: "spin 1s linear infinite" }} />

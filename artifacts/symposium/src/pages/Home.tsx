@@ -269,18 +269,18 @@ export default function Home() {
 
             <div className="grid gap-6 mb-10 [grid-template-columns:repeat(auto-fill,minmax(min(480px,100%),1fr))]">
               {featuredSpeakers.map(speaker => (
-                <div key={speaker.id} className="flex gap-6 p-6 rounded-xl border border-border bg-white shadow-sm">
+                <div key={speaker.id} className="flex flex-col sm:flex-row gap-4 sm:gap-6 p-4 sm:p-6 rounded-xl border border-border bg-white shadow-sm">
                   {/* Photo */}
-                  <div className="flex-shrink-0">
-                    <Avatar className="w-64 h-64 rounded-xl">
+                  <div className="flex-shrink-0 flex justify-center sm:block">
+                    <Avatar className="w-28 h-28 sm:w-48 sm:h-48 md:w-64 md:h-64 rounded-xl">
                       <AvatarImage src={resolveImageUrl(speaker.photoUrl) || ''} alt={speaker.name} className="object-cover object-top" />
-                      <AvatarFallback className="text-5xl bg-secondary text-white rounded-xl font-bold">
+                      <AvatarFallback className="text-3xl sm:text-4xl md:text-5xl bg-secondary text-white rounded-xl font-bold">
                         {speaker.initials || speaker.name.substring(0, 2)}
                       </AvatarFallback>
                     </Avatar>
                   </div>
                   {/* Info */}
-                  <div className="flex flex-col justify-center min-w-0">
+                  <div className="flex flex-col justify-center min-w-0 text-center sm:text-left">
                     <h3 className="font-bold text-secondary text-base leading-snug mb-0.5">{speaker.name}</h3>
                     {speaker.institution && <p className="text-sm text-muted-foreground">{speaker.institution}</p>}
                     <p className="text-sm text-primary font-medium">{speaker.country}</p>

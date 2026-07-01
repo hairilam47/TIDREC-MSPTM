@@ -153,24 +153,33 @@ function AbstractDropdown() {
 }
 
 export function SiteHeader() {
+  const [menuOpen, setMenuOpen] = React.useState(false);
   const { data: cms } = useGetSettings();
+  const cmsRecord = cms as Record<string, string> | undefined;
+  const firstAnnouncementUrl = cms?.first_announcement_url;
+  const uitm_url = cmsRecord?.co_organiser_uitm_website_url;
+  const hasProspectus = Boolean(cms?.sponsor_prospectus_url);
+
+  const close = () => setMenuOpen(false);
 
   return (
     <header className="border-b border-sidebar-border sticky top-0 z-50 bg-white">
-      <div className="w-full h-32 flex items-center pr-6">
-        <Link href="/" className="flex-shrink-0">
-          <img src={logoImg} alt="SEAT-MSPTM 2027" className="h-32 w-auto object-contain" />
+      {/* ── Main header row ── */}
+      <div className="w-full flex items-center py-2 md:py-0 md:h-32 pr-4 md:pr-6">
+        <Link href="/" className="flex-shrink-0" onClick={close}>
+          <img src={logoImg} alt="SEAT-MSPTM 2027" className="h-14 md:h-32 w-auto object-contain" />
         </Link>
 
+        {/* Desktop nav */}
         <nav className="hidden md:flex flex-1 items-center justify-center gap-5">
           <Link href="/" className="hover:text-accent transition-colors text-[var(--navy)] font-semibold text-sm">Home</Link>
-          <AboutDropdown firstAnnouncementUrl={cms?.first_announcement_url} uitm_url={(cms as Record<string, string> | undefined)?.co_organiser_uitm_website_url} />
+          <AboutDropdown firstAnnouncementUrl={firstAnnouncementUrl} uitm_url={uitm_url} />
           <Link href="/programme" className="hover:text-accent transition-colors text-[var(--navy)] font-semibold text-sm">Programme</Link>
           <AbstractDropdown />
           <Link href="/speakers" className="hover:text-accent transition-colors text-[var(--navy)] font-semibold text-sm">Speakers</Link>
           <a href="/#sponsors" className="hover:text-accent transition-colors cursor-pointer text-[var(--navy)] font-semibold text-sm">Sponsors</a>
           <Link href="/contact" className="hover:text-accent transition-colors text-[var(--navy)] font-semibold text-sm">Contact</Link>
-          {cms?.sponsor_prospectus_url && (
+          {hasProspectus && (
             <a href="/api/sponsor-prospectus" download className="hover:text-accent transition-colors text-[var(--navy)] font-semibold text-sm cursor-pointer">Prospectus</a>
           )}
           <Link href="/login" className="hover:text-accent transition-colors text-[var(--navy)] font-semibold text-sm">Login</Link>
@@ -179,10 +188,104 @@ export function SiteHeader() {
           </Button>
         </nav>
 
-        <div className="flex-shrink-0">
+        {/* Desktop countdown — hidden on mobile */}
+        <div className="hidden md:flex flex-shrink-0">
           <CountdownBadge />
         </div>
+
+        {/* Mobile: hamburger button */}
+        <button
+          type="button"
+          className="md:hidden ml-auto p-2 rounded-lg text-[var(--navy)] hover:bg-gray-50 transition-colors"
+          aria-label={menuOpen ? "Close menu" : "Open menu"}
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen((o) => !o)}
+        >
+          {menuOpen ? (
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+              <path d="M18 6 6 18M6 6l12 12" />
+            </svg>
+          ) : (
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+              <path d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          )}
+        </button>
       </div>
+
+      {/* ── Mobile menu panel ── */}
+      {menuOpen && (
+        <nav
+          className="md:hidden border-t bg-white"
+          style={{ borderColor: "var(--border-color)" }}
+          aria-label="Mobile navigation"
+        >
+          <div className="px-4 py-2 flex flex-col">
+            {(
+              [
+                ["/", "Home"],
+                ["/committee", "Organising Committee"],
+                ["/programme", "Programme"],
+                ["/abstract", "Abstract Guidelines"],
+                ["/portal/abstracts/new", "Submit Abstract"],
+                ["/speakers", "Speakers"],
+                ["/#sponsors", "Sponsors"],
+                ["/contact", "Contact"],
+                ["/login", "Login"],
+              ] as [string, string][]
+            ).map(([href, label]) => (
+              <Link
+                key={href}
+                href={href}
+                className="flex items-center py-3 text-sm font-semibold border-b"
+                style={{ color: "var(--navy)", borderColor: "var(--border-color-light)" }}
+                onClick={close}
+              >
+                {label}
+              </Link>
+            ))}
+
+            {uitm_url && (
+              <a
+                href={uitm_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center py-3 text-sm font-semibold border-b"
+                style={{ color: "var(--navy)", borderColor: "var(--border-color-light)" }}
+              >
+                UiTM ↗
+              </a>
+            )}
+            {firstAnnouncementUrl && (
+              <a
+                href="/api/first-announcement"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center py-3 text-sm font-semibold border-b"
+                style={{ color: "var(--teal)", borderColor: "var(--border-color-light)" }}
+              >
+                First Announcement ↗
+              </a>
+            )}
+            {hasProspectus && (
+              <a
+                href="/api/sponsor-prospectus"
+                download
+                className="flex items-center py-3 text-sm font-semibold border-b"
+                style={{ color: "var(--navy)", borderColor: "var(--border-color-light)" }}
+              >
+                Sponsor Prospectus ↓
+              </a>
+            )}
+
+            <div className="py-3">
+              <Button asChild className="w-full bg-accent text-accent-foreground hover:bg-accent/90 text-sm">
+                <Link href="/registration" onClick={close}>Register Now</Link>
+              </Button>
+            </div>
+          </div>
+        </nav>
+      )}
     </header>
   );
 }
