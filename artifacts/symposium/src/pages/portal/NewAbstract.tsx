@@ -179,7 +179,7 @@ export default function NewAbstract() {
 
   return (
     <PortalLayout title="Submit Abstract">
-      <div className="max-w-2xl">
+      <div className="w-full">
         <Link href="/portal/abstracts" className="flex items-center gap-1.5 text-[13px] mb-5 no-underline" style={{ color: "var(--text-muted)" }}>
           <ArrowLeft className="w-4 h-4" /> Back to Abstracts
         </Link>
@@ -216,7 +216,7 @@ export default function NewAbstract() {
         {/* Step 0: Details & Content */}
         {step === 0 && (
           <div className="card p-6">
-            <h2 className="text-[17px] font-sans font-bold mb-5" style={{ color: "var(--navy)" }}>
+            <h2 className="text-[15px] font-sans font-bold mb-5" style={{ color: "var(--navy)" }}>
               Abstract Details & Content
             </h2>
             <div className="space-y-5">
@@ -334,7 +334,7 @@ export default function NewAbstract() {
         {/* Step 1: File Upload */}
         {step === 1 && (
           <div className="card p-6">
-            <h2 className="text-[17px] font-sans font-bold mb-2" style={{ color: "var(--navy)" }}>
+            <h2 className="text-[15px] font-sans font-bold mb-2" style={{ color: "var(--navy)" }}>
               Upload Abstract Document
             </h2>
             <p className="text-[13px] mb-6" style={{ color: "var(--text-muted)" }}>
@@ -433,7 +433,7 @@ export default function NewAbstract() {
         {/* Step 2: Preview */}
         {step === 2 && (
           <div className="card p-6">
-            <h2 className="text-[17px] font-sans font-bold mb-5" style={{ color: "var(--navy)" }}>Review Your Abstract</h2>
+            <h2 className="text-[15px] font-sans font-bold mb-5" style={{ color: "var(--navy)" }}>Review Your Abstract</h2>
             <div className="space-y-4">
               {[
                 { label: "Title", value: form.title },
@@ -482,7 +482,7 @@ export default function NewAbstract() {
         {/* Step 3: Submit */}
         {step === 3 && (
           <div className="card p-6">
-            <h2 className="text-[17px] font-sans font-bold mb-3" style={{ color: "var(--navy)" }}>Confirm Submission</h2>
+            <h2 className="text-[15px] font-sans font-bold mb-3" style={{ color: "var(--navy)" }}>Confirm Submission</h2>
             <div className="rounded-xl p-5 mb-5" style={{ background: "var(--primary-lt)", border: "1px solid var(--border-color)" }}>
               <div className="text-[13px] mb-1 font-semibold" style={{ color: "var(--primary)" }}>You are about to submit:</div>
               <div className="text-[15px] font-sans font-bold" style={{ color: "var(--navy)" }}>{form.title}</div>
