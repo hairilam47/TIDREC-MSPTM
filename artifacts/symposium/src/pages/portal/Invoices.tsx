@@ -70,7 +70,7 @@ export default function Invoices() {
             {/* Invoice body */}
             <div className="card-body" style={{ padding: "24px 32px" }}>
               {/* Dates */}
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginBottom: 24, paddingBottom: 24, borderBottom: "1px solid var(--border-color)" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: 24, marginBottom: 24, paddingBottom: 24, borderBottom: "1px solid var(--border-color)" }}>
                 <div>
                   <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", color: "var(--text-disabled)", marginBottom: 4 }}>Issued</div>
                   <div style={{ fontSize: 14, color: "var(--text)" }}>

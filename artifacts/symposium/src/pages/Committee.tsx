@@ -106,7 +106,7 @@ export default function CommitteePage() {
     <div className="min-h-screen bg-white flex flex-col">
       <SiteHeader />
 
-      <section className="py-14 px-4" style={{ background: "var(--navy)" }}>
+      <section className="py-10 sm:py-14 px-4" style={{ background: "var(--navy)" }}>
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-3xl md:text-5xl font-extrabold tracking-wide uppercase text-white">
             ORGANISING{" "}

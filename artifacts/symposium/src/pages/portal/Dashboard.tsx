@@ -162,8 +162,8 @@ export default function Dashboard() {
       {/* ── Payment pending alert ── */}
       {registration && paymentStatus !== "paid" && paymentStatus !== "waived" && paymentStatus !== "pending_confirmation" && (
         <div className="card mb-4" style={{ borderLeft: "4px solid var(--primary)", background: "var(--primary-lt)" }}>
-          <div className="card-body" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
-            <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+          <div className="card-body" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
+            <div style={{ display: "flex", alignItems: "flex-start", gap: 12, flex: 1 }}>
               <AlertTriangle style={{ width: 18, height: 18, color: "var(--primary)", flexShrink: 0 }} />
               <div>
                 <div style={{ fontWeight: 600, fontSize: 13, color: "var(--text)" }}>

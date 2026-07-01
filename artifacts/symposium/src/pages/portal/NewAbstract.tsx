@@ -336,7 +336,7 @@ export default function NewAbstract() {
               </div>
             </div>
             <div className="flex justify-end mt-6 pt-4" style={{ borderTop: "1px solid var(--border-color-light)" }}>
-              <button onClick={handleNext} className="btn btn-primary">
+              <button onClick={handleNext} className="btn btn-primary w-full sm:w-auto justify-center">
                 Next: File Upload →
               </button>
             </div>

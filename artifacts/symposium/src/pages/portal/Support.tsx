@@ -98,7 +98,7 @@ export default function Support() {
             {FAQS.map((faq, i) => (
               <div key={i} style={{ borderBottom: i < FAQS.length - 1 ? "1px solid var(--border-color-light)" : "none" }}>
                 <button
-                  style={{ width: "100%", textAlign: "left", padding: "14px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, background: "none", border: "none", cursor: "pointer", fontFamily: "inherit" }}
+                  style={{ width: "100%", textAlign: "left", padding: "14px 16px", minHeight: 52, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, background: "none", border: "none", cursor: "pointer", fontFamily: "inherit" }}
                   onClick={() => setOpen(open === i ? null : i)}
                 >
                   <span style={{ fontSize: 14, fontWeight: 500, color: "var(--text)" }}>{faq.q}</span>

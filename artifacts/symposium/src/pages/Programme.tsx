@@ -138,7 +138,7 @@ export default function ProgrammePage() {
     <div className="min-h-screen bg-white flex flex-col">
       <SiteHeader />
 
-      <section className="py-16 px-4" style={{ background: "#0B2744" }}>
+      <section className="py-10 sm:py-16 px-4" style={{ background: "#0B2744" }}>
         <div className="max-w-4xl mx-auto text-center">
           <p className="text-xs font-bold tracking-widest uppercase mb-3" style={{ color: "#C89B3C" }}>
             3rd SEAT-MSPTM 2027

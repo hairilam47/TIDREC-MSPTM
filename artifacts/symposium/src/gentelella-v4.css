@@ -533,6 +533,8 @@ body[data-shell="portal"] .tb-btn.tb-docs:hover { background: rgba(14,110,116,0.
   .page-wrapper { padding: 12px; }
   .page-title { font-size: 16px; }
   .page-pretitle { font-size: 10px; }
+  .btn { min-height: 44px; height: auto; padding-top: 8px; padding-bottom: 8px; }
+  .btn-sm { min-height: 38px; }
   body.sidebar-open { overflow: hidden; }
   body.sidebar-rail .sidebar { width: var(--sidebar-w); }
 }

@@ -14,7 +14,7 @@ export default function AboutPage() {
     <div className="min-h-screen bg-white flex flex-col">
       <SiteHeader />
       {/* Hero */}
-      <section className="py-14 px-4" style={{ background: "var(--navy)" }}>
+      <section className="py-10 sm:py-14 px-4" style={{ background: "var(--navy)" }}>
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-3xl md:text-5xl font-extrabold tracking-wide text-white">
             About{" "}
@@ -28,7 +28,7 @@ export default function AboutPage() {
         </div>
       </section>
       {/* Content */}
-      <main className="flex-1 px-4 py-16">
+      <main className="flex-1 px-4 py-10 sm:py-16">
         <div className="max-w-3xl mx-auto">
 
           {/* Body paragraphs */}

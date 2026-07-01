@@ -34,7 +34,7 @@ export default function ContactPage() {
       <SiteHeader />
 
       {/* Hero */}
-      <section className="py-14 px-4" style={{ background: "var(--navy)" }}>
+      <section className="py-10 sm:py-14 px-4" style={{ background: "var(--navy)" }}>
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-3xl md:text-5xl font-extrabold tracking-wide text-white">
             Contact
@@ -52,7 +52,7 @@ export default function ContactPage() {
         <div className="w-full max-w-xl bg-white rounded-2xl border shadow-sm overflow-hidden" style={{ borderColor: "#e5e7eb" }}>
 
           {/* Logo */}
-          <div className="flex justify-center pt-10 pb-6 px-8">
+          <div className="flex justify-center pt-8 pb-6 px-4 sm:px-8">
             <img src={logoImg} alt="3rd SEAT-MSPTM 2027" className="h-36 w-auto object-contain" />
           </div>
 

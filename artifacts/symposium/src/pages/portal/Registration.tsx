@@ -422,7 +422,7 @@ export default function Registration() {
             <div className="card-title">Event Details</div>
           </div>
           <div className="card-body">
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3,minmax(0,1fr))", gap: 16 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: 16 }}>
               {[
                 { label: "Event", value: "SEAT-MSPTM 2027" },
                 { label: "Date", value: "22–23 March 2027" },
