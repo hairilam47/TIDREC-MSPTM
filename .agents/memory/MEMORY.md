@@ -2,3 +2,4 @@
 - [Programme sessions table](programme-sessions-table.md) — programme_sessions table was created via raw SQL (drizzle-kit push blocks on TTY prompt); run SQL directly for future schema adds.
 - [Admin portal Vite alias](admin-portal-vite-alias.md) — admin portal @/ → symposium/src; always edit artifacts/symposium/src/pages/admin/, never admin-portal/src/pages/admin/.
 - [Symposium SPA routing](symposium-spa-routing.md) — all admin/portal routes must be registered in App.tsx; Replit proxy 404s for sub-paths are React Router misses, not platform routing issues.
+- [Gentelella layout CSS](gentelella-css.md) — gentelella-v4.css is the layout system for admin/portal; must be imported in main.tsx or all shell styling is lost.
