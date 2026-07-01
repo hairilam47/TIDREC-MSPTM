@@ -92,14 +92,16 @@ export default function CommitteePage() {
   const international = (members ?? []).filter((m) => m.committeeLevel === "international_advisory");
   const local = (members ?? []).filter((m) => m.committeeLevel === "local_organising");
   const subcommittees = (members ?? []).filter((m) => m.committeeLevel === "subcommittee");
+  const subcommitteeNamed = subcommittees.filter((m) => m.subcommitteeName);
+  const subcommitteeGeneral = subcommittees.filter((m) => !m.subcommitteeName);
 
   const subcommitteeMap: Record<string, string> = {};
   const subcommitteeNames: string[] = [];
-  for (const m of subcommittees) {
-    if (m.subcommitteeName && !(m.subcommitteeName in subcommitteeMap)) {
-      subcommitteeNames.push(m.subcommitteeName);
+  for (const m of subcommitteeNamed) {
+    if (!(m.subcommitteeName! in subcommitteeMap)) {
+      subcommitteeNames.push(m.subcommitteeName!);
     }
-    if (m.subcommitteeName) subcommitteeMap[m.subcommitteeName] = m.name;
+    subcommitteeMap[m.subcommitteeName!] = m.name;
   }
 
   return (
@@ -147,6 +149,15 @@ export default function CommitteePage() {
               {subcommitteeNames.map((name) => (
                 <SubcommitteeCard key={name} name={name} leadName={subcommitteeMap[name]} />
               ))}
+            </div>
+          </section>
+        )}
+
+        {subcommitteeGeneral.length > 0 && (
+          <section className="mb-8">
+            <SectionHeading>Committee Members</SectionHeading>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              {subcommitteeGeneral.map((m) => <PersonCard key={m.id} member={m} />)}
             </div>
           </section>
         )}
