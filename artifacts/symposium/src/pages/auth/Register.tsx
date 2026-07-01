@@ -522,7 +522,7 @@ export default function Register() {
                 {/* Institution */}
                 <div>
                   <Label htmlFor="institution">Institution / Organisation *</Label>
-                  <Input id="institution" data-testid="input-institution" placeholder="Institution / Organisation"
+                  <Input id="institution" data-testid="input-institution" placeholder=""
                     value={formData.institution} onChange={e => update("institution", e.target.value)} className="mt-1" />
                 </div>
 
