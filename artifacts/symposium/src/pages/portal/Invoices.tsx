@@ -40,7 +40,7 @@ export default function Invoices() {
               <div>
                 <div style={{ color: "#fff", fontSize: 20, fontWeight: 700, marginBottom: 4 }}>INVOICE</div>
                 <div style={{ fontSize: 13, color: "rgba(255,255,255,0.7)" }}>
-                  3rd SEAT-MSPTM 2027 — Symposium Registration
+                  SEAT-MSPTM 2027 — Symposium Registration
                 </div>
               </div>
               <div style={{ textAlign: "right" }}>
@@ -114,7 +114,7 @@ export default function Invoices() {
                         Symposium Registration — {categories.find(c => c.slug === invoice.category)?.label || invoice.category?.replace(/_/g, " ") || invoice.category}
                       </div>
                       <div style={{ fontSize: 12, marginTop: 2, color: "var(--text-muted)" }}>
-                        3rd SEAT-MSPTM 2027 · 22–23 March 2027 · Sunway Putra Hotel, KL
+                        SEAT-MSPTM 2027 · 22–23 March 2027 · Sunway Putra Hotel, KL
                       </div>
                       <div style={{ fontSize: 12, marginTop: 2, color: "var(--text-muted)" }}>
                         Reg: {invoice.registrationCode}

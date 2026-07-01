@@ -208,7 +208,7 @@ export default function AbstractPage() {
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">Abstract</h1>
           <div className="mx-auto w-16 h-1 rounded-full" style={{ background: "var(--gold, #C89B3C)" }} />
           <p className="mt-5 text-sm md:text-base max-w-2xl mx-auto" style={{ color: "rgba(255,255,255,0.72)" }}>
-            Submit your research abstracts for the 3rd SEAT-MSPTM 2027. We welcome submissions across all tracks of the symposium and concurrent scientific conference.
+            Submit your research abstracts for the SEAT-MSPTM 2027. We welcome submissions across all tracks of the symposium and concurrent scientific conference.
           </p>
         </div>
       </section>
