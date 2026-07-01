@@ -179,7 +179,7 @@ export default function Profile() {
                 {/* Salutation */}
                 <div>
                   <p style={sectionTitle}>Salutation</p>
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))", gap: 8 }}>
                     {SALUTATIONS.map(s => (
                       <label key={s} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", borderRadius: 8, cursor: "pointer", border: form.salutation === s ? "2px solid var(--primary)" : "1px solid var(--border-color)", background: form.salutation === s ? "var(--primary-lt)" : "var(--bg-surface)", fontSize: 13 }}>
                         <input type="radio" name="salutation" value={s} checked={form.salutation === s} onChange={e => setField("salutation", e.target.value)} />
