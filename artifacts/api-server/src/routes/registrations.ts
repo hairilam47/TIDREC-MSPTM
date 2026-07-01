@@ -295,21 +295,52 @@ router.get("/registrations/:id", requireAdmin, async (req, res) => {
 router.patch("/registrations/:id", requireAdmin, async (req, res) => {
   try {
     const id = parseInt(String(req.params.id));
-    const { paymentStatus, paymentAmount, paymentMethod } = req.body;
-    const [reg] = await db.update(registrationsTable)
-      .set({
-        paymentStatus: paymentStatus || undefined,
-        paymentAmount: paymentAmount !== undefined ? String(paymentAmount) : undefined,
-        paymentMethod: paymentMethod !== undefined ? (paymentMethod || null) : undefined,
-        receiptUrl: req.body.receiptUrl !== undefined ? (req.body.receiptUrl || null) : undefined,
-        updatedAt: new Date(),
-      })
-      .where(eq(registrationsTable.id, id))
-      .returning();
-    if (!reg) {
+    const body = req.body as Record<string, unknown>;
+
+    const [existingReg] = await db.select().from(registrationsTable).where(eq(registrationsTable.id, id)).limit(1);
+    if (!existingReg) {
       res.status(404).json({ error: "Registration not found" });
       return;
     }
+
+    // Registration table fields
+    const regUpdates: Partial<typeof registrationsTable.$inferInsert> = { updatedAt: new Date() };
+    if (body.paymentStatus !== undefined) regUpdates.paymentStatus = body.paymentStatus as typeof existingReg.paymentStatus;
+    if (body.paymentAmount !== undefined) regUpdates.paymentAmount = body.paymentAmount != null ? String(body.paymentAmount) : null;
+    if (body.paymentMethod !== undefined) regUpdates.paymentMethod = (body.paymentMethod as string) || null;
+    if (body.receiptUrl !== undefined) regUpdates.receiptUrl = (body.receiptUrl as string) || null;
+    if (body.category !== undefined) regUpdates.category = String(body.category ?? "").trim() || existingReg.category;
+    if (body.dietaryRequirements !== undefined) regUpdates.dietaryRequirements = String(body.dietaryRequirements ?? "").trim() || null;
+    if (body.specialNeeds !== undefined) regUpdates.specialNeeds = String(body.specialNeeds ?? "").trim() || null;
+
+    const [reg] = await db.update(registrationsTable).set(regUpdates).where(eq(registrationsTable.id, id)).returning();
+
+    // User profile fields (applied to the linked user account)
+    const userUpdates: Partial<typeof usersTable.$inferInsert> = {};
+    if (body.firstName !== undefined) userUpdates.firstName = String(body.firstName ?? "").trim() || undefined;
+    if (body.lastName !== undefined) userUpdates.lastName = String(body.lastName ?? "").trim() || undefined;
+    if (body.email !== undefined) { const e = String(body.email ?? "").trim().toLowerCase(); if (e) userUpdates.email = e; }
+    if (body.institution !== undefined) userUpdates.institution = String(body.institution ?? "").trim() || null;
+    if (body.country !== undefined) userUpdates.country = String(body.country ?? "").trim() || null;
+    if (body.nationality !== undefined) userUpdates.nationality = String(body.nationality ?? "").trim() || null;
+    if (body.gender !== undefined) userUpdates.gender = String(body.gender ?? "").trim() || null;
+    if (body.dateOfBirth !== undefined) userUpdates.dateOfBirth = String(body.dateOfBirth ?? "").trim() || null;
+    if (body.isMmaMember !== undefined) {
+      userUpdates.isMmaMember =
+        body.isMmaMember === true || body.isMmaMember === "true" ? true
+        : body.isMmaMember === false || body.isMmaMember === "false" ? false
+        : null;
+    }
+    if (body.mmcNumber !== undefined) userUpdates.mmcNumber = String(body.mmcNumber ?? "").trim() || null;
+    if (body.salutation !== undefined) userUpdates.salutation = String(body.salutation ?? "").trim() || null;
+    if (body.mobileCountryCode !== undefined) userUpdates.mobileCountryCode = String(body.mobileCountryCode ?? "").trim() || null;
+    if (body.mobileNumber !== undefined) userUpdates.mobileNumber = String(body.mobileNumber ?? "").trim() || null;
+
+    if (Object.keys(userUpdates).length > 0) {
+      userUpdates.updatedAt = new Date();
+      await db.update(usersTable).set(userUpdates).where(eq(usersTable.id, existingReg.userId));
+    }
+
     res.json(await formatRegistration(reg));
   } catch (err) {
     console.error(err);

@@ -8,6 +8,7 @@ import {
   useDeleteRegistration,
   useSendPaymentReminder,
   useBulkRemindRegistrations,
+  useFullUpdateRegistration,
 } from "@workspace/api-client-react";
 import { Search, Download, ChevronDown, Pencil, UserPlus, Loader2, X, ChevronRight, Trash2, Bell, BellRing } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -274,7 +275,252 @@ function AddRegistrationModal({ onClose, onSuccess }: { onClose: () => void; onS
 
 type AnyReg = Record<string, unknown>;
 
-function DetailDrawer({ reg, onClose }: { reg: AnyReg; onClose: () => void }) {
+interface EditRegistrationForm {
+  salutation: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  gender: string;
+  dateOfBirth: string;
+  nationality: string;
+  mobileCountryCode: string;
+  mobileNumber: string;
+  institution: string;
+  country: string;
+  isMmaMember: string;
+  mmcNumber: string;
+  category: string;
+  paymentStatus: string;
+  paymentAmount: string;
+  dietaryRequirements: string;
+  specialNeeds: string;
+}
+
+function toEditRegForm(reg: AnyReg): EditRegistrationForm {
+  return {
+    salutation: String(reg.salutation ?? ""),
+    firstName: String(reg.firstName ?? ""),
+    lastName: String(reg.lastName ?? ""),
+    email: String(reg.email ?? ""),
+    gender: String(reg.gender ?? ""),
+    dateOfBirth: reg.dateOfBirth ? String(reg.dateOfBirth).slice(0, 10) : "",
+    nationality: String(reg.nationality ?? ""),
+    mobileCountryCode: String(reg.mobileCountryCode ?? ""),
+    mobileNumber: String(reg.mobileNumber ?? ""),
+    institution: String(reg.institution ?? ""),
+    country: String(reg.country ?? ""),
+    isMmaMember: reg.isMmaMember === true ? "true" : reg.isMmaMember === false ? "false" : "",
+    mmcNumber: String(reg.mmcNumber ?? ""),
+    category: String(reg.category ?? ""),
+    paymentStatus: String(reg.paymentStatus ?? "pending"),
+    paymentAmount: reg.paymentAmount != null ? String(reg.paymentAmount) : "",
+    dietaryRequirements: String(reg.dietaryRequirements ?? ""),
+    specialNeeds: String(reg.specialNeeds ?? ""),
+  };
+}
+
+function EditRegistrationModal({
+  reg,
+  onClose,
+  onSaved,
+}: {
+  reg: AnyReg;
+  onClose: () => void;
+  onSaved: () => void;
+}) {
+  const [form, setForm] = React.useState<EditRegistrationForm>(() => toEditRegForm(reg));
+  const mutation = useFullUpdateRegistration();
+  const { toast } = useToast();
+  const { data: categories = [] } = useGetRegistrationCategories();
+
+  const set = (k: keyof EditRegistrationForm) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
+      setForm((f) => ({ ...f, [k]: e.target.value }));
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.firstName.trim() || !form.lastName.trim()) {
+      toast({ title: "First name and last name are required", variant: "destructive" });
+      return;
+    }
+    mutation.mutate(
+      {
+        id: reg.id as number,
+        data: {
+          salutation: form.salutation || null,
+          firstName: form.firstName.trim(),
+          lastName: form.lastName.trim(),
+          email: form.email.trim(),
+          gender: form.gender || null,
+          dateOfBirth: form.dateOfBirth || null,
+          nationality: form.nationality || null,
+          mobileCountryCode: form.mobileCountryCode || null,
+          mobileNumber: form.mobileNumber || null,
+          institution: form.institution || null,
+          country: form.country || null,
+          isMmaMember: form.isMmaMember === "true" ? true : form.isMmaMember === "false" ? false : null,
+          mmcNumber: form.mmcNumber || null,
+          category: form.category || undefined,
+          paymentStatus: form.paymentStatus || undefined,
+          paymentAmount: form.paymentAmount ? parseFloat(form.paymentAmount) : undefined,
+          dietaryRequirements: form.dietaryRequirements || null,
+          specialNeeds: form.specialNeeds || null,
+        },
+      },
+      {
+        onSuccess: () => {
+          toast({ title: "Registration updated" });
+          onSaved();
+          onClose();
+        },
+        onError: () => toast({ title: "Update failed", variant: "destructive" }),
+      }
+    );
+  };
+
+  return (
+    <ModalShell
+      title={`Edit — ${form.firstName} ${form.lastName}`}
+      onClose={onClose}
+      size="xl"
+      footer={
+        <div className="flex justify-end gap-3">
+          <button type="button" onClick={onClose} className="btn btn-outline">Cancel</button>
+          <button
+            type="submit"
+            form="edit-reg-form"
+            disabled={mutation.isPending}
+            className="btn btn-primary flex items-center gap-2 disabled:opacity-60"
+          >
+            {mutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
+            Save Changes
+          </button>
+        </div>
+      }
+    >
+      <form id="edit-reg-form" onSubmit={handleSubmit} className="space-y-6">
+        <div>
+          <h3 className="text-[11px] font-bold uppercase tracking-wider mb-3" style={{ color: "var(--text-muted)" }}>Identity</h3>
+          <div className="grid grid-cols-2 gap-4">
+            <FormField label="Salutation">
+              <select value={form.salutation} onChange={set("salutation")} className={SELECT_BASE} style={inputBorder()}>
+                <option value="">— Select —</option>
+                {["Dr.", "Prof.", "Assoc. Prof.", "Mr.", "Mrs.", "Ms.", "Other"].map((s) => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
+            </FormField>
+            <FormField label="Gender">
+              <select value={form.gender} onChange={set("gender")} className={SELECT_BASE} style={inputBorder()}>
+                <option value="">— Select —</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Prefer not to say">Prefer not to say</option>
+              </select>
+            </FormField>
+          </div>
+          <div className="grid grid-cols-2 gap-4 mt-4">
+            <FormField label="First Name" required>
+              <input value={form.firstName} onChange={set("firstName")} className={INPUT_BASE} style={inputBorder()} />
+            </FormField>
+            <FormField label="Last Name" required>
+              <input value={form.lastName} onChange={set("lastName")} className={INPUT_BASE} style={inputBorder()} />
+            </FormField>
+          </div>
+          <div className="grid grid-cols-2 gap-4 mt-4">
+            <FormField label="Email Address" hint="Also used for login">
+              <input type="email" value={form.email} onChange={set("email")} className={INPUT_BASE} style={inputBorder()} />
+            </FormField>
+            <FormField label="Date of Birth">
+              <input type="date" value={form.dateOfBirth} onChange={set("dateOfBirth")} className={INPUT_BASE} style={inputBorder()} />
+            </FormField>
+          </div>
+          <div className="mt-4">
+            <FormField label="Nationality">
+              <input value={form.nationality} onChange={set("nationality")} placeholder="e.g. Malaysian" className={INPUT_BASE} style={inputBorder()} />
+            </FormField>
+          </div>
+        </div>
+
+        <div>
+          <h3 className="text-[11px] font-bold uppercase tracking-wider mb-3" style={{ color: "var(--text-muted)" }}>Contact & Affiliation</h3>
+          <div className="grid grid-cols-3 gap-4">
+            <FormField label="Mobile Country Code">
+              <input value={form.mobileCountryCode} onChange={set("mobileCountryCode")} placeholder="+60" className={INPUT_BASE} style={inputBorder()} />
+            </FormField>
+            <div className="col-span-2">
+              <FormField label="Mobile Number">
+                <input value={form.mobileNumber} onChange={set("mobileNumber")} placeholder="12-345 6789" className={INPUT_BASE} style={inputBorder()} />
+              </FormField>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4 mt-4">
+            <FormField label="Institution">
+              <input value={form.institution} onChange={set("institution")} placeholder="e.g. University of Malaya" className={INPUT_BASE} style={inputBorder()} />
+            </FormField>
+            <FormField label="Country">
+              <input value={form.country} onChange={set("country")} placeholder="e.g. Malaysia" className={INPUT_BASE} style={inputBorder()} />
+            </FormField>
+          </div>
+        </div>
+
+        <div>
+          <h3 className="text-[11px] font-bold uppercase tracking-wider mb-3" style={{ color: "var(--text-muted)" }}>Membership</h3>
+          <div className="grid grid-cols-2 gap-4">
+            <FormField label="MMA Member">
+              <select value={form.isMmaMember} onChange={set("isMmaMember")} className={SELECT_BASE} style={inputBorder()}>
+                <option value="">— Not specified —</option>
+                <option value="true">Yes — MMA Member</option>
+                <option value="false">No</option>
+              </select>
+            </FormField>
+            {form.isMmaMember === "true" && (
+              <FormField label="MMC Number">
+                <input value={form.mmcNumber} onChange={set("mmcNumber")} placeholder="e.g. 12345" className={INPUT_BASE} style={inputBorder()} />
+              </FormField>
+            )}
+          </div>
+        </div>
+
+        <div>
+          <h3 className="text-[11px] font-bold uppercase tracking-wider mb-3" style={{ color: "var(--text-muted)" }}>Registration Details</h3>
+          <FormField label="Category">
+            <select value={form.category} onChange={set("category")} className={SELECT_BASE} style={inputBorder()}>
+              <option value="">— Unchanged —</option>
+              {categories.map((c) => (
+                <option key={c.slug} value={c.slug}>{c.label}</option>
+              ))}
+            </select>
+          </FormField>
+          <div className="grid grid-cols-2 gap-4 mt-4">
+            <FormField label="Payment Status">
+              <select value={form.paymentStatus} onChange={set("paymentStatus")} className={SELECT_BASE} style={inputBorder()}>
+                <option value="pending">Pending</option>
+                <option value="paid">Paid</option>
+                <option value="waived">Waived</option>
+                <option value="overdue">Overdue</option>
+                <option value="pending_confirmation">Pending Confirmation</option>
+              </select>
+            </FormField>
+            <FormField label="Amount (MYR)">
+              <input type="number" value={form.paymentAmount} onChange={set("paymentAmount")} placeholder="0.00" min="0" step="0.01" className={INPUT_BASE} style={inputBorder()} />
+            </FormField>
+          </div>
+          <div className="mt-4 space-y-4">
+            <FormField label="Dietary Requirements">
+              <textarea value={form.dietaryRequirements} onChange={set("dietaryRequirements")} rows={2} className={TEXTAREA_BASE} style={inputBorder()} />
+            </FormField>
+            <FormField label="Special Needs / Accessibility">
+              <textarea value={form.specialNeeds} onChange={set("specialNeeds")} rows={2} className={TEXTAREA_BASE} style={inputBorder()} />
+            </FormField>
+          </div>
+        </div>
+      </form>
+    </ModalShell>
+  );
+}
+
+function DetailDrawer({ reg, onClose, onEdit }: { reg: AnyReg; onClose: () => void; onEdit: () => void }) {
   const ps = PAYMENT_STYLES[(reg.paymentStatus as string) ?? "pending"] ?? PAYMENT_STYLES.pending;
   const displayName = (reg.fullName as string) || `${reg.firstName ?? ""} ${reg.lastName ?? ""}`.trim() || "—";
   const salutation = reg.salutation as string | null;
@@ -318,9 +564,17 @@ function DetailDrawer({ reg, onClose }: { reg: AnyReg; onClose: () => void }) {
             </div>
             <div className="text-[12px] mt-0.5" style={{ color: "var(--text-muted)" }}>{reg.registrationCode as string}</div>
           </div>
-          <button onClick={onClose} className="p-1.5 rounded-lg transition-colors" style={{ color: "var(--text-muted)" }}>
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={onEdit}
+              className="btn btn-outline btn-sm flex items-center gap-1.5 text-[12px]"
+            >
+              <Pencil className="w-3.5 h-3.5" /> Edit All
+            </button>
+            <button onClick={onClose} className="p-1.5 rounded-lg transition-colors" style={{ color: "var(--text-muted)" }}>
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         <div className="flex-1 overflow-y-auto px-5 py-4 space-y-5">
@@ -421,6 +675,7 @@ export default function AdminRegistrations() {
   const [editAmount, setEditAmount] = React.useState<string>("");
   const [showAddModal, setShowAddModal] = React.useState(false);
   const [drawerReg, setDrawerReg] = React.useState<AnyReg | null>(null);
+  const [editingReg, setEditingReg] = React.useState<AnyReg | null>(null);
   const [deleteTarget, setDeleteTarget] = React.useState<{ id: number; name: string } | null>(null);
   const [selectedIds, setSelectedIds] = React.useState<Set<number>>(new Set());
 
@@ -925,6 +1180,15 @@ export default function AdminRegistrations() {
         <DetailDrawer
           reg={drawerReg}
           onClose={() => setDrawerReg(null)}
+          onEdit={() => { setEditingReg(drawerReg); setDrawerReg(null); }}
+        />
+      )}
+
+      {editingReg && (
+        <EditRegistrationModal
+          reg={editingReg}
+          onClose={() => setEditingReg(null)}
+          onSaved={() => { refetch(); setEditingReg(null); }}
         />
       )}
 

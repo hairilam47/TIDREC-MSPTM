@@ -86,3 +86,29 @@ export function useReorderSponsors<TError = ErrorType<unknown>, TContext = unkno
 ): UseMutationResult<{ ok: boolean }, TError, { items: { id: number; sortOrder: number }[] }, TContext> {
   return useMutation(getReorderSponsorsMutationOptions(options));
 }
+
+// ─── Full Update Registration (all fields) ────────────────────────────────────
+
+export function useFullUpdateRegistration<TError = ErrorType<unknown>, TContext = unknown>(
+  options?: { mutation?: UseMutationOptions<unknown, TError, { id: number; data: Record<string, unknown> }, TContext> }
+): UseMutationResult<unknown, TError, { id: number; data: Record<string, unknown> }, TContext> {
+  const { mutation: mutationOptions } = options ?? {};
+  return useMutation<unknown, TError, { id: number; data: Record<string, unknown> }, TContext>({
+    mutationFn: ({ id, data }) =>
+      customFetch<unknown>(`/api/registrations/${id}`, { method: "PATCH", body: data }),
+    ...mutationOptions,
+  });
+}
+
+// ─── Full Update User (all fields incl. role) ────────────────────────────────
+
+export function useFullUpdateUser<TError = ErrorType<unknown>, TContext = unknown>(
+  options?: { mutation?: UseMutationOptions<unknown, TError, { id: number; data: Record<string, unknown> }, TContext> }
+): UseMutationResult<unknown, TError, { id: number; data: Record<string, unknown> }, TContext> {
+  const { mutation: mutationOptions } = options ?? {};
+  return useMutation<unknown, TError, { id: number; data: Record<string, unknown> }, TContext>({
+    mutationFn: ({ id, data }) =>
+      customFetch<unknown>(`/api/users/${id}`, { method: "PATCH", body: data }),
+    ...mutationOptions,
+  });
+}
