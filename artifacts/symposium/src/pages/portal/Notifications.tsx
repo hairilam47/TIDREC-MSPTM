@@ -27,7 +27,7 @@ export default function Notifications() {
           <p style={{ fontSize: 14, color: "var(--text-muted)" }}>No announcements yet.</p>
         </div>
       ) : (
-        <div style={{ display: "flex", flexDirection: "column", gap: 10, maxWidth: 640 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           {sorted.map((a) => (
             <div
               key={a.id}

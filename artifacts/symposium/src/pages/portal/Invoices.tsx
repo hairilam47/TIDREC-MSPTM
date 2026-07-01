@@ -21,7 +21,7 @@ export default function Invoices() {
           <Loader2 className="w-8 h-8 animate-spin" style={{ color: "var(--primary)" }} />
         </div>
       ) : isError || !invoice ? (
-        <div className="card" style={{ maxWidth: 380, margin: "0 auto" }}>
+        <div className="card">
           <div className="card-body" style={{ padding: "64px 16px", textAlign: "center" }}>
             <div style={{ width: 56, height: 56, borderRadius: "50%", background: "var(--bg-surface-secondary)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
               <Receipt style={{ width: 28, height: 28, color: "var(--text-disabled)" }} />
@@ -33,7 +33,7 @@ export default function Invoices() {
           </div>
         </div>
       ) : (
-        <div style={{ maxWidth: 640 }}>
+        <div>
           <div className="card" style={{ overflow: "hidden" }}>
             {/* Invoice header — brand gradient, intentionally not using CSS vars */}
             <div style={{ padding: "24px 32px", display: "flex", alignItems: "flex-start", justifyContent: "space-between", background: "linear-gradient(135deg, var(--navy), var(--teal))" }}>

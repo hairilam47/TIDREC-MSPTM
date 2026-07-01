@@ -247,7 +247,7 @@ export default function Registration() {
   if (!registration) {
     return (
       <PortalLayout title="My Registration">
-        <div style={{ maxWidth: 520, margin: "0 auto" }}>
+        <div>
           <div className="card">
             <div className="card-body">
               <div style={{ width: 44, height: 44, borderRadius: 10, background: "var(--primary-lt)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16 }}>
@@ -320,7 +320,7 @@ export default function Registration() {
 
   return (
     <PortalLayout title="My Registration">
-      <div style={{ maxWidth: 720 }}>
+      <div>
         {/* Status banner */}
         <div className="card mb-5" style={{ borderLeft: "4px solid", borderLeftColor: sc.color, background: sc.bg }}>
           <div className="card-body" style={{ display: "flex", alignItems: "center", gap: 12 }}>

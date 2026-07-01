@@ -65,7 +65,7 @@ export default function Support() {
 
   return (
     <PortalLayout title="Support">
-      <div style={{ maxWidth: 640 }}>
+      <div>
         <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 32 }}>
           Need help? Find answers to common questions or get in touch with the organising committee.
         </p>

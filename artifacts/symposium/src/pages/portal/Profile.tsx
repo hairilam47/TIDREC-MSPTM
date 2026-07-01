@@ -148,7 +148,7 @@ export default function Profile() {
           <Loader2 className="w-8 h-8 animate-spin" style={{ color: "var(--primary)" }} />
         </div>
       ) : (
-        <div style={{ maxWidth: 680 }}>
+        <div>
           {/* Avatar card */}
           <div className="card mb-4">
             <div className="card-body" style={{ display: "flex", alignItems: "center", gap: 20 }}>
